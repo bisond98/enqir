@@ -586,7 +586,7 @@ export default function EnquiryWall() {
                                     className="font-medium"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
-                                    I Can Provide
+                                    Sell
                                     <ArrowRight className="h-4 w-4 ml-2" />
                                   </Button>
                                 )

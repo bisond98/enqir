@@ -2836,7 +2836,7 @@ const EnquiryResponses = () => {
                               🤝 Meetup
                             </button>
                             <button
-                              onClick={() => setNewMessage("I can provide samples for testing")}
+                              onClick={() => setNewMessage("I sell samples for testing")}
                               className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-pink-50 text-pink-700 border border-pink-200 rounded-md hover:bg-pink-100 hover:border-pink-300 transition-colors duration-200 font-medium"
                             >
                               🧪 Samples

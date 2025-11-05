@@ -1628,7 +1628,7 @@ const Landing = () => {
                                   className="w-full h-5 sm:h-6 lg:h-10 bg-gray-800 text-white text-[8px] sm:text-[9px] lg:text-sm font-medium rounded hover:bg-gray-900 transition-colors"
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
-                                  I Can Provide This
+                                  Sell
                                 </button>
                               );
                             }

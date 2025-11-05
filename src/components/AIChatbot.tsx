@@ -53,7 +53,7 @@ const AIChatbot: React.FC = () => {
       actions: ["Go to Post Enquiry", "View Examples"]
     },
     "how to respond to enquiries": {
-      answer: "To respond to enquiries, browse the 'Browse Enquiries' section, find something you can help with, and click 'I Can Provide' to submit your offer.",
+      answer: "To respond to enquiries, browse the 'Browse Enquiries' section, find something you can help with, and click 'Sell' to submit your offer.",
       actions: ["Browse Enquiries", "View My Responses"]
     },
     "what is a trust badge": {
