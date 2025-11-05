@@ -1,0 +1,254 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Mobile-First Professional Styling */
+@media (max-width: 640px) {
+  #root {
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  /* Professional mobile typography */
+  .mobile-heading-1 {
+    @apply text-xl font-bold text-slate-900 leading-tight;
+  }
+  
+  .mobile-heading-2 {
+    @apply text-lg font-semibold text-slate-800 leading-tight;
+  }
+  
+  .mobile-heading-3 {
+    @apply text-base font-semibold text-slate-700 leading-tight;
+  }
+  
+  .mobile-body {
+    @apply text-sm text-slate-600 leading-relaxed;
+  }
+  
+  .mobile-caption {
+    @apply text-xs text-slate-500 leading-normal;
+  }
+  
+  /* Professional mobile buttons */
+  .mobile-button-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+  }
+  
+  .mobile-button-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+  }
+  
+  .mobile-button-success {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+  }
+  
+  .mobile-button-text {
+    @apply text-sm font-semibold;
+  }
+  
+  /* Professional mobile cards */
+  .mobile-card {
+    @apply bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 p-4;
+  }
+  
+  .mobile-card-elevated {
+    @apply bg-white rounded-2xl border-2 border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-300 p-4;
+  }
+  
+  /* Professional mobile spacing */
+  .mobile-padding {
+    @apply p-4;
+  }
+  
+  .mobile-padding-lg {
+    @apply p-6;
+  }
+  
+  .mobile-margin {
+    @apply m-4;
+  }
+  
+  .mobile-margin-lg {
+    @apply m-6;
+  }
+  
+  /* Professional mobile flex layouts */
+  .mobile-flex {
+    @apply flex;
+  }
+  
+  .mobile-flex-col {
+    @apply flex flex-col;
+  }
+  
+  .mobile-flex-row {
+    @apply flex flex-row;
+  }
+  
+  .mobile-center {
+    @apply items-center justify-center;
+  }
+  
+  .mobile-between {
+    @apply items-center justify-between;
+  }
+  
+  .mobile-gap {
+    @apply gap-3;
+  }
+  
+  .mobile-gap-sm {
+    @apply gap-2;
+  }
+  
+  .mobile-gap-md {
+    @apply gap-4;
+  }
+  
+  .mobile-gap-lg {
+    @apply gap-6;
+  }
+  
+  /* Professional mobile grid */
+  .mobile-grid-1 {
+    @apply grid grid-cols-1 gap-4;
+  }
+  
+  .mobile-grid-2 {
+    @apply grid grid-cols-2 gap-3;
+  }
+  
+  .mobile-grid-3 {
+    @apply grid grid-cols-3 gap-2;
+  }
+  
+  /* Professional mobile text sizing */
+  .mobile-text-xs {
+    @apply text-xs;
+  }
+  
+  .mobile-text-sm {
+    @apply text-sm;
+  }
+  
+  .mobile-text-base {
+    @apply text-base;
+  }
+  
+  .mobile-text-lg {
+    @apply text-lg;
+  }
+  
+  .mobile-text-xl {
+    @apply text-xl;
+  }
+  
+  /* Professional mobile touch targets */
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .mobile-touch-target-lg {
+    @apply min-h-[48px] min-w-[48px];
+  }
+  
+  /* Professional mobile shadows */
+  .mobile-shadow {
+    @apply shadow-lg;
+  }
+  
+  .mobile-shadow-lg {
+    @apply shadow-xl;
+  }
+  
+  .mobile-shadow-xl {
+    @apply shadow-2xl;
+  }
+  
+  /* Professional mobile borders */
+  .mobile-border {
+    @apply border border-slate-200;
+  }
+  
+  .mobile-border-lg {
+    @apply border-2 border-slate-300;
+  }
+  
+  .mobile-border-blue {
+    @apply border-2 border-blue-200;
+  }
+  
+  /* Professional mobile rounded corners */
+  .mobile-rounded {
+    @apply rounded-xl;
+  }
+  
+  .mobile-rounded-lg {
+    @apply rounded-2xl;
+  }
+  
+  /* Professional mobile spacing utilities */
+  .mobile-space-y {
+    @apply space-y-3;
+  }
+  
+  .mobile-space-y-sm {
+    @apply space-y-2;
+  }
+  
+  .mobile-space-y-lg {
+    @apply space-y-4;
+  }
+  
+  .mobile-space-x {
+    @apply space-x-3;
+  }
+  
+  .mobile-space-x-sm {
+    @apply space-x-2;
+  }
+  
+  .mobile-space-x-lg {
+    @apply space-x-4;
+  }
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

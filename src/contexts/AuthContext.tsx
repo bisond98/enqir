@@ -1,0 +1,573 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from '@/hooks/use-toast';
+import { auth } from '@/firebase';
+import { WelcomePopup } from '@/components/WelcomePopup';
+import {
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  sendEmailVerification,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
+  confirmPasswordReset as firebaseConfirmPasswordReset,
+  updateProfile,
+  deleteUser as firebaseDeleteUser,
+  User as FirebaseUser,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+  linkWithCredential,
+  EmailAuthProvider,
+  signInWithCredential,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, onSnapshot, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase';
+
+interface AuthContextType {
+  user: FirebaseUser | null;
+  loading: boolean;
+  isEmailVerified: boolean;
+  isProfileVerified: boolean;
+  profileVerificationStatus: string | null;
+  showWelcomePopup: boolean;
+  signUp: (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => Promise<{ error: any | null; requiresVerification?: boolean }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: any | null; requiresVerification?: boolean }>;
+  signOut: () => Promise<void>;
+  resendConfirmation: () => Promise<{ error: any | null }>;
+  sendPasswordResetEmail: (email: string) => Promise<{ error: any | null }>;
+  confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<{ error: any | null }>;
+  verifyPhoneOTP: (otp: string, verificationId: string) => Promise<{ error: any | null }>;
+  sendPhoneOTP: (phoneNumber: string) => Promise<{ error: any | null; verificationId?: string }>;
+  deleteAccount: () => Promise<{ error: any | null }>;
+  closeWelcomePopup: () => void;
+  clearAuthState: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
+  const [isProfileVerified, setIsProfileVerified] = useState<boolean>(false);
+  const [profileVerificationStatus, setProfileVerificationStatus] = useState<string | null>(null);
+  const [showWelcomePopup, setShowWelcomePopup] = useState<boolean>(false);
+
+  // Load profile verification status when user changes - REALTIME
+  const loadProfileData = (currentUser: FirebaseUser | null) => {
+    if (currentUser) {
+      // Setting up real-time profile listener
+      const profileRef = doc(db, 'userProfiles', currentUser.uid);
+      
+      // Set up real-time listener for profile changes
+      const unsubscribe = onSnapshot(profileRef, (profileDoc) => {
+        if (profileDoc.exists()) {
+          const profileData = profileDoc.data();
+          // Profile data updated
+          setIsProfileVerified(profileData.isProfileVerified || false);
+          setProfileVerificationStatus(profileData.verificationStatus || null);
+        } else {
+          // No profile found, setting defaults
+          setIsProfileVerified(false);
+          setProfileVerificationStatus(null);
+        }
+      }, (error) => {
+        console.log('Error in profile listener:', error);
+        setIsProfileVerified(false);
+        setProfileVerificationStatus(null);
+      });
+      
+      // Return unsubscribe function for cleanup
+      return unsubscribe;
+    } else {
+      setIsProfileVerified(false);
+      setProfileVerificationStatus(null);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    let profileUnsubscribe: (() => void) | null = null;
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setIsEmailVerified(currentUser?.emailVerified || false);
+      
+      // Clean up previous profile listener
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+      }
+      
+      // Set up new real-time profile listener (non-blocking)
+      if (currentUser) {
+        profileUnsubscribe = loadProfileData(currentUser);
+      }
+      setLoading(false);
+    });
+    
+    return () => {
+      unsubscribe();
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+      }
+    };
+  }, []);
+
+  // Helper function to detect if input is email or phone
+  const isEmail = (identifier: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+  };
+
+  const signUp = async (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => {
+    try {
+      setLoading(true);
+      
+      if (isEmail(identifier)) {
+        // Email signup
+        const result = await createUserWithEmailAndPassword(auth, identifier, password);
+
+        if (userData?.full_name) {
+          await updateProfile(result.user, { displayName: userData.full_name });
+        }
+
+        // Store additional user profile data in userProfiles collection
+        if (userData?.full_name || userData?.first_name || userData?.last_name) {
+          try {
+            await setDoc(doc(db, 'userProfiles', result.user.uid), {
+              userId: result.user.uid,
+              fullName: userData?.full_name || '',
+              firstName: userData?.first_name || '',
+              lastName: userData?.last_name || '',
+              phone: '',
+              isProfileVerified: false,
+              verificationMethod: 'manual',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+            console.log('User profile data stored successfully');
+          } catch (profileError) {
+            console.error('Error storing user profile:', profileError);
+            // Don't fail the signup if profile storage fails
+          }
+        }
+
+        await sendEmailVerification(result.user, {
+          url: `${window.location.origin}/auth/callback`,
+          handleCodeInApp: true,
+        });
+
+        toast({
+          title: 'Verification Email Sent!',
+          description: `We've sent a verification link to ${identifier}. Check your inbox and spam folder, then click the verification link to activate your account.`,
+        });
+
+        setLoading(false);
+        return { error: null, requiresVerification: true };
+      } else {
+        // Phone signup - temporarily disabled
+        toast({
+          title: 'Phone authentication disabled',
+          description: 'Please use email authentication. Phone auth requires billing setup.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return { error: new Error('Phone authentication disabled') };
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Sign up failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return { error };
+    }
+  };
+
+  const signIn = async (identifier: string, password: string) => {
+    try {
+      console.log('🔐 Starting sign-in process for:', identifier);
+      setLoading(true);
+      
+      if (isEmail(identifier)) {
+        console.log('🔐 Attempting email sign-in');
+        
+        // Simple email sign-in with retry logic
+        let retryCount = 0;
+        const maxRetries = 2;
+        
+        while (retryCount < maxRetries) {
+          try {
+            const result = await signInWithEmailAndPassword(auth, identifier, password);
+            console.log('🔐 Sign-in result:', { uid: result.user.uid, emailVerified: result.user.emailVerified });
+            
+            // Skip email verification check for testing
+            console.log('🔐 Sign-in successful, showing welcome popup');
+            setShowWelcomePopup(true);
+            setLoading(false);
+            return { error: null };
+          } catch (firebaseError: any) {
+            retryCount++;
+            console.warn(`🔐 Sign-in attempt ${retryCount} failed:`, firebaseError.code);
+            
+            if (retryCount >= maxRetries) {
+              throw firebaseError;
+            }
+            
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      } else {
+        // Phone signin - temporarily disabled
+        toast({
+          title: 'Phone authentication disabled',
+          description: 'Please use email authentication. Phone auth requires billing setup.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return { error: new Error('Phone authentication disabled') };
+      }
+    } catch (error: any) {
+      console.error("🔍 Firebase signIn error details:", {
+        code: error.code,
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      
+      // Better error messages based on error codes
+      let errorTitle = 'Sign in failed';
+      let errorDescription = error.message;
+      
+      if (error.code === 'auth/invalid-credential') {
+        errorTitle = 'Invalid Credentials';
+        errorDescription = 'The email or password you entered is incorrect. Please check your credentials and try again.';
+      } else if (error.code === 'auth/user-not-found') {
+        errorTitle = 'Account Not Found';
+        errorDescription = 'No account found with this email address. Please sign up first or check your email.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorTitle = 'Incorrect Password';
+        errorDescription = 'The password you entered is incorrect. Please try again or reset your password.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorTitle = 'Too Many Attempts';
+        errorDescription = 'Too many failed sign-in attempts. Please try again later.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorTitle = 'Network Connection Failed';
+        errorDescription = 'Unable to connect to Firebase servers. This could be due to:\n• Internet connection issues\n• Firebase project configuration\n• CORS settings\n• Firewall blocking the connection\n\nPlease check your internet connection and try again.';
+      } else if (error.code === 'auth/user-disabled') {
+        errorTitle = 'Account Disabled';
+        errorDescription = 'This account has been disabled. Please contact support.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorTitle = 'Sign-in Method Disabled';
+        errorDescription = 'Email/password sign-in is not enabled. Please contact support.';
+      } else if (error.code === 'auth/user-already-exists') {
+        errorTitle = 'User Already Exists';
+        errorDescription = 'An account with this email already exists. Please sign in instead.';
+      } else if (error.code === 'auth/invalid-api-key') {
+        errorTitle = 'Configuration Error';
+        errorDescription = 'Firebase API key is invalid. Please contact support.';
+      } else if (error.code === 'auth/project-not-found') {
+        errorTitle = 'Project Not Found';
+        errorDescription = 'Firebase project not found. Please contact support.';
+      }
+      
+      toast({
+        title: errorTitle,
+        description: errorDescription,
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return { error };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      console.log('🔐 Starting sign-out process');
+      
+      // Clear all local state first
+      setUser(null);
+      setIsEmailVerified(false);
+      setIsProfileVerified(false);
+      setProfileVerificationStatus(null);
+      setShowWelcomePopup(false);
+      
+      // Sign out from Firebase
+      await firebaseSignOut(auth);
+      
+      console.log('🔐 Sign-out successful');
+      toast({ title: 'Signed out', description: 'You have been signed out successfully.' });
+      
+      // Small delay before redirect to ensure state is cleared
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
+      
+    } catch (error: any) {
+      console.error('🔐 Sign-out error:', error);
+      toast({
+        title: 'Sign out failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const closeWelcomePopup = () => {
+    setShowWelcomePopup(false);
+  };
+
+  const clearAuthState = () => {
+    console.log('🔐 Clearing all authentication state');
+    setUser(null);
+    setIsEmailVerified(false);
+    setIsProfileVerified(false);
+    setProfileVerificationStatus(null);
+    setShowWelcomePopup(false);
+    setLoading(false);
+  };
+
+  const deleteAccount = async () => {
+    try {
+      if (!auth.currentUser) {
+        throw new Error('No user is currently signed in.');
+      }
+
+      const currentUser = auth.currentUser;
+      const userId = currentUser.uid;
+
+      // Delete user profile data
+      try {
+        await deleteDoc(doc(db, 'userProfiles', userId));
+      } catch (error) {
+        console.error('Error deleting user profile:', error);
+        // Continue with account deletion even if profile deletion fails
+      }
+
+      // Delete user's enquiries
+      try {
+        const enquiriesQuery = query(collection(db, 'enquiries'), where('userId', '==', userId));
+        const enquiriesSnapshot = await getDocs(enquiriesQuery);
+        const deletePromises = enquiriesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+      } catch (error) {
+        console.error('Error deleting user enquiries:', error);
+        // Continue with account deletion even if enquiries deletion fails
+      }
+
+      // Delete user's responses
+      try {
+        const responsesQuery = query(collection(db, 'responses'), where('userId', '==', userId));
+        const responsesSnapshot = await getDocs(responsesQuery);
+        const deletePromises = responsesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+      } catch (error) {
+        console.error('Error deleting user responses:', error);
+        // Continue with account deletion even if responses deletion fails
+      }
+
+      // Delete the Firebase Auth user
+      await firebaseDeleteUser(currentUser);
+
+      toast({
+        title: 'Account Deleted',
+        description: 'Your account and all associated data have been permanently deleted.',
+      });
+
+      // Redirect to landing page
+      window.location.href = '/';
+
+      return { error: null };
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      
+      let errorMessage = 'Failed to delete account. Please try again.';
+      if (error.code === 'auth/requires-recent-login') {
+        errorMessage = 'For security reasons, please sign in again before deleting your account.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast({
+        title: 'Account Deletion Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+
+      return { error };
+    }
+  };
+
+  const resendConfirmation = async () => {
+    try {
+      if (!auth.currentUser) {
+        throw new Error('You must be signed in to resend verification email.');
+      }
+      await sendEmailVerification(auth.currentUser, {
+        url: `${window.location.origin}/auth/callback`,
+        handleCodeInApp: true,
+      });
+      toast({ title: 'Email sent', description: 'Verification email resent. Please check your inbox.' });
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: 'Failed to resend email',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
+  const sendPasswordResetEmail = async (email: string) => {
+    try {
+      await firebaseSendPasswordResetEmail(auth, email, {
+        url: `${window.location.origin}/reset-password`,
+        handleCodeInApp: true,
+      });
+      toast({ title: 'Password reset email sent', description: 'Please check your inbox for a password reset link.' });
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: 'Failed to send password reset email',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
+  const confirmPasswordReset = async (oobCode: string, newPassword: string) => {
+    try {
+      await firebaseConfirmPasswordReset(auth, oobCode, newPassword);
+      toast({ title: 'Password reset successful', description: 'Your password has been reset. You can now sign in with your new password.' });
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: 'Password reset failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
+  const sendPhoneOTP = async (phoneNumber: string) => {
+    try {
+      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+        });
+      }
+
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, window.recaptchaVerifier);
+      window.verificationId = confirmationResult.verificationId;
+      
+      toast({
+        title: 'OTP sent',
+        description: 'Please enter the OTP sent to your phone number.',
+      });
+      
+      return { error: null, verificationId: confirmationResult.verificationId };
+    } catch (error: any) {
+      toast({
+        title: 'Failed to send OTP',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
+  const verifyPhoneOTP = async (otp: string, verificationId: string) => {
+    try {
+      const credential = PhoneAuthProvider.credential(verificationId, otp);
+      
+      if (auth.currentUser) {
+        // Link phone to existing account
+        await linkWithCredential(auth.currentUser, credential);
+        
+        // Store user data in Firestore
+        await setDoc(doc(db, 'users', auth.currentUser.phoneNumber || ''), {
+          uid: auth.currentUser.uid,
+          phoneNumber: auth.currentUser.phoneNumber,
+          displayName: auth.currentUser.displayName,
+          createdAt: new Date(),
+        });
+      } else {
+        // Sign in with phone
+        const result = await signInWithCredential(auth, credential);
+        
+        // Store user data in Firestore
+        await setDoc(doc(db, 'users', result.user.phoneNumber || ''), {
+          uid: result.user.uid,
+          phoneNumber: result.user.phoneNumber,
+          displayName: result.user.displayName,
+          createdAt: new Date(),
+        });
+      }
+      
+      toast({
+        title: 'Phone verified',
+        description: 'Your phone number has been verified successfully.',
+      });
+      
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: 'OTP verification failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      isEmailVerified,
+      isProfileVerified,
+      profileVerificationStatus,
+      showWelcomePopup,
+      signUp, 
+      signIn, 
+      signOut, 
+      resendConfirmation,
+      sendPasswordResetEmail,
+      confirmPasswordReset,
+      sendPhoneOTP,
+      verifyPhoneOTP,
+      deleteAccount,
+      closeWelcomePopup,
+      clearAuthState
+    }}>
+      {children}
+      <WelcomePopup 
+        isVisible={showWelcomePopup}
+        userName={user?.displayName || undefined}
+        onClose={closeWelcomePopup}
+      />
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+// Add global types for window object
+declare global {
+  interface Window {
+    recaptchaVerifier?: RecaptchaVerifier;
+    verificationId?: string;
+  }
+}
