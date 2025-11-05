@@ -297,19 +297,38 @@ class SmartNotificationService {
 
   /**
    * Store notification in localStorage (in real app, this would be a database)
+   * ONLY stores fresh notifications (not old ones)
    */
   private async storeNotification(userId: string, notification: NotificationData): Promise<void> {
     try {
       const key = `notifications_${userId}`;
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
-      existing.push(notification);
       
-      // Keep only last 100 notifications
-      if (existing.length > 100) {
-        existing.splice(0, existing.length - 100);
+      // ULTRA-STRICT: Only store if notification is absolutely fresh (within last 30 seconds)
+      const now = new Date();
+      const notifTime = new Date(notification.timestamp);
+      const thirtySecondsAgo = new Date(now.getTime() - 30000);
+      
+      if (notifTime < thirtySecondsAgo) {
+        console.log('⚠️ Skipping old notification - too old to store (>30sec)');
+        return; // Don't store old notifications
       }
       
-      localStorage.setItem(key, JSON.stringify(existing));
+      existing.push(notification);
+      
+      // Keep only last 20 notifications (reduced for speed)
+      if (existing.length > 20) {
+        existing.splice(0, existing.length - 20);
+      }
+      
+      // Filter out any notifications older than 30 seconds while storing
+      const fresh = existing.filter((n: NotificationData) => {
+        const t = new Date(n.timestamp);
+        return t >= thirtySecondsAgo;
+      });
+      
+      localStorage.setItem(key, JSON.stringify(fresh));
+      console.log(`💾 Stored notification (total: ${fresh.length} fresh)`);
     } catch (error) {
       console.error('Failed to store notification:', error);
     }
@@ -317,14 +336,33 @@ class SmartNotificationService {
 
   /**
    * Get user notifications
+   * ONLY returns absolutely fresh notifications (last 30 seconds)
    */
   async getUserNotifications(userId: string, limit: number = 20): Promise<NotificationData[]> {
     try {
       const key = `notifications_${userId}`;
-      const notifications = JSON.parse(localStorage.getItem(key) || '[]');
+      const stored = localStorage.getItem(key);
+      
+      // If no stored data, return empty immediately
+      if (!stored) {
+        return [];
+      }
+      
+      const notifications = JSON.parse(stored);
+      
+      // ULTRA-STRICT: Filter out ANY notifications older than 30 seconds
+      const now = new Date();
+      const thirtySecondsAgo = new Date(now.getTime() - 30000); // Only last 30 seconds
+      
+      const freshNotifications = notifications.filter((n: NotificationData) => {
+        if (!n || !n.timestamp) return false;
+        const notifTime = new Date(n.timestamp);
+        // Only return notifications from last 30 seconds
+        return notifTime >= thirtySecondsAgo;
+      });
       
       // Sort by timestamp (newest first)
-      return notifications
+      return freshNotifications
         .sort((a: NotificationData, b: NotificationData) => 
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         )

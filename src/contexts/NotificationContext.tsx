@@ -54,15 +54,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     const initialize = async () => {
       try {
-        // Clear all old notifications on first load
+        // STEP 1: COMPLETELY CLEAR ALL OLD NOTIFICATION DATA FOR ALL USERS
         await clearAllOldNotifications();
+        
+        // STEP 2: Initialize fresh notification system
         await initializeNotifications();
-        // Don't load any existing notifications - start fresh
+        
+        // STEP 3: Start with ZERO notifications (completely fresh start)
         setNotifications([]);
         setUnreadCount(0);
         setIsInitialized(true);
+        
+        console.log('🚀 Notification system initialized - starting fresh (no old data)');
       } catch (error) {
         console.error('Failed to initialize notifications:', error);
+        setNotifications([]);
+        setUnreadCount(0);
         setIsInitialized(true);
       }
     };
@@ -70,17 +77,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     initialize();
   }, [user?.uid]);
 
-  // Clear all old notifications from localStorage
+  // COMPLETELY CLEAR all old notifications from localStorage for ALL users
   const clearAllOldNotifications = async () => {
     try {
-      // Clear all notification-related localStorage keys
+      // Get all localStorage keys
       const keys = Object.keys(localStorage);
+      
+      // Remove ALL notification-related keys for ALL users
       keys.forEach(key => {
-        if (key.includes('notification') || key.includes('notif')) {
+        if (
+          key.includes('notification') || 
+          key.includes('notif') ||
+          key.startsWith('notifications_') ||
+          key.startsWith('notification_prefs_')
+        ) {
           localStorage.removeItem(key);
         }
       });
-      console.log('Cleared all old notifications from localStorage');
+      
+      console.log('✅ CLEARED ALL OLD NOTIFICATIONS FOR ALL USERS');
     } catch (error) {
       console.error('Failed to clear old notifications:', error);
     }
@@ -96,25 +111,33 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     
     setLoading(true);
     try {
-      // Only load notifications created from NOW onwards (no past notifications)
-      const now = new Date();
+      // STEP 1: CLEAR ALL old notifications FIRST (every time we refresh)
+      await clearAllOldNotifications();
+      
+      // STEP 2: Get notifications from service (should be empty or only very recent ones)
       const userNotifications = await smartNotificationService.getUserNotifications(user.uid, 20);
       
       // Ensure notifications array is valid
       const validNotifications = Array.isArray(userNotifications) ? userNotifications : [];
       
-      // STRICT: Only show notifications created from now onwards (no past ones)
-      const futureNotifications = validNotifications.filter(n => {
+      // STEP 3: ULTRA-STRICT FILTER - Only show notifications from the last 30 SECONDS
+      // This ensures ONLY brand new notifications appear, nothing old
+      const now = new Date();
+      const thirtySecondsAgo = new Date(now.getTime() - 30000); // 30 seconds only
+      
+      const freshNotifications = validNotifications.filter(n => {
         if (!n || !n.timestamp) return false;
         const notifDate = n.timestamp instanceof Date ? n.timestamp : new Date(n.timestamp);
-        // Only include if timestamp is from current session (after app loaded)
-        return notifDate >= now;
+        // Only show notifications from the last 30 seconds (absolutely fresh)
+        return notifDate >= thirtySecondsAgo;
       });
       
-      setNotifications(futureNotifications);
+      setNotifications(freshNotifications);
       
-      const unread = futureNotifications.filter(n => n && !n.read).length;
+      const unread = freshNotifications.filter(n => n && !n.read).length;
       setUnreadCount(unread);
+      
+      console.log(`📬 Loaded ${freshNotifications.length} FRESH notifications (30sec window, no old ones)`);
     } catch (error) {
       console.error('Failed to refresh notifications:', error);
       // Set empty array on error to prevent crashes
