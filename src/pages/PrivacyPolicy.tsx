@@ -8,11 +8,11 @@ const PrivacyPolicy = () => {
     <Layout>
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 max-w-4xl">
         <Card className="shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="bg-gray-800 text-gray-900 p-3 sm:p-4 md:p-6">
+          <CardHeader className="bg-gray-800 p-3 sm:p-4 md:p-6">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Shield className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
               <div>
-                <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">Privacy Policy</CardTitle>
+                <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Privacy Policy</CardTitle>
                 <p className="text-gray-300 mt-1 sm:mt-2 text-xs sm:text-sm">Last Updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               </div>
             </div>

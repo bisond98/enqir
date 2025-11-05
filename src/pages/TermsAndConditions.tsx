@@ -7,8 +7,8 @@ const TermsAndConditions = () => {
     <Layout>
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 max-w-4xl">
         <Card className="shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="bg-gray-800 text-gray-900 p-3 sm:p-4 md:p-6">
-            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">Terms and Conditions</CardTitle>
+          <CardHeader className="bg-gray-800 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Terms and Conditions</CardTitle>
             <p className="text-gray-300 mt-1 sm:mt-2 text-xs sm:text-sm">Last Updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           </CardHeader>
           <CardContent className="p-3 sm:p-4 md:p-6 bg-white">
