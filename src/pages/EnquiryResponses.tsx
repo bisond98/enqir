@@ -18,6 +18,8 @@ import { toast } from "@/hooks/use-toast";
 import { getPrivacyProtectedName, isUserVerified, getSafeLogData } from "@/utils/privacy";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
+import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
 
 
 interface Enquiry {
@@ -128,6 +130,9 @@ const EnquiryResponses = () => {
   const [isInCall, setIsInCall] = useState(false);
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
   const [callsEnabled, setCallsEnabled] = useState(true); // Call toggle state
+  
+  // Microphone permission state
+  const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
   
   // Update ref whenever callStatus changes
   useEffect(() => {
@@ -269,6 +274,30 @@ const EnquiryResponses = () => {
 
     loadCallsEnabled();
   }, [selectedResponse, enquiryId]);
+
+  // Check microphone permission on mount and when chat opens
+  useEffect(() => {
+    if (!selectedResponse) return;
+
+    const checkPermission = async () => {
+      try {
+        const status = await checkMicrophonePermission();
+        setMicrophonePermission(status);
+      } catch (error) {
+        console.error('Error checking microphone permission:', error);
+        setMicrophonePermission('prompt'); // Default to prompt on error
+      }
+    };
+
+    checkPermission();
+  }, [selectedResponse]);
+
+  // Handle permission granted callback
+  const handlePermissionGranted = async () => {
+    // Re-check permission status
+    const status = await checkMicrophonePermission();
+    setMicrophonePermission(status);
+  };
 
   // Simple real-time chat with onSnapshot
   useEffect(() => {
@@ -979,6 +1008,18 @@ const EnquiryResponses = () => {
     if (!selectedResponse || !enquiry || !user) return;
 
     try {
+      // Check microphone permission first
+      const permissionStatus = await checkMicrophonePermission();
+      if (permissionStatus !== 'granted') {
+        setMicrophonePermission(permissionStatus);
+        toast({
+          title: 'Microphone Permission Required',
+          description: 'Please grant microphone access to make calls. Click the permission button above.',
+          variant: 'default'
+        });
+        return;
+      }
+
       // Check network connectivity before initiating call
       if (!navigator.onLine) {
         toast({
@@ -1666,6 +1707,18 @@ const EnquiryResponses = () => {
   // Audio recording functions
   const startRecording = async () => {
     try {
+      // Check microphone permission first
+      const permissionStatus = await checkMicrophonePermission();
+      if (permissionStatus !== 'granted') {
+        setMicrophonePermission(permissionStatus);
+        toast({
+          title: 'Microphone Permission Required',
+          description: 'Please grant microphone access to record voice messages. Click the permission button above.',
+          variant: 'default'
+        });
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -2725,6 +2778,15 @@ const EnquiryResponses = () => {
                   <div className="border-t border-slate-200 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
                     <div className="p-3 sm:p-4">
+                      {/* Microphone Permission Prompt */}
+                      {selectedResponse && (
+                        <div className="mb-3 sm:mb-4">
+                          <MicrophonePermissionPrompt
+                            permissionStatus={microphonePermission}
+                            onPermissionGranted={handlePermissionGranted}
+                          />
+                        </div>
+                      )}
                       {/* Smart Suggestions - Mobile Responsive */}
                       <div className="flex items-center space-x-2 sm:space-x-2 mb-3 sm:mb-4 overflow-x-auto pb-3">
                         {user?.uid === selectedResponse?.sellerId ? (
