@@ -6,31 +6,31 @@ import { Shield, Lock, Eye, Database, UserCheck, Bell } from 'lucide-react';
 const PrivacyPolicy = () => {
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
         <Card className="shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white">
-            <div className="flex items-center gap-3">
-              <Shield className="w-8 h-8" />
+          <CardHeader className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8" />
               <div>
-                <CardTitle className="text-3xl font-bold">Privacy Policy</CardTitle>
-                <p className="text-blue-100 mt-2">Last Updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold">Privacy Policy</CardTitle>
+                <p className="text-blue-100 mt-2 text-xs sm:text-sm">Last Updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <ScrollArea className="h-[70vh] pr-4">
-              <div className="space-y-6 text-gray-700">
+          <CardContent className="p-4 sm:p-6">
+            <ScrollArea className="h-[calc(100vh-8rem)] sm:h-[70vh] pr-2 sm:pr-4">
+              <div className="space-y-4 sm:space-y-6 text-gray-700 text-sm sm:text-base">
                 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Eye className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center gap-2">
+                    <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                     1. Introduction
                   </h2>
-                  <p className="mb-3">
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
                     Welcome to Enqir.in ("we," "our," "us," or "the Platform"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you use our AI-powered marketplace platform.
                   </p>
-                  <p>
-                    By using Enqir.in, you agree to the collection and use of information in accordance with this Privacy Policy. If you do not agree with our policies, please do not use our services.
+                  <p className="leading-relaxed">
+                    By using Enqir.in, you explicitly consent to the collection, use, and disclosure of information in accordance with this Privacy Policy. If you do not agree with our policies, please do not use our services.
                   </p>
                 </section>
 
@@ -46,7 +46,7 @@ const PrivacyPolicy = () => {
                     <li><strong>Profile Information:</strong> Display name, profile picture, bio, business details</li>
                     <li><strong>Enquiry Information:</strong> Product/service descriptions, categories, budgets, deadlines, location preferences</li>
                     <li><strong>Response Information:</strong> Seller submissions, quotes, contact details, business proposals</li>
-                    <li><strong>Payment Information:</strong> Billing address, transaction history (payment card details are processed by Razorpay and not stored by us)</li>
+                    <li><strong>Payment Information:</strong> Billing address, transaction history, payment method details (payment card details are processed by third-party payment gateways and not stored by us)</li>
                     <li><strong>Communication Data:</strong> Messages, chat history, feedback, support tickets</li>
                     <li><strong>Verification Data:</strong> Identity documents, business registration details (for verified users)</li>
                     <li><strong>Images:</strong> Photos uploaded for enquiries or responses</li>
@@ -61,9 +61,9 @@ const PrivacyPolicy = () => {
                     <li><strong>AI Interaction Data:</strong> Search queries, AI recommendation interactions, matchmaking patterns</li>
                   </ul>
                   
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">2.3 Information from Third Parties</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Payment Processor:</strong> Transaction confirmations from Razorpay</li>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1.5 sm:mb-2">2.3 Information from Third Parties</h3>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
+                    <li><strong>Payment Processors:</strong> Transaction confirmations, payment status, and transaction details from third-party payment gateways</li>
                     <li><strong>Authentication Providers:</strong> Firebase Authentication data</li>
                     <li><strong>Cloud Services:</strong> Image storage metadata from Cloudinary</li>
                     <li><strong>Analytics Services:</strong> Aggregated usage insights</li>
@@ -112,22 +112,47 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">4. Information Sharing and Disclosure</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">4. Information Sharing and Disclosure</h2>
                   
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">4.1 When We Share Your Information</h3>
-                  <ul className="list-disc pl-6 space-y-2 mb-4">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1.5 sm:mb-2">4.1 When We Share Your Information</h3>
+                  <p className="mb-2 sm:mb-3 leading-relaxed text-sm sm:text-base">
+                    We may share your information with third parties in the following circumstances:
+                  </p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 mb-3 sm:mb-4 leading-relaxed">
                     <li><strong>With Other Users:</strong> Your enquiries and responses are visible to relevant users based on matchmaking</li>
-                    <li><strong>Payment Processing:</strong> Transaction data shared with Razorpay for payment processing</li>
+                    <li><strong>Payment Processing:</strong> We share customer information (name, email, address, transaction details) with <strong>third-party payment processors</strong> (financial institutions, banks, payment gateways) to process payments, track transactions, prevent fraud, and comply with legal requirements. <strong>By using our payment services, you explicitly consent to sharing your information with payment processors and their affiliates.</strong></li>
                     <li><strong>Service Providers:</strong> Third-party services for hosting (Firebase, Supabase), image storage (Cloudinary), and analytics</li>
                     <li><strong>Legal Requirements:</strong> When required by law, court order, or government request</li>
                     <li><strong>Business Transfers:</strong> In case of merger, acquisition, or sale of assets</li>
                     <li><strong>With Your Consent:</strong> When you explicitly authorize sharing</li>
                   </ul>
                   
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">4.2 What We DON'T Share</h3>
-                  <ul className="list-disc pl-6 space-y-2">
+                  <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-500 mb-3 sm:mb-4">
+                    <h4 className="font-semibold text-gray-800 mb-1.5 sm:mb-2">Payment Gateway Data Sharing</h4>
+                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed mb-2">
+                      When you make a payment, we share the following information with our payment gateway partners:
+                    </p>
+                    <ul className="list-disc pl-5 sm:pl-6 space-y-1 text-xs sm:text-sm text-gray-700 leading-relaxed">
+                      <li>Your name and email address</li>
+                      <li>Billing address</li>
+                      <li>Transaction amount and details</li>
+                      <li>Payment method information (card type, last 4 digits - not full card numbers)</li>
+                    </ul>
+                    <p className="mt-2 text-xs sm:text-sm text-gray-700 leading-relaxed">
+                      <strong>Important:</strong> Sensitive financial information (full card numbers, CVV, expiry dates) is handled securely by the payment gateway and adheres to industry standards like PCI-DSS. We or the payment gateway do not store your card data on our servers. The data is encrypted through secure protocols.
+                    </p>
+                    <p className="mt-2 text-xs sm:text-sm text-gray-700 leading-relaxed">
+                      <strong>Consent:</strong> By proceeding with a payment, you explicitly consent to sharing your information with payment processors and their affiliates for the purposes stated above.
+                    </p>
+                    <p className="mt-2 text-xs sm:text-sm">
+                      <strong>Review Payment Gateway Privacy:</strong> Please review the privacy policy of our payment gateway: <a href="https://razorpay.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Payment Gateway Privacy Policy</a>
+                    </p>
+                  </div>
+                  
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1.5 sm:mb-2">4.2 What We DON'T Share</h3>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
                     <li>We never sell your personal information to third parties</li>
-                    <li>Payment card details are never stored or shared (handled by Razorpay)</li>
+                    <li>Payment card details (full card numbers, CVV) are never stored or shared by us (handled securely by payment gateways)</li>
                     <li>Private messages are not shared with advertisers</li>
                     <li>Identity verification documents are kept confidential</li>
                   </ul>
@@ -149,26 +174,30 @@ const PrivacyPolicy = () => {
                     <li><strong>Withdrawal:</strong> Withdraw consent for data processing (where applicable)</li>
                   </ul>
                   <p className="mt-3">
-                    To exercise these rights, contact us at <a href="mailto:privacy@enqir.in" className="text-blue-600 hover:underline font-semibold">privacy@enqir.in</a>
+                    To exercise these rights, contact us at <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a>
                   </p>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">6. Data Security</h2>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="mb-3">We implement industry-standard security measures to protect your data:</p>
-                    <ul className="list-disc pl-6 space-y-2">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center gap-2">
+                    <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                    6. Data Security
+                  </h2>
+                  <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+                    <p className="mb-2 sm:mb-3 leading-relaxed">We implement industry-standard security measures to protect your data:</p>
+                    <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
                       <li><strong>Encryption:</strong> HTTPS/TLS encryption for data in transit</li>
                       <li><strong>Firebase Security:</strong> Secure authentication and database rules</li>
-                      <li><strong>Razorpay PCI-DSS:</strong> Compliant payment processing</li>
+                      <li><strong>Payment Gateway Security:</strong> Payment processing through PCI-DSS compliant payment gateways. Sensitive financial information (card data) is handled securely by payment gateway partners adhering to industry standards like PCI-DSS</li>
+                      <li><strong>No Card Storage:</strong> We or our payment gateway partners do not store your card data on our servers. Payment card details are encrypted and processed securely</li>
                       <li><strong>Access Controls:</strong> Restricted employee access to sensitive data</li>
                       <li><strong>Regular Audits:</strong> Security assessments and vulnerability testing</li>
                       <li><strong>Monitoring:</strong> Real-time threat detection and response</li>
                       <li><strong>Backup:</strong> Regular data backups for disaster recovery</li>
                     </ul>
                   </div>
-                  <p className="mt-3 text-sm text-gray-600">
-                    <strong>Note:</strong> No system is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.
+                  <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    <strong>Note:</strong> No system is 100% secure. While we strive to protect your data, we cannot guarantee absolute security. We recommend using strong passwords and keeping your account credentials secure.
                   </p>
                 </section>
 
@@ -213,7 +242,7 @@ const PrivacyPolicy = () => {
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-900 mb-3">10. Children's Privacy</h2>
                   <p>
-                    Enqir.in is not intended for users under 18 years of age. We do not knowingly collect data from children. If you believe we have inadvertently collected information from a child, contact us immediately at <a href="mailto:privacy@enqir.in" className="text-blue-600 hover:underline">privacy@enqir.in</a>, and we will delete it.
+                    Enqir.in is not intended for users under 18 years of age. We do not knowingly collect data from children. If you believe we have inadvertently collected information from a child, contact us immediately at <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline">info@enqir.in</a>, and we will delete it.
                   </p>
                 </section>
 
@@ -230,15 +259,17 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">12. Third-Party Services</h2>
-                  <p className="mb-3">We integrate with third-party services that have their own privacy policies:</p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Firebase:</strong> <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Privacy Policy</a></li>
-                    <li><strong>Razorpay:</strong> <a href="https://razorpay.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Privacy Policy</a></li>
-                    <li><strong>Cloudinary:</strong> <a href="https://cloudinary.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Privacy Policy</a></li>
-                    <li><strong>Supabase:</strong> <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Privacy Policy</a></li>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">12. Third-Party Services</h2>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">We integrate with third-party services that have their own privacy policies. By using our Platform, you agree to the terms and privacy policies of these third-party service providers:</p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 mb-2 sm:mb-3 leading-relaxed">
+                    <li><strong>Firebase:</strong> <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Privacy Policy</a></li>
+                    <li><strong>Payment Gateway:</strong> <a href="https://razorpay.com/privacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Payment Gateway Privacy Policy</a> and <a href="https://razorpay.com/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Terms</a></li>
+                    <li><strong>Cloudinary:</strong> <a href="https://cloudinary.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Privacy Policy</a></li>
+                    <li><strong>Supabase:</strong> <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-semibold">Privacy Policy</a></li>
                   </ul>
-                  <p className="mt-3">We are not responsible for third-party privacy practices. Please review their policies independently.</p>
+                  <p className="leading-relaxed text-sm sm:text-base">
+                    We are not responsible for third-party privacy practices. Please review their policies independently. We do not act as an agent or representative of any third-party service provider.
+                  </p>
                 </section>
 
                 <section>
@@ -249,13 +280,20 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3">14. Contact Us</h2>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="mb-3">For privacy-related questions, concerns, or requests, contact us:</p>
-                    <p className="mb-2"><strong>Privacy Officer</strong></p>
-                    <p className="mb-2"><strong>Email:</strong> <a href="mailto:privacy@enqir.in" className="text-blue-600 hover:underline">privacy@enqir.in</a></p>
-                    <p className="mb-2"><strong>Support Email:</strong> <a href="mailto:support@enqir.in" className="text-blue-600 hover:underline">support@enqir.in</a></p>
-                    <p><strong>Website:</strong> <a href="https://enqir.in" className="text-blue-600 hover:underline">https://enqir.in</a></p>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">14. Contact Us</h2>
+                  <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                    <p className="mb-2 sm:mb-3 leading-relaxed">For privacy-related questions, concerns, or requests, contact us:</p>
+                    <p className="mb-2"><strong>Privacy Officer / Grievance Officer</strong></p>
+                    <p className="mb-2"><strong>Name:</strong> Nived Sunil S</p>
+                    <p className="mb-2"><strong>Business Name:</strong> Enqir (Individual/Sole Proprietorship)</p>
+                    <p className="mb-2"><strong>Owner Name:</strong> Nived Sunil S</p>
+                    <p className="mb-2"><strong>Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
+                    <p className="mb-2"><strong>Grievance Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
+                    <p className="mb-2"><strong>Support Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
+                    <p className="mb-2"><strong>Phone:</strong> +91 9747460245</p>
+                    <p className="mb-2"><strong>Physical Address:</strong> Kunnath house, Thenkara Po Mannarkkad, Palakkad, Kerala</p>
+                    <p className="mb-2"><strong>Website:</strong> <a href="https://enqir.in" className="text-blue-600 hover:underline font-semibold">https://enqir.in</a></p>
+                    <p className="mt-2 text-xs sm:text-sm text-gray-600"><strong>Response Time:</strong> Within 24-48 hours</p>
                   </div>
                 </section>
 
