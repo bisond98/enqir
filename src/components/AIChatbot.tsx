@@ -285,8 +285,8 @@ const AIChatbot: React.FC = () => {
               </div>
             </div>
 
-            {/* Clean Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 bg-gray-50/50">
+            {/* Clean Chat Messages - Optimized for better visibility */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 min-h-0 bg-gray-50/50">
               {messages.map((message, index) => (
                 <div
                   key={message.id}
@@ -294,7 +294,7 @@ const AIChatbot: React.FC = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl transition-all duration-200 hover:shadow-md ${
+                    className={`max-w-[85%] sm:max-w-[75%] p-4 sm:p-5 rounded-2xl transition-all duration-200 hover:shadow-md ${
                       message.sender === 'user'
                         ? 'bg-gray-800 text-white rounded-br-md shadow-sm'
                         : 'bg-white text-gray-900 rounded-bl-md border border-gray-200 shadow-sm'
@@ -309,17 +309,35 @@ const AIChatbot: React.FC = () => {
                         {message.text}
                       </button>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         {message.sender === 'bot' && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <Bot className="h-3 w-3 text-gray-800" />
-                            <span className="text-xs font-medium text-gray-600">Assistant</span>
+                          <div className="flex items-center gap-2 mb-2.5">
+                            <Bot className="h-4 w-4 text-gray-800" />
+                            <span className="text-sm font-semibold text-gray-700">Assistant</span>
                           </div>
                         )}
-                        <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
+                        <div className="text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap text-gray-800">
+                          {message.text.split('\n').map((line, lineIndex) => {
+                            // Handle bullet points
+                            if (line.trim().startsWith('•')) {
+                              return (
+                                <div key={lineIndex} className="flex items-start gap-2 mb-1.5">
+                                  <span className="text-gray-800 mt-1.5 flex-shrink-0">•</span>
+                                  <span className="flex-1">{line.trim().substring(1).trim()}</span>
+                                </div>
+                              );
+                            }
+                            // Handle regular lines
+                            return (
+                              <p key={lineIndex} className={lineIndex === 0 ? 'font-medium text-gray-900 mb-2' : 'mb-1.5'}>
+                                {line || '\u00A0'}
+                              </p>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-current/10">
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-current/10">
                       <p className="text-xs opacity-70">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
