@@ -251,10 +251,10 @@ const AIChatbot: React.FC = () => {
                  
           <SheetContent 
             side="right" 
-            className="w-[86vw] max-w-[380px] sm:w-[480px] h-[70vh] sm:h-[70vh] p-0 bg-white border-l border-gray-200 flex flex-col [&>button]:hidden"
+            className="w-[86vw] max-w-[380px] sm:w-[480px] h-[70vh] sm:h-[70vh] p-0 bg-white border-l border-gray-200 flex flex-col [&>button]:hidden rounded-2xl sm:rounded-3xl"
           >
             {/* Clean Minimal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white">
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white rounded-t-2xl sm:rounded-t-3xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
                   <Bot className="h-5 w-5 text-white" />
@@ -293,8 +293,8 @@ const AIChatbot: React.FC = () => {
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div
-                    className={`max-w-[85%] sm:max-w-[75%] p-4 sm:p-5 rounded-2xl transition-all duration-200 hover:shadow-md ${
+                    <div
+                    className={`max-w-[85%] sm:max-w-[75%] p-4 sm:p-5 rounded-2xl sm:rounded-3xl transition-all duration-200 hover:shadow-md ${
                       message.sender === 'user'
                         ? 'bg-gray-800 text-white rounded-br-md shadow-sm'
                         : 'bg-white text-gray-900 rounded-bl-md border border-gray-200 shadow-sm'
@@ -352,7 +352,7 @@ const AIChatbot: React.FC = () => {
               {/* Clean Typing Indicator */}
               {isTyping && (
                 <div className="flex justify-start animate-in slide-in-from-bottom-2 duration-300">
-                  <div className="bg-white border border-gray-200 p-3 rounded-2xl rounded-bl-md">
+                  <div className="bg-white border border-gray-200 p-3 rounded-2xl sm:rounded-3xl rounded-bl-md">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2">
                         <Bot className="h-3 w-3 text-gray-800" />
@@ -373,7 +373,7 @@ const AIChatbot: React.FC = () => {
             </div>
 
             {/* Clean Quick Actions - Compact with full text visible */}
-            <div className="p-3 sm:p-4 border-t border-gray-100 bg-white">
+            <div className="p-3 sm:p-4 border-t border-gray-100 bg-white rounded-b-none">
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2 mb-2 sm:mb-3">
                   <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-800 rounded-full flex items-center justify-center">
@@ -386,7 +386,7 @@ const AIChatbot: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => handleQuickQuestion(question)}
-                      className="text-left p-2 sm:p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-800 rounded-lg sm:rounded-xl transition-all duration-200 group disabled:opacity-50 hover:scale-[1.02] active:scale-100"
+                      className="text-left p-2 sm:p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-800 rounded-xl sm:rounded-2xl transition-all duration-200 group disabled:opacity-50 hover:scale-[1.02] active:scale-100"
                       disabled={isLoading}
                     >
                       <div className="flex items-center gap-1.5 sm:gap-2">
@@ -401,7 +401,7 @@ const AIChatbot: React.FC = () => {
             </div>
 
             {/* Clean Input Area */}
-            <div className="p-4 border-t border-gray-100 bg-white">
+            <div className="p-4 border-t border-gray-100 bg-white rounded-b-2xl sm:rounded-b-3xl">
               <div className="flex gap-3">
                 <div className="flex-1 relative">
                   <input
@@ -410,7 +410,7 @@ const AIChatbot: React.FC = () => {
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="w-full px-4 py-3 pr-12 text-sm border border-gray-200 rounded-2xl focus:border-gray-800 focus:ring-2 focus:ring-gray-200 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 pr-12 text-sm border border-gray-200 rounded-2xl sm:rounded-3xl focus:border-gray-800 focus:ring-2 focus:ring-gray-200 transition-all duration-200 bg-gray-50 focus:bg-white"
                     disabled={isLoading}
                   />
                   {inputText.trim() && (
@@ -422,7 +422,7 @@ const AIChatbot: React.FC = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isLoading}
-                  className="px-4 py-3 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-2xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px]"
+                  className="px-4 py-3 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-2xl sm:rounded-3xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px]"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
