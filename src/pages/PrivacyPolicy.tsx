@@ -287,6 +287,7 @@ const PrivacyPolicy = () => {
                     <p className="mb-2"><strong>Name:</strong> Nived Sunil S</p>
                     <p className="mb-2"><strong>Business Name:</strong> Enqir (Individual/Sole Proprietorship)</p>
                     <p className="mb-2"><strong>Owner Name:</strong> Nived Sunil S</p>
+                    <p className="mb-2"><strong>Owner Email:</strong> <a href="mailto:nivedsunil5@gmail.com" className="text-blue-600 hover:underline font-semibold">nivedsunil5@gmail.com</a></p>
                     <p className="mb-2"><strong>Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
                     <p className="mb-2"><strong>Grievance Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
                     <p className="mb-2"><strong>Support Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>

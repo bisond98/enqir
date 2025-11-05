@@ -333,6 +333,7 @@ const RefundPolicy = () => {
                     <p className="mb-2"><strong>Support Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
                     <p className="mb-2"><strong>Business Name:</strong> Enqir (Individual/Sole Proprietorship)</p>
                     <p className="mb-2"><strong>Owner Name:</strong> Nived Sunil S</p>
+                    <p className="mb-2"><strong>Owner Email:</strong> <a href="mailto:nivedsunil5@gmail.com" className="text-blue-600 hover:underline font-semibold">nivedsunil5@gmail.com</a></p>
                     <p className="mb-2"><strong>Phone:</strong> +91 9747460245</p>
                     <p className="mb-2"><strong>Physical Address:</strong> Kunnath house, Thenkara Po Mannarkkad, Palakkad, Kerala</p>
                     <p className="mb-3 sm:mb-4"><strong>Response Time:</strong> Within 24-48 hours</p>
