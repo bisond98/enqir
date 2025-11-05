@@ -401,7 +401,7 @@ const MyEnquiries = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8">
           {/* Header with gray background */}
-          <div className="mb-3 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border-2 border-gray-700">
+          <div className="mb-3 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 border-gray-700">
             {/* Header Section - Top 10% with gray background */}
             <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 py-3 sm:px-6 sm:py-6">
               <div className="flex items-start justify-between mb-2 sm:mb-4">
@@ -437,19 +437,19 @@ const MyEnquiries = () => {
 
           {/* Stats Summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-5 mb-3 sm:mb-8">
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-lg">
+            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
               <div className="text-xl sm:text-4xl font-black text-blue-600 mb-1 sm:mb-2">{enquiries.length}</div>
               <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Total Enquiries</p>
             </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-lg">
+            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
               <div className="text-xl sm:text-4xl font-black text-green-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</div>
               <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Live</p>
             </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-lg">
+            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
               <div className="text-xl sm:text-4xl font-black text-yellow-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'pending').length}</div>
               <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Pending</p>
             </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-lg">
+            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
               <div className="text-xl sm:text-4xl font-black text-gray-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'completed').length}</div>
               <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Completed</p>
             </Card>
@@ -457,7 +457,7 @@ const MyEnquiries = () => {
 
           {/* Enquiries List */}
           {enquiries.length === 0 ? (
-            <Card className="p-6 sm:p-12 text-center border-0 shadow-lg">
+            <Card className="p-6 sm:p-12 text-center border-0 shadow-lg rounded-2xl">
               <div className="w-12 h-12 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 <Eye className="h-6 w-6 sm:h-10 sm:w-10 text-blue-600" />
               </div>

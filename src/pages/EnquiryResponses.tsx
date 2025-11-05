@@ -2176,7 +2176,7 @@ const EnquiryResponses = () => {
             </div>
 
             {/* Enquiry Summary */}
-            <Card className="mb-8 border-0 shadow-lg">
+            <Card className="mb-8 border-0 shadow-lg rounded-2xl">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -2200,7 +2200,7 @@ const EnquiryResponses = () => {
             </Card>
 
             {/* No Responses Message */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg rounded-2xl">
               <CardContent className="p-16 text-center">
                 <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <MessageSquare className="h-12 w-12 text-slate-600" />
@@ -2311,7 +2311,7 @@ const EnquiryResponses = () => {
             <div className="lg:col-span-1 order-2 lg:order-1">
               <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 mb-2 sm:mb-3 lg:mb-4">Approved Responses</h3>
               {approvedResponses.length === 0 ? (
-                <Card className="p-4 sm:p-6 lg:p-8 text-center border-0 shadow-lg">
+                <Card className="p-4 sm:p-6 lg:p-8 text-center border-0 shadow-lg rounded-2xl">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-slate-600" />
                   </div>
@@ -2364,7 +2364,7 @@ const EnquiryResponses = () => {
 
               {/* Success Message for 3rd+ Sellers (Non-Premium) - Mobile Only */}
               {isUserInQueue() && (
-                <Card className="border-0 shadow-lg bg-green-50 border-green-200 md:hidden mt-6 relative z-0">
+                <Card className="border-0 shadow-lg bg-green-50 border-green-200 md:hidden mt-6 relative z-0 rounded-2xl">
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">

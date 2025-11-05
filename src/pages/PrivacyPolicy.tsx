@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
   return (
     <Layout>
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 max-w-4xl">
-        <Card className="shadow-2xl border-0 overflow-hidden">
+        <Card className="shadow-2xl border-0 overflow-hidden rounded-2xl sm:rounded-3xl">
           <CardHeader className="bg-gray-800 p-3 sm:p-4 md:p-6">
             <div className="flex items-center gap-2 sm:gap-3">
               <Shield className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />

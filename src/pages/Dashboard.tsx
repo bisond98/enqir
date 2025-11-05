@@ -1063,7 +1063,7 @@ const Dashboard = () => {
                         return (
                           <div
                             key={enquiry.id}
-                            className={`rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 overflow-hidden ${
+                            className={`rounded-2xl sm:rounded-3xl shadow-sm transition-all duration-200 overflow-hidden ${
                               expiredFlag
                                 ? 'opacity-70 grayscale pointer-events-none bg-gray-100 border-2 border-gray-300'
                                 : 'bg-white border-2 border-blue-200 hover:shadow-md cursor-pointer'
@@ -1258,7 +1258,7 @@ const Dashboard = () => {
                   ) : (
                     <div className="space-y-2 sm:space-y-3">
                       {responsesSummary.slice(0, 3).map((submission) => (
-                        <div key={submission.id} className="bg-white rounded-lg sm:rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+                        <div key={submission.id} className="bg-white rounded-2xl sm:rounded-3xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
                           {/* Card Header - Top 10% with gray background */}
                           <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
                             <div className="flex items-center justify-between">
@@ -1410,7 +1410,7 @@ const Dashboard = () => {
               ) : (
                 <div className="space-y-2 sm:space-y-3">
                   {savedEnquiries.slice(0, 3).map((enquiry) => (
-                    <div key={enquiry.id} className="bg-white rounded-lg sm:rounded-xl border-2 border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-2 sm:p-4">
+                    <div key={enquiry.id} className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-2 sm:p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <h4 className="text-xs sm:text-base font-semibold text-gray-900 mb-1 line-clamp-1">{enquiry.title}</h4>

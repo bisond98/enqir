@@ -66,7 +66,7 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
   };
 
   return (
-    <Card className={`border-blue-200 bg-blue-50 shadow-md ${className}`}>
+    <Card className={`border-blue-200 bg-blue-50 shadow-md rounded-2xl ${className}`}>
       <CardContent className="p-3 sm:p-4">
         <div className="flex items-start gap-3">
           {/* Icon */}

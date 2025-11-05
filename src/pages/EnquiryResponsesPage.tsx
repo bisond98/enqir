@@ -421,7 +421,7 @@ const EnquiryResponsesPage = () => {
         </div>
 
         {/* Header with gray background */}
-        <div className="mb-3 sm:mb-6 rounded-lg overflow-hidden shadow-lg border-2 border-gray-700">
+        <div className="mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 border-gray-700">
           <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 py-3 sm:px-6 sm:py-6">
             <h2 className="text-lg sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">Responses to "{enquiry.title}"</h2>
             <p className="text-gray-200 mb-0 sm:mb-6 text-[10px] sm:text-base font-medium">View and manage responses from sellers for this enquiry</p>
@@ -430,7 +430,7 @@ const EnquiryResponsesPage = () => {
         
         {/* Sorting Controls - Mobile Optimized */}
         {visibleResponses.length > 1 && (
-          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-700">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 space-y-1.5 sm:space-y-0">
               <h3 className="text-white font-bold text-xs sm:text-base">Sort Responses</h3>
               <span className="text-gray-300 text-[10px] sm:text-sm font-medium">{visibleResponses.length} responses</span>
