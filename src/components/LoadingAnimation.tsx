@@ -1,16 +1,43 @@
 import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface LoadingAnimationProps {
   message?: string;
   className?: string;
+  showBackButton?: boolean;
+  onBack?: () => void;
 }
 
 export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ 
   message = "Loading...",
-  className = ""
+  className = "",
+  showBackButton = true,
+  onBack
 }) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 ${className}`}>
+    <div className={`min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}>
+      {/* Back Button - Top Left Corner */}
+      {showBackButton && (
+        <button
+          onClick={handleBack}
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 p-2 rounded-full bg-white border border-gray-300 shadow-md hover:shadow-lg hover:bg-gray-50 transition-all duration-200 z-10"
+          title="Go back"
+        >
+          <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900" />
+        </button>
+      )}
+
       <div className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
         {/* Business Model Loading Animation */}
         <div className="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto">

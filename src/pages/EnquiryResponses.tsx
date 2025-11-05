@@ -127,6 +127,7 @@ const EnquiryResponses = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
+  const [callsEnabled, setCallsEnabled] = useState(true); // Call toggle state
   
   // Update ref whenever callStatus changes
   useEffect(() => {
@@ -244,6 +245,30 @@ const EnquiryResponses = () => {
       }
     }
   }, [sellerIdFromUrl, approvedResponses, user, enquiry]);
+
+  // Load calls enabled state from Firestore
+  useEffect(() => {
+    if (!selectedResponse || !enquiryId) return;
+
+    const loadCallsEnabled = async () => {
+      try {
+        const chatSettingsRef = doc(db, 'chatSettings', `${enquiryId}_${selectedResponse.sellerId}`);
+        const chatSettingsDoc = await getDoc(chatSettingsRef);
+        
+        if (chatSettingsDoc.exists()) {
+          const data = chatSettingsDoc.data();
+          setCallsEnabled(data.callsEnabled !== undefined ? data.callsEnabled : true);
+        } else {
+          setCallsEnabled(true); // Default to enabled
+        }
+      } catch (error) {
+        console.log('Error loading calls enabled state:', error);
+        setCallsEnabled(true); // Default to enabled on error
+      }
+    };
+
+    loadCallsEnabled();
+  }, [selectedResponse, enquiryId]);
 
   // Simple real-time chat with onSnapshot
   useEffect(() => {
@@ -897,6 +922,57 @@ const EnquiryResponses = () => {
     };
 
     return peerConnection;
+  };
+
+  // Toggle calls for this chat
+  const toggleCallsEnabled = async () => {
+    if (!selectedResponse || !enquiryId) return;
+
+    try {
+      const chatSettingsRef = doc(db, 'chatSettings', `${enquiryId}_${selectedResponse.sellerId}`);
+      const newCallsEnabled = !callsEnabled;
+      
+      await updateDoc(chatSettingsRef, {
+        callsEnabled: newCallsEnabled,
+        updatedAt: new Date(),
+        updatedBy: user?.uid
+      }).catch(async (error) => {
+        // If document doesn't exist, create it
+        if (error.code === 'not-found') {
+          await setDoc(chatSettingsRef, {
+            enquiryId: enquiryId,
+            sellerId: selectedResponse.sellerId,
+            callsEnabled: newCallsEnabled,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            updatedBy: user?.uid
+          });
+        } else {
+          throw error;
+        }
+      });
+
+      setCallsEnabled(newCallsEnabled);
+      
+      toast({
+        title: newCallsEnabled ? 'Calls Enabled' : 'Calls Disabled',
+        description: newCallsEnabled ? 
+          'You can now make audio calls in this chat.' : 
+          'Audio calls are now disabled for this chat.',
+      });
+
+      // If disabling calls while in a call, end the call
+      if (!newCallsEnabled && (isCalling || isInCall)) {
+        await endCall();
+      }
+    } catch (error) {
+      console.error('Error toggling calls:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update call settings. Please try again.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const initiateCall = async () => {
@@ -2283,8 +2359,21 @@ const EnquiryResponses = () => {
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
-                        {/* Call Button - First on mobile */}
+                        {/* Call Toggle - Simple text button */}
                         {canUserChat(selectedResponse) && (
+                          <Button
+                            onClick={toggleCallsEnabled}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border border-gray-200 hover:border-gray-300"
+                            title={callsEnabled ? 'Click to disable calls' : 'Click to enable calls'}
+                          >
+                            {callsEnabled ? '🔊 Calls On' : '🔇 Calls Off'}
+                          </Button>
+                        )}
+                        
+                        {/* Call Button - First on mobile, only shown if calls enabled */}
+                        {canUserChat(selectedResponse) && callsEnabled && (
                           <Button
                             onClick={() => {
                               if (isCalling || isInCall) {
