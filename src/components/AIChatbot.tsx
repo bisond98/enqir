@@ -372,7 +372,7 @@ const AIChatbot: React.FC = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Clean Quick Actions */}
+            {/* Clean Quick Actions - Full text visible */}
             <div className="p-4 border-t border-gray-100 bg-white">
               <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-3">
@@ -381,17 +381,17 @@ const AIChatbot: React.FC = () => {
                   </div>
                   <p className="text-sm font-semibold text-gray-900">Quick Help</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {quickQuestions.map((question, index) => (
                     <button
                       key={index}
                       onClick={() => handleQuickQuestion(question)}
-                      className="text-left p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-800 rounded-xl transition-all duration-200 group disabled:opacity-50 hover:scale-105 active:scale-95"
+                      className="text-left p-3 sm:p-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-800 rounded-xl transition-all duration-200 group disabled:opacity-50 hover:scale-[1.02] active:scale-100 w-full"
                       disabled={isLoading}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-gray-800 rounded-full group-hover:bg-gray-900 group-hover:scale-125 transition-all duration-200"></div>
-                        <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900 truncate">{question}</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-1.5 h-1.5 bg-gray-800 rounded-full group-hover:bg-gray-900 group-hover:scale-125 transition-all duration-200 flex-shrink-0"></div>
+                        <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-gray-900 break-words flex-1 text-left">{question}</span>
                         <Sparkles className="h-3 w-3 text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
                       </div>
                     </button>
