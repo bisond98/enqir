@@ -1260,6 +1260,19 @@ const EnquiryResponses = () => {
     if (!selectedResponse || !enquiry || !user) return;
 
     try {
+      // Check microphone permission first
+      const permissionStatus = await checkMicrophonePermission();
+      if (permissionStatus !== 'granted') {
+        setMicrophonePermission(permissionStatus);
+        toast({
+          title: 'Microphone Permission Required',
+          description: 'Please grant microphone access to answer calls. Click the permission button above.',
+          variant: 'default'
+        });
+        endCall();
+        return;
+      }
+
       // Check network connectivity before answering call
       if (!navigator.onLine) {
         toast({
