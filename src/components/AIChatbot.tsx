@@ -431,13 +431,6 @@ const AIChatbot: React.FC = () => {
                   )}
                 </button>
               </div>
-              <div className="flex items-center justify-between mt-2 text-xs text-gray-400">
-                <span>Press Enter to send</span>
-                <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                  <span>Enqir Assistant</span>
-                </span>
-              </div>
             </div>
           </SheetContent>
         </Sheet>
