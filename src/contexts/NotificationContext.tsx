@@ -114,30 +114,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       // STEP 1: CLEAR ALL old notifications FIRST (every time we refresh)
       await clearAllOldNotifications();
       
-      // STEP 2: Get notifications from service (should be empty or only very recent ones)
-      const userNotifications = await smartNotificationService.getUserNotifications(user.uid, 20);
+      // STEP 2: DON'T LOAD ANY OLD NOTIFICATIONS - Start completely fresh
+      // This disables the notification system from showing any past notifications
+      setNotifications([]);
+      setUnreadCount(0);
       
-      // Ensure notifications array is valid
-      const validNotifications = Array.isArray(userNotifications) ? userNotifications : [];
+      console.log('📬 Notification system cleared - NO old notifications will be shown');
       
-      // STEP 3: ULTRA-STRICT FILTER - Only show notifications from the last 30 SECONDS
-      // This ensures ONLY brand new notifications appear, nothing old
-      const now = new Date();
-      const thirtySecondsAgo = new Date(now.getTime() - 30000); // 30 seconds only
-      
-      const freshNotifications = validNotifications.filter(n => {
-        if (!n || !n.timestamp) return false;
-        const notifDate = n.timestamp instanceof Date ? n.timestamp : new Date(n.timestamp);
-        // Only show notifications from the last 30 seconds (absolutely fresh)
-        return notifDate >= thirtySecondsAgo;
-      });
-      
-      setNotifications(freshNotifications);
-      
-      const unread = freshNotifications.filter(n => n && !n.read).length;
-      setUnreadCount(unread);
-      
-      console.log(`📬 Loaded ${freshNotifications.length} FRESH notifications (30sec window, no old ones)`);
+      // NOTE: Only NEW notifications created AFTER this point will appear
+      // This ensures a completely fresh start with zero notification backlog
     } catch (error) {
       console.error('Failed to refresh notifications:', error);
       // Set empty array on error to prevent crashes
