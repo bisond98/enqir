@@ -620,7 +620,7 @@ export default function EnquiryWall() {
                                 className="w-full h-4 md:h-8 text-[8px] md:text-xs font-medium"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                I Can Provide
+                                Sell
                                 <ArrowRight className="h-2 w-2 md:h-3 md:w-3 ml-1" />
                               </Button>
                             ) : (
