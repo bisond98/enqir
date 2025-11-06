@@ -1791,38 +1791,35 @@ const Landing = () => {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div
-                        className="relative bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
+                        className="relative bg-white border-2 border-gray-200 rounded-full aspect-square p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
                       >
                         {/* Subtle gradient overlay on hover */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl sm:rounded-3xl`}></div>
+                        <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full`}></div>
                         
                         {/* Content */}
-                        <div className="relative flex flex-col items-center text-center space-y-3 sm:space-y-3.5 lg:space-y-4 z-10 w-full">
+                        <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full">
                           {/* Icon Container */}
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gray-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100 flex-shrink-0">
-                            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-700 group-hover:text-gray-900 transition-colors" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gray-50 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100 flex-shrink-0">
+                            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-gray-700 group-hover:text-gray-900 transition-colors" />
                           </div>
                           
                           {/* Category Name */}
-                          <div className="space-y-0.5 sm:space-y-1 w-full">
-                            <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                          <div className="space-y-0 sm:space-y-0.5 w-full px-1">
+                            <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
                               {category.name.split(' ')[0]}
                             </h4>
                             {category.name.includes('&') && (
-                              <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
                                 {category.name.split('&')[1]?.trim()}
                               </h4>
                             )}
                             {!category.name.includes('&') && category.name.split(' ').length > 1 && (
-                              <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
                                 {category.name.split(' ').slice(1).join(' ')}
                               </h4>
                             )}
                           </div>
                         </div>
-
-                        {/* Corner accent */}
-                        <div className="absolute top-0 right-0 w-16 h-16 bg-gray-50 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
                     </div>
                   );
