@@ -1763,50 +1763,89 @@ const Landing = () => {
             </div>
           )}
 
-          {/* Categories Preview - Professional & Engaging */}
-          <div className="mb-8 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1.2s' }}>
-            <div className="text-center mb-6 sm:mb-8">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                Popular Categories
-              </h3>
-              <p className="text-sm sm:text-base text-gray-600">
-                Explore what people are looking for
-              </p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
-              {categories.map((category, index) => {
-                const IconComponent = category.icon;
-                return (
-                  <div
-                    key={index}
-                    className="group cursor-pointer"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <div className="relative h-full p-4 sm:p-5 bg-white border border-gray-200/60 rounded-xl sm:rounded-2xl hover:border-gray-300 hover:shadow-lg transition-all duration-300 ease-out overflow-hidden">
-                      {/* Subtle gradient background on hover */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-                      
-                      {/* Content */}
-                      <div className="relative flex flex-col items-center text-center space-y-2 sm:space-y-3">
-                        {/* Icon */}
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-50 group-hover:bg-white/80 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-sm">
-                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 group-hover:text-gray-900 transition-colors duration-300" />
-                        </div>
+          {/* Categories Preview - Corporate & Professional */}
+          <div className="mb-8 sm:mb-16 animate-slide-up px-4 sm:px-6 lg:px-8" style={{ animationDelay: '1.2s' }}>
+            <div className="max-w-7xl mx-auto">
+              {/* Section Header */}
+              <div className="text-center mb-8 sm:mb-12">
+                <div className="inline-flex items-center justify-center gap-2 mb-3">
+                  <div className="w-8 h-0.5 bg-gray-800"></div>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+                    Popular Categories
+                  </h2>
+                  <div className="w-8 h-0.5 bg-gray-800"></div>
+                </div>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                  Discover opportunities across diverse categories
+                </p>
+              </div>
+
+              {/* Categories Grid - Corporate Style */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 lg:gap-6">
+                {categories.map((category, index) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <div
+                      key={index}
+                      className="group cursor-pointer"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <div
+                        className="relative bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden"
+                        onClick={() => {
+                          navigate('/enquiry-wall');
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      >
+                        {/* Subtle gradient overlay on hover */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl sm:rounded-3xl`}></div>
                         
-                        {/* Category Name */}
-                        <span className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors duration-300 leading-tight">
-                          {category.name}
-                        </span>
-                      </div>
-                      
-                      {/* Subtle shine effect on hover */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                        {/* Content */}
+                        <div className="relative flex flex-col items-center text-center space-y-3 sm:space-y-4 z-10">
+                          {/* Icon Container */}
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100">
+                            <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-gray-700 group-hover:text-gray-900 transition-colors" />
+                          </div>
+                          
+                          {/* Category Name */}
+                          <div className="space-y-1">
+                            <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                              {category.name.split(' ')[0]}
+                            </h4>
+                            {category.name.includes('&') && (
+                              <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                                {category.name.split('&')[1]?.trim()}
+                              </h4>
+                            )}
+                            {!category.name.includes('&') && category.name.split(' ').length > 1 && (
+                              <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                                {category.name.split(' ').slice(1).join(' ')}
+                              </h4>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Corner accent */}
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-gray-50 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              {/* View All CTA */}
+              <div className="text-center mt-8 sm:mt-12">
+                <button
+                  onClick={() => {
+                    navigate('/enquiry-wall');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl sm:rounded-2xl transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-100"
+                >
+                  <span className="text-sm sm:text-base">Explore All Categories</span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+              </div>
             </div>
           </div>
 
