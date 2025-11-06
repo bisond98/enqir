@@ -281,97 +281,110 @@ export default function EnquiryWall() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              {/* Categories Grid */}
-              <div className="flex flex-wrap gap-1 sm:gap-2 justify-center max-w-full">
-                {[
-                  { value: "all", label: "All" },
-                  { value: "agriculture-farming", label: "Agriculture" },
-                  { value: "antiques", label: "Antiques" },
-                  { value: "art", label: "Art" },
-                  { value: "automobile", label: "Automobile" },
-                  { value: "books-publications", label: "Books" },
-                  { value: "childcare-family", label: "Childcare" },
-                  { value: "collectibles", label: "Collectibles" },
-                  { value: "construction-renovation", label: "Construction" },
-                  { value: "education-training", label: "Education" },
-                  { value: "electronics-gadgets", label: "Electronics" },
-                  { value: "entertainment-media", label: "Entertainment" },
-                  { value: "events-entertainment", label: "Events" },
-                  { value: "fashion-apparel", label: "Fashion" },
-                  { value: "food-beverage", label: "Food" },
-                  { value: "gaming-recreation", label: "Gaming" },
-                  { value: "government-public", label: "Government" },
-                  { value: "health-beauty", label: "Health" },
-                  { value: "home-furniture", label: "Home" },
-                  { value: "insurance-services", label: "Insurance" },
-                  { value: "jobs", label: "Jobs" },
-                  { value: "jewelry-accessories", label: "Jewelry" },
-                  { value: "legal-financial", label: "Legal" },
-                  { value: "marketing-advertising", label: "Marketing" },
-                  { value: "memorabilia", label: "Memorabilia" },
-                  { value: "non-profit-charity", label: "Non-Profit" },
-                  { value: "pets", label: "Pets" },
-                  { value: "professional-services", label: "Services" },
-                  { value: "raw-materials-industrial", label: "Industrial" },
-                  { value: "real-estate", label: "Real Estate" },
-                  { value: "real-estate-services", label: "Real Estate Services" },
-                  { value: "renewable-energy", label: "Renewable Energy" },
-                  { value: "security-safety", label: "Security" },
-                  { value: "sneakers", label: "Sneakers" },
-                  { value: "souvenir", label: "Souvenir" },
-                  { value: "sports-outdoor", label: "Sports" },
-                  { value: "technology", label: "Technology" },
-                  { value: "thrift", label: "Thrift" },
-                  { value: "transportation-logistics", label: "Transportation" },
-                  { value: "travel-tourism", label: "Travel" },
-                  { value: "vintage", label: "Vintage" },
-                  { value: "waste-management", label: "Waste Management" },
-                  { value: "wedding-events", label: "Wedding" },
-                  { value: "other", label: "Other" }
-                ].map((category, index) => (
-                  <div
-                    key={category.value}
-                    className={`${
-                      index < 6 
-                        ? 'block' 
-                        : showAllCategories 
-                          ? 'block animate-fade-in' 
-                          : 'hidden sm:block'
-                    } transition-all duration-300`}
-                  >
-                    <Button
-                      variant={selectedCategory === category.value ? "default" : "outline"}
-                      size="sm"
+            <div className="space-y-3 sm:space-y-4">
+              {/* Categories Grid - Professional Mobile Layout */}
+              <div className="w-full">
+                {/* Mobile: First Row - Always Visible */}
+                <div className="flex flex-wrap gap-2 sm:gap-2.5 justify-center sm:justify-start mb-2 sm:mb-0">
+                  {[
+                    { value: "all", label: "All" },
+                    { value: "agriculture-farming", label: "Agriculture" },
+                    { value: "antiques", label: "Antiques" },
+                    { value: "art", label: "Art" },
+                    { value: "automobile", label: "Automobile" },
+                    { value: "books-publications", label: "Books" },
+                  ].map((category) => (
+                    <button
+                      key={category.value}
                       onClick={() => setSelectedCategory(category.value)}
-                      className="mobile-button-secondary text-xs whitespace-nowrap min-w-fit flex-shrink-0"
+                      className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
+                        selectedCategory === category.value
+                          ? 'bg-gray-800 text-white shadow-md hover:bg-gray-900 scale-105'
+                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
+                      }`}
                     >
                       {category.label}
-                    </Button>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Mobile: Additional Categories - Expandable */}
+                <div className={`${showAllCategories ? 'block' : 'hidden sm:block'} transition-all duration-300`}>
+                  <div className="flex flex-wrap gap-2 sm:gap-2.5 justify-center sm:justify-start">
+                    {[
+                      { value: "childcare-family", label: "Childcare" },
+                      { value: "collectibles", label: "Collectibles" },
+                      { value: "construction-renovation", label: "Construction" },
+                      { value: "education-training", label: "Education" },
+                      { value: "electronics-gadgets", label: "Electronics" },
+                      { value: "entertainment-media", label: "Entertainment" },
+                      { value: "events-entertainment", label: "Events" },
+                      { value: "fashion-apparel", label: "Fashion" },
+                      { value: "food-beverage", label: "Food" },
+                      { value: "gaming-recreation", label: "Gaming" },
+                      { value: "government-public", label: "Government" },
+                      { value: "health-beauty", label: "Health" },
+                      { value: "home-furniture", label: "Home" },
+                      { value: "insurance-services", label: "Insurance" },
+                      { value: "jobs", label: "Jobs" },
+                      { value: "jewelry-accessories", label: "Jewelry" },
+                      { value: "legal-financial", label: "Legal" },
+                      { value: "marketing-advertising", label: "Marketing" },
+                      { value: "memorabilia", label: "Memorabilia" },
+                      { value: "non-profit-charity", label: "Non-Profit" },
+                      { value: "pets", label: "Pets" },
+                      { value: "professional-services", label: "Services" },
+                      { value: "raw-materials-industrial", label: "Industrial" },
+                      { value: "real-estate", label: "Real Estate" },
+                      { value: "real-estate-services", label: "Real Estate Services" },
+                      { value: "renewable-energy", label: "Renewable Energy" },
+                      { value: "security-safety", label: "Security" },
+                      { value: "sneakers", label: "Sneakers" },
+                      { value: "souvenir", label: "Souvenir" },
+                      { value: "sports-outdoor", label: "Sports" },
+                      { value: "technology", label: "Technology" },
+                      { value: "thrift", label: "Thrift" },
+                      { value: "transportation-logistics", label: "Transportation" },
+                      { value: "travel-tourism", label: "Travel" },
+                      { value: "vintage", label: "Vintage" },
+                      { value: "waste-management", label: "Waste Management" },
+                      { value: "wedding-events", label: "Wedding" },
+                      { value: "other", label: "Other" }
+                    ].map((category) => (
+                      <button
+                        key={category.value}
+                        onClick={() => setSelectedCategory(category.value)}
+                        className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
+                          selectedCategory === category.value
+                            ? 'bg-gray-800 text-white shadow-md hover:bg-gray-900 scale-105'
+                            : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
+                        }`}
+                      >
+                        {category.label}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
               
-              {/* Mobile: Show More/Less toggle */}
-              <div className="text-center sm:hidden mt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
+              {/* Mobile: Show More/Less toggle - Professional */}
+              <div className="text-center sm:hidden pt-2">
+                <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="mobile-button-outline text-xs"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm transition-all duration-200 min-touch"
                 >
                   {showAllCategories ? (
                     <>
-                      <X className="w-2.5 h-2.5 mr-1" />
+                      <X className="w-3.5 h-3.5" />
                       Show Less
                     </>
                   ) : (
                     <>
-                      <Filter className="w-2.5 h-2.5 mr-1" />
+                      <Filter className="w-3.5 h-3.5" />
                       Show More (+38)
                     </>
                   )}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
