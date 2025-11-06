@@ -235,7 +235,7 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-10" />
                 <input
                   type="text"
                   placeholder="Search enquiries... (try 'car', 'jacket', 'phone')"
@@ -243,12 +243,18 @@ export default function EnquiryWall() {
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="mobile-input min-touch"
+                  className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-3.5 text-sm sm:text-base border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-white shadow-sm placeholder-gray-400 leading-tight sm:leading-normal"
+                  style={{ 
+                    fontSize: '16px', // Prevents zoom on iOS
+                    lineHeight: '1.5',
+                    paddingTop: '0.75rem',
+                    paddingBottom: '0.75rem'
+                  }}
                   disabled={isAISearching}
                 />
                 {isAISearching && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
                 
