@@ -1775,40 +1775,36 @@ const Landing = () => {
                   </h2>
                   <div className="w-8 h-0.5 bg-gray-800"></div>
                 </div>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xs sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
                   Discover opportunities across diverse categories
                 </p>
               </div>
 
-              {/* Categories Grid - Corporate Style */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 lg:gap-6">
+              {/* Categories Grid - Corporate Style - Well Aligned */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 lg:gap-6 items-stretch">
                 {categories.map((category, index) => {
                   const IconComponent = category.icon;
                   return (
                     <div
                       key={index}
-                      className="group cursor-pointer"
+                      className="group flex"
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div
-                        className="relative bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden"
-                        onClick={() => {
-                          navigate('/enquiry-wall');
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
+                        className="relative bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
                       >
                         {/* Subtle gradient overlay on hover */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl sm:rounded-3xl`}></div>
                         
                         {/* Content */}
-                        <div className="relative flex flex-col items-center text-center space-y-3 sm:space-y-4 z-10">
+                        <div className="relative flex flex-col items-center text-center space-y-3 sm:space-y-3.5 lg:space-y-4 z-10 w-full">
                           {/* Icon Container */}
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100">
-                            <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-gray-700 group-hover:text-gray-900 transition-colors" />
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gray-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100 flex-shrink-0">
+                            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-700 group-hover:text-gray-900 transition-colors" />
                           </div>
                           
                           {/* Category Name */}
-                          <div className="space-y-1">
+                          <div className="space-y-0.5 sm:space-y-1 w-full">
                             <h4 className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
                               {category.name.split(' ')[0]}
                             </h4>
