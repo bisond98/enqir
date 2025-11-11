@@ -171,34 +171,34 @@ const SignIn = () => {
 
               {/* Verification Email Sent Section */}
               {showVerificationSent && (
-                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-green-50/80 to-emerald-50/50 rounded-lg border border-green-200">
-                  <div className="text-center space-y-3 sm:space-4">
+                <div className="mb-4 sm:mb-6 p-3 sm:p-6 bg-gradient-to-br from-green-50/80 to-emerald-50/50 rounded-lg border border-green-200">
+                  <div className="text-center space-y-2.5 sm:space-4">
                     {/* Title */}
-                    <h3 className="text-lg sm:text-xl font-bold text-green-800">
+                    <h3 className="text-base sm:text-xl font-bold text-green-800">
                       Verification Email Sent!
                     </h3>
                     
                     {/* Email Address */}
-                    <p className="text-sm sm:text-base text-green-700">
+                    <p className="text-xs sm:text-base text-green-700 leading-relaxed px-1">
                       We've sent a verification link to{" "}
                       <span className="font-semibold text-green-800 break-all">{signUpIdentifier}</span>
                     </p>
 
                     {/* Simple Steps */}
-                    <div className="space-y-2 text-sm text-green-700">
-                      <p>📧 Check your inbox and spam folder</p>
-                      <p>🔗 Click the verification link in the email</p>
+                    <div className="space-y-2.5 sm:space-3 text-xs sm:text-sm text-green-700 pt-1 sm:pt-0">
+                      <p className="leading-relaxed">📧 Check your inbox and spam folder</p>
+                      <p className="leading-relaxed">🔗 Click the verification link in the email</p>
                     </div>
 
                     {/* Action Button */}
-                    <div className="pt-2">
+                    <div className="pt-3 sm:pt-2">
                       <Button
                         onClick={() => {
                           setShowVerificationSent(false);
                           setSuccess("");
                           setError("");
                         }}
-                        className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
+                        className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
                       >
                         Got it, let me sign in
                       </Button>
