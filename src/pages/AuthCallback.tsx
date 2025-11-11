@@ -68,14 +68,19 @@ const AuthCallback = () => {
             // Sign in with email link (automatically verifies email and signs user in)
             const result = await signInWithEmailLink(auth, email, window.location.href);
             console.log('✅ Sign-in successful!', result.user.email);
+            
+            // Reload user to ensure emailVerified status is updated
+            await result.user.reload();
+            console.log('✅ User reloaded, emailVerified:', result.user.emailVerified);
+            
             window.localStorage.removeItem('emailForSignIn');
             toast({ 
               title: 'Signed in successfully!', 
               description: 'Your email has been verified and you are now signed in.' 
             });
-            // Redirect to profile page
+            // Redirect to profile page immediately
             console.log('🔄 Redirecting to /profile...');
-            navigate('/profile');
+            navigate('/profile', { replace: true });
             return;
           } catch (err: any) {
             console.error('❌ Sign-in with email link error:', err);

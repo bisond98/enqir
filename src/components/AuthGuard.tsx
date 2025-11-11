@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ interface AuthGuardProps {
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { user, isEmailVerified, resendConfirmation } = useAuth();
+  const location = useLocation();
 
   // If no user, show nothing (let the app handle sign-in flow)
   if (!user) {
@@ -19,6 +21,13 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   // If user is verified, show the app
   if (isEmailVerified) {
+    return <>{children}</>;
+  }
+
+  // If user is on profile page after email link sign-in, skip verification check
+  // (email link automatically verifies, just needs a moment to update)
+  if (location.pathname === '/profile') {
+    // Give it a moment for auth state to update, then show children
     return <>{children}</>;
   }
 

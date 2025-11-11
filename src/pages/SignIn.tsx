@@ -206,12 +206,6 @@ const SignIn = () => {
                             Click the verification link in the email
                           </span>
                         </div>
-                        <div className="flex items-start gap-2.5 sm:gap-3">
-                          <span className="text-base sm:text-lg flex-shrink-0">✅</span>
-                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
-                            Then come back here to sign in
-                          </span>
-                        </div>
                       </div>
                     </div>
 
