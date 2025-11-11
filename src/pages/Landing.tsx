@@ -1798,71 +1798,104 @@ const Landing = () => {
             </div>
           )}
 
-          {/* Categories Preview - Corporate & Professional */}
-          <div className="mb-8 sm:mb-16 animate-slide-up px-4 sm:px-6 lg:px-8" style={{ animationDelay: '1.2s' }}>
-            <div className="max-w-7xl mx-auto">
-              {/* Section Header */}
-              <div className="text-center mb-8 sm:mb-12">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight mb-3">
-                  Popular Categories
-                </h2>
-                <p className="text-xs sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                  Discover opportunities across diverse categories
-                </p>
+          {/* Categories Preview - Professional & Engaging */}
+          <div className="mb-12 sm:mb-20 animate-slide-up" style={{ animationDelay: '1.2s' }}>
+            {/* Background Container */}
+            <div className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 via-white to-gray-50/30">
+              {/* Decorative Elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-100/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-100/20 rounded-full blur-3xl"></div>
               </div>
 
-              {/* Categories Grid - Corporate Style - Well Aligned */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 lg:gap-6 items-stretch">
-                {categories.map((category, index) => {
-                  const IconComponent = category.icon;
-                  return (
-                    <div
-                      key={index}
-                      className="group flex"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
+              <div className="max-w-7xl mx-auto relative">
+                {/* Section Header */}
+                <div className="text-center mb-8 sm:mb-14 lg:mb-16 px-2 sm:px-0">
+                  <div className="inline-block mb-2 sm:mb-4">
+                    <span className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider px-4 py-1.5 bg-gray-100 rounded-full">
+                      Explore
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-4">
+                    Popular Categories
+                  </h2>
+                  <p className="text-[10px] sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-tight sm:leading-relaxed whitespace-nowrap sm:whitespace-normal px-1">
+                    Discover opportunities across diverse categories tailored to your needs
+                  </p>
+                </div>
+
+                {/* Categories Single Row - Professional Circles */}
+                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
+                  {categories.map((category, index) => {
+                    const IconComponent = category.icon;
+                    return (
                       <div
-                        className="relative bg-gray-800 border-2 border-gray-700 rounded-full aspect-square p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-600 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
+                        key={index}
+                        className="group flex justify-center items-center animate-slide-up"
+                        style={{ animationDelay: `${1.4 + index * 0.1}s` }}
                       >
-                        {/* Content */}
-                        <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full">
-                          {/* Icon Container */}
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-transparent rounded-full flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 flex-shrink-0">
-                            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white transition-colors" />
-                          </div>
+                        <div className="relative">
+                          {/* Glow Effect on Hover */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/20 group-hover:to-purple-400/20 rounded-full blur-xl transition-all duration-500 scale-0 group-hover:scale-150"></div>
                           
-                          {/* Category Name */}
-                          <div className="space-y-0 sm:space-y-0.5 w-full px-1">
-                            <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
-                              {category.name.split(' ')[0]}
-                            </h4>
-                            {category.name.includes('&') && (
-                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
-                                {category.name.split('&')[1]?.trim()}
-                              </h4>
-                            )}
-                            {!category.name.includes('&') && category.name.split(' ').length > 1 && (
-                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
-                                {category.name.split(' ').slice(1).join(' ')}
-                              </h4>
-                            )}
+                          {/* Circle Container */}
+                          <div
+                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 hover:scale-110 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                          >
+                            {/* Shine Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            
+                            {/* Content - Perfectly Centered */}
+                            <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full p-4">
+                              {/* Icon Container */}
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-white/10 group-hover:scale-110 transition-all duration-500 flex-shrink-0 shadow-lg">
+                                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-white group-hover:text-blue-100 transition-colors duration-300" />
+                              </div>
+                              
+                              {/* Category Name - Well Arranged */}
+                              <div className="w-full flex flex-col items-center justify-center gap-0.5">
+                                {category.name.includes('&') ? (
+                                  <>
+                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
+                                      {category.name.split('&')[0]?.trim()}
+                                    </h4>
+                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
+                                      & {category.name.split('&')[1]?.trim()}
+                                    </h4>
+                                  </>
+                                ) : category.name.split(' ').length > 2 ? (
+                                  <>
+                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
+                                      {category.name.split(' ').slice(0, 2).join(' ')}
+                                    </h4>
+                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
+                                      {category.name.split(' ').slice(2).join(' ')}
+                                    </h4>
+                                  </>
+                                ) : (
+                                  <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
+                                    {category.name}
+                                  </h4>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              {/* View All CTA */}
-              <div className="text-center mt-8 sm:mt-12">
-                <Link
-                  to="/enquiries"
-                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl sm:rounded-2xl transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-100"
-                >
-                  <span className="text-sm sm:text-base">Explore All Categories</span>
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Link>
+                {/* View All CTA */}
+                <div className="text-center">
+                  <Link
+                    to="/enquiries"
+                    className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-gray-400/20 hover:scale-105 active:scale-100 border border-gray-700/50"
+                  >
+                    <span className="text-sm sm:text-base">Explore All Categories</span>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
