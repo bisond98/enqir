@@ -172,41 +172,22 @@ const SignIn = () => {
               {/* Verification Email Sent Section */}
               {showVerificationSent && (
                 <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-green-50/80 to-emerald-50/50 rounded-lg border border-green-200">
-                  <div className="text-center space-y-4 sm:space-y-5">
-                    {/* Success Icon */}
-                    <div className="flex justify-center">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                        <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-green-600" />
-                      </div>
-                    </div>
-                    
+                  <div className="text-center space-y-3 sm:space-4">
                     {/* Title */}
-                    <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-green-800 mb-2">
-                        Verification Email Sent!
-                      </h3>
-                      <p className="text-xs sm:text-sm text-green-700">
-                        We've sent a verification link to{" "}
-                        <span className="font-semibold text-green-800 break-all">{signUpIdentifier}</span>
-                      </p>
-                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-green-800">
+                      Verification Email Sent!
+                    </h3>
+                    
+                    {/* Email Address */}
+                    <p className="text-sm sm:text-base text-green-700">
+                      We've sent a verification link to{" "}
+                      <span className="font-semibold text-green-800 break-all">{signUpIdentifier}</span>
+                    </p>
 
-                    {/* Steps */}
-                    <div className="bg-white/80 rounded-lg p-3 sm:p-4 border border-green-100">
-                      <div className="space-y-2.5 sm:space-y-3 text-left">
-                        <div className="flex items-start gap-2.5 sm:gap-3">
-                          <span className="text-base sm:text-lg flex-shrink-0">📧</span>
-                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
-                            Check your inbox and spam folder
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2.5 sm:gap-3">
-                          <span className="text-base sm:text-lg flex-shrink-0">🔗</span>
-                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
-                            Click the verification link in the email
-                          </span>
-                        </div>
-                      </div>
+                    {/* Simple Steps */}
+                    <div className="space-y-2 text-sm text-green-700">
+                      <p>📧 Check your inbox and spam folder</p>
+                      <p>🔗 Click the verification link in the email</p>
                     </div>
 
                     {/* Action Button */}
