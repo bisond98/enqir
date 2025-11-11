@@ -1810,18 +1810,20 @@ const Landing = () => {
 
               <div className="max-w-7xl mx-auto relative">
                 {/* Section Header */}
-                <div className="text-center mb-8 sm:mb-14 lg:mb-16 px-2 sm:px-0">
-                  <div className="inline-block mb-2 sm:mb-4">
-                    <span className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider px-4 py-1.5 bg-gray-100 rounded-full">
+                <div className="mb-8 sm:mb-14 lg:mb-16">
+                  <div className="text-center mb-2 sm:mb-4">
+                    <span className="inline-block text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider px-4 py-1.5 bg-gray-100 rounded-full">
                       Explore
                     </span>
                   </div>
-                  <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-4">
+                  <h2 className="text-center text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-4">
                     Popular Categories
                   </h2>
-                  <p className="text-[10px] sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-tight sm:leading-relaxed whitespace-nowrap sm:whitespace-normal px-1">
-                    Discover opportunities across diverse categories tailored to your needs
-                  </p>
+                  <div className="w-full flex justify-center">
+                    <p className="text-xs sm:text-base lg:text-lg text-gray-600 w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
+                      Find what you need across diverse categories
+                    </p>
+                  </div>
                 </div>
 
                 {/* Categories Single Row - Professional Circles */}
@@ -1840,43 +1842,23 @@ const Landing = () => {
                           
                           {/* Circle Container */}
                           <div
-                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 hover:scale-110 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 hover:scale-110 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
                           >
                             {/* Shine Effect */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             
                             {/* Content - Perfectly Centered */}
-                            <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full p-4">
+                            <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full p-4 sm:p-4">
                               {/* Icon Container */}
                               <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-white/10 group-hover:scale-110 transition-all duration-500 flex-shrink-0 shadow-lg">
                                 <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-white group-hover:text-blue-100 transition-colors duration-300" />
                               </div>
                               
                               {/* Category Name - Well Arranged */}
-                              <div className="w-full flex flex-col items-center justify-center gap-0.5">
-                                {category.name.includes('&') ? (
-                                  <>
-                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
-                                      {category.name.split('&')[0]?.trim()}
-                                    </h4>
-                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
-                                      & {category.name.split('&')[1]?.trim()}
-                                    </h4>
-                                  </>
-                                ) : category.name.split(' ').length > 2 ? (
-                                  <>
-                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
-                                      {category.name.split(' ').slice(0, 2).join(' ')}
-                                    </h4>
-                                    <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
-                                      {category.name.split(' ').slice(2).join(' ')}
-                                    </h4>
-                                  </>
-                                ) : (
-                                  <h4 className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-2 transition-colors duration-300">
-                                    {category.name}
-                                  </h4>
-                                )}
+                              <div className="w-full flex flex-row sm:flex-col items-center justify-center gap-0.5 sm:gap-0.5">
+                                <h4 className="text-[9px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
+                                  {category.name}
+                                </h4>
                               </div>
                             </div>
                           </div>
