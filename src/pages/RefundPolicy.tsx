@@ -12,7 +12,7 @@ const RefundPolicy = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
               <div>
-                <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Refund & Cancellation Policy</CardTitle>
+                <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Shipping & Refund Policy</CardTitle>
                 <p className="text-gray-300 mt-1 sm:mt-2 text-xs sm:text-sm">Last Updated: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
@@ -24,18 +24,121 @@ const RefundPolicy = () => {
                 <section>
                   <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">1. Overview</h2>
                   <p className="mb-2 sm:mb-3 leading-relaxed">
-                    At Enqir.in, we strive to provide the best experience for our users. This Refund and Cancellation Policy outlines the circumstances under which refunds are provided for our AI-powered marketplace services. This policy is designed to comply with the Consumer Protection (E-Commerce) Rules, 2020 and the Consumer Protection Act, 2019.
+                    At Enqir.in, we strive to provide the best experience for our users. This Shipping & Refund Policy outlines our approach to shipping and delivery, as well as the circumstances under which refunds are provided for our AI-powered marketplace services. This policy is designed to comply with the Consumer Protection (E-Commerce) Rules, 2020 and the Consumer Protection Act, 2019.
                   </p>
-                  <p className="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-500 leading-relaxed">
-                    <strong>Important:</strong> All payments are processed securely through third-party payment gateways and trusted payment partners. Once a payment plan is activated and responses are unlocked, the service is considered delivered. Refunds are processed through our payment gateway to the original payment method.
-                  </p>
+                  <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-500 mb-2 sm:mb-3">
+                    <p className="leading-relaxed mb-2 sm:mb-3">
+                      <strong>Important:</strong> Enqir.in acts as a facilitator connecting buyers and sellers. We do not handle, manage, or interfere with shipping arrangements between users. All shipping terms, costs, and methods are negotiated directly between buyers and sellers through our chat feature.
+                    </p>
+                    <p className="leading-relaxed">
+                      <strong>Payment Processing:</strong> All payments for platform services are processed securely through third-party payment gateways. Once a payment plan is activated and responses are unlocked, the service is considered delivered. Refunds are processed through our payment gateway to the original payment method.
+                    </p>
+                  </div>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                    2. Refund Eligibility
-                  </h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">2. Shipping & Delivery Policy</h2>
+                  
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.1 Platform Services (Digital - No Shipping Required)</h3>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    Our platform services are entirely digital and delivered instantly:
+                  </p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 mb-2 sm:mb-3 leading-relaxed">
+                    <li><strong>Premium Plan Activation:</strong> Instant digital delivery (within seconds of payment confirmation)</li>
+                    <li><strong>Enquiry Posting:</strong> Instant digital service (enquiries appear immediately after submission)</li>
+                    <li><strong>Seller Response Access:</strong> Instant digital activation (responses unlocked immediately)</li>
+                    <li><strong>Feature Access:</strong> All paid features are available instantly upon activation</li>
+                  </ul>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    <strong>No Physical Shipping:</strong> Enqir.in does not ship any physical products. All platform services are delivered digitally through our web platform.
+                  </p>
+
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.2 User-to-User Transactions</h3>
+                  <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 mb-2 sm:mb-3">
+                    <p className="mb-2 sm:mb-3 leading-relaxed font-semibold text-gray-800">
+                      Platform Role:
+                    </p>
+                    <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
+                      <li><strong>Facilitator Only:</strong> Enqir.in connects buyers and sellers but does not participate in their transactions</li>
+                      <li><strong>No Interference:</strong> We do not control, manage, or interfere with shipping arrangements between users</li>
+                      <li><strong>No Responsibility:</strong> We are not responsible for shipping methods, costs, timelines, or delivery of products/services between users</li>
+                      <li><strong>Commission-Free:</strong> We do not charge commissions on user-to-user transactions</li>
+                    </ul>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.3 User Responsibilities</h3>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    Buyers and sellers are solely responsible for:
+                  </p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 mb-2 sm:mb-3 leading-relaxed">
+                    <li>Negotiating and agreeing on shipping methods (standard, express, local delivery, international, etc.)</li>
+                    <li>Determining shipping costs and who bears the cost</li>
+                    <li>Setting delivery timelines and expectations</li>
+                    <li>Handling all shipping arrangements and logistics</li>
+                    <li>Resolving shipping disputes directly between themselves</li>
+                    <li>Ensuring proper packaging and handling of products</li>
+                  </ul>
+
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.4 Shipping Negotiation via Chat</h3>
+                  <div className="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200 mb-2 sm:mb-3">
+                    <p className="mb-2 sm:mb-3 leading-relaxed font-semibold text-gray-800">
+                      Use our chat feature to discuss and agree on:
+                    </p>
+                    <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
+                      <li>Shipping methods (standard courier, express delivery, local pickup, international shipping, etc.)</li>
+                      <li>Shipping costs and payment responsibility</li>
+                      <li>Delivery timelines and expected delivery dates</li>
+                      <li>Shipping addresses and delivery locations</li>
+                      <li>Return shipping policies and costs</li>
+                      <li>Product packaging and handling requirements</li>
+                      <li>Tracking information and delivery confirmation</li>
+                    </ul>
+                  </div>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    <strong>Note:</strong> All shipping arrangements are made directly between buyers and sellers. Enqir.in does not monitor, verify, or enforce shipping agreements between users.
+                  </p>
+
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.5 Platform Disclaimers</h3>
+                  <div className="bg-red-50 p-3 sm:p-4 rounded-lg border-l-4 border-red-500 mb-2 sm:mb-3">
+                    <p className="mb-2 sm:mb-3 leading-relaxed font-semibold text-gray-800">
+                      Enqir.in is NOT responsible for:
+                    </p>
+                    <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
+                      <li>Shipping delays, damages, or losses between users</li>
+                      <li>Shipping method selection or shipping costs</li>
+                      <li>Delivery timelines or delivery failures</li>
+                      <li>Product quality, packaging, or handling during shipping</li>
+                      <li>Shipping disputes between buyers and sellers</li>
+                      <li>Verification of shipping methods or costs</li>
+                      <li>Handling shipping payments or refunds</li>
+                    </ul>
+                  </div>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    <strong>Users transact at their own risk.</strong> Enqir.in provides the platform for connection and communication but is not a party to any shipping arrangements or product transactions between users.
+                  </p>
+
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">2.6 Shipping Dispute Resolution</h3>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    For shipping-related disputes between buyers and sellers:
+                  </p>
+                  <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 mb-2 sm:mb-3 leading-relaxed">
+                    <li><strong>Direct Resolution:</strong> Shipping disputes should be resolved directly between the buyer and seller</li>
+                    <li><strong>Platform Assistance:</strong> Enqir.in may assist in facilitating communication but is not liable for shipping issues</li>
+                    <li><strong>No Mediation:</strong> We do not mediate, arbitrate, or decide shipping disputes</li>
+                    <li><strong>User Agreement:</strong> Users are responsible for their own shipping agreements and dispute resolution</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">3. Refund Policy</h2>
+                  <p className="mb-2 sm:mb-3 leading-relaxed">
+                    This refund policy applies <strong>ONLY to platform services</strong> (premium plans, enquiry posting, etc.). Refunds do NOT apply to transactions between buyers and sellers, as those are handled directly between users.
+                  </p>
+                  
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                    3.1 Refund Eligibility
+                  </h3>
                   <p className="mb-4">Refunds are ONLY provided in the following scenarios:</p>
                   
                   <div className="space-y-4">
@@ -90,10 +193,10 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <XCircle className="w-6 h-6 text-red-600" />
-                    3. Non-Refundable Scenarios
-                  </h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                    <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
+                    3.2 Non-Refundable Scenarios
+                  </h3>
                   <p className="mb-4">Refunds will NOT be provided in the following cases:</p>
                   
                   <div className="space-y-4">
@@ -156,10 +259,10 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Clock className="w-6 h-6 text-blue-600" />
-                    4. Refund Request Process
-                  </h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                    3.3 Refund Request Process
+                  </h3>
                   <p className="mb-4">To request a refund, follow these steps:</p>
                   
                   <div className="bg-gray-50 p-4 rounded-lg space-y-3">
@@ -213,7 +316,7 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">5. Refund Timeline</h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">3.4 Refund Timeline</h3>
                   <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                     <ul className="space-y-1.5 sm:space-y-2">
                       <li className="flex items-start gap-2 leading-relaxed">
@@ -240,7 +343,7 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">6. Cancellation Policy</h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">3.5 Cancellation Policy</h3>
                   <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-yellow-500">
                     <p className="mb-2 sm:mb-3 leading-relaxed">
                       <strong>Digital Services - No Cancellation After Purchase:</strong>
@@ -248,17 +351,17 @@ const RefundPolicy = () => {
                     <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
                       <li>Once a payment plan is purchased and activated, it cannot be cancelled</li>
                       <li>Digital content (unlocked responses) is delivered instantly and irreversibly</li>
-                      <li>You may request a refund only if eligible under Section 2 above</li>
+                      <li>You may request a refund only if eligible under Section 3.1 above</li>
                       <li>We cannot impose cancellation charges unless we also bear similar charges if we cancel an order ourselves</li>
                     </ul>
                     <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 leading-relaxed">
-                      <strong>Note:</strong> For physical products (if any), cancellation may be allowed within 15 days of purchase, subject to return shipping costs as specified in Section 7 below.
+                      <strong>Note:</strong> For physical products (if any) sold by third-party sellers, cancellation and return shipping costs are negotiated directly between buyers and sellers via chat, as per Section 2.4 above.
                     </p>
                   </div>
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">7. Payment Plan-Specific Terms</h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">3.6 Payment Plan-Specific Terms</h3>
                   
                   <div className="space-y-2 sm:space-y-3">
                     <div className="border-l-4 border-purple-500 pl-3 sm:pl-4">
@@ -284,21 +387,23 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">7.1 Return Shipping Costs (For Physical Products, if any)</h2>
-                  <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-yellow-500">
-                    <p className="leading-relaxed mb-2 sm:mb-3">
-                      For digital services, return shipping is not applicable as content is delivered instantly. However, for physical products (if any):
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">3.7 User-to-User Transaction Refunds</h3>
+                  <div className="bg-yellow-50 p-3 sm:p-4 rounded-lg border-l-4 border-yellow-500">
+                    <p className="leading-relaxed mb-2 sm:mb-3 font-semibold text-gray-800">
+                      <strong>Important:</strong> Refunds for transactions between buyers and sellers are NOT handled by Enqir.in.
                     </p>
                     <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2 leading-relaxed">
-                      <li>The customer will be responsible for paying for their own shipping costs for returning their item</li>
-                      <li>Shipping costs are non-refundable unless the return is due to our error or a defective product</li>
-                      <li>Original shipping costs are not refunded unless the product is defective or not as described</li>
+                      <li>Buyers and sellers negotiate refund terms directly via chat</li>
+                      <li>Platform does not process refunds for user-to-user transactions</li>
+                      <li>Shipping costs and return shipping are agreed upon between users</li>
+                      <li>Disputes should be resolved directly between buyer and seller</li>
+                      <li>Platform may assist in communication but is not liable for transaction refunds</li>
                     </ul>
                   </div>
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">8. Grievance Officer</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">4. Grievance Officer</h2>
                   <p className="mb-2 sm:mb-3 leading-relaxed">
                     In accordance with the Consumer Protection (E-Commerce) Rules, 2020, we have appointed a Grievance Officer to address your refund and cancellation concerns:
                   </p>
@@ -312,7 +417,7 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">9. Dispute Resolution</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">5. Dispute Resolution</h2>
                   <p className="mb-2 sm:mb-3 leading-relaxed">
                     If your refund request is rejected and you disagree with the decision:
                   </p>
@@ -326,7 +431,7 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">10. Contact Information</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">6. Contact Information</h2>
                   <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                     <p className="mb-2 sm:mb-3"><strong>For Refund Requests:</strong></p>
                     <p className="mb-2"><strong>Email:</strong> <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold">info@enqir.in</a></p>
@@ -350,7 +455,7 @@ const RefundPolicy = () => {
                 </section>
 
                 <section>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">11. Policy Updates</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">7. Policy Updates</h2>
                   <p className="leading-relaxed">
                     We reserve the right to modify this Refund and Cancellation Policy at any time. Changes will be effective immediately upon posting on this page with an updated "Last Updated" date. Continued use of the Platform after changes constitutes acceptance. We will notify users of significant changes via email or Platform notification.
                   </p>
@@ -358,11 +463,14 @@ const RefundPolicy = () => {
 
                 <section className="border-t pt-4 sm:pt-6 mt-4 sm:mt-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2">📌 Important Reminder</h3>
-                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                    Enqir.in is a <strong>marketplace platform</strong> that facilitates connections between buyers and sellers. Payment unlocks <strong>access to view seller responses</strong>, not guaranteed business outcomes or transaction success. We do not control seller content, quality, or availability. Please read all terms carefully before making a purchase.
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed mb-2 sm:mb-3">
+                    Enqir.in is a <strong>facilitator platform</strong> that connects buyers and sellers. We do not handle shipping, pricing, or transactions between users. Payment unlocks <strong>access to view seller responses</strong>, not guaranteed business outcomes or transaction success. We do not control seller content, quality, or availability. Please read all terms carefully before making a purchase.
                   </p>
-                  <p className="mt-2 text-xs sm:text-sm text-gray-700 leading-relaxed">
-                    <strong>Consumer Protection:</strong> This policy complies with the Consumer Protection (E-Commerce) Rules, 2020. We cannot refuse refunds for defective products or services not as described. All refunds are processed through our payment gateway to the original payment method.
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed mb-2 sm:mb-3">
+                    <strong>Shipping & Transactions:</strong> All shipping arrangements, pricing, and payment methods are negotiated directly between buyers and sellers via our chat feature. Enqir.in is not a party to these transactions and does not handle shipping or refunds for user-to-user transactions.
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                    <strong>Consumer Protection:</strong> This policy complies with the Consumer Protection (E-Commerce) Rules, 2020. We cannot refuse refunds for defective products or services not as described. All refunds for platform services are processed through our payment gateway to the original payment method.
                   </p>
                 </section>
 

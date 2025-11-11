@@ -17,7 +17,7 @@ export default function Footer() {
     },
     {
       id: 'refund',
-      title: 'Refund Policy',
+      title: 'Shipping & Refund Policy',
       icon: RotateCcw,
       link: '/refund-policy'
     },
