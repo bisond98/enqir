@@ -100,8 +100,14 @@ const MyEnquiries = () => {
         const live = enquiriesData.filter(e => !isExpired(e)).sort((a, b) => (toDate(b.createdAt).getTime() - toDate(a.createdAt).getTime()));
         const expired = enquiriesData.filter(e => isExpired(e)).sort((a, b) => (toDate(b.createdAt).getTime() - toDate(a.createdAt).getTime()));
         const combined = [...live, ...expired];
-        console.log('MyEnquiries: Ordered live then expired:', { live: live.length, expired: expired.length });
-        setEnquiries(combined);
+        
+        // Deduplicate by enquiry ID to prevent duplicates
+        const uniqueEnquiries = Array.from(
+          new Map(combined.map(e => [e.id, e])).values()
+        );
+        
+        console.log('MyEnquiries: Ordered live then expired:', { live: live.length, expired: expired.length, unique: uniqueEnquiries.length });
+        setEnquiries(uniqueEnquiries);
         setLoading(false);
       } catch (error) {
         console.log('Error loading enquiries:', error);

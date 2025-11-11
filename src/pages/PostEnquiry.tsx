@@ -134,6 +134,12 @@ export default function PostEnquiry() {
   const handlePayment = async () => {
     if (!selectedPlan || !user?.uid) return;
     
+    // Prevent double submission
+    if (loading || paymentLoading || isSubmitted) {
+      console.warn('⚠️ Payment blocked: Already processing or already submitted');
+      return;
+    }
+    
     setPaymentStep('processing');
     setPaymentLoading(true);
     
@@ -150,6 +156,14 @@ export default function PostEnquiry() {
       
       // Submit enquiry after successful payment
       setTimeout(async () => {
+        // Prevent double submission
+        if (isSubmitted) {
+          console.warn('⚠️ Enquiry creation blocked: Already submitted');
+          setPaymentLoading(false);
+          setShowPaymentModal(false);
+          return;
+        }
+        
         try {
           setLoading(true);
           
@@ -256,6 +270,12 @@ export default function PostEnquiry() {
   };
 
   const handleSubmitAfterPayment = async () => {
+    // Prevent double submission
+    if (loading || isSubmitted) {
+      console.warn('⚠️ Submit after payment blocked: Already submitting or already submitted');
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -794,6 +814,12 @@ export default function PostEnquiry() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Prevent double submission - CRITICAL FIX
+    if (loading || isSubmitted) {
+      console.warn('⚠️ Submission blocked: Already submitting or already submitted');
+      return;
+    }
+    
     console.log('🚀 FORM SUBMITTED! 🚀');
     console.log('Form submission started');
     console.log('Form data:', { title, description, category, budget, location, deadline, notes });
@@ -951,9 +977,18 @@ export default function PostEnquiry() {
       
       console.log('Saving enquiry data:', enquiryData);
       
+      // Final check before submission to prevent duplicates
+      if (isSubmitted) {
+        console.warn('⚠️ Duplicate submission prevented: Already submitted');
+        setLoading(false);
+        return;
+      }
+      
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
+        // Mark as submitted immediately after successful creation to prevent duplicates
+        setIsSubmitted(true);
         setSubmittedEnquiryId(docRef.id);
         setEnquiryStatus('pending');
         setIsEnquiryApproved(false);

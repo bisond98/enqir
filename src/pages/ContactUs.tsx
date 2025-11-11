@@ -1,17 +1,19 @@
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Mail, MessageSquare, Shield, CreditCard, AlertCircle, HelpCircle } from 'lucide-react';
 
 const ContactUs = () => {
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-            <CardTitle className="text-3xl font-bold">Contact Us</CardTitle>
-            <p className="text-indigo-100 mt-2">We're here to help! Reach out to us for any queries or support.</p>
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 max-w-4xl">
+        <Card className="shadow-2xl border-0 overflow-hidden rounded-2xl sm:rounded-3xl">
+          <CardHeader className="bg-gray-800 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Contact Us</CardTitle>
+            <p className="text-gray-300 mt-1 sm:mt-2 text-xs sm:text-sm">We're here to help! Reach out to us for any queries or support.</p>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-3 sm:p-4 md:p-6 bg-white">
+            <ScrollArea className="h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] md:h-[70vh] pr-2 sm:pr-4">
             <div className="space-y-6">
               
               <section>
@@ -188,6 +190,7 @@ const ContactUs = () => {
               </section>
 
             </div>
+            </ScrollArea>
           </CardContent>
         </Card>
       </div>

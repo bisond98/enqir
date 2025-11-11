@@ -234,7 +234,10 @@ const Landing = () => {
   };
 
   // Use shuffled enquiries for display (search redirects to Live Enquiries page)
-  const filteredEnquiries = shuffledEnquiries;
+  // Final deduplication before rendering to prevent any duplicates
+  const filteredEnquiries = Array.from(
+    new Map(shuffledEnquiries.map(e => [e.id, e])).values()
+  );
 
   // Load saved enquiries on mount
   useEffect(() => {
@@ -675,9 +678,14 @@ const Landing = () => {
         });
       });
       
+      // Deduplicate by ID first (in case same document appears multiple times)
+      const uniqueItems = Array.from(
+        new Map(items.map(e => [e.id, e])).values()
+      );
+      
       // Separate live and expired
-      const live = items.filter(e => !isEnquiryOutdated(e));
-      const expired = items.filter(e => isEnquiryOutdated(e));
+      const live = uniqueItems.filter(e => !isEnquiryOutdated(e));
+      const expired = uniqueItems.filter(e => isEnquiryOutdated(e));
       
       // Sort both by createdAt (newest first)
       live.sort((a, b) => {
@@ -691,8 +699,13 @@ const Landing = () => {
         return dateB.getTime() - dateA.getTime();
       });
       
-      // Set all live enquiries for count and search
-      setAllLiveEnquiries([...live, ...expired]);
+      // Deduplicate again after combining (extra safety)
+      const allUnique = Array.from(
+        new Map([...live, ...expired].map(e => [e.id, e])).values()
+      );
+      
+      // Set all live enquiries for count and search (deduplicated)
+      setAllLiveEnquiries(allUnique);
       
       // Set display enquiries (first 3 live, then expired if needed)
       let combined: any[] = [];
@@ -702,8 +715,14 @@ const Landing = () => {
         const needed = 3 - live.length;
         combined = [...live, ...expired.slice(0, needed)];
       }
-      setPublicRecentEnquiries(combined);
-      setShuffledEnquiries(combined);
+      
+      // Final deduplication on display enquiries
+      const uniqueCombined = Array.from(
+        new Map(combined.map(e => [e.id, e])).values()
+      );
+      
+      setPublicRecentEnquiries(uniqueCombined);
+      setShuffledEnquiries(uniqueCombined);
     }, (error) => {
       console.error('Error loading enquiries:', error);
       // Set empty arrays on error
@@ -716,12 +735,29 @@ const Landing = () => {
 
   // Shuffle every 1 minute
   useEffect(() => {
-    if (publicRecentEnquiries.length <= 1) {
-      setShuffledEnquiries(publicRecentEnquiries);
+    // Deduplicate before processing
+    const uniqueEnquiries = Array.from(
+      new Map(publicRecentEnquiries.map(e => [e.id, e])).values()
+    );
+    
+    if (uniqueEnquiries.length <= 1) {
+      setShuffledEnquiries(uniqueEnquiries);
       return;
     }
+    
+    // Set initial shuffled (deduplicated)
+    const initialShuffled = getRandomThree(uniqueEnquiries);
+    const uniqueInitial = Array.from(
+      new Map(initialShuffled.map(e => [e.id, e])).values()
+    );
+    setShuffledEnquiries(uniqueInitial);
+    
     const interval = setInterval(() => {
-      setShuffledEnquiries(getRandomThree(publicRecentEnquiries));
+      const shuffled = getRandomThree(uniqueEnquiries);
+      const uniqueShuffled = Array.from(
+        new Map(shuffled.map(e => [e.id, e])).values()
+      );
+      setShuffledEnquiries(uniqueShuffled);
     }, 60000); // 1 minute
     return () => clearInterval(interval);
   }, [publicRecentEnquiries]);
@@ -1740,22 +1776,21 @@ const Landing = () => {
 
           {/* Compact Dashboard Section for Signed-in Users */}
           {user && (
-            <div className="mb-16 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
+            <div className="mb-6 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
               <div className="max-w-4xl mx-auto text-center">
-                <p className="text-slate-600 font-medium text-[10px] sm:text-xs md:text-base mb-4 sm:mb-6 leading-tight">
+                <p className="text-slate-600 font-medium text-[10px] sm:text-xs md:text-base mb-3 sm:mb-4 leading-tight">
                   Stay anonymous until closing the deal
                 </p>
                 
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
                   <Link to="/dashboard">
-                    <button className="bg-gray-800 text-white px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded-md inline-flex items-center">
-                      <BarChart3 className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                      Dashboard
+                    <button className="bg-gray-800 text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
+                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </Link>
                   <Link to="/post-enquiry">
-                    <button className="bg-gray-800 text-white px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded-md inline-flex items-center">
-                      Post Enquiry
+                    <button className="bg-gray-800 text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
+                      <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </Link>
                 </div>
@@ -1768,13 +1803,9 @@ const Landing = () => {
             <div className="max-w-7xl mx-auto">
               {/* Section Header */}
               <div className="text-center mb-8 sm:mb-12">
-                <div className="inline-flex items-center justify-center gap-2 mb-3">
-                  <div className="w-8 h-0.5 bg-gray-800"></div>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
-                    Popular Categories
-                  </h2>
-                  <div className="w-8 h-0.5 bg-gray-800"></div>
-                </div>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight mb-3">
+                  Popular Categories
+                </h2>
                 <p className="text-xs sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
                   Discover opportunities across diverse categories
                 </p>
@@ -1791,30 +1822,27 @@ const Landing = () => {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div
-                        className="relative bg-white border-2 border-gray-200 rounded-full aspect-square p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-800 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
+                        className="relative bg-gray-800 border-2 border-gray-700 rounded-full aspect-square p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:border-gray-600 hover:-translate-y-1 overflow-hidden w-full flex flex-col items-center justify-center"
                       >
-                        {/* Subtle gradient overlay on hover */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full`}></div>
-                        
                         {/* Content */}
                         <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full">
                           {/* Icon Container */}
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gray-50 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white border border-gray-100 flex-shrink-0">
-                            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-gray-700 group-hover:text-gray-900 transition-colors" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-transparent rounded-full flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-110 flex-shrink-0">
+                            <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white transition-colors" />
                           </div>
                           
                           {/* Category Name */}
                           <div className="space-y-0 sm:space-y-0.5 w-full px-1">
-                            <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                            <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
                               {category.name.split(' ')[0]}
                             </h4>
                             {category.name.includes('&') && (
-                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
                                 {category.name.split('&')[1]?.trim()}
                               </h4>
                             )}
                             {!category.name.includes('&') && category.name.split(' ').length > 1 && (
-                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight">
+                              <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white transition-colors leading-tight">
                                 {category.name.split(' ').slice(1).join(' ')}
                               </h4>
                             )}
@@ -1828,16 +1856,13 @@ const Landing = () => {
 
               {/* View All CTA */}
               <div className="text-center mt-8 sm:mt-12">
-                <button
-                  onClick={() => {
-                    navigate('/enquiry-wall');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
+                <Link
+                  to="/enquiries"
                   className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl sm:rounded-2xl transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-100"
                 >
                   <span className="text-sm sm:text-base">Explore All Categories</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+                </Link>
               </div>
             </div>
           </div>
