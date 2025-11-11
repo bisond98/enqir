@@ -171,12 +171,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         } catch (emailError: any) {
           console.error('Email link error:', emailError);
-          // User is still created, just email sending failed
-          toast({
-            title: 'Account Created!',
-            description: `Account created successfully, but email link failed. Error: ${emailError.message}. Please sign in manually.`,
-            variant: 'default',
-          });
+          
+          // If quota exceeded, fallback to regular email verification
+          if (emailError.code === 'auth/quota-exceeded' && result.user) {
+            console.log('⚠️ Email link quota exceeded, falling back to regular email verification');
+            try {
+              await sendEmailVerification(result.user, {
+                url: `${window.location.origin}/auth/callback`,
+                handleCodeInApp: true,
+              });
+              toast({
+                title: 'Verification Email Sent!',
+                description: `We've sent a verification email to ${identifier}. Check your inbox and click the link to verify your account, then sign in.`,
+              });
+            } catch (verifyError: any) {
+              console.error('Email verification error:', verifyError);
+              toast({
+                title: 'Account Created!',
+                description: `Account created successfully, but email verification failed. Please try signing in and resending verification from your profile.`,
+                variant: 'default',
+              });
+            }
+          } else {
+            // Other errors - user is still created, just email sending failed
+            toast({
+              title: 'Account Created!',
+              description: `Account created successfully, but email link failed. Error: ${emailError.message}. Please sign in manually.`,
+              variant: 'default',
+            });
+          }
         }
 
         setLoading(false);
