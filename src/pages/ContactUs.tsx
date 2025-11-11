@@ -29,8 +29,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">For general queries and assistance</p>
-                      <a href="mailto:support@enqir.in" className="text-blue-600 hover:underline font-semibold text-lg">
-                        support@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: 24-48 hours</p>
                     </CardContent>
@@ -156,7 +156,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">What if my issue is urgent?</h3>
-                    <p className="text-gray-600 text-sm">For payment failures or technical errors, email <a href="mailto:support@enqir.in" className="text-blue-600 hover:underline">support@enqir.in</a> with "URGENT" in the subject line.</p>
+                    <p className="text-gray-600 text-sm">For payment failures or technical errors, email <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline">info@enqir.in</a> with "URGENT" in the subject line.</p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">How do I track my refund status?</h3>
