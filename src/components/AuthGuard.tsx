@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -13,14 +13,34 @@ interface AuthGuardProps {
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { user, isEmailVerified, resendConfirmation } = useAuth();
   const location = useLocation();
+  const hasReloadedRef = useRef(false);
+
+  // Force reload user's email verification status when on profile page
+  // (in case they just signed in via email link - only runs once)
+  useEffect(() => {
+    if (user && location.pathname === '/profile' && !user.emailVerified && !hasReloadedRef.current) {
+      console.log('🔄 Reloading user to check email verification status...');
+      hasReloadedRef.current = true;
+      user.reload().then(() => {
+        console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+      }).catch((err) => {
+        console.error('❌ Error reloading user:', err);
+        hasReloadedRef.current = false; // Allow retry on error
+      });
+    }
+  }, [user, location.pathname]);
 
   // If no user, show nothing (let the app handle sign-in flow)
   if (!user) {
     return <>{children}</>;
   }
 
+  // Check email verification from both state AND user object (user object is source of truth)
+  // This ensures we catch cases where state hasn't updated yet
+  const emailIsVerified = isEmailVerified || user.emailVerified;
+
   // If user is verified, show the app
-  if (isEmailVerified) {
+  if (emailIsVerified) {
     return <>{children}</>;
   }
 
@@ -70,7 +90,18 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
               <Button 
                 variant="outline"
                 className="w-full"
-                onClick={() => window.location.reload()}
+                onClick={async () => {
+                  // Reload user to check verification status before refreshing page
+                  if (user) {
+                    try {
+                      await user.reload();
+                      console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+                    } catch (err) {
+                      console.error('❌ Error reloading user:', err);
+                    }
+                  }
+                  window.location.reload();
+                }}
               >
                 I've Verified My Email
               </Button>
