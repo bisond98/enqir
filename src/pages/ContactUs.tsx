@@ -45,8 +45,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">For payment and refund issues</p>
-                      <a href="mailto:refunds@enqir.in" className="text-green-600 hover:underline font-semibold text-lg">
-                        refunds@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-green-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: 24 hours</p>
                     </CardContent>
@@ -61,8 +61,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">For privacy and legal matters</p>
-                      <a href="mailto:legal@enqir.in" className="text-purple-600 hover:underline font-semibold text-lg">
-                        legal@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-purple-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: 3-5 business days</p>
                     </CardContent>
@@ -77,8 +77,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">For data protection requests</p>
-                      <a href="mailto:privacy@enqir.in" className="text-cyan-600 hover:underline font-semibold text-lg">
-                        privacy@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-cyan-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: 5-7 business days</p>
                     </CardContent>
@@ -93,8 +93,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">Report fraud or abuse</p>
-                      <a href="mailto:report@enqir.in" className="text-red-600 hover:underline font-semibold text-lg">
-                        report@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-red-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: Immediate priority</p>
                     </CardContent>
@@ -109,8 +109,8 @@ const ContactUs = () => {
                     </CardHeader>
                     <CardContent className="pt-4">
                       <p className="text-gray-700 mb-2">For escalated disputes</p>
-                      <a href="mailto:disputes@enqir.in" className="text-yellow-600 hover:underline font-semibold text-lg">
-                        disputes@enqir.in
+                      <a href="mailto:info@enqir.in" className="text-yellow-600 hover:underline font-semibold text-lg">
+                        info@enqir.in
                       </a>
                       <p className="text-sm text-gray-600 mt-2">Response time: 2-3 business days</p>
                     </CardContent>
@@ -160,7 +160,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">How do I track my refund status?</h3>
-                    <p className="text-gray-600 text-sm">After submitting a refund request, you'll receive a tracking number. Email <a href="mailto:refunds@enqir.in" className="text-blue-600 hover:underline">refunds@enqir.in</a> with your tracking number for updates.</p>
+                    <p className="text-gray-600 text-sm">After submitting a refund request, you'll receive a tracking number. Email <a href="mailto:info@enqir.in" className="text-blue-600 hover:underline">info@enqir.in</a> with your tracking number for updates.</p>
                   </div>
                 </div>
               </section>
