@@ -16,6 +16,13 @@ const AuthCallback = () => {
         const oobCode = params.get('oobCode');
         const continueUrl = params.get('continueUrl') || '/dashboard';
 
+        // Handle password reset links - redirect to reset password page
+        if (mode === 'resetPassword' && oobCode) {
+          console.log('🔐 Password reset link detected, redirecting to reset-password page');
+          navigate(`/reset-password?oobCode=${oobCode}`);
+          return;
+        }
+
         // Handle email verification links
         if (mode === 'verifyEmail' && oobCode) {
           try {

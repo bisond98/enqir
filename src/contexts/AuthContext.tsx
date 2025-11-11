@@ -151,15 +151,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
-        await sendEmailVerification(result.user, {
-          url: `${window.location.origin}/auth/callback`,
-          handleCodeInApp: true,
-        });
+        try {
+          await sendEmailVerification(result.user, {
+            url: `${window.location.origin}/auth/callback`,
+            handleCodeInApp: true,
+          });
 
-        toast({
-          title: 'Verification Email Sent!',
-          description: `We've sent a verification link to ${identifier}. Check your inbox and spam folder, then click the verification link to activate your account.`,
-        });
+          toast({
+            title: 'Verification Email Sent!',
+            description: `We've sent a verification link to ${identifier}. Check your inbox and spam folder, then click the verification link to activate your account.`,
+          });
+        } catch (emailError: any) {
+          console.error('Email verification error:', emailError);
+          // User is still created, just email sending failed
+          toast({
+            title: 'Account Created!',
+            description: `Account created successfully, but email verification failed. Error: ${emailError.message}. Please try resending verification email from your profile.`,
+            variant: 'default',
+          });
+        }
 
         setLoading(false);
         return { error: null, requiresVerification: true };
@@ -404,16 +414,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!auth.currentUser) {
         throw new Error('You must be signed in to resend verification email.');
       }
+      console.log('📧 Resending verification email to:', auth.currentUser.email);
       await sendEmailVerification(auth.currentUser, {
         url: `${window.location.origin}/auth/callback`,
         handleCodeInApp: true,
       });
-      toast({ title: 'Email sent', description: 'Verification email resent. Please check your inbox.' });
+      console.log('✅ Verification email resent successfully');
+      toast({ 
+        title: 'Email sent', 
+        description: 'Verification email resent. Please check your inbox (and spam folder).' 
+      });
       return { error: null };
     } catch (error: any) {
+      console.error('❌ Resend verification email error:', error);
+      let errorMessage = error.message || 'Failed to resend email';
+      
+      if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many requests. Please wait a few minutes before trying again.';
+      }
+      
       toast({
         title: 'Failed to resend email',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
       return { error };
@@ -422,16 +444,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const sendPasswordResetEmail = async (email: string) => {
     try {
+      console.log('📧 Attempting to send password reset email to:', email);
       await firebaseSendPasswordResetEmail(auth, email, {
         url: `${window.location.origin}/reset-password`,
         handleCodeInApp: true,
       });
-      toast({ title: 'Password reset email sent', description: 'Please check your inbox for a password reset link.' });
+      console.log('✅ Password reset email sent successfully');
+      toast({ 
+        title: 'Password reset email sent', 
+        description: 'Please check your inbox (and spam folder) for a password reset link.' 
+      });
       return { error: null };
     } catch (error: any) {
+      console.error('❌ Password reset email error:', error);
+      let errorMessage = error.message || 'Failed to send password reset email';
+      
+      // Provide more helpful error messages
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email address.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address. Please check and try again.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many requests. Please try again later.';
+      }
+      
       toast({
         title: 'Failed to send password reset email',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
       return { error };

@@ -24,15 +24,20 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   
   const oobCode = searchParams.get('oobCode'); // Firebase action code
+  const mode = searchParams.get('mode'); // Firebase action mode
 
   useEffect(() => {
+    console.log('🔐 ResetPassword page loaded with:', { oobCode, mode, fullUrl: window.location.href });
+    
     // Validate the reset link
     if (oobCode) {
       setIsValidLink(true);
+      console.log('✅ Valid reset link detected');
     } else {
+      console.error('❌ No oobCode found in URL');
       setError("Invalid or expired password reset link");
     }
-  }, [oobCode]);
+  }, [oobCode, mode]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
