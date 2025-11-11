@@ -1,10 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, Phone, Shield, CheckCircle } from 'lucide-react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -53,65 +51,55 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   // If user is not verified, show verification prompt
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-background to-muted/20">
       <div className="w-full max-w-md">
         <Card className="shadow-lg">
-          <CardHeader className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Shield className="h-8 w-8 text-pal-blue" />
-              <span className="text-xl font-semibold">Email Verification Required</span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center">
-              <CheckCircle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Welcome, {user.displayName || 'User'}!</h3>
-              <p className="text-muted-foreground">
-                Please verify your email address to access the platform.
-              </p>
-            </div>
-
-            <Alert className="border-pal-blue/20 bg-pal-blue/5">
-              <Mail className="h-4 w-4" />
-              <AlertDescription>
-                We sent a verification email to <strong>{user.email}</strong>
-              </AlertDescription>
-            </Alert>
-
-            <div className="space-y-3">
-              <Button 
-                onClick={resendConfirmation}
-                className="w-full primary-gradient hover:shadow-glow transition-spring"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                Resend Verification Email
-              </Button>
+          <CardContent className="p-4 sm:p-6">
+            <div className="text-center space-y-3 sm:space-4">
+              {/* Title */}
+              <h3 className="text-base sm:text-lg font-semibold">
+                Email Verification Required
+              </h3>
               
-              <Button 
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  // Reload user to check verification status before refreshing page
-                  if (user) {
-                    try {
-                      await user.reload();
-                      console.log('✅ User reloaded, emailVerified:', user.emailVerified);
-                    } catch (err) {
-                      console.error('❌ Error reloading user:', err);
-                    }
-                  }
-                  window.location.reload();
-                }}
-              >
-                I've Verified My Email
-              </Button>
-            </div>
-
-            <div className="text-center text-sm text-muted-foreground">
-              <p>
-                Check your inbox and spam folder for the verification link.
-                Click the link to verify your account.
+              {/* Email */}
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                We sent a verification email to <strong className="break-all">{user.email}</strong>
               </p>
+
+              {/* Simple Steps */}
+              <div className="space-y-1.5 sm:space-2 text-xs sm:text-sm text-muted-foreground py-1 sm:py-2">
+                <p>📧 Check your inbox and spam folder</p>
+                <p>🔗 Click the verification link in the email</p>
+              </div>
+
+              {/* Buttons */}
+              <div className="space-y-2 sm:space-3 pt-2 sm:pt-3">
+                <Button 
+                  onClick={resendConfirmation}
+                  className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
+                >
+                  Resend Verification Email
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="w-full h-10 sm:h-11 text-xs sm:text-sm"
+                  onClick={async () => {
+                    // Reload user to check verification status before refreshing page
+                    if (user) {
+                      try {
+                        await user.reload();
+                        console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+                      } catch (err) {
+                        console.error('❌ Error reloading user:', err);
+                      }
+                    }
+                    window.location.reload();
+                  }}
+                >
+                  I've Verified My Email
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
