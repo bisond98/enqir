@@ -27,42 +27,221 @@ export interface UserPaymentPlan {
   activePayments: string[]; // Array of payment record IDs
 }
 
-// Simulate payment processing with dummy gateway - Always succeeds for testing
+// Extend Window interface for Razorpay
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+// Load Razorpay script dynamically
+const loadRazorpayScript = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to load Razorpay script'));
+    document.body.appendChild(script);
+  });
+};
+
+// Create Razorpay order via backend
+const createRazorpayOrder = async (
+  amount: number,
+  enquiryId: string,
+  userId: string,
+  planId: string
+): Promise<{ orderId: string; amount: number; currency: string }> => {
+  try {
+    // Hardcoded for local development - will work immediately
+    const apiUrl = 'http://localhost:5001';
+    const orderUrl = `${apiUrl}/createRazorpayOrder`;
+    console.log('📡 Creating order at:', orderUrl);
+    
+    const response = await fetch(orderUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: amount * 100, // Convert to paise
+        currency: 'INR',
+        enquiryId,
+        userId,
+        planId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to create order');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error creating Razorpay order:', error);
+    throw error;
+  }
+};
+
+// Verify payment via backend
+const verifyRazorpayPayment = async (
+  razorpayOrderId: string,
+  razorpayPaymentId: string,
+  razorpaySignature: string,
+  enquiryId: string,
+  userId: string,
+  planId: string,
+  amount: number
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    // Hardcoded for local development - will work immediately
+    const apiUrl = 'http://localhost:5001';
+    const verifyUrl = `${apiUrl}/verifyRazorpayPayment`;
+    console.log('🔍 Verifying payment at:', verifyUrl);
+    
+    const response = await fetch(verifyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: razorpayPaymentId,
+        razorpay_signature: razorpaySignature,
+        enquiryId,
+        userId,
+        planId,
+        amount,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Payment verification failed');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Payment verification failed',
+    };
+  }
+};
+
+// Process payment with Razorpay integration
 export const processPayment = async (
   enquiryId: string,
   userId: string,
   plan: PaymentPlan,
   paymentDetails: {
-    cardNumber: string;
-    expiryDate: string;
-    cvv: string;
-    name: string;
+    cardNumber?: string;
+    expiryDate?: string;
+    cvv?: string;
+    name?: string;
+    email?: string;
+    contact?: string;
   }
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
   try {
-    // Simulate payment processing delay (1 second for testing)
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('🚀 Starting Razorpay payment process...');
+
+    // Load Razorpay script
+    await loadRazorpayScript();
+    console.log('✅ Razorpay script loaded');
+
+    // Create order via backend
+    const order = await createRazorpayOrder(plan.price, enquiryId, userId, plan.id);
+    console.log('✅ Razorpay order created:', order.orderId);
+
+    // Get Razorpay Key ID
+    const razorpayKeyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
     
-    // Always succeed for testing
-    const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    console.log('✅ Payment processed successfully:', {
-      enquiryId,
-      userId,
-      planId: plan.id,
-      amount: plan.price,
-      transactionId
+    if (!razorpayKeyId) {
+      throw new Error('Razorpay Key ID not configured. Please add VITE_RAZORPAY_KEY_ID to your .env file.');
+    }
+
+    // Initialize Razorpay checkout
+    return new Promise((resolve) => {
+      const options = {
+        key: razorpayKeyId,
+        amount: order.amount, // Amount in paise
+        currency: order.currency,
+        name: 'Enqir',
+        description: `${plan.name} Plan - ${plan.responses === -1 ? 'Unlimited' : plan.responses} responses`,
+        order_id: order.orderId,
+        handler: async function (response: any) {
+          console.log('💳 Payment completed, verifying...', response);
+          
+          try {
+            // Verify payment on backend
+            const verifyResult = await verifyRazorpayPayment(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature,
+              enquiryId,
+              userId,
+              plan.id,
+              plan.price
+            );
+
+            if (verifyResult.success) {
+              console.log('✅ Payment verified successfully');
+              resolve({
+                success: true,
+                transactionId: response.razorpay_payment_id,
+              });
+            } else {
+              console.error('❌ Payment verification failed:', verifyResult.error);
+              resolve({
+                success: false,
+                error: verifyResult.error || 'Payment verification failed',
+              });
+            }
+          } catch (error) {
+            console.error('❌ Payment verification error:', error);
+            resolve({
+              success: false,
+              error: 'Payment verification failed. Please contact support.',
+            });
+          }
+        },
+        prefill: {
+          name: paymentDetails.name || '',
+          email: paymentDetails.email || '',
+          contact: paymentDetails.contact || '',
+        },
+        theme: {
+          color: '#2563eb', // Blue color matching your app
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('⚠️ Payment cancelled by user');
+            resolve({
+              success: false,
+              error: 'Payment cancelled by user',
+            });
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
     });
-    
-    return {
-      success: true,
-      transactionId
-    };
   } catch (error) {
-    console.error('Payment processing error:', error);
+    console.error('❌ Payment processing error:', error);
     return {
       success: false,
-      error: 'Payment processing failed. Please try again.'
+      error: error instanceof Error ? error.message : 'Payment processing failed. Please try again.',
     };
   }
 };

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -9,17 +9,17 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Shield, Mail, Lock, User, Info, AlertTriangle } from "lucide-react";
+import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react";
 
 const SignIn = () => {
   // Use Firebase authentication directly since it's working
   const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   // Form states
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [signUpIdentifier, setSignUpIdentifier] = useState("");
@@ -29,28 +29,18 @@ const SignIn = () => {
   const [showVerificationSent, setShowVerificationSent] = useState(false);
   const [loading, setLoading] = useState(false);
   
+  // Pre-fill email from URL parameter (from email verification)
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setIdentifier(emailParam);
+      setSuccess("Email verified! Please sign in to continue.");
+    }
+  }, [searchParams]);
+  
   // Helper function to validate email format
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  // Auto-extract firstName and lastName when fullName changes
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFullName(value);
-    
-    // Auto-extract firstName and lastName
-    const nameParts = value.trim().split(' ');
-    if (nameParts.length >= 2) {
-      setFirstName(nameParts[0]);
-      setLastName(nameParts.slice(1).join(' '));
-    } else if (nameParts.length === 1) {
-      setFirstName(nameParts[0]);
-      setLastName('');
-    } else {
-      setFirstName('');
-      setLastName('');
-    }
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -104,10 +94,13 @@ const SignIn = () => {
         return;
       }
       
+      // Construct full name from first and last name
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+      
       const result = await signUp(signUpIdentifier, signUpPassword, { 
         full_name: fullName,
-        first_name: firstName,
-        last_name: lastName
+        first_name: firstName.trim(),
+        last_name: lastName.trim()
       });
       console.log("Sign up result:", result);
       
@@ -132,272 +125,295 @@ const SignIn = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background to-muted/20">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-4">
-              Welcome to <span className="text-blue-600 text-3xl sm:text-5xl">Enqir</span>.in
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-pal-blue/5 rounded-full animate-float hidden sm:block"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-pal-blue/10 rounded-full animate-float hidden sm:block" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-32 left-1/4 w-16 h-16 bg-pal-blue/5 rounded-full animate-float hidden sm:block" style={{ animationDelay: '4s' }}></div>
+        </div>
+
+        <div className="w-full max-w-md relative z-10">
+          {/* Header Section */}
+          <div className="text-center mb-5 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-pal-blue/10 to-pal-blue/5 mb-3 sm:mb-6">
+              <User className="h-7 w-7 sm:h-10 sm:w-10 text-pal-blue" />
+            </div>
+            <h1 className="text-xl sm:text-3xl font-bold text-foreground mb-2 sm:mb-3">
+              Welcome to <span className="text-pal-blue">Enqir</span>
             </h1>
+            <p className="text-xs sm:text-base text-muted-foreground px-2">
+              Sign in to your account or create a new one
+            </p>
           </div>
 
-          <Card className="shadow-lg border-2 border-blue-200 rounded-2xl overflow-hidden">
-            {/* Card Header - Top 10% with gray background */}
-            <CardHeader className="bg-gray-800 p-4 sm:p-6 lg:p-8">
-              <div className="flex items-center justify-center space-x-2">
-                <Shield className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                <span className="text-lg sm:text-xl font-semibold text-white">Secure Access</span>
-              </div>
-            </CardHeader>
-            {/* Card Content - Rest with white background */}
-            <CardContent className="p-4 sm:p-6 lg:p-8">
+          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+            <CardContent className="px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8">
               {/* Error Display */}
               {error && (
-                <Alert className="mb-4 border-red-200 bg-red-50">
+                <Alert className="mb-4 border-red-200 bg-red-50/80">
                   <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <AlertDescription className="text-sm text-red-800">
+                  <AlertDescription className="text-xs sm:text-sm text-red-800">
                     {error}
                   </AlertDescription>
                 </Alert>
               )}
 
               {/* Success Display */}
-              {success && (
-                <Alert className="mb-4 border-green-200 bg-green-50">
-                  <Shield className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-sm text-green-800">
+              {success && !showVerificationSent && (
+                <Alert className="mb-4 border-green-200 bg-green-50/80">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-xs sm:text-sm text-green-800">
                     {success}
                   </AlertDescription>
                 </Alert>
               )}
 
-              {/* Verification Sent UI */}
+              {/* Verification Email Sent Section */}
               {showVerificationSent && (
-                <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Mail className="h-8 w-8 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-green-800 mb-2">Verification Email Sent!</h3>
-                    <p className="text-green-700 text-sm mb-4">
-                      We've sent a verification link to <strong className="text-green-800">{signUpIdentifier}</strong>
-                    </p>
-                    <div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm">
-                      <div className="space-y-2">
-                        <p className="text-sm text-green-600 flex items-center justify-center gap-2">
-                          <span className="text-lg">📧</span> Check your inbox and spam folder
-                        </p>
-                        <p className="text-sm text-green-600 flex items-center justify-center gap-2">
-                          <span className="text-lg">🔗</span> Click the verification link in the email
-                        </p>
-                        <p className="text-sm text-green-600 flex items-center justify-center gap-2">
-                          <span className="text-lg">✅</span> Then come back here to sign in
-                        </p>
+                <div className="mb-6 p-4 sm:p-6 bg-gradient-to-br from-green-50/80 to-emerald-50/50 rounded-lg border border-green-200">
+                  <div className="text-center space-y-4 sm:space-y-5">
+                    {/* Success Icon */}
+                    <div className="flex justify-center">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                        <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-green-600" />
                       </div>
                     </div>
-                    <div className="mt-4 space-x-2">
+                    
+                    {/* Title */}
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-green-800 mb-2">
+                        Verification Email Sent!
+                      </h3>
+                      <p className="text-xs sm:text-sm text-green-700">
+                        We've sent a verification link to{" "}
+                        <span className="font-semibold text-green-800 break-all">{signUpIdentifier}</span>
+                      </p>
+                    </div>
+
+                    {/* Steps */}
+                    <div className="bg-white/80 rounded-lg p-3 sm:p-4 border border-green-100">
+                      <div className="space-y-2.5 sm:space-y-3 text-left">
+                        <div className="flex items-start gap-2.5 sm:gap-3">
+                          <span className="text-base sm:text-lg flex-shrink-0">📧</span>
+                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
+                            Check your inbox and spam folder
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2.5 sm:gap-3">
+                          <span className="text-base sm:text-lg flex-shrink-0">🔗</span>
+                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
+                            Click the verification link in the email
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2.5 sm:gap-3">
+                          <span className="text-base sm:text-lg flex-shrink-0">✅</span>
+                          <span className="text-xs sm:text-sm text-green-700 leading-relaxed">
+                            Then come back here to sign in
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="pt-2">
                       <Button
-                        variant="outline"
-                        size="sm"
                         onClick={() => {
                           setShowVerificationSent(false);
                           setSuccess("");
                           setError("");
                         }}
-                        className="border-green-300 text-green-700 hover:bg-green-50"
+                        className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
                       >
                         Got it, let me sign in
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => navigate('/signin')}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        Sign In
                       </Button>
                     </div>
                   </div>
                 </div>
               )}
 
-              <Tabs defaultValue="signin" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14">
-                  <TabsTrigger value="signin" className="text-base sm:text-lg font-semibold">Sign In</TabsTrigger>
-                  <TabsTrigger value="signup" className="text-base sm:text-lg font-semibold">Sign Up</TabsTrigger>
-                </TabsList>
+              {/* Sign In / Sign Up Tabs */}
+              {!showVerificationSent && (
+                <>
+                  <Tabs defaultValue="signin" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 mb-4 sm:mb-6">
+                      <TabsTrigger value="signin" className="text-sm sm:text-base font-semibold">Sign In</TabsTrigger>
+                      <TabsTrigger value="signup" className="text-sm sm:text-base font-semibold">Sign Up</TabsTrigger>
+                    </TabsList>
 
-                {/* Sign In Form */}
-                <TabsContent value="signin">
-                  <form onSubmit={handleSignIn} className="space-y-3 sm:space-y-4">
-                    
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="identifier" className="text-xs sm:text-sm">
-                        Email Address
-                      </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        <Input
-                          id="identifier"
-                          type="email"
-                          placeholder="Enter your email address"
-                          className="pl-8 sm:pl-10 h-9 sm:h-10 text-xs sm:text-sm"
-                          value={identifier}
-                          onChange={(e) => setIdentifier(e.target.value)}
-                          required
-                        />
+                    {/* Sign In Form */}
+                    <TabsContent value="signin" className="space-y-4 sm:space-y-5">
+                      <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5">
+                        <div className="space-y-2">
+                          <Label htmlFor="identifier" className="text-xs sm:text-sm font-medium text-foreground">
+                            Email Address
+                          </Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="identifier"
+                              type="email"
+                              placeholder="Enter your email address"
+                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              value={identifier}
+                              onChange={(e) => setIdentifier(e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="password" className="text-xs sm:text-sm font-medium text-foreground">
+                            Password
+                          </Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="password"
+                              type="password"
+                              placeholder="Enter your password"
+                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <Button 
+                          type="submit" 
+                          className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Signing in...
+                            </>
+                          ) : (
+                            "Sign In"
+                          )}
+                        </Button>
+                      </form>
+                      
+                      <div className="text-center">
+                        <Link to="/forgot-password" className="text-xs text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
+                          Forgot your password?
+                        </Link>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">
-                        Use your email address to sign in
-                      </p>
-                    </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="password" className="text-xs sm:text-sm">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="Enter your password"
-                          className="pl-8 sm:pl-10 h-9 sm:h-10 text-xs sm:text-sm"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 sm:h-14 primary-gradient hover:shadow-glow transition-spring text-sm sm:text-base font-medium"
-                      disabled={loading}
-                    >
-                      {loading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
+                    </TabsContent>
+
+                    {/* Sign Up Form */}
+                    <TabsContent value="signup" className="space-y-4 sm:space-y-5">
+                      <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-5">
+                        {/* First Name and Last Name - Manual Entry */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="firstName" className="text-xs sm:text-sm font-medium text-foreground">
+                              First Name *
+                            </Label>
+                            <div className="relative">
+                              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="firstName"
+                                type="text"
+                                placeholder="First name"
+                                className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="lastName" className="text-xs sm:text-sm font-medium text-foreground">
+                              Last Name *
+                            </Label>
+                            <div className="relative">
+                              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="lastName"
+                                type="text"
+                                placeholder="Last name"
+                                className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-identifier" className="text-xs sm:text-sm font-medium text-foreground">
+                            Email Address
+                          </Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="signup-identifier"
+                              type="email"
+                              placeholder="Enter your email address"
+                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              value={signUpIdentifier}
+                              onChange={(e) => setSignUpIdentifier(e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-password" className="text-xs sm:text-sm font-medium text-foreground">
+                            Password
+                          </Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="signup-password"
+                              type="password"
+                              placeholder="Create a secure password"
+                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              value={signUpPassword}
+                              onChange={(e) => setSignUpPassword(e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <Button 
+                          type="submit" 
+                          className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Creating account...
+                            </>
+                          ) : (
+                            "Create Account"
+                          )}
+                        </Button>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
+
+                  <Separator className="my-4 sm:my-6" />
                   
-                  <div className="mt-3 sm:mt-4 text-center">
-                    <Link to="/forgot-password" className="text-xs sm:text-sm text-pal-blue hover:underline">
-                      Forgot your password?
-                    </Link>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">
+                      By continuing, you agree to our{" "}
+                      <Link to="/terms-and-conditions" className="font-semibold text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link to="/privacy-policy" className="font-semibold text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
+                        Privacy Policy
+                      </Link>
+                    </p>
                   </div>
-                </TabsContent>
-
-                {/* Sign Up Form */}
-                <TabsContent value="signup">
-                  <form onSubmit={handleSignUp} className="space-y-3 sm:space-y-4">
-
-
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="name" className="text-xs sm:text-sm">Full Name *</Label>
-                      <div className="relative">
-                        <User className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        <Input
-                          id="name"
-                          type="text"
-                          placeholder="Enter your full name (e.g., John Smith)"
-                          className="pl-8 sm:pl-10 h-9 sm:h-10 text-xs sm:text-sm"
-                          value={fullName}
-                          onChange={handleFullNameChange}
-                          required
-                        />
-                      </div>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">
-                        We'll automatically extract your first and last name
-                      </p>
-                    </div>
-
-                    {/* Auto-extracted First Name and Last Name (Read-only) */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                      <div className="space-y-1.5 sm:space-y-2">
-                        <Label htmlFor="firstName" className="text-xs sm:text-sm">First Name</Label>
-                        <Input
-                          id="firstName"
-                          type="text"
-                          value={firstName}
-                          readOnly
-                          disabled
-                          className="bg-gray-50 border-gray-200 text-gray-700 cursor-not-allowed h-9 sm:h-10 text-xs sm:text-sm"
-                        />
-                        <p className="text-[10px] sm:text-xs text-muted-foreground">
-                          Auto-extracted
-                        </p>
-                      </div>
-                      <div className="space-y-1.5 sm:space-y-2">
-                        <Label htmlFor="lastName" className="text-xs sm:text-sm">Last Name</Label>
-                        <Input
-                          id="lastName"
-                          type="text"
-                          value={lastName}
-                          readOnly
-                          disabled
-                          className="bg-gray-50 border-gray-200 text-gray-700 cursor-not-allowed h-9 sm:h-10 text-xs sm:text-sm"
-                        />
-                        <p className="text-[10px] sm:text-xs text-muted-foreground">
-                          Auto-extracted
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="signup-identifier" className="text-xs sm:text-sm">
-                        Email Address
-                      </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        <Input
-                          id="signup-identifier"
-                          type="email"
-                          placeholder="Enter your email address"
-                          className="pl-8 sm:pl-10 h-9 sm:h-10 text-xs sm:text-sm"
-                          value={signUpIdentifier}
-                          onChange={(e) => setSignUpIdentifier(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">
-                        We'll send a verification email to your inbox
-                      </p>
-                    </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="signup-password" className="text-xs sm:text-sm">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        <Input
-                          id="signup-password"
-                          type="password"
-                          placeholder="Create a secure password"
-                          className="pl-8 sm:pl-10 h-9 sm:h-10 text-xs sm:text-sm"
-                          value={signUpPassword}
-                          onChange={(e) => setSignUpPassword(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 sm:h-14 primary-gradient hover:shadow-glow transition-spring text-sm sm:text-base font-medium"
-                      disabled={loading}
-                    >
-                      {loading ? "Creating account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-
-              <Separator className="my-6" />
-              
-              <div className="text-center text-xs text-muted-foreground">
-                <p>
-                  By continuing, you agree to our{" "}
-                  <Link to="/terms" className="text-pal-blue hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="text-pal-blue hover:underline">
-                    Privacy Policy
-                  </Link>
-                </p>
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -43,28 +43,43 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setPaymentLoading(true);
     
     try {
-      // Simulate payment processing delay (2 seconds for testing)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Always succeed for testing - no need to call payment service
-      console.log('✅ Dummy payment successful:', {
+      // Process payment with Razorpay
+      const result = await processPayment(
         enquiryId,
         userId,
-        planId: selectedPlan.id,
-        amount: selectedPlan.price,
+        selectedPlan,
         paymentDetails
-      });
+      );
       
-      setPaymentStep('success');
-      
-      // Call success callback after a short delay
-      setTimeout(() => {
-        onPaymentSuccess(selectedPlan.id, selectedPlan.price);
-        resetModal();
-      }, 1500);
-      
+      if (result.success && result.transactionId) {
+        console.log('✅ Payment successful:', result.transactionId);
+        
+        // Save payment record to Firestore
+        const paymentRecordId = await savePaymentRecord(
+          enquiryId,
+          userId,
+          selectedPlan,
+          result.transactionId
+        );
+        
+        // Update enquiry premium status
+        await updateEnquiryPremiumStatus(enquiryId, true, selectedPlan.id);
+        
+        // Update user payment plan
+        await updateUserPaymentPlan(userId, selectedPlan.id, paymentRecordId, enquiryId);
+        
+        setPaymentStep('success');
+        
+        // Call success callback after a short delay
+        setTimeout(() => {
+          onPaymentSuccess(selectedPlan.id, selectedPlan.price);
+          resetModal();
+        }, 1500);
+      } else {
+        throw new Error(result.error || 'Payment failed');
+      }
     } catch (error) {
-      console.error('Payment failed:', error);
+      console.error('❌ Payment failed:', error);
       setPaymentStep('failed');
       setPaymentLoading(false);
     }
@@ -77,8 +92,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     onClose();
   };
 
-  const isFormValid = paymentDetails.cardNumber && paymentDetails.expiryDate && 
-                     paymentDetails.cvv && paymentDetails.name;
+  const isFormValid = paymentDetails.name && paymentDetails.name.trim().length > 2;
 
   if (!isOpen) return null;
 
@@ -134,47 +148,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Payment Form */}
+              {/* Customer Details for Razorpay */}
               <div className="space-y-4 sm:space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Card Number</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
                   <input
                     type="text"
-                    placeholder="1234 5678 9012 3456"
-                    value={paymentDetails.cardNumber}
-                    onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                    className="w-full px-4 py-3 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Expiry Date</label>
-                    <input
-                      type="text"
-                      placeholder="MM/YY"
-                      value={paymentDetails.expiryDate}
-                      onChange={(e) => setPaymentDetails(prev => ({ ...prev, expiryDate: e.target.value }))}
-                      className="w-full px-4 py-3 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">CVV</label>
-                    <input
-                      type="text"
-                      placeholder="123"
-                      value={paymentDetails.cvv}
-                      onChange={(e) => setPaymentDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                      className="w-full px-4 py-3 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Cardholder Name</label>
-                  <input
-                    type="text"
-                    placeholder="John Doe"
+                    placeholder="Enter your name"
                     value={paymentDetails.name}
                     onChange={(e) => setPaymentDetails(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-4 py-3 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -182,15 +162,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               </div>
 
-              {/* Test Payment Notice */}
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <span className="text-yellow-600 text-xs">🧪</span>
+              {/* Razorpay Info */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CreditCard className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-yellow-800 text-sm">Test Mode</p>
-                    <p className="text-yellow-700 text-xs">Use any card details - payment will be simulated</p>
+                    <p className="font-medium text-blue-900 text-sm mb-1">Secure Payment with Razorpay</p>
+                    <p className="text-blue-700 text-xs leading-relaxed">
+                      You'll be redirected to Razorpay's secure checkout to complete your payment. 
+                      We accept Credit Card, Debit Card, Net Banking, UPI, and Wallets.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -257,7 +240,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 ) : (
                   <CreditCard className="h-5 w-5 mr-2" />
                 )}
-                {isUpgrade ? `Upgrade for ₹${finalPrice}` : `Pay ₹${finalPrice}`}
+                {isUpgrade ? `Pay ₹${finalPrice} with Razorpay` : `Pay ₹${finalPrice} with Razorpay`}
               </Button>
             </div>
           </div>

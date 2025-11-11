@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   sendEmailVerification,
+  sendSignInLinkToEmail,
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   confirmPasswordReset as firebaseConfirmPasswordReset,
   updateProfile,
@@ -151,22 +152,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
+        // Send email link for automatic sign-in
         try {
-          await sendEmailVerification(result.user, {
+          // Store email for sign-in link
+          window.localStorage.setItem('emailForSignIn', identifier);
+          console.log('📧 Stored email in localStorage:', identifier);
+          console.log('🔗 Callback URL:', `${window.location.origin}/auth/callback`);
+          
+          await sendSignInLinkToEmail(auth, identifier, {
             url: `${window.location.origin}/auth/callback`,
             handleCodeInApp: true,
           });
+          console.log('✅ Email link sent successfully to:', identifier);
 
           toast({
             title: 'Verification Email Sent!',
-            description: `We've sent a verification link to ${identifier}. Check your inbox and spam folder, then click the verification link to activate your account.`,
+            description: `We've sent a sign-in link to ${identifier}. Click the link in your email to verify and access your account.`,
           });
         } catch (emailError: any) {
-          console.error('Email verification error:', emailError);
+          console.error('Email link error:', emailError);
           // User is still created, just email sending failed
           toast({
             title: 'Account Created!',
-            description: `Account created successfully, but email verification failed. Error: ${emailError.message}. Please try resending verification email from your profile.`,
+            description: `Account created successfully, but email link failed. Error: ${emailError.message}. Please sign in manually.`,
             variant: 'default',
           });
         }
