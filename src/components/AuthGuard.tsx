@@ -51,39 +51,39 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   // If user is not verified, show verification prompt
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-12 bg-gradient-to-br from-background to-muted/20">
       <div className="w-full max-w-md">
         <Card className="shadow-lg">
-          <CardContent className="p-4 sm:p-6">
-            <div className="text-center space-y-3 sm:space-4">
+          <CardContent className="p-3 sm:p-6">
+            <div className="text-center space-y-2.5 sm:space-4">
               {/* Title */}
-              <h3 className="text-base sm:text-lg font-semibold">
+              <h3 className="text-sm sm:text-lg font-semibold leading-tight">
                 Email Verification Required
               </h3>
               
               {/* Email */}
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p className="text-[11px] sm:text-sm text-muted-foreground leading-relaxed px-1">
                 We sent a verification email to <strong className="break-all">{user.email}</strong>
               </p>
 
               {/* Simple Steps */}
-              <div className="space-y-1.5 sm:space-2 text-xs sm:text-sm text-muted-foreground py-1 sm:py-2">
+              <div className="space-y-1.5 sm:space-2 text-[11px] sm:text-sm text-muted-foreground py-1 sm:py-2 leading-relaxed">
                 <p>📧 Check your inbox and spam folder</p>
                 <p>🔗 Click the verification link in the email</p>
               </div>
 
               {/* Buttons */}
-              <div className="space-y-2 sm:space-3 pt-2 sm:pt-3">
+              <div className="space-y-2 sm:space-3 pt-2.5 sm:pt-3">
                 <Button 
                   onClick={resendConfirmation}
-                  className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
+                  className="w-full h-9 sm:h-11 text-[11px] sm:text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
                 >
                   Resend Verification Email
                 </Button>
                 
                 <Button 
                   variant="outline"
-                  className="w-full h-10 sm:h-11 text-xs sm:text-sm"
+                  className="w-full h-9 sm:h-11 text-[11px] sm:text-sm"
                   onClick={async () => {
                     // Reload user to check verification status before refreshing page
                     if (user) {
