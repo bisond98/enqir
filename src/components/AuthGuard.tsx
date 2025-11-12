@@ -14,6 +14,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const location = useLocation();
   const hasReloadedRef = useRef(false);
   const [isChecking, setIsChecking] = React.useState(false);
+  const [forceUpdate, setForceUpdate] = React.useState(0);
 
   // Force reload user's email verification status if not verified
   // (in case they just signed in via email link - only runs once per session)
@@ -24,7 +25,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
       hasReloadedRef.current = true;
       user.reload().then(() => {
         console.log('✅ User reloaded, emailVerified:', user.emailVerified);
-        setIsChecking(false);
+        // Force re-render to check updated emailVerified status
+        setForceUpdate(prev => prev + 1);
+        // Small delay to allow auth state to propagate
+        setTimeout(() => {
+          setIsChecking(false);
+        }, 500);
       }).catch((err) => {
         console.error('❌ Error reloading user:', err);
         hasReloadedRef.current = false; // Allow retry on error
@@ -95,6 +101,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
                         hasReloadedRef.current = false; // Reset to allow reload
                         await user.reload();
                         console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+                        
+                        // Force re-render to check updated emailVerified status
+                        setForceUpdate(prev => prev + 1);
+                        
+                        // Small delay to allow state to update
+                        await new Promise(resolve => setTimeout(resolve, 300));
                         
                         // If verified, the component will re-render and show children
                         // If not verified, show error
