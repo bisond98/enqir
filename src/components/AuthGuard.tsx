@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -12,21 +13,25 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { user, isEmailVerified, resendConfirmation } = useAuth();
   const location = useLocation();
   const hasReloadedRef = useRef(false);
+  const [isChecking, setIsChecking] = React.useState(false);
 
-  // Force reload user's email verification status when on profile page
-  // (in case they just signed in via email link - only runs once)
+  // Force reload user's email verification status if not verified
+  // (in case they just signed in via email link - only runs once per session)
   useEffect(() => {
-    if (user && location.pathname === '/profile' && !user.emailVerified && !hasReloadedRef.current) {
+    if (user && !user.emailVerified && !hasReloadedRef.current && !isChecking) {
       console.log('🔄 Reloading user to check email verification status...');
+      setIsChecking(true);
       hasReloadedRef.current = true;
       user.reload().then(() => {
         console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+        setIsChecking(false);
       }).catch((err) => {
         console.error('❌ Error reloading user:', err);
         hasReloadedRef.current = false; // Allow retry on error
+        setIsChecking(false);
       });
     }
-  }, [user, location.pathname]);
+  }, [user, isChecking]);
 
   // If no user, show nothing (let the app handle sign-in flow)
   if (!user) {
@@ -42,10 +47,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  // If user is on profile page after email link sign-in, skip verification check
-  // (email link automatically verifies, just needs a moment to update)
-  if (location.pathname === '/profile') {
-    // Give it a moment for auth state to update, then show children
+  // If we're still checking verification status, show loading state briefly
+  if (isChecking) {
     return <>{children}</>;
   }
 
@@ -85,16 +88,34 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
                   variant="outline"
                   className="w-full h-9 sm:h-11 text-[11px] sm:text-sm"
                   onClick={async () => {
-                    // Reload user to check verification status before refreshing page
+                    // Reload user to check verification status
                     if (user) {
                       try {
+                        setIsChecking(true);
+                        hasReloadedRef.current = false; // Reset to allow reload
                         await user.reload();
                         console.log('✅ User reloaded, emailVerified:', user.emailVerified);
+                        
+                        // If verified, the component will re-render and show children
+                        // If not verified, show error
+                        if (!user.emailVerified) {
+                          toast({
+                            title: 'Email not verified yet',
+                            description: 'Please click the verification link in your email.',
+                            variant: 'destructive',
+                          });
+                        }
+                        setIsChecking(false);
                       } catch (err) {
                         console.error('❌ Error reloading user:', err);
+                        setIsChecking(false);
+                        toast({
+                          title: 'Error',
+                          description: 'Unable to check verification status. Please try again.',
+                          variant: 'destructive',
+                        });
                       }
                     }
-                    window.location.reload();
                   }}
                 >
                   I've Verified My Email
