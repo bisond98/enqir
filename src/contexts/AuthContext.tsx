@@ -334,6 +334,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setProfileVerificationStatus(null);
       setShowWelcomePopup(false);
       
+      // Clear email link sign-in flag
+      window.localStorage.removeItem('signedInViaEmailLink');
+      
       // Sign out from Firebase
       await firebaseSignOut(auth);
       

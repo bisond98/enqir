@@ -44,6 +44,14 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
+  // Check if user signed in via email link (email is automatically verified)
+  const signedInViaEmailLink = window.localStorage.getItem('signedInViaEmailLink') === 'true';
+  
+  // If user signed in via email link, skip verification check entirely
+  if (signedInViaEmailLink) {
+    return <>{children}</>;
+  }
+
   // Check email verification from both state AND user object (user object is source of truth)
   // This ensures we catch cases where state hasn't updated yet
   const emailIsVerified = isEmailVerified || user.emailVerified;

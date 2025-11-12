@@ -73,7 +73,10 @@ const AuthCallback = () => {
             await result.user.reload();
             console.log('✅ User reloaded, emailVerified:', result.user.emailVerified);
             
+            // Mark that user signed in via email link (email is automatically verified)
+            window.localStorage.setItem('signedInViaEmailLink', 'true');
             window.localStorage.removeItem('emailForSignIn');
+            
             toast({ 
               title: 'Signed in successfully!', 
               description: 'Your email has been verified and you are now signed in.' 
