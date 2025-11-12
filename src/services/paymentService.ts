@@ -58,8 +58,8 @@ const createRazorpayOrder = async (
   planId: string
 ): Promise<{ orderId: string; amount: number; currency: string }> => {
   try {
-    // Hardcoded for local development - will work immediately
-    const apiUrl = 'http://localhost:5001';
+    // Use environment variable for backend URL (Render in production, localhost in development)
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
     const orderUrl = `${apiUrl}/createRazorpayOrder`;
     console.log('📡 Creating order at:', orderUrl);
     
@@ -101,8 +101,8 @@ const verifyRazorpayPayment = async (
   amount: number
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    // Hardcoded for local development - will work immediately
-    const apiUrl = 'http://localhost:5001';
+    // Use environment variable for backend URL (Render in production, localhost in development)
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
     const verifyUrl = `${apiUrl}/verifyRazorpayPayment`;
     console.log('🔍 Verifying payment at:', verifyUrl);
     
