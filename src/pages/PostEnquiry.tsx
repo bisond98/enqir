@@ -152,6 +152,12 @@ export default function PostEnquiry() {
         paymentDetails
       );
       
+      // Check if payment actually succeeded
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.error || 'Payment failed');
+      }
+      
+      console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
       setPaymentStep('success');
       
       // Submit enquiry after successful payment
