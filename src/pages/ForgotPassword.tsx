@@ -133,12 +133,12 @@ const ForgotPassword = () => {
                   {/* Title */}
                   <div>
                     <h3 className="text-lg sm:text-2xl font-bold text-foreground mb-2">
-                      Check Your Email
-                    </h3>
+                    Check Your Email
+                  </h3>
                     <p className="text-xs sm:text-base text-muted-foreground px-1">
                       We've sent a password reset link to{" "}
                       <span className="font-semibold text-foreground break-all">{email}</span>
-                    </p>
+                  </p>
                   </div>
 
                   {/* Next Steps */}

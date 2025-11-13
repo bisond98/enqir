@@ -167,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           toast({
             title: 'Verification Email Sent!',
-            description: `We've sent a sign-in link to ${identifier}. Click the link in your email to verify and access your account.`,
+            description: `Check your inbox at ${identifier} and click the link to sign in.`,
           });
         } catch (emailError: any) {
           console.error('Email link error:', emailError);
@@ -176,13 +176,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (emailError.code === 'auth/quota-exceeded' && result.user) {
             console.log('⚠️ Email link quota exceeded, falling back to regular email verification');
             try {
-              await sendEmailVerification(result.user, {
-                url: `${window.location.origin}/auth/callback`,
-                handleCodeInApp: true,
-              });
-              toast({
-                title: 'Verification Email Sent!',
-                description: `We've sent a verification email to ${identifier}. Check your inbox and click the link to verify your account, then sign in.`,
+        await sendEmailVerification(result.user, {
+          url: `${window.location.origin}/auth/callback`,
+          handleCodeInApp: true,
+        });
+        toast({
+          title: 'Verification Email Sent!',
+                description: `Check your inbox at ${identifier} and click the link to verify.`,
               });
             } catch (verifyError: any) {
               console.error('Email verification error:', verifyError);

@@ -10,6 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { auth } from "@/firebase";
+import { signInWithEmailLink, isSignInWithEmailLink } from "firebase/auth";
+import { toast } from "@/hooks/use-toast";
 
 const SignIn = () => {
   // Use Firebase authentication directly since it's working
@@ -28,6 +31,8 @@ const SignIn = () => {
   const [success, setSuccess] = useState("");
   const [showVerificationSent, setShowVerificationSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isEmailLinkMode, setIsEmailLinkMode] = useState(false);
+  const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
   
   // Pre-fill email from URL parameter (from email verification)
   useEffect(() => {
@@ -35,6 +40,18 @@ const SignIn = () => {
     if (emailParam) {
       setIdentifier(emailParam);
       setSuccess("Email verified! Please sign in to continue.");
+    }
+    
+    // Check if we're completing an email link sign-in
+    const emailLinkParam = searchParams.get('emailLink');
+    if (emailLinkParam === 'true') {
+      const storedLink = window.localStorage.getItem('pendingEmailLink');
+      if (storedLink && isSignInWithEmailLink(auth, storedLink)) {
+        setIsEmailLinkMode(true);
+        setPendingEmailLink(storedLink);
+        setError("");
+        setSuccess("Please enter the email address you used to sign up to complete sign-in.");
+      }
     }
   }, [searchParams]);
   
@@ -180,15 +197,10 @@ const SignIn = () => {
                     
                     {/* Email Address */}
                     <p className="text-xs sm:text-base text-green-700 leading-relaxed px-1">
-                      We've sent a verification link to{" "}
+                      Check your inbox at{" "}
                       <span className="font-semibold text-green-800 break-all">{signUpIdentifier}</span>
+                      {" "}and click the link to sign in.
                     </p>
-
-                    {/* Simple Steps */}
-                    <div className="space-y-2.5 sm:space-3 text-xs sm:text-sm text-green-700 pt-1 sm:pt-0">
-                      <p className="leading-relaxed">📧 Check your inbox and spam folder</p>
-                      <p className="leading-relaxed">🔗 Click the verification link in the email</p>
-                    </div>
 
                     {/* Action Button */}
                     <div className="pt-3 sm:pt-2">
@@ -210,56 +222,56 @@ const SignIn = () => {
               {/* Sign In / Sign Up Tabs */}
               {!showVerificationSent && (
                 <>
-                  <Tabs defaultValue="signin" className="w-full">
+              <Tabs defaultValue="signin" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 mb-4 sm:mb-6">
                       <TabsTrigger value="signin" className="text-sm sm:text-base font-semibold">Sign In</TabsTrigger>
                       <TabsTrigger value="signup" className="text-sm sm:text-base font-semibold">Sign Up</TabsTrigger>
-                    </TabsList>
+                </TabsList>
 
-                    {/* Sign In Form */}
+                {/* Sign In Form */}
                     <TabsContent value="signin" className="space-y-4 sm:space-y-5">
                       <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5">
                         <div className="space-y-2">
                           <Label htmlFor="identifier" className="text-xs sm:text-sm font-medium text-foreground">
-                            Email Address
-                          </Label>
-                          <div className="relative">
+                        Email Address
+                      </Label>
+                      <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="identifier"
-                              type="email"
-                              placeholder="Enter your email address"
+                        <Input
+                          id="identifier"
+                          type="email"
+                          placeholder="Enter your email address"
                               className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
-                              value={identifier}
-                              onChange={(e) => setIdentifier(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
+                          value={identifier}
+                          onChange={(e) => setIdentifier(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
                         
                         <div className="space-y-2">
                           <Label htmlFor="password" className="text-xs sm:text-sm font-medium text-foreground">
                             Password
                           </Label>
-                          <div className="relative">
+                      <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="password"
-                              type="password"
-                              placeholder="Enter your password"
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
                               className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
-                        <Button 
-                          type="submit" 
+                    <Button 
+                      type="submit" 
                           className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
-                          disabled={loading}
-                        >
+                      disabled={loading}
+                    >
                           {loading ? (
                             <>
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -268,17 +280,17 @@ const SignIn = () => {
                           ) : (
                             "Sign In"
                           )}
-                        </Button>
-                      </form>
-                      
+                    </Button>
+                  </form>
+                  
                       <div className="text-center">
                         <Link to="/forgot-password" className="text-xs text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
-                          Forgot your password?
-                        </Link>
-                      </div>
-                    </TabsContent>
+                      Forgot your password?
+                    </Link>
+                  </div>
+                </TabsContent>
 
-                    {/* Sign Up Form */}
+                {/* Sign Up Form */}
                     <TabsContent value="signup" className="space-y-4 sm:space-y-5">
                       <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-5">
                         {/* First Name and Last Name - Manual Entry */}
@@ -287,79 +299,79 @@ const SignIn = () => {
                             <Label htmlFor="firstName" className="text-xs sm:text-sm font-medium text-foreground">
                               First Name *
                             </Label>
-                            <div className="relative">
+                      <div className="relative">
                               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input
+                        <Input
                                 id="firstName"
-                                type="text"
+                          type="text"
                                 placeholder="First name"
                                 className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
-                                required
-                              />
-                            </div>
-                          </div>
+                          required
+                        />
+                      </div>
+                    </div>
                           <div className="space-y-2">
                             <Label htmlFor="lastName" className="text-xs sm:text-sm font-medium text-foreground">
                               Last Name *
                             </Label>
                             <div className="relative">
                               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                id="lastName"
-                                type="text"
+                        <Input
+                          id="lastName"
+                          type="text"
                                 placeholder="Last name"
                                 className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
-                                value={lastName}
+                          value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 required
-                              />
+                        />
                             </div>
-                          </div>
-                        </div>
+                      </div>
+                    </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="signup-identifier" className="text-xs sm:text-sm font-medium text-foreground">
-                            Email Address
-                          </Label>
-                          <div className="relative">
+                        Email Address
+                      </Label>
+                      <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="signup-identifier"
-                              type="email"
-                              placeholder="Enter your email address"
+                        <Input
+                          id="signup-identifier"
+                          type="email"
+                          placeholder="Enter your email address"
                               className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
-                              value={signUpIdentifier}
-                              onChange={(e) => setSignUpIdentifier(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
+                          value={signUpIdentifier}
+                          onChange={(e) => setSignUpIdentifier(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="signup-password" className="text-xs sm:text-sm font-medium text-foreground">
                             Password
                           </Label>
-                          <div className="relative">
+                      <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="signup-password"
-                              type="password"
-                              placeholder="Create a secure password"
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="Create a secure password"
                               className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
-                              value={signUpPassword}
-                              onChange={(e) => setSignUpPassword(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
+                          value={signUpPassword}
+                          onChange={(e) => setSignUpPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
-                        <Button 
-                          type="submit" 
+                    <Button 
+                      type="submit" 
                           className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
-                          disabled={loading}
-                        >
+                      disabled={loading}
+                    >
                           {loading ? (
                             <>
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -368,25 +380,25 @@ const SignIn = () => {
                           ) : (
                             "Create Account"
                           )}
-                        </Button>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
 
                   <Separator className="my-4 sm:my-6" />
-                  
+              
                   <div className="text-center">
                     <p className="text-xs text-muted-foreground">
-                      By continuing, you agree to our{" "}
+                  By continuing, you agree to our{" "}
                       <Link to="/terms-and-conditions" className="font-semibold text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
                       <Link to="/privacy-policy" className="font-semibold text-pal-blue hover:text-pal-blue/80 hover:underline transition-colors">
-                        Privacy Policy
-                      </Link>
-                    </p>
-                  </div>
+                    Privacy Policy
+                  </Link>
+                </p>
+              </div>
                 </>
               )}
             </CardContent>

@@ -37,35 +37,34 @@ const AuthCallback = () => {
         
         if (isEmailLink) {
           console.log('✅ Email link authentication detected!');
-          let email = window.localStorage.getItem('emailForSignIn');
+          
+          // For email link sign-in, we MUST use the email from localStorage
+          // This is the email that was used when sendSignInLinkToEmail was called
+          // checkActionCode doesn't work reliably for email link sign-in
+          const email = window.localStorage.getItem('emailForSignIn');
           console.log('📧 Email from localStorage:', email);
           
-          if (!email && oobCode) {
-            // Try to get email from action code if available
-            console.log('🔍 Trying to get email from oobCode...');
-            try {
-              const actionCodeInfo = await checkActionCode(auth, oobCode);
-              email = actionCodeInfo.data.email;
-              console.log('✅ Got email from oobCode:', email);
-            } catch (err) {
-              console.error('❌ Could not get email from action code:', err);
-            }
-          }
-          
           if (!email) {
-            console.error('❌ No email found - cannot complete sign-in');
+            console.error('❌ No email found in localStorage - user might be on different device/browser');
             toast({ 
               title: 'Email required', 
-              description: 'Please provide your email address to complete sign-in.', 
+              description: 'Please enter the email address you used to sign up to complete sign-in.', 
               variant: 'destructive' 
             });
-            navigate('/signin');
+            // Redirect to sign-in page with email prompt
+            // Store the callback URL so we can retry after getting email
+            window.localStorage.setItem('pendingEmailLink', window.location.href);
+            navigate('/signin?emailLink=true');
             return;
           }
 
           try {
             console.log('🔐 Attempting to sign in with email link...');
+            console.log('📧 Using email:', email);
+            console.log('🔗 Using URL:', window.location.href);
+            
             // Sign in with email link (automatically verifies email and signs user in)
+            // The email MUST match exactly what was used in sendSignInLinkToEmail
             const result = await signInWithEmailLink(auth, email, window.location.href);
             console.log('✅ Sign-in successful!', result.user.email);
             
@@ -76,6 +75,7 @@ const AuthCallback = () => {
             // Mark that user signed in via email link (email is automatically verified)
             window.localStorage.setItem('signedInViaEmailLink', 'true');
             window.localStorage.removeItem('emailForSignIn');
+            window.localStorage.removeItem('pendingEmailLink'); // Clear any pending link
             
             toast({ 
               title: 'Signed in successfully!', 
@@ -89,9 +89,26 @@ const AuthCallback = () => {
             console.error('❌ Sign-in with email link error:', err);
             console.error('Error code:', err.code);
             console.error('Error message:', err.message);
+            console.error('Email used:', email);
+            console.error('URL used:', window.location.href);
+            
+            // If email mismatch, the email in localStorage doesn't match the link
+            if (err.code === 'auth/invalid-email' || err.message?.includes('does not match')) {
+              console.log('🔄 Email mismatch - localStorage email does not match link email');
+              toast({ 
+                title: 'Email mismatch', 
+                description: 'The email in this link doesn\'t match. Please enter the email address you used to sign up.', 
+                variant: 'destructive' 
+              });
+              // Store the callback URL and redirect to sign-in to get correct email
+              window.localStorage.setItem('pendingEmailLink', window.location.href);
+              navigate('/signin?emailLink=true');
+              return;
+            }
+            
             toast({ 
               title: 'Sign-in failed', 
-              description: err.message || 'Unable to sign in. Please try again.', 
+              description: err.message || 'Unable to sign in. Please try signing up again or use the sign-in page.', 
               variant: 'destructive' 
             });
             navigate('/signin');
@@ -117,8 +134,8 @@ const AuthCallback = () => {
                 description: 'Your email has been successfully verified. Welcome!' 
               });
               navigate('/profile');
-              return;
-            }
+            return;
+          }
             
             // If user is not signed in, we can't automatically sign them in without password
             // But we can redirect them to sign in with a pre-filled email

@@ -1457,15 +1457,15 @@ const Landing = () => {
             </button>
           </Link>
           <Link to="/enquiries" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2 sm:py-2 px-3 sm:px-4 rounded-lg sm:rounded-lg border-2 border-gray-800 hover:border-gray-800 flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
+            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-2 border-gray-800 hover:border-gray-800 flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
+              <span className="text-xs sm:text-base">Show All Enquiries</span>
               <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
-              <span className="text-[10px] sm:text-base">Show All Enquiries</span>
             </button>
             </Link>
             <div className="w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
               <div className="flex gap-2 sm:gap-2">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
-                  <Search className="absolute left-2 sm:left-5 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-5 sm:w-5 text-gray-400" />
+                  <Search className="absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -1482,14 +1482,21 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full px-2 sm:px-5 py-2.5 sm:py-4 pl-8 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-2xl focus:border-blue-500 focus:ring-2 sm:focus:ring-4 focus:ring-blue-100 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-2xl focus:border-blue-500 focus:ring-2 sm:focus:ring-4 focus:ring-blue-100 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    style={{ 
+                      fontSize: '16px',
+                      lineHeight: '1.5',
+                      paddingTop: '0.75rem',
+                      paddingBottom: '0.75rem',
+                      textAlign: searchTerm ? 'left' : 'center'
+                    }}
                   />
                   
                 </div>
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold py-2.5 sm:py-2 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[40px] sm:min-w-[52px]"
+                className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px]"
               >
                 {isSearching ? (
                   <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -1809,7 +1816,7 @@ const Landing = () => {
               </div>
 
               <div className="max-w-7xl mx-auto relative">
-                {/* Section Header */}
+              {/* Section Header */}
                 <div className="mb-8 sm:mb-14 lg:mb-16">
                   <div className="text-center mb-2 sm:mb-4">
                     <span className="inline-block text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider px-4 py-1.5 bg-gray-100 rounded-full">
@@ -1817,66 +1824,66 @@ const Landing = () => {
                     </span>
                   </div>
                   <h2 className="text-center text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-4">
-                    Popular Categories
-                  </h2>
+                  Popular Categories
+                </h2>
                   <div className="w-full flex justify-center">
                     <p className="text-xs sm:text-base lg:text-lg text-gray-600 w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
                       Find what you need across diverse categories
-                    </p>
+                </p>
                   </div>
-                </div>
+              </div>
 
                 {/* Categories Single Row - Professional Circles */}
                 <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
-                  {categories.map((category, index) => {
-                    const IconComponent = category.icon;
-                    return (
-                      <div
-                        key={index}
+                {categories.map((category, index) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <div
+                      key={index}
                         className="group flex justify-center items-center animate-slide-up"
                         style={{ animationDelay: `${1.4 + index * 0.1}s` }}
-                      >
+                    >
                         <div className="relative">
                           {/* Glow Effect on Hover */}
                           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/20 group-hover:to-purple-400/20 rounded-full blur-xl transition-all duration-500 scale-0 group-hover:scale-150"></div>
                           
                           {/* Circle Container */}
-                          <div
+                      <div
                             className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 hover:scale-110 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
-                          >
+                      >
                             {/* Shine Effect */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             
-                            {/* Content - Perfectly Centered */}
+                        {/* Content - Perfectly Centered */}
                             <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full p-4 sm:p-4">
-                              {/* Icon Container */}
+                          {/* Icon Container */}
                               <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-white/10 group-hover:scale-110 transition-all duration-500 flex-shrink-0 shadow-lg">
                                 <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-white group-hover:text-blue-100 transition-colors duration-300" />
-                              </div>
-                              
+                          </div>
+                          
                               {/* Category Name - Well Arranged */}
                               <div className="w-full flex flex-row sm:flex-col items-center justify-center gap-0.5 sm:gap-0.5">
                                 <h4 className="text-[9px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
-                                  {category.name}
-                                </h4>
+                                {category.name}
+                              </h4>
                               </div>
-                            </div>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                {/* View All CTA */}
+              {/* View All CTA */}
                 <div className="text-center">
-                  <Link
-                    to="/enquiries"
+                <Link
+                  to="/enquiries"
                     className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-gray-400/20 hover:scale-105 active:scale-100 border border-gray-700/50"
-                  >
-                    <span className="text-sm sm:text-base">Explore All Categories</span>
+                >
+                  <span className="text-sm sm:text-base">Explore All Categories</span>
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                </Link>
                 </div>
               </div>
             </div>

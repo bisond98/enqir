@@ -67,14 +67,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         
         // Update user payment plan
         await updateUserPaymentPlan(userId, selectedPlan.id, paymentRecordId, enquiryId);
-        
-        setPaymentStep('success');
-        
-        // Call success callback after a short delay
-        setTimeout(() => {
-          onPaymentSuccess(selectedPlan.id, selectedPlan.price);
-          resetModal();
-        }, 1500);
+      
+      setPaymentStep('success');
+      
+      // Call success callback after a short delay
+      setTimeout(() => {
+        onPaymentSuccess(selectedPlan.id, selectedPlan.price);
+        resetModal();
+      }, 1500);
       } else {
         throw new Error(result.error || 'Payment failed');
       }

@@ -87,19 +87,19 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
               <div className="space-y-1.5 sm:space-2 text-[11px] sm:text-sm text-muted-foreground py-1 sm:py-2 leading-relaxed">
                 <p>📧 Check your inbox and spam folder</p>
                 <p>🔗 Click the verification link in the email</p>
-              </div>
+            </div>
 
               {/* Buttons */}
               <div className="space-y-2 sm:space-3 pt-2.5 sm:pt-3">
-                <Button 
-                  onClick={resendConfirmation}
+              <Button 
+                onClick={resendConfirmation}
                   className="w-full h-9 sm:h-11 text-[11px] sm:text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
-                >
-                  Resend Verification Email
-                </Button>
-                
-                <Button 
-                  variant="outline"
+              >
+                Resend Verification Email
+              </Button>
+              
+              <Button 
+                variant="outline"
                   className="w-full h-9 sm:h-11 text-[11px] sm:text-sm"
                   onClick={async () => {
                     // Reload user to check verification status
@@ -137,10 +137,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
                       }
                     }
                   }}
-                >
-                  I've Verified My Email
-                </Button>
-              </div>
+              >
+                I've Verified My Email
+              </Button>
+            </div>
             </div>
           </CardContent>
         </Card>
