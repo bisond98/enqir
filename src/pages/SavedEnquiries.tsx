@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
@@ -81,6 +81,33 @@ const SavedEnquiries = () => {
     setupSavedEnquiriesListener();
   }, [user?.uid]);
 
+  // Sort saved enquiries: live first, then expired
+  const sortedSavedEnquiries = useMemo(() => {
+    return [...savedEnquiries].sort((a, b) => {
+      const now = new Date();
+      
+      // Check if expired
+      const aExpired = a.deadline && (() => {
+        const deadlineDate = a.deadline.toDate ? a.deadline.toDate() : new Date(a.deadline);
+        return deadlineDate < now;
+      })();
+      
+      const bExpired = b.deadline && (() => {
+        const deadlineDate = b.deadline.toDate ? b.deadline.toDate() : new Date(b.deadline);
+        return deadlineDate < now;
+      })();
+      
+      // Live enquiries first
+      if (aExpired && !bExpired) return 1;
+      if (!aExpired && bExpired) return -1;
+      
+      // If both are same status, sort by createdAt (newest first)
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [savedEnquiries]);
+
   if (loading) {
     return <LoadingAnimation message="Loading saved enquiries" />;
   }
@@ -137,7 +164,7 @@ const SavedEnquiries = () => {
             </Card>
           ) : (
             <div className="space-y-3 sm:space-y-6">
-              {savedEnquiries.map((enquiry) => {
+              {sortedSavedEnquiries.map((enquiry) => {
                 const isExpired = enquiry.deadline && (() => {
                   const now = new Date();
                   const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);

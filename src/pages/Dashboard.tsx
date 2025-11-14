@@ -1445,45 +1445,66 @@ const Dashboard = () => {
                   <p className="text-slate-500 text-center py-3 text-xs sm:text-sm">No saved enquiries yet</p>
               ) : (
                 <div className="space-y-2 sm:space-y-3">
-                  {savedEnquiries.slice(0, 3).map((enquiry) => (
-                    <div key={enquiry.id} className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-2 sm:p-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs sm:text-base font-semibold text-gray-900 mb-1 line-clamp-1">{enquiry.title}</h4>
-                          <p className="text-[10px] sm:text-sm text-gray-600 mb-2 line-clamp-2">{enquiry.description}</p>
-                          <div className="flex items-center gap-3 text-[10px] sm:text-sm text-gray-500">
-                            <Badge variant="secondary" className="text-[9px] sm:text-xs">{enquiry.category}</Badge>
-                            <span>₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                            {enquiry.location && <span>• {enquiry.location}</span>}
+                  {savedEnquiries.slice(0, 3).map((enquiry) => {
+                    const now = new Date();
+                    const isExpired = enquiry.deadline && (() => {
+                      const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                      return deadlineDate < now;
+                    })();
+                    
+                    return (
+                      <div 
+                        key={enquiry.id} 
+                        className={`bg-white rounded-2xl sm:rounded-3xl border-2 shadow-sm hover:shadow-md transition-all duration-200 p-2 sm:p-4 ${
+                          isExpired 
+                            ? 'opacity-60 grayscale border-gray-300' 
+                            : 'border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <h4 className={`text-xs sm:text-base font-semibold line-clamp-1 ${
+                                isExpired ? 'text-gray-500' : 'text-gray-900'
+                              }`}>
+                                {enquiry.title}
+                              </h4>
+                              {isExpired && (
+                                <Badge className="text-[9px] sm:text-[10px] bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5">
+                                  Expired
+                                </Badge>
+                              )}
+                            </div>
+                            <p className={`text-[10px] sm:text-sm mb-2 line-clamp-2 ${
+                              isExpired ? 'text-gray-400' : 'text-gray-600'
+                            }`}>
+                              {enquiry.description}
+                            </p>
+                            <div className="flex items-center gap-3 text-[10px] sm:text-sm text-gray-500">
+                              <Badge variant="secondary" className="text-[9px] sm:text-xs">{enquiry.category}</Badge>
+                              <span>₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span>• {enquiry.location}</span>}
+                            </div>
                           </div>
                         </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (!isExpired) {
+                              navigate(`/enquiry/${enquiry.id}`);
+                            }
+                          }}
+                          disabled={isExpired}
+                          className={`w-full mt-2 text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 ${
+                            isExpired ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        >
+                          View Details
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const now = new Date();
-                          const isExpired = enquiry.deadline && (() => {
-                            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                            return deadlineDate < now;
-                          })();
-                          if (!isExpired) {
-                            navigate(`/enquiry/${enquiry.id}`);
-                          }
-                        }}
-                        disabled={(() => {
-                          const now = new Date();
-                          return enquiry.deadline && (() => {
-                            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                            return deadlineDate < now;
-                          })();
-                        })()}
-                        className="w-full mt-2 text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
               </div>
