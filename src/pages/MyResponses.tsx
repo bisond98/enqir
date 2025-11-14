@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +53,7 @@ const MyResponses = () => {
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [enquiries, setEnquiries] = useState<{ [key: string]: Enquiry }>({});
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -76,7 +77,7 @@ const MyResponses = () => {
         submissionData.userProfileVerified = isProfileVerified;
         submissionsData.push(submissionData);
       });
-      // Sort by createdAt in JavaScript
+      // Sort by createdAt in JavaScript (will be re-sorted after enquiries are loaded)
       submissionsData.sort((a, b) => {
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
         const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
@@ -196,6 +197,23 @@ const MyResponses = () => {
     return deadline < now;
   };
 
+  // Sort responses: live first, then expired
+  const sortedSubmissions = useMemo(() => {
+    return [...sellerSubmissions].sort((a, b) => {
+      const aExpired = isEnquiryExpired(a.enquiryId);
+      const bExpired = isEnquiryExpired(b.enquiryId);
+      
+      // Live enquiries first
+      if (aExpired && !bExpired) return 1;
+      if (!aExpired && bExpired) return -1;
+      
+      // If both are same status, sort by createdAt (newest first)
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [sellerSubmissions, enquiries]);
+
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Recently';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -241,46 +259,26 @@ const MyResponses = () => {
           {/* Header with gray background */}
           <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
             {/* Header Section - Top 10% with gray background */}
-            <div className="bg-gray-800 px-6 py-6">
-              <div className="flex items-start justify-between mb-4">
+            <div className="bg-gray-800 px-4 sm:px-6 py-5 sm:py-6">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <Button
                   variant="ghost"
                   onClick={() => window.history.back()}
-                  className="p-2 hover:bg-gray-700 rounded-lg text-white"
+                  className="p-2 hover:bg-gray-700 rounded-lg text-white flex-shrink-0"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div className="text-center flex-1">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight whitespace-nowrap">
+                <div className="text-center flex-1 px-2 sm:px-4 min-w-0">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight mb-2 sm:mb-3">
                     Your Responses
                   </h1>
+                  <p className="text-gray-300 text-[11px] sm:text-xs md:text-sm font-medium max-w-2xl mx-auto leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                    Track your submissions and status
+                  </p>
                 </div>
-                <div className="w-10"></div> {/* Spacer for balance */}
+                <div className="w-10 flex-shrink-0"></div> {/* Spacer for balance */}
               </div>
-              <p className="text-gray-300 text-xs lg:text-sm max-w-2xl mx-auto leading-relaxed text-center">
-                Track your seller submissions and their status
-              </p>
             </div>
-          </div>
-
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-gray-700 to-gray-800">
-              <div className="text-xl font-bold text-white mb-1">{sellerSubmissions.length}</div>
-              <p className="text-xs text-gray-100 font-medium">Total Responses</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100">
-              <div className="text-xl font-bold text-emerald-600 mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</div>
-              <p className="text-xs text-emerald-700 font-medium">Approved</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
-              <div className="text-xl font-bold text-amber-600 mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</div>
-              <p className="text-xs text-amber-700 font-medium">Under Review</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100">
-              <div className="text-xl font-bold text-red-600 mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</div>
-              <p className="text-xs text-red-700 font-medium">Rejected</p>
-            </Card>
           </div>
 
           {/* Responses List */}
@@ -301,152 +299,282 @@ const MyResponses = () => {
               </Link>
             </Card>
           ) : (
-            <div className="space-y-6">
-              {sellerSubmissions.map((submission) => {
+            <div className="space-y-4 sm:space-y-6">
+              {(showAll ? sortedSubmissions : sortedSubmissions.slice(0, 7)).map((submission) => {
                 const enquiry = enquiries[submission.enquiryId];
                 const isExpired = isEnquiryExpired(submission.enquiryId);
                 return (
-                  <Card key={submission.id} className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired ? 'opacity-60' : ''}`}>
+                  <Card key={submission.id} className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired ? 'opacity-60 grayscale pointer-events-none' : ''}`}>
                     {/* Card Header - Top 10% with gray background (or red if expired) */}
-                    <div className={`px-6 py-4 ${isExpired ? 'bg-red-900' : 'bg-gray-800'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          {isExpired ? <AlertTriangle className="h-4 w-4 text-red-300" /> : getStatusIcon(submission.status)}
-                          <h3 className="text-lg font-semibold text-white truncate">
+                    <div className={`px-4 sm:px-6 py-3 sm:py-4 ${isExpired ? 'bg-red-900' : 'bg-gray-800'}`}>
+                      <div className="flex items-center justify-between gap-2 sm:gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                          {isExpired ? <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
+                          <h3 className="text-base sm:text-lg font-semibold text-white truncate">
                             {submission.title}
                           </h3>
                           {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                            <div className={`flex items-center justify-center w-4 h-4 rounded-full flex-shrink-0 shadow-sm ${
+                            <div className={`flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                               isExpired ? 'bg-gray-400' : 'bg-blue-500'
                             }`}>
-                              <CheckCircle className="h-2.5 w-2.5 text-white" />
+                              <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                           {isExpired && (
-                            <Badge className="text-xs bg-red-100 text-red-800 border-red-300">
+                            <Badge className="text-[10px] sm:text-xs bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5">
                               Expired
                             </Badge>
                           )}
-                          {getStatusBadge(submission.status)}
+                          {submission.status === 'approved' ? (
+                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full flex-shrink-0"></div>
+                          ) : (
+                            getStatusBadge(submission.status)
+                          )}
                         </div>
                       </div>
                       <div className="mt-2">
-                        <span className={`text-xs sm:text-sm ${isExpired ? 'text-red-200' : 'text-gray-300'}`}>
+                        <span className={`text-[11px] sm:text-sm ${isExpired ? 'text-red-200' : 'text-gray-300'}`}>
                           {getStatusMessage(submission)}
                         </span>
                       </div>
                     </div>
                     
                     {/* Card Content - Rest with white background */}
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-5">
 
-                      {/* Response Details */}
-                      <div className="mb-4">
-                        {/* SIMPLE: Show "Verified" for any type of verification */}
-                        {(submission.userProfileVerified || submission.isIdentityVerified) && (
-                          <div className="mb-3">
-                            <Badge className="text-xs bg-green-100 text-green-800 border-green-300">
-                              <Shield className="h-3 w-3 mr-1" />
-                              Trusted User
-                            </Badge>
-                          </div>
-                        )}
-                        <p className="text-slate-600 mb-3 line-clamp-2">{submission.message}</p>
-                        
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                          <span className="flex items-center space-x-1">
-                            <ImageIcon className="h-4 w-4" />
-                            <span>{submission.imageCount} images</span>
-                          </span>
-                          <span className="flex items-center space-x-1">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>₹{submission.price}</span>
-                          </span>
-                          {submission.govIdUrl && (
-                            <span className="flex items-center space-x-1">
-                              <Shield className="h-4 w-4" />
-                              <span>ID Uploaded</span>
-                            </span>
+                      {/* Response Number and Status */}
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                          <h4 className="text-xs sm:text-sm md:text-base font-semibold text-slate-900">
+                            Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
+                          </h4>
+                          {submission.status === 'approved' ? (
+                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full flex-shrink-0"></div>
+                          ) : (
+                            getStatusBadge(submission.status)
+                          )}
+                          {(submission.userProfileVerified || submission.isIdentityVerified) && (
+                            <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full flex-shrink-0 shadow-sm bg-blue-500">
+                              <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 text-white" />
+                            </div>
                           )}
                         </div>
                       </div>
 
+                      {/* Response Message */}
+                      <div>
+                        <p className="text-[11px] sm:text-xs md:text-sm text-slate-700 leading-relaxed mb-2 sm:mb-3 md:mb-4">
+                          {submission.message}
+                        </p>
+                        
+                        {/* Response Details Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+                          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+                            <ImageIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
+                            <span className="text-[10px] sm:text-xs md:text-sm text-slate-600">{submission.imageCount || 0} images</span>
+                          </div>
+                          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
+                            <span className="text-[10px] sm:text-xs md:text-sm font-medium text-slate-600">
+                              {submission.price?.toString().startsWith('₹') ? submission.price : `₹${submission.price}`}
+                            </span>
+                          </div>
+                          {submission.govIdUrl && (
+                            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+                              <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
+                              <span className="text-[10px] sm:text-xs md:text-sm text-slate-600">ID Uploaded</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Additional Notes */}
+                      {submission.notes && (
+                        <div className="p-2.5 sm:p-3 md:p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                          <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-slate-800 mb-1 sm:mb-1.5 md:mb-2">Additional Notes:</h4>
+                          <p className="text-[11px] sm:text-xs md:text-sm text-slate-700 leading-relaxed">{submission.notes}</p>
+                        </div>
+                      )}
+
                       {/* Enquiry Context */}
                       {enquiry && (
-                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-blue-800 mb-2">Responding to:</h4>
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div className="flex-1">
-                              <p className="text-blue-900 font-medium text-sm sm:text-base">{enquiry.title}</p>
-                              <p className="text-blue-700 text-xs sm:text-sm">Budget: {formatBudget(enquiry.budget)} • {enquiry.category}</p>
+                        <div className={`p-2.5 sm:p-3 md:p-4 border rounded-lg ${isExpired ? 'bg-gray-50 border-gray-300 opacity-75' : 'bg-blue-50 border-blue-200'}`}>
+                          <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-blue-800 mb-1.5 sm:mb-2">Responding to:</h4>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-medium text-xs sm:text-sm md:text-base mb-0.5 sm:mb-1 ${isExpired ? 'text-gray-600' : 'text-blue-900'}`}>{enquiry.title}</p>
+                              <p className={`text-[10px] sm:text-xs md:text-sm ${isExpired ? 'text-gray-500' : 'text-blue-700'}`}>
+                                Budget: {formatBudget(enquiry.budget)} • {enquiry.category}
+                              </p>
                             </div>
-                            <Link to={`/enquiry/${enquiry.id}`}>
-                              <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm">
-                                <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                                View Enquiry
-                              </Button>
-                            </Link>
+                            {!isExpired && (
+                              <Link 
+                                to={`/enquiry/${enquiry.id}`}
+                                onClick={(e) => {
+                                  if (isExpired) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                                className="flex-shrink-0"
+                              >
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  disabled={isExpired}
+                                  className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm w-full sm:w-auto"
+                                  onClick={(e) => {
+                                    if (isExpired) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                >
+                                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                                  View Enquiry
+                                </Button>
+                              </Link>
+                            )}
                           </div>
                         </div>
                       )}
 
-                      {/* Additional Notes */}
-                      {submission.notes && (
-                        <div className="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                          <h4 className="text-sm font-semibold text-slate-800 mb-2">Additional Notes:</h4>
-                          <p className="text-slate-700 text-sm">{submission.notes}</p>
-                        </div>
-                      )}
-
                       {/* Timestamps */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 text-xs text-slate-500 mb-4">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[10px] sm:text-[11px] md:text-xs text-slate-500 pt-2 border-t border-slate-200">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
                           <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
                         </div>
                         {submission.updatedAt && submission.updatedAt !== submission.createdAt && (
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                          <div className="flex items-center gap-1.5 sm:gap-2">
+                            <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-emerald-500 rounded-full flex-shrink-0"></span>
                             <span className="text-slate-600">Updated: {formatDate(submission.updatedAt)}</span>
                           </div>
                         )}
                       </div>
 
                       {/* Status-specific Actions */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex space-x-3">
-                          {submission.status === 'approved' && (
-                            <Link to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}>
-                              <Button variant="outline" size="sm" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
-                                <MessageSquare className="h-4 w-4 mr-2" />
-                                Chat Available
-                              </Button>
-                            </Link>
-                          )}
-                          {submission.status === 'rejected' && (
-                            <Link to="/enquiries">
-                              <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                                <Rocket className="h-4 w-4 mr-2" />
-                                Submit New Response
-                              </Button>
-                            </Link>
-                          )}
-                        </div>
-                        
-                        <div className="text-sm text-slate-500">
+                      {!isExpired && (
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-slate-200">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
+                            {submission.status === 'approved' && (
+                              <Link 
+                                to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}
+                                className="flex-1 sm:flex-initial"
+                                onClick={(e) => {
+                                  if (isExpired) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  disabled={isExpired}
+                                  className="w-full sm:w-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs sm:text-sm h-9 sm:h-10"
+                                  onClick={(e) => {
+                                    if (isExpired) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                >
+                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                                  Chat Available
+                                </Button>
+                              </Link>
+                            )}
+                            {submission.status === 'rejected' && (
+                              <Link 
+                                to="/enquiries"
+                                className="flex-1 sm:flex-initial"
+                                onClick={(e) => {
+                                  if (isExpired) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                              >
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  disabled={isExpired}
+                                  className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm h-9 sm:h-10"
+                                  onClick={(e) => {
+                                    if (isExpired) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                >
+                                  <Rocket className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                                  Submit New Response
+                                </Button>
+                              </Link>
+                            )}
+                          </div>
+                          
                           {submission.buyerViewed && (
-                            <span className="text-emerald-600">✓ Buyer has viewed</span>
+                            <div className="text-xs sm:text-sm text-emerald-600 flex items-center gap-1.5">
+                              <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              <span>Buyer has viewed</span>
+                            </div>
                           )}
                         </div>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
                 );
               })}
+              {sortedSubmissions.length > 7 && (
+                <div className="flex justify-center pt-4">
+                  {!showAll ? (
+                    <Button
+                      onClick={() => setShowAll(true)}
+                      variant="outline"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
+                    >
+                      View More ({sortedSubmissions.length - 7} more)
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setShowAll(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      variant="outline"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
+                    >
+                      View Less
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           )}
+
+          {/* Stats Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
+            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-gray-700 to-gray-800">
+              <div className="text-xl font-bold text-white mb-1">{sellerSubmissions.length}</div>
+              <p className="text-xs text-gray-100 font-medium">Total Responses</p>
+            </Card>
+            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100">
+              <div className="text-xl font-bold text-emerald-600 mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</div>
+              <p className="text-xs text-emerald-700 font-medium">Approved</p>
+            </Card>
+            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
+              <div className="text-xl font-bold text-amber-600 mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</div>
+              <p className="text-xs text-amber-700 font-medium">Under Review</p>
+            </Card>
+            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100">
+              <div className="text-xl font-bold text-red-600 mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</div>
+              <p className="text-xs text-red-700 font-medium">Rejected</p>
+            </Card>
+          </div>
         </div>
       </div>
     </Layout>

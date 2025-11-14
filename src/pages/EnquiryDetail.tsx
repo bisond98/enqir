@@ -395,13 +395,13 @@ const EnquiryDetail = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-slate-50">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-6">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
           {/* Header */}
-          <div className="mb-3 sm:mb-6">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
-              className="mb-2 sm:mb-3 p-1.5 sm:p-2 hover:bg-slate-100 rounded-lg h-8 w-8 sm:h-9 sm:w-9"
+              className="mb-3 sm:mb-4 p-2 hover:bg-slate-100 rounded-lg h-9 w-9 sm:h-10 sm:w-10 min-h-[44px] min-w-[44px]"
             >
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
@@ -409,102 +409,102 @@ const EnquiryDetail = () => {
             {/* Enquiry Card - Matching Dashboard Style */}
             <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden">
               {/* Card Header - Gray Background */}
-              <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                   {getStatusBadge(enquiry.status)}
                   {(enquiry.userProfileVerified || enquiry.isIdentityVerified) && (
-                    <div title="Verified Enquiry">
-                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
+                    <div title="Verified Enquiry" className="flex-shrink-0">
+                      <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-400" />
                     </div>
                   )}
                   {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px]">
+                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs">
                       <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
                       Premium
                     </Badge>
                   )}
                   {enquiry.isUrgent && (
-                    <Badge className="bg-red-100 text-red-800 border-red-200 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px]">
+                    <Badge className="bg-red-100 text-red-800 border-red-200 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs">
                       <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
                       Urgent
                     </Badge>
                   )}
                 </div>
-                <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-white mb-1.5 sm:mb-2">
+                <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white leading-tight">
                   {enquiry.title}
                 </h1>
               </div>
               
               {/* Card Content - White Background */}
-              <CardContent className="p-3 sm:p-4 lg:p-6">
+              <CardContent className="p-4 sm:p-5 lg:p-6">
                 <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h3 className="text-xs sm:text-sm font-medium text-slate-700 mb-1.5 sm:mb-2">Description</h3>
-                    <p className="text-[11px] sm:text-sm text-slate-600 leading-relaxed">{enquiry.description}</p>
+                    <h3 className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 sm:mb-3">Description</h3>
+                    <p className="text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed">{enquiry.description}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Enquiry Details */}
               <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl">
                 {/* Card Header - Gray Background */}
-                <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                  <h2 className="text-xs sm:text-sm font-semibold text-white flex items-center gap-2">
-                    <Tag className="h-3 w-3 sm:h-4 sm:w-4" />
+                <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+                  <h2 className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-center gap-2">
+                    <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     Enquiry Details
                   </h2>
                 </div>
                 
                 {/* Card Content - White Background */}
-                <CardContent className="p-3 sm:p-4 lg:p-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                    <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
-                      <div className="flex items-center gap-2">
+                <CardContent className="p-4 sm:p-5 lg:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
                         <IndianRupee className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs text-gray-600 mb-0.5">Budget</p>
-                          <p className="text-sm sm:text-base font-semibold text-green-600">{formatBudget(enquiry.budget)}</p>
+                          <p className="text-[11px] sm:text-xs text-gray-600 mb-1">Budget</p>
+                          <p className="text-sm sm:text-base md:text-lg font-semibold text-green-600">{formatBudget(enquiry.budget)}</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
-                      <div className="flex items-center gap-2">
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
                         <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs text-gray-600 mb-0.5">Location</p>
-                          <p className="text-xs sm:text-sm font-semibold text-gray-800 truncate">{enquiry.location}</p>
+                          <p className="text-[11px] sm:text-xs text-gray-600 mb-1">Location</p>
+                          <p className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 truncate">{enquiry.location}</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
-                      <div className="flex items-center gap-2">
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
                         <Tag className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs text-gray-600 mb-0.5">Category</p>
-                          <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 bg-gray-100 text-gray-700">
+                          <p className="text-[11px] sm:text-xs text-gray-600 mb-1">Category</p>
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-gray-100 text-gray-700">
                             {enquiry.category}
                           </Badge>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
-                      <div className="flex items-center gap-2">
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
                         <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] sm:text-xs text-gray-600 mb-0.5">Deadline</p>
-                          <div className="text-xs sm:text-sm font-semibold text-gray-800">
-                            {enquiry.deadline && (enquiry.deadline instanceof Date || enquiry.deadline?.toDate || typeof enquiry.deadline === 'string' || typeof enquiry.deadline === 'number') ? (
+                          <p className="text-[11px] sm:text-xs text-gray-600 mb-1">Deadline</p>
+                          <div className="text-xs sm:text-sm md:text-base font-semibold text-gray-800">
+                            {enquiry.deadline ? (
                               <CountdownTimer deadline={enquiry.deadline} />
                             ) : (
-                              <span className="text-gray-500 text-[10px] sm:text-xs">No deadline</span>
+                              <span className="text-gray-500 text-[11px] sm:text-xs">No deadline</span>
                             )}
                           </div>
                         </div>
@@ -513,12 +513,12 @@ const EnquiryDetail = () => {
                   </div>
 
                   {enquiry.notes && (
-                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
-                      <p className="text-[10px] sm:text-xs font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
-                        <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-gray-200">
+                      <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 sm:mb-3 flex items-center gap-2">
+                        <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         Additional Notes
                       </p>
-                      <p className="text-[11px] sm:text-sm text-slate-600 leading-relaxed">{enquiry.notes}</p>
+                      <p className="text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed">{enquiry.notes}</p>
                     </div>
                   )}
                 </CardContent>
@@ -562,33 +562,33 @@ const EnquiryDetail = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-4 sm:space-y-6">
               {/* Action Buttons */}
               <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl">
                 {/* Card Header - Gray Background */}
-                <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                  <h3 className="text-xs sm:text-sm font-semibold text-white">
+                <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+                  <h3 className="text-xs sm:text-sm md:text-base font-semibold text-white">
                     {user && enquiry.userId === user.uid ? 'Your Enquiry' : 'Ready to Respond?'}
                   </h3>
                 </div>
                 
                 {/* Card Content - White Background */}
-                <CardContent className="p-3 sm:p-4">
-                  <div className="space-y-3">
+                <CardContent className="p-4 sm:p-5">
+                  <div className="space-y-4">
                     {user && enquiry.userId === user.uid ? (
-                      <div className="space-y-2">
-                        <p className="text-[10px] sm:text-xs text-gray-600 mb-3">View responses and manage from dashboard</p>
+                      <div className="space-y-3">
+                        <p className="text-[11px] sm:text-xs text-gray-600 mb-3">View responses and manage from dashboard</p>
                         <Button
                           disabled
-                          className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-gray-100 text-gray-500 cursor-not-allowed"
+                          className="w-full h-10 sm:h-11 text-xs sm:text-sm bg-gray-100 text-gray-500 cursor-not-allowed min-h-[44px]"
                         >
-                          <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
+                          <MessageSquare className="h-4 w-4 mr-2" />
                           Your Enquiry
                         </Button>
                         <Button
                           onClick={() => navigate('/dashboard')}
                           variant="outline"
-                          className="w-full h-8 sm:h-9 text-[10px] sm:text-xs border-gray-300"
+                          className="w-full h-10 sm:h-11 text-xs sm:text-sm border-gray-300 min-h-[44px]"
                         >
                           View Dashboard
                         </Button>
@@ -605,35 +605,35 @@ const EnquiryDetail = () => {
                           <Button
                             onClick={handleRespond}
                             disabled={responding || enquiry.status !== 'live' || isExpired}
-                            className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-gray-800 hover:bg-gray-900 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full h-10 sm:h-11 text-xs sm:text-sm bg-gray-800 hover:bg-gray-900 text-white disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                           >
-                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
+                            <MessageSquare className="h-4 w-4 mr-2" />
                             {responding ? 'Opening...' : isExpired ? 'Enquiry Expired' : 'Respond to Enquiry'}
                           </Button>
                         );
                       })()
                     )}
                     
-                    <div className="flex gap-2 pt-2 border-t border-gray-200">
+                    <div className="flex gap-2.5 sm:gap-3 pt-3 border-t border-gray-200">
                       <Button
                         variant="outline"
                         onClick={handleSave}
-                        className={`flex-1 h-7 sm:h-8 text-[9px] sm:text-[10px] border-gray-300 ${
+                        className={`flex-1 h-10 sm:h-11 text-xs sm:text-sm border-gray-300 min-h-[44px] ${
                           savedEnquiries.includes(enquiry.id) 
                             ? 'bg-blue-50 text-blue-600 border-blue-200' 
                             : ''
                         }`}
                       >
-                        <Bookmark className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                        <Bookmark className={`h-4 w-4 mr-1.5 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
                         {savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}
                       </Button>
                       
                       <Button 
                         variant="outline" 
-                        className="flex-1 h-7 sm:h-8 text-[9px] sm:text-[10px] border-gray-300"
+                        className="flex-1 h-10 sm:h-11 text-xs sm:text-sm border-gray-300 min-h-[44px]"
                         onClick={handleShare}
                       >
-                        <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                        <Share2 className="h-4 w-4 mr-1.5" />
                         Share
                       </Button>
                     </div>
@@ -645,36 +645,36 @@ const EnquiryDetail = () => {
               {userProfile && (
                 <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl">
                   {/* Card Header - Gray Background */}
-                  <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                    <h3 className="text-xs sm:text-sm font-semibold text-white flex items-center gap-1.5">
-                      <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+                    <h3 className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       Posted by
                     </h3>
                   </div>
                   
                   {/* Card Content - White Background */}
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-800 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base flex-shrink-0">
                         {userProfile.displayName?.charAt(0) || 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-xs sm:text-sm text-gray-900 truncate">{userProfile.displayName || 'User'}</p>
+                        <p className="font-semibold text-sm sm:text-base text-gray-900 truncate mb-1">{userProfile.displayName || 'User'}</p>
                         {userProfile.isVerified ? (
-                          <div className="flex items-center gap-1 text-blue-600 text-[9px] sm:text-[10px] font-medium">
-                            <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          <div className="flex items-center gap-1.5 text-blue-600 text-[11px] sm:text-xs font-medium">
+                            <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             Trust Badge
                           </div>
                         ) : (
-                          <div className="text-gray-500 text-[9px] sm:text-[10px]">Regular User</div>
+                          <div className="text-gray-500 text-[11px] sm:text-xs">Regular User</div>
                         )}
                       </div>
                     </div>
                     {userProfile.location && (
-                      <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
-                        <div className="flex items-center gap-1.5 text-gray-700">
-                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-500 flex-shrink-0" />
-                          <span className="font-medium text-[10px] sm:text-xs truncate">{userProfile.location}</span>
+                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm truncate">{userProfile.location}</span>
                         </div>
                       </div>
                     )}
