@@ -281,6 +281,26 @@ const MyResponses = () => {
             </div>
           </div>
 
+          {/* Stats Summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <Card className="p-3 text-center border border-gray-200 shadow-lg bg-white">
+              <div className="text-xl font-bold text-gray-800 mb-1">{sellerSubmissions.length}</div>
+              <p className="text-xs text-gray-600 font-medium">Total Responses</p>
+            </Card>
+            <Card className="p-3 text-center border border-gray-200 shadow-lg bg-white">
+              <div className="text-xl font-bold text-emerald-600 mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</div>
+              <p className="text-xs text-gray-600 font-medium">Approved</p>
+            </Card>
+            <Card className="p-3 text-center border border-gray-200 shadow-lg bg-white">
+              <div className="text-xl font-bold text-amber-600 mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</div>
+              <p className="text-xs text-gray-600 font-medium">Under Review</p>
+            </Card>
+            <Card className="p-3 text-center border border-gray-200 shadow-lg bg-white">
+              <div className="text-xl font-bold text-red-600 mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</div>
+              <p className="text-xs text-gray-600 font-medium">Rejected</p>
+            </Card>
+          </div>
+
           {/* Responses List */}
           {sellerSubmissions.length === 0 ? (
             <Card className="p-12 text-center border-0 shadow-lg">
@@ -305,27 +325,25 @@ const MyResponses = () => {
                 const isExpired = isEnquiryExpired(submission.enquiryId);
                 return (
                   <Card key={submission.id} className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired ? 'opacity-60 grayscale pointer-events-none' : ''}`}>
-                    {/* Card Header - Top 10% with gray background (or red if expired) */}
-                    <div className={`px-4 sm:px-6 py-3 sm:py-4 ${isExpired ? 'bg-red-900' : 'bg-gray-800'}`}>
-                      <div className="flex items-center justify-between gap-2 sm:gap-3">
-                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                          {isExpired ? <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
-                          <h3 className="text-base sm:text-lg font-semibold text-white truncate">
-                            {submission.title}
+                    {/* Card Header - Compact gray background */}
+                    <div className={`bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired ? 'opacity-70' : ''}`}>
+                      <div className="flex items-center justify-between gap-1 sm:gap-2">
+                        <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
+                          {isExpired ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
+                          <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
+                            Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
                           </h3>
                           {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                            <div className={`flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
+                            <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
                               isExpired ? 'bg-gray-400' : 'bg-blue-500'
                             }`}>
-                              <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
+                              <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                           {isExpired && (
-                            <Badge className="text-[10px] sm:text-xs bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5">
-                              Expired
-                            </Badge>
+                            <Badge variant="outline" className="text-[8px] sm:text-xs text-gray-500 border border-gray-400 font-bold">Expired</Badge>
                           )}
                           {submission.status === 'approved' ? (
                             <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full flex-shrink-0"></div>
@@ -334,58 +352,39 @@ const MyResponses = () => {
                           )}
                         </div>
                       </div>
-                      <div className="mt-2">
-                        <span className={`text-[11px] sm:text-sm ${isExpired ? 'text-red-200' : 'text-gray-300'}`}>
+                      <div className="mt-1 sm:mt-2">
+                        <span className={`text-[9px] sm:text-xs font-bold opacity-95 ${isExpired ? 'text-red-200' : 'text-white'}`}>
                           {getStatusMessage(submission)}
                         </span>
                       </div>
                     </div>
                     
                     {/* Card Content - Rest with white background */}
-                    <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-5">
+                    <CardContent className="p-2 sm:p-4 space-y-2 sm:space-y-3">
 
-                      {/* Response Number and Status */}
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                          <h4 className="text-xs sm:text-sm md:text-base font-semibold text-slate-900">
-                            Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
-                          </h4>
-                          {submission.status === 'approved' ? (
-                            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full flex-shrink-0"></div>
-                          ) : (
-                            getStatusBadge(submission.status)
-                          )}
-                          {(submission.userProfileVerified || submission.isIdentityVerified) && (
-                            <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full flex-shrink-0 shadow-sm bg-blue-500">
-                              <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 text-white" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Response Message */}
-                      <div>
-                        <p className="text-[11px] sm:text-xs md:text-sm text-slate-700 leading-relaxed mb-2 sm:mb-3 md:mb-4">
-                          {submission.message}
-                        </p>
+                      {/* Response Information Group */}
+                      <div className="space-y-1.5 sm:space-y-2 pb-2 border-b border-gray-200">
+                        {/* Response Title */}
+                        <p className="text-[10px] sm:text-sm text-gray-900 leading-snug line-clamp-2 font-bold">{submission.title}</p>
                         
-                        {/* Response Details Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
-                          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                            <ImageIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
-                            <span className="text-[10px] sm:text-xs md:text-sm text-slate-600">{submission.imageCount || 0} images</span>
-                          </div>
-                          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
-                            <span className="text-[10px] sm:text-xs md:text-sm font-medium text-slate-600">
-                              {submission.price?.toString().startsWith('₹') ? submission.price : `₹${submission.price}`}
-                            </span>
-                          </div>
+                        {/* Response Message */}
+                        <p className="text-[10px] sm:text-sm text-gray-700 leading-snug line-clamp-2">{submission.message}</p>
+                        
+                        {/* Stats & Details */}
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-1">
+                          <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
+                            <ImageIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-600" />
+                            <span>{submission.imageCount || 0}</span>
+                          </span>
+                          <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
+                            <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-600" />
+                            <span>{submission.price?.toString().startsWith('₹') ? submission.price : `₹${submission.price}`}</span>
+                          </span>
                           {submission.govIdUrl && (
-                            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                              <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-slate-500 flex-shrink-0" />
-                              <span className="text-[10px] sm:text-xs md:text-sm text-slate-600">ID Uploaded</span>
-                            </div>
+                            <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
+                              <Shield className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-600" />
+                              <span>ID Verified</span>
+                            </span>
                           )}
                         </div>
                       </div>
@@ -398,46 +397,55 @@ const MyResponses = () => {
                         </div>
                       )}
 
-                      {/* Enquiry Context */}
+                      {/* Enquiry Context - Budget & Category Group */}
                       {enquiry && (
-                        <div className={`p-2.5 sm:p-3 md:p-4 border rounded-lg ${isExpired ? 'bg-gray-50 border-gray-300 opacity-75' : 'bg-blue-50 border-blue-200'}`}>
-                          <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-blue-800 mb-1.5 sm:mb-2">Responding to:</h4>
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-                            <div className="flex-1 min-w-0">
-                              <p className={`font-medium text-xs sm:text-sm md:text-base mb-0.5 sm:mb-1 ${isExpired ? 'text-gray-600' : 'text-blue-900'}`}>{enquiry.title}</p>
-                              <p className={`text-[10px] sm:text-xs md:text-sm ${isExpired ? 'text-gray-500' : 'text-blue-700'}`}>
-                                Budget: {formatBudget(enquiry.budget)} • {enquiry.category}
-                              </p>
+                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded border border-gray-200 shadow-sm">
+                          <div className="flex items-center space-x-1.5">
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                              <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
                             </div>
-                            {!isExpired && (
-                              <Link 
-                                to={`/enquiry/${enquiry.id}`}
-                                onClick={(e) => {
-                                  if (isExpired) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                  }
-                                }}
-                                className="flex-shrink-0"
-                              >
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  disabled={isExpired}
-                                  className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm w-full sm:w-auto"
-                                  onClick={(e) => {
-                                    if (isExpired) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }
-                                  }}
-                                >
-                                  <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                                  View Enquiry
-                                </Button>
-                              </Link>
-                            )}
+                            <div>
+                              <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Enquiry Budget</div>
+                              <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
+                            </div>
                           </div>
+                          {enquiry.category && (
+                            <Badge variant="outline" className="text-[8px] sm:text-xs font-black border border-gray-300 text-gray-800 px-1.5 py-0">
+                              {enquiry.category}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      {/* View Enquiry Button */}
+                      {enquiry && !isExpired && (
+                        <div className="pt-2">
+                          <Link 
+                            to={`/enquiry/${enquiry.id}`}
+                            onClick={(e) => {
+                              if (isExpired) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
+                            className="block"
+                          >
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              disabled={isExpired}
+                              className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
+                              onClick={(e) => {
+                                if (isExpired) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }
+                              }}
+                            >
+                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5" />
+                              View Enquiry
+                            </Button>
+                          </Link>
                         </div>
                       )}
 
@@ -555,26 +563,6 @@ const MyResponses = () => {
               )}
             </div>
           )}
-
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-gray-700 to-gray-800">
-              <div className="text-xl font-bold text-white mb-1">{sellerSubmissions.length}</div>
-              <p className="text-xs text-gray-100 font-medium">Total Responses</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100">
-              <div className="text-xl font-bold text-emerald-600 mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</div>
-              <p className="text-xs text-emerald-700 font-medium">Approved</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
-              <div className="text-xl font-bold text-amber-600 mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</div>
-              <p className="text-xs text-amber-700 font-medium">Under Review</p>
-            </Card>
-            <Card className="p-3 text-center border-0 shadow-lg bg-gradient-to-br from-red-50 to-red-100">
-              <div className="text-xl font-bold text-red-600 mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</div>
-              <p className="text-xs text-red-700 font-medium">Rejected</p>
-            </Card>
-          </div>
         </div>
       </div>
     </Layout>
