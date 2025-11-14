@@ -334,18 +334,18 @@ const Profile = () => {
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Profile Header */}
         <div className="mb-4 sm:mb-8">
-          <Card>
-            <CardHeader className="text-center p-4 sm:p-6">
-              <div className="mx-auto p-3 sm:p-4 bg-pal-blue/10 rounded-full w-fit mb-3 sm:mb-4">
-                <User className="h-8 w-8 sm:h-12 sm:w-12 text-pal-blue" />
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
+            <div className="text-center">
+              <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
+                <User className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
               </div>
-              <CardTitle className="text-lg sm:text-2xl font-bold">
+              <h2 className="text-lg sm:text-2xl font-bold text-white mb-2">
                 {fullName || authUser.displayName || "Profile"}
-              </CardTitle>
-              <CardDescription className="text-sm sm:text-lg">
+              </h2>
+              <p className="text-sm sm:text-lg text-gray-300 mb-3">
                 {authUser.email}
-              </CardDescription>
-              <div className="bg-gray-800 rounded-lg p-3 sm:p-4 mt-2">
+              </p>
+              <div className="rounded-lg p-3 sm:p-4 mt-2">
                 <p className="text-xs sm:text-sm text-white text-center">
                   AI-powered profile verification for enhanced trust
                 </p>
@@ -360,8 +360,8 @@ const Profile = () => {
                   </Badge>
                 </div>
               )}
-            </CardHeader>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Profile Form */}

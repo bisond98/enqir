@@ -885,32 +885,36 @@ const Dashboard = () => {
           </div>
           
           {/* Welcome Header */}
-          <div className="text-center mb-4 sm:mb-16 px-2 -mt-2 sm:-mt-6">
-            <div className="flex justify-center items-center gap-2 sm:gap-4 mb-1.5 sm:mb-3">
-              <div className="inline-flex items-center justify-center w-8 h-8 sm:w-20 sm:h-20 bg-gray-800 rounded-lg sm:rounded-2xl shadow-lg sm:shadow-xl">
-                <Users className="h-4 w-4 sm:h-10 sm:w-10 text-white" />
+          <div className="mb-4 sm:mb-16 -mt-2 sm:-mt-6">
+            <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-2 sm:gap-4 mb-1.5 sm:mb-3">
+                  <div className="inline-flex items-center justify-center w-8 h-8 sm:w-20 sm:h-20 bg-white/10 rounded-lg sm:rounded-2xl shadow-lg sm:shadow-xl">
+                    <Users className="h-4 w-4 sm:h-10 sm:w-10 text-white" />
+                  </div>
+                  <Button
+                    onClick={handleRefresh}
+                    disabled={refreshing}
+                    variant="outline"
+                    size="sm"
+                    className="h-7 w-7 sm:h-12 sm:w-12 rounded-full shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-105 bg-white/10 border-white/20 hover:bg-white/20"
+                    title="Refresh Dashboard Data"
+                  >
+                    <RefreshCw className={`h-3 w-3 sm:h-5 sm:w-5 text-white ${refreshing ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+                <h1 className="mb-0.5 sm:mb-2">
+                  <VerifiedUser 
+                    name={userProfile?.fullName || 'User'}
+                    isVerified={userProfile?.isProfileVerified || false}
+                    className="text-2xl sm:text-7xl font-bold text-white inline-flex items-center gap-1.5 justify-center"
+                  />
+                </h1>
+                <p className="text-xs sm:text-base text-gray-300 max-w-3xl mx-auto leading-relaxed px-2 text-center">
+                  Use AI to search for you
+                </p>
               </div>
-              <Button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                variant="outline"
-                size="sm"
-                className="h-7 w-7 sm:h-12 sm:w-12 rounded-full shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-105"
-                title="Refresh Dashboard Data"
-              >
-                <RefreshCw className={`h-3 w-3 sm:h-5 sm:w-5 ${refreshing ? 'animate-spin' : ''}`} />
-              </Button>
             </div>
-            <h1 className="mb-0.5 sm:mb-2">
-              <VerifiedUser 
-                name={userProfile?.fullName || 'User'}
-                isVerified={userProfile?.isProfileVerified || false}
-                className="text-2xl sm:text-7xl font-bold text-slate-900 inline-flex items-center gap-1.5 justify-center"
-              />
-            </h1>
-            <p className="text-xs sm:text-base text-slate-600 max-w-3xl mx-auto leading-relaxed px-2 text-center">
-              Use AI to search for you
-            </p>
           </div>
 
           {/* Your Stats Grid */}

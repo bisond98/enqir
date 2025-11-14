@@ -45,6 +45,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }
 
   // Check if user signed in via email link (email is automatically verified)
+  // Email link sign-in automatically verifies the email, so we skip the verification popup
   const signedInViaEmailLink = window.localStorage.getItem('signedInViaEmailLink') === 'true';
   
   // If user signed in via email link, skip verification check entirely
