@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -162,7 +162,14 @@ const Dashboard = () => {
           });
 
           const savedData = (await Promise.all(savedPromises)).filter((e): e is Enquiry => e !== null);
-          setSavedEnquiries(savedData);
+          // Sort by order in savedIds array (most recently saved is at the end, so reverse to show latest first)
+          const sortedSavedData = savedData.sort((a, b) => {
+            const indexA = savedIds.indexOf(a.id);
+            const indexB = savedIds.indexOf(b.id);
+            // Reverse order: higher index (more recent) comes first
+            return indexB - indexA;
+          });
+          setSavedEnquiries(sortedSavedData);
             } catch (error) {
               console.error('Error processing saved enquiries snapshot:', error);
             }
@@ -1073,9 +1080,18 @@ const Dashboard = () => {
                             {/* Card Header - Top 10% with gray background */}
                             <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
                               <div className="flex items-center justify-between">
-                                <h5 className={`text-xs sm:text-lg font-semibold truncate ${expiredFlag ? 'text-gray-300' : 'text-white'}`}>
-                                  {enquiry.title}
-                                </h5>
+                                <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+                                  <h5 className={`text-xs sm:text-lg font-semibold truncate ${expiredFlag ? 'text-gray-300' : 'text-white'}`}>
+                                    {enquiry.title}
+                                  </h5>
+                                  {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                                    <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm ${
+                                      expiredFlag ? 'bg-gray-400' : 'bg-blue-500'
+                                    }`}>
+                                      <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                                    </div>
+                                  )}
+                                </div>
                                 {/* Plan Badge */}
                                 <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
                                   enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
@@ -1135,9 +1151,11 @@ const Dashboard = () => {
                                 size="sm" 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/enquiry/${enquiry.id}/responses`);
+                                  if (!expiredFlag) {
+                                    navigate(`/enquiry/${enquiry.id}/responses`);
+                                  }
                                 }}
-                                disabled={allResponses.length === 0}
+                                disabled={expiredFlag || allResponses.length === 0}
                                 className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
                               >
                                 View Responses
@@ -1148,7 +1166,13 @@ const Dashboard = () => {
                                 <Button
                                   variant="default"
                                   size="sm"
-                                  onClick={(e) => handleUpgradeClick(enquiry, e)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!expiredFlag) {
+                                      handleUpgradeClick(enquiry, e);
+                                    }
+                                  }}
+                                  disabled={expiredFlag}
                                   className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 bg-blue-600 hover:bg-blue-700 text-white"
                                 >
                                   Upgrade
@@ -1166,10 +1190,11 @@ const Dashboard = () => {
                                 size="sm" 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                  if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
                                     handleDeleteEnquiry(enquiry.id);
                                   }
                                 }}
+                                disabled={expiredFlag}
                                 className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
                               >
                                 Delete
@@ -1262,9 +1287,16 @@ const Dashboard = () => {
                           {/* Card Header - Top 10% with gray background */}
                           <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
                             <div className="flex items-center justify-between">
-                              <h5 className="text-xs sm:text-lg font-semibold text-white truncate">
-                                {submission.title}
-                              </h5>
+                              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+                                <h5 className="text-xs sm:text-lg font-semibold text-white truncate">
+                                  {submission.title}
+                                </h5>
+                                {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                                  <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm bg-blue-500">
+                                    <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                                  </div>
+                                )}
+                              </div>
                               {/* Status Badge */}
                               <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
                                 submission.status === 'approved' 
@@ -1425,7 +1457,23 @@ const Dashboard = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/enquiry/${enquiry.id}`)}
+                        onClick={() => {
+                          const now = new Date();
+                          const isExpired = enquiry.deadline && (() => {
+                            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                            return deadlineDate < now;
+                          })();
+                          if (!isExpired) {
+                            navigate(`/enquiry/${enquiry.id}`);
+                          }
+                        }}
+                        disabled={(() => {
+                          const now = new Date();
+                          return enquiry.deadline && (() => {
+                            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                            return deadlineDate < now;
+                          })();
+                        })()}
                         className="w-full mt-2 text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
                       >
                         View Details

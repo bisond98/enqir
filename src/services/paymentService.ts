@@ -50,7 +50,7 @@ const loadRazorpayScript = (): Promise<void> => {
   });
 };
 
-// Create Razorpay order via backend
+// Create Razorpay order via Firebase Cloud Functions
 const createRazorpayOrder = async (
   amount: number,
   enquiryId: string,
@@ -58,10 +58,10 @@ const createRazorpayOrder = async (
   planId: string
 ): Promise<{ orderId: string; amount: number; currency: string }> => {
   try {
-    // Use environment variable for backend URL (Render in production, localhost in development)
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-    const orderUrl = `${apiUrl}/createRazorpayOrder`;
-    console.log('📡 Creating order at:', orderUrl);
+    // Use Firebase Cloud Functions URL
+    const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
+    const orderUrl = `${functionsUrl}/createRazorpayOrder`;
+    console.log('📡 Creating order via Cloud Functions:', orderUrl);
     
     const response = await fetch(orderUrl, {
       method: 'POST',
@@ -90,7 +90,7 @@ const createRazorpayOrder = async (
   }
 };
 
-// Verify payment via backend
+// Verify payment via Firebase Cloud Functions
 const verifyRazorpayPayment = async (
   razorpayOrderId: string,
   razorpayPaymentId: string,
@@ -101,10 +101,10 @@ const verifyRazorpayPayment = async (
   amount: number
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    // Use environment variable for backend URL (Render in production, localhost in development)
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-    const verifyUrl = `${apiUrl}/verifyRazorpayPayment`;
-    console.log('🔍 Verifying payment at:', verifyUrl);
+    // Use Firebase Cloud Functions URL
+    const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
+    const verifyUrl = `${functionsUrl}/verifyRazorpayPayment`;
+    console.log('🔍 Verifying payment via Cloud Functions:', verifyUrl);
     
     const response = await fetch(verifyUrl, {
       method: 'POST',

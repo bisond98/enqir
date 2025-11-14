@@ -310,11 +310,18 @@ const MyResponses = () => {
                     {/* Card Header - Top 10% with gray background (or red if expired) */}
                     <div className={`px-6 py-4 ${isExpired ? 'bg-red-900' : 'bg-gray-800'}`}>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 flex-1 min-w-0">
                           {isExpired ? <AlertTriangle className="h-4 w-4 text-red-300" /> : getStatusIcon(submission.status)}
                           <h3 className="text-lg font-semibold text-white truncate">
                             {submission.title}
                           </h3>
+                          {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                            <div className={`flex items-center justify-center w-4 h-4 rounded-full flex-shrink-0 shadow-sm ${
+                              isExpired ? 'bg-gray-400' : 'bg-blue-500'
+                            }`}>
+                              <CheckCircle className="h-2.5 w-2.5 text-white" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2">
                           {isExpired && (

@@ -586,7 +586,14 @@ export default function PostEnquiry() {
                           type="text"
                           placeholder="MM/YY"
                           value={paymentDetails.expiryDate}
-                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, expiryDate: e.target.value }))}
+                          onChange={(e) => {
+                            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                            if (value.length >= 2) {
+                              value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                            }
+                            setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
+                          }}
+                          maxLength={5}
                           className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
                         />
                       </div>
@@ -1709,7 +1716,7 @@ export default function PostEnquiry() {
                         </Label>
                       </div>
                       <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-xs text-green-700">
+                        <p className="text-[11px] sm:text-xs text-green-700 whitespace-nowrap">
                           ✓ You have a trust badge - no ID upload needed for verification
                         </p>
                       </div>
@@ -1983,7 +1990,14 @@ export default function PostEnquiry() {
                     type="text" 
                     placeholder="MM/YY"
                     value={paymentDetails.expiryDate}
-                    onChange={(e) => setPaymentDetails(prev => ({ ...prev, expiryDate: e.target.value }))}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                      if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                      }
+                      setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
+                    }}
+                    maxLength={5}
                     className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base"
                   />
                   <input 

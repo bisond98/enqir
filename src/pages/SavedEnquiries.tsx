@@ -21,6 +21,7 @@ interface Enquiry {
   status: 'pending' | 'live' | 'rejected' | 'completed';
   createdAt: any;
   userId: string;
+  deadline?: any;
 }
 
 const SavedEnquiries = () => {
@@ -136,57 +137,100 @@ const SavedEnquiries = () => {
             </Card>
           ) : (
             <div className="space-y-3 sm:space-y-6">
-              {savedEnquiries.map((enquiry) => (
+              {savedEnquiries.map((enquiry) => {
+                const isExpired = enquiry.deadline && (() => {
+                  const now = new Date();
+                  const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                  return deadlineDate < now;
+                })();
+                
+                return (
                 <Card 
                   key={enquiry.id} 
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer touch-manipulation border-0 bg-white/90 backdrop-blur-sm shadow-lg hover:scale-[1.01] sm:hover:scale-[1.02]"
-                  onClick={() => navigate(`/enquiry/${enquiry.id}`)}
-                  onTouchEnd={() => navigate(`/enquiry/${enquiry.id}`)}
+                  className={`transition-all duration-300 touch-manipulation border-0 bg-white/90 backdrop-blur-sm shadow-lg ${
+                    isExpired 
+                      ? 'opacity-70 grayscale cursor-not-allowed' 
+                      : 'hover:shadow-xl cursor-pointer hover:scale-[1.01] sm:hover:scale-[1.02]'
+                  }`}
+                  onClick={() => {
+                    if (!isExpired) {
+                      navigate(`/enquiry/${enquiry.id}`);
+                    }
+                  }}
+                  onTouchEnd={() => {
+                    if (!isExpired) {
+                      navigate(`/enquiry/${enquiry.id}`);
+                    }
+                  }}
                 >
                   <CardContent className="p-3 sm:p-8">
                     <div className="space-y-3 sm:space-y-4">
                       <div>
-                        <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 leading-tight">
+                        <h3 className={`text-sm sm:text-xl font-bold mb-2 sm:mb-3 line-clamp-2 leading-tight ${
+                          isExpired ? 'text-gray-500' : 'text-gray-900'
+                        }`}>
                           {enquiry.title}
                         </h3>
-                        <p className="text-xs sm:text-base text-gray-600 mb-3 sm:mb-4 line-clamp-3 leading-relaxed">
+                        <p className={`text-xs sm:text-base mb-3 sm:mb-4 line-clamp-3 leading-relaxed ${
+                          isExpired ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
                           {enquiry.description}
                         </p>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                        <Badge variant="secondary" className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-100 text-blue-700 font-medium">
+                        <Badge variant="secondary" className={`text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 font-medium ${
+                          isExpired ? 'bg-gray-100 text-gray-500' : 'bg-blue-100 text-blue-700'
+                        }`}>
                           {enquiry.category}
                         </Badge>
-                        <div className="text-xs sm:text-sm font-semibold text-green-600">
+                        <div className={`text-xs sm:text-sm font-semibold ${
+                          isExpired ? 'text-gray-500' : 'text-green-600'
+                        }`}>
                           ₹{enquiry.budget?.toLocaleString('en-IN')}
                         </div>
                         {enquiry.location && (
-                          <div className="text-xs sm:text-sm text-gray-500 flex items-center">
+                          <div className={`text-xs sm:text-sm flex items-center ${
+                            isExpired ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
                             📍 {enquiry.location}
                           </div>
+                        )}
+                        {isExpired && (
+                          <Badge variant="outline" className="text-xs sm:text-sm text-gray-500 border-gray-400">
+                            Expired
+                          </Badge>
                         )}
                       </div>
                       
                       <Button
                         variant="outline"
                         size="lg"
+                        disabled={isExpired}
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/enquiry/${enquiry.id}`);
+                          if (!isExpired) {
+                            navigate(`/enquiry/${enquiry.id}`);
+                          }
                         }}
                         onTouchEnd={(e) => {
                           e.stopPropagation();
-                          navigate(`/enquiry/${enquiry.id}`);
+                          if (!isExpired) {
+                            navigate(`/enquiry/${enquiry.id}`);
+                          }
                         }}
-                        className="w-full h-10 sm:h-12 text-xs sm:text-base font-medium border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+                        className={`w-full h-10 sm:h-12 text-xs sm:text-base font-medium border-2 transition-all duration-200 ${
+                          isExpired 
+                            ? 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50' 
+                            : 'border-blue-200 hover:border-blue-300 hover:bg-blue-50'
+                        }`}
                       >
                         View Details
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           )}
         </div>

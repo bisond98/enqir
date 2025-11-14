@@ -550,10 +550,10 @@ const EnquiryResponsesPage = () => {
                       <div className="min-w-0 flex-1">
                         <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
                         <div className="flex items-center space-x-1.5">
-                          {response.isIdentityVerified && (
+                          {((response as any).userProfileVerified || response.isIdentityVerified) && (
                             <div className="flex items-center space-x-0.5">
-                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                              <span className="text-[9px] sm:text-xs font-bold text-green-600">Verified</span>
+                              <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600" />
+                              <span className="text-[9px] sm:text-xs font-bold text-blue-600">Trust Badge</span>
                             </div>
                           )}
                           <span className="text-[9px] sm:text-xs text-gray-500">
@@ -577,17 +577,6 @@ const EnquiryResponsesPage = () => {
                     </div>
                   </div>
                   
-                  {/* Trust Status - Only show if verified */}
-                  {response.isIdentityVerified && (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-[8px] font-black">✓</span>
-                      </div>
-                      <span className="text-[9px] sm:text-xs font-bold text-green-600">
-                        ✓ Trust Badge Verified
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Message & Notes Group */}
@@ -721,13 +710,28 @@ const EnquiryResponsesPage = () => {
                 Only the first {responseLimit} responses are visible for your current plan.<br />
                 Upgrade to a higher plan to view all {responses.length} responses.
               </p>
-              <Button
-                variant="default"
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full max-w-xs mt-1 sm:mt-2 py-2 sm:py-3 text-xs sm:text-base font-black rounded-lg shadow-md hover:shadow-lg"
-                onClick={() => handleUpgradeClick(enquiry)}
-              >
-                Upgrade Plan
-              </Button>
+              {(() => {
+                const isExpired = enquiry.deadline && (() => {
+                  const now = new Date();
+                  const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                  return deadlineDate < now;
+                })();
+                
+                return (
+                  <Button
+                    variant="default"
+                    disabled={isExpired}
+                    className="bg-blue-600 hover:bg-blue-700 text-white w-full max-w-xs mt-1 sm:mt-2 py-2 sm:py-3 text-xs sm:text-base font-black rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      if (!isExpired) {
+                        handleUpgradeClick(enquiry);
+                      }
+                    }}
+                  >
+                    {isExpired ? 'Enquiry Expired' : 'Upgrade Plan'}
+                  </Button>
+                );
+              })()}
             </div>
           );
         })()}

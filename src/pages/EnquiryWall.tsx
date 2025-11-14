@@ -58,6 +58,7 @@ export default function EnquiryWall() {
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isAISearching, setIsAISearching] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
 
   // Handle URL parameters on component mount
   useEffect(() => {
@@ -153,6 +154,31 @@ export default function EnquiryWall() {
 
     loadEnquiries();
   }, []);
+
+  // Fetch user profiles for all enquiry owners to show trust badges
+  useEffect(() => {
+    if (enquiries.length === 0) return;
+
+    const fetchUserProfiles = async () => {
+      const profiles: {[key: string]: any} = {};
+      const userIds = [...new Set(enquiries.map(enquiry => enquiry.userId))];
+      
+      for (const userId of userIds) {
+        try {
+          const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+          if (profileDoc.exists()) {
+            profiles[userId] = profileDoc.data();
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+      
+      setUserProfiles(profiles);
+    };
+
+    fetchUserProfiles();
+  }, [enquiries]);
 
   // AI-powered search function
   const handleAISearch = async (term: string) => {
@@ -743,7 +769,16 @@ export default function EnquiryWall() {
             }`}>
               {displayEnquiries.map((enquiry) => (
                 <div key={enquiry.id} className="block">
-                  <Link to={`/enquiry/${enquiry.id}`} className="block">
+                  <Link 
+                    to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
+                    className="block"
+                    onClick={(e) => {
+                      if (isEnquiryOutdated(enquiry)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                    }}
+                  >
                     <Card className={`${
                       viewMode === 'grid' ? 'h-full border border-gray-200 bg-white shadow-md hover:shadow-xl hover:border-gray-300 sm:hover:border-blue-300 flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden' : 'border-2 border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-gray-300 rounded-2xl sm:rounded-3xl'
                     } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer ${
@@ -791,7 +826,7 @@ export default function EnquiryWall() {
                                 }`}>
                                   {enquiry.title}
                                 </h3>
-                                {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                {(userProfiles[enquiry.userId]?.isProfileVerified || (enquiry as any).isUserVerified || enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                                   <div className={`flex items-center justify-center w-4 h-4 sm:w-6 sm:h-6 rounded-full flex-shrink-0 mt-0.5 shadow-sm ${
                                     isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
@@ -863,7 +898,7 @@ export default function EnquiryWall() {
                                 }`}>
                                   {enquiry.title}
                                 </h3>
-                                {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                {(userProfiles[enquiry.userId]?.isProfileVerified || (enquiry as any).isUserVerified || enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                                   <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
@@ -1001,13 +1036,19 @@ export default function EnquiryWall() {
                                 Your Enquiry
                               </Button>
                             ) : authUser ? (
-                              <Button 
-                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
-                                onClick={() => window.location.href = `/respond/${enquiry.id}`}
-                              >
-                                Sell
-                                <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2" />
-                              </Button>
+                              isEnquiryOutdated(enquiry) ? (
+                                <Button variant="outline" size="sm" className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-lg sm:rounded-xl" disabled>
+                                  Expired
+                                </Button>
+                              ) : (
+                                <Button 
+                                  className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
+                                  onClick={() => window.location.href = `/respond/${enquiry.id}`}
+                                >
+                                  Sell
+                                  <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2" />
+                                </Button>
+                              )
                             ) : (
                               <Link to="/signin">
                                 <Button className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-lg sm:rounded-xl" variant="outline">

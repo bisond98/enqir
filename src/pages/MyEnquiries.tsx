@@ -496,6 +496,13 @@ const MyEnquiries = () => {
                         <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
                           {enquiry.title}
                         </h3>
+                        {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                          <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm ${
+                            isExpired ? 'bg-gray-400' : 'bg-blue-500'
+                          }`}>
+                            <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                         {isExpired && (
@@ -637,7 +644,7 @@ const MyEnquiries = () => {
                           userPaymentPlan?.proActivationDate
                         );
                         return upgradeOptions.length > 0;
-                      })() && (
+                      })() && !isExpired && (
                         <div className="pt-1.5 border-t border-gray-200">
                           <Button
                             onClick={() => handleUpgradeClick(enquiry)}
@@ -692,22 +699,34 @@ const MyEnquiries = () => {
                     {/* Actions Group */}
                     <div className="flex flex-col gap-1.5 sm:gap-2 pt-2 border-t-2 border-gray-200 bg-gray-50 rounded-lg p-2 shadow-sm">
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-                        <Link to={`/enquiry/${enquiry.id}`} className="flex-1 sm:flex-none min-w-[100px]">
-                          <Button variant="outline" size="sm" className="w-full sm:w-auto border border-blue-400 text-blue-800 hover:bg-blue-100 hover:border-blue-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white">
+                        {isExpired ? (
+                          <Button variant="outline" size="sm" disabled className="w-full sm:w-auto border border-gray-300 text-gray-400 bg-gray-100 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black">
                             <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
                             <span className="whitespace-nowrap">View Details</span>
                           </Button>
-                        </Link>
+                        ) : (
+                          <Link to={`/enquiry/${enquiry.id}`} className="flex-1 sm:flex-none min-w-[100px]">
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto border border-blue-400 text-blue-800 hover:bg-blue-100 hover:border-blue-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white">
+                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
+                              <span className="whitespace-nowrap">View Details</span>
+                            </Button>
+                          </Link>
+                        )}
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="flex-1 sm:flex-none min-w-[110px] sm:min-w-[140px] w-full sm:w-auto border border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white"
-                          onClick={() => navigate(`/enquiry/${enquiry.id}/responses-page`)}
+                          disabled={isExpired}
+                          className="flex-1 sm:flex-none min-w-[110px] sm:min-w-[140px] w-full sm:w-auto border border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                          onClick={() => {
+                            if (!isExpired) {
+                              navigate(`/enquiry/${enquiry.id}/responses-page`);
+                            }
+                          }}
                         >
                           <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
                           <span className="whitespace-nowrap text-[8px] sm:text-xs">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
                         </Button>
-                        {enquiry.status === 'live' && (
+                        {enquiry.status === 'live' && !isExpired && (
                           <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-1 sm:flex-none min-w-[100px]">
                             <Button variant="outline" size="sm" className="w-full sm:w-auto border border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white">
                               <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
@@ -721,8 +740,13 @@ const MyEnquiries = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => deleteEnquiry(enquiry.id)}
-                          className="border border-red-400 text-red-800 hover:bg-red-100 hover:border-red-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white"
+                          onClick={() => {
+                            if (!isExpired) {
+                              deleteEnquiry(enquiry.id);
+                            }
+                          }}
+                          disabled={isExpired}
+                          className="border border-red-400 text-red-800 hover:bg-red-100 hover:border-red-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
                           <span className="hidden sm:inline">Delete Enquiry</span>

@@ -594,14 +594,24 @@ const EnquiryDetail = () => {
                         </Button>
                       </div>
                     ) : (
-                      <Button
-                        onClick={handleRespond}
-                        disabled={responding || enquiry.status !== 'live'}
-                        className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-gray-800 hover:bg-gray-900 text-white"
-                      >
-                        <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
-                        {responding ? 'Opening...' : 'Respond to Enquiry'}
-                      </Button>
+                      (() => {
+                        const isExpired = enquiry.deadline && (() => {
+                          const now = new Date();
+                          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                          return deadlineDate < now;
+                        })();
+                        
+                        return (
+                          <Button
+                            onClick={handleRespond}
+                            disabled={responding || enquiry.status !== 'live' || isExpired}
+                            className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-gray-800 hover:bg-gray-900 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
+                            {responding ? 'Opening...' : isExpired ? 'Enquiry Expired' : 'Respond to Enquiry'}
+                          </Button>
+                        );
+                      })()
                     )}
                     
                     <div className="flex gap-2 pt-2 border-t border-gray-200">
@@ -651,9 +661,9 @@ const EnquiryDetail = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-xs sm:text-sm text-gray-900 truncate">{userProfile.displayName || 'User'}</p>
                         {userProfile.isVerified ? (
-                          <div className="flex items-center gap-1 text-green-600 text-[9px] sm:text-[10px] font-medium">
+                          <div className="flex items-center gap-1 text-blue-600 text-[9px] sm:text-[10px] font-medium">
                             <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                            Verified
+                            Trust Badge
                           </div>
                         ) : (
                           <div className="text-gray-500 text-[9px] sm:text-[10px]">Regular User</div>

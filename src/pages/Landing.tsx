@@ -1546,9 +1546,19 @@ const Landing = () => {
               <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 px-1 sm:px-0">
                   {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry) => (
-                  <Link key={enquiry.id} to={`/enquiry/${enquiry.id}`} className="block h-full">
+                  <Link 
+                    key={enquiry.id} 
+                    to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
+                    className="block h-full"
+                    onClick={(e) => {
+                      if (isEnquiryOutdated(enquiry)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                    }}
+                  >
                     <div className={`bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-200 hover:border-gray-300 flex flex-col h-full transform transition-all duration-200 hover:scale-[1.01] overflow-hidden group ${
-                      isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-100 border-gray-300 grayscale' : ''
+                      isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-100 border-gray-300 grayscale pointer-events-none' : ''
                     }`}>
                       {/* Card Header - Compact on mobile, spacious on desktop */}
                       <div className="bg-gray-800 px-2.5 sm:px-3 lg:px-6 py-1.5 sm:py-2 lg:py-4">
@@ -1690,16 +1700,29 @@ const Landing = () => {
                       <div className="border-t border-gray-700 bg-gray-800 rounded-b-lg -mx-2.5 sm:-mx-3 lg:-mx-6 -mb-2.5 sm:-mb-3 lg:-mb-6 px-2.5 sm:px-3 lg:px-6 py-1.5 sm:py-2 lg:py-4">
                         <div className="flex items-center justify-between h-[18px] sm:h-[20px] lg:h-[28px]">
                           <button 
-                            onClick={(e) => handleSave(enquiry.id, e)}
-                            className={`inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm transition-all duration-150 ${savedEnquiries.includes(enquiry.id) ? 'text-blue-300 hover:text-blue-200' : 'text-gray-300 hover:text-blue-300'}`}
-                            disabled={!user}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm transition-all duration-150 ${savedEnquiries.includes(enquiry.id) ? 'text-blue-300 hover:text-blue-200' : 'text-gray-300 hover:text-blue-300'} ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
                             <Bookmark className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 transition-transform duration-150 ${savedEnquiries.includes(enquiry.id) ? 'fill-current scale-110' : 'hover:scale-110'}`} />
                             <span className="hidden sm:inline">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                           </button>
                           <button 
-                            onClick={(e) => handleShare(enquiry, e)}
-                            className="inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm text-gray-300 hover:text-blue-300 transition-all duration-150"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm text-gray-300 hover:text-blue-300 transition-all duration-150 ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
                             <Share2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 transition-transform duration-150 hover:scale-110" />
                             <span className="hidden sm:inline">Share</span>
