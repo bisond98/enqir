@@ -48,6 +48,26 @@ import ContactUs from "./pages/ContactUs";
 
 const queryClient = new QueryClient();
 
+// Global fix to ensure body scroll is always enabled
+if (typeof window !== 'undefined') {
+  // Ensure body can scroll
+  const ensureScroll = () => {
+    if (document.body.style.overflow === 'hidden' && !document.querySelector('[data-radix-dialog-overlay][data-state="open"]')) {
+      document.body.style.overflow = '';
+      document.body.style.overflowY = 'auto';
+    }
+    if (document.documentElement.style.overflow === 'hidden' && !document.querySelector('[data-radix-dialog-overlay][data-state="open"]')) {
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowY = 'auto';
+    }
+  };
+  
+  // Check periodically and on focus
+  setInterval(ensureScroll, 1000);
+  window.addEventListener('focus', ensureScroll);
+  window.addEventListener('load', ensureScroll);
+}
+
 const App = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>

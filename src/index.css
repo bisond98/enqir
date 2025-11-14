@@ -62,10 +62,18 @@
       padding-right: 1rem;
     }
     
-    /* Prevent horizontal scroll */
+    /* Prevent horizontal scroll but allow vertical scroll */
     body {
       overflow-x: hidden;
+      overflow-y: auto !important; /* Force vertical scroll to work */
       width: 100%;
+      height: auto;
+      position: relative;
+    }
+    
+    html {
+      overflow-y: auto !important; /* Ensure html can scroll */
+      height: auto;
     }
     
     /* Better form inputs */

@@ -48,6 +48,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isUpgrade, finalPrice, user]);
+  
+  // Ensure body scroll is restored when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      // Restore body scroll when modal is closed
+      document.body.style.overflow = '';
+      document.body.style.overflowY = 'auto';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowY = 'auto';
+    }
+    return () => {
+      // Cleanup: ensure scroll is restored on unmount
+      document.body.style.overflow = '';
+      document.body.style.overflowY = 'auto';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowY = 'auto';
+    };
+  }, [isOpen]);
 
   const handleDirectPayment = async () => {
     if (paymentLoading) return;

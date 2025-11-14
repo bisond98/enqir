@@ -48,24 +48,35 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
   }
 
   try {
+    console.log("📥 Received request body:", JSON.stringify(req.body));
+    
     const { amount, currency = "INR", enquiryId, userId, planId } = req.body;
 
     // Validate input
     if (!amount || amount <= 0) {
-      res.status(400).json({ error: "Invalid amount" });
+      console.error("❌ Invalid amount:", amount);
+      res.status(400).json({ error: "Invalid amount", receivedAmount: amount });
       return;
     }
 
     if (!enquiryId || !userId || !planId) {
-      res.status(400).json({ error: "Missing required fields" });
+      console.error("❌ Missing required fields:", { enquiryId, userId, planId });
+      res.status(400).json({ error: "Missing required fields", received: { enquiryId, userId, planId } });
       return;
     }
 
+    console.log("✅ Input validation passed:", { amount, currency, enquiryId, userId, planId });
+
     // Create order options
+    // Receipt must be max 40 characters - use short hash of enquiryId + timestamp
+    const timestamp = Date.now().toString().slice(-8); // Last 8 digits of timestamp
+    const shortEnquiryId = enquiryId.length > 20 ? enquiryId.slice(-20) : enquiryId; // Last 20 chars if too long
+    const receipt = `r_${shortEnquiryId}_${timestamp}`.slice(0, 40); // Max 40 chars
+    
     const options = {
       amount: amount, // Amount in paise (already converted in frontend)
       currency,
-      receipt: `receipt_${enquiryId}_${Date.now()}`,
+      receipt: receipt,
       notes: {
         enquiryId,
         userId,
@@ -73,11 +84,36 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
       },
     };
 
-    // Get Razorpay instance and create order
-    const razorpay = getRazorpayInstance();
-    const order = await razorpay.orders.create(options);
+    console.log("📦 Creating Razorpay order with options:", JSON.stringify(options));
 
-    console.log("✅ Order created successfully:", order.id);
+    // Get Razorpay instance and create order
+    let razorpay;
+    try {
+      razorpay = getRazorpayInstance();
+      console.log("✅ Razorpay instance obtained");
+    } catch (initError: any) {
+      console.error("❌ Failed to get Razorpay instance:", initError);
+      res.status(500).json({
+        error: "Failed to initialize Razorpay",
+        details: initError.message,
+      });
+      return;
+    }
+
+    let order;
+    try {
+      order = await razorpay.orders.create(options);
+      console.log("✅ Order created successfully:", order.id);
+    } catch (razorpayError: any) {
+      console.error("❌ Razorpay API error:", razorpayError);
+      console.error("❌ Razorpay error details:", JSON.stringify(razorpayError, null, 2));
+      res.status(500).json({
+        error: "Failed to create order with Razorpay",
+        details: razorpayError.message || "Unknown Razorpay error",
+        razorpayError: razorpayError.error || razorpayError.description || razorpayError,
+      });
+      return;
+    }
 
     res.json({
       orderId: order.id,
@@ -85,14 +121,15 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
       currency: order.currency,
     });
   } catch (error: any) {
-    console.error("❌ Error creating order:", error);
+    console.error("❌ Unexpected error creating order:", error);
+    console.error("❌ Error stack:", error.stack);
     const errorMessage = error.message || "Unknown error";
     const errorDetails = {
       error: "Failed to create order",
       details: errorMessage,
       ...(error.response && { razorpayError: error.response }),
     };
-    console.error("❌ Full error details:", errorDetails);
+    console.error("❌ Full error details:", JSON.stringify(errorDetails, null, 2));
     res.status(500).json(errorDetails);
   }
 });
