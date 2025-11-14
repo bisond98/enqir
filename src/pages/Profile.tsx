@@ -345,9 +345,11 @@ const Profile = () => {
               <CardDescription className="text-sm sm:text-lg">
                 {authUser.email}
               </CardDescription>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                AI-powered profile verification for enhanced trust
-              </p>
+              <div className="bg-gray-800 rounded-lg p-3 sm:p-4 mt-2">
+                <p className="text-xs sm:text-sm text-white text-center">
+                  AI-powered profile verification for enhanced trust
+                </p>
+              </div>
               
               {/* Verification Badge - Only show if verified */}
               {isProfileVerified && (
@@ -363,7 +365,7 @@ const Profile = () => {
         </div>
 
         {/* Profile Form */}
-        <Card>
+        <Card className="mt-6 sm:mt-8">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
             <CardDescription className="text-xs sm:text-sm">Update your profile details</CardDescription>

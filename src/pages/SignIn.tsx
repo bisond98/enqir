@@ -236,12 +236,12 @@ const SignIn = () => {
                         Email Address
                       </Label>
                       <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Mail className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
                           required
@@ -254,12 +254,12 @@ const SignIn = () => {
                             Password
                           </Label>
                       <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Lock className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
@@ -300,12 +300,12 @@ const SignIn = () => {
                               First Name *
                             </Label>
                       <div className="relative">
-                              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <User className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                                 id="firstName"
                           type="text"
                                 placeholder="First name"
-                                className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                                className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                           required
@@ -317,12 +317,12 @@ const SignIn = () => {
                               Last Name *
                             </Label>
                             <div className="relative">
-                              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <User className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                           id="lastName"
                           type="text"
                                 placeholder="Last name"
-                                className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                                className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                           value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 required
@@ -336,12 +336,12 @@ const SignIn = () => {
                         Email Address
                       </Label>
                       <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Mail className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
                           required
@@ -354,12 +354,12 @@ const SignIn = () => {
                             Password
                           </Label>
                       <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Lock className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-muted-foreground z-10 pointer-events-none" />
                         <Input
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                              className="!pl-12 sm:!pl-10 pr-4 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           required

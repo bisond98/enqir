@@ -275,6 +275,136 @@ export default function PostEnquiry() {
     setShowPaymentModal(false);
   };
 
+  // Direct payment handler - skips custom card form, goes straight to Razorpay checkout
+  const handleDirectPayment = async () => {
+    if (!selectedPlan || !user?.uid) return;
+    
+    // Prevent double submission
+    if (loading || paymentLoading || isSubmitted) {
+      console.warn('⚠️ Payment blocked: Already processing or already submitted');
+      return;
+    }
+    
+    setPaymentLoading(true);
+    
+    try {
+      // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
+      const paymentResult = await processPayment(
+        'temp-enquiry-id', // Will be updated after enquiry is created
+        user.uid,
+        selectedPlan,
+        {
+          // Use user's info from Firebase auth - Razorpay will show its own card form
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          contact: '', // Optional
+        }
+      );
+      
+      // Check if payment actually succeeded
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.error || 'Payment failed');
+      }
+      
+      console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
+      
+      // Submit enquiry after successful payment
+      setTimeout(async () => {
+        // Prevent double submission
+        if (isSubmitted) {
+          console.warn('⚠️ Enquiry creation blocked: Already submitted');
+          setPaymentLoading(false);
+          return;
+        }
+        
+        try {
+          setLoading(true);
+          
+          // Create enquiry data
+          const enquiryData: any = {
+            title: title.trim(),
+            description: description.trim(),
+            category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
+            categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
+            budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+            location: location.trim(),
+            deadline: deadline,
+            isUrgent: deadline ? (() => {
+              const now = new Date();
+              const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+              return diffHours < 72;
+            })() : false,
+            status: "live",
+            isPremium: selectedPlan.price > 0,
+            selectedPlanId: selectedPlan.id,
+            selectedPlanPrice: selectedPlan.price,
+            paymentStatus: "completed",
+            createdAt: serverTimestamp(),
+            userId: user?.uid,
+            userEmail: user?.email,
+            userName: user?.displayName || user?.email?.split('@')[0],
+            notes: notes.trim() || null,
+            governmentIdFront: null,
+            governmentIdBack: null,
+            isUserVerified: isUserVerified,
+            profileVerificationStatus: profileVerificationStatus
+          };
+
+          // Add enquiry to database
+          const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
+          const enquiryId = docRef.id;
+          console.log('Premium enquiry saved successfully with ID:', enquiryId);
+          
+          // Save payment record with actual enquiry ID
+          const paymentRecordId = await savePaymentRecord(
+            enquiryId,
+            user.uid,
+            selectedPlan,
+            paymentResult.transactionId || ''
+          );
+          
+          // Update user payment plan
+          await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
+          
+          setSubmittedEnquiryId(enquiryId);
+          setEnquiryStatus('live');
+          setIsEnquiryApproved(true);
+          
+          // Mark as submitted
+          incrementEnquiries();
+          setIsSubmitted(true);
+          setIsPaymentSuccessful(true);
+          
+          toast({
+            title: "Payment Successful! 🎉",
+            description: "Your premium enquiry is now live!",
+          });
+          
+        } catch (error) {
+          console.error('Error creating premium enquiry:', error);
+          toast({
+            title: "Error",
+            description: "Failed to create enquiry. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setLoading(false);
+        }
+        
+        setPaymentLoading(false);
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Payment failed:', error);
+      toast({
+        title: "Payment Failed",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+      setPaymentLoading(false);
+    }
+  };
+
   const handleSubmitAfterPayment = async () => {
     // Prevent double submission
     if (loading || isSubmitted) {
@@ -860,10 +990,10 @@ export default function PostEnquiry() {
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan });
     
-    // If premium option is selected, show payment modal first
+    // If premium option is selected, go directly to Razorpay checkout (Razorpay has its own card form)
     if (selectedPlan && selectedPlan.price > 0) {
-      console.log('💳 Opening payment modal for premium enquiry');
-      setShowPaymentModal(true);
+      console.log('💳 Opening Razorpay checkout directly (Razorpay has built-in card form)');
+      handleDirectPayment();
       return; // Don't submit enquiry yet
     }
     
@@ -1347,7 +1477,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
+                      className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
                       required
                     />
                   </div>
@@ -1482,7 +1612,7 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
+                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
                         required
                       />
                     </div>
@@ -1499,7 +1629,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
+                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
                         required
                       />
                         
@@ -1547,7 +1677,7 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={3}
-                        className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base"
+                        className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base pl-4 pr-4 py-3"
                       />
                     </div>
                   </div>
@@ -1717,7 +1847,7 @@ export default function PostEnquiry() {
                       </div>
                       <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                         <p className="text-[11px] sm:text-xs text-green-700 whitespace-nowrap">
-                          ✓ You have a trust badge - no ID upload needed for verification
+                          ✓ Trust badge verified - no ID upload needed
                         </p>
                       </div>
                     </div>
