@@ -26,9 +26,12 @@ import {
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import CountdownTimer from '@/components/CountdownTimer';
+import PaymentPlanSelector from '@/components/PaymentPlanSelector';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
 
 interface Enquiry {
   id: string;
@@ -117,6 +120,8 @@ const EnquiryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState(false);
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
+  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string>('free');
 
   useEffect(() => {
     if (!id) return;
@@ -164,6 +169,7 @@ const EnquiryDetail = () => {
 
       const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
       setEnquiry(enquiryData);
+      setCurrentPlan(enquiryData.selectedPlanId || 'free');
 
       // Increment view count (with error handling)
       try {
@@ -326,6 +332,52 @@ const EnquiryDetail = () => {
         variant: "destructive",
       });
     }
+  };
+
+  // Handle payment plan selection for upgrades
+  const handlePlanSelect = async (planId: string, price: number) => {
+    if (!enquiry || !user) return;
+    
+    try {
+      const plan = PAYMENT_PLANS.find(p => p.id === planId);
+      if (!plan) throw new Error('Plan not found');
+      
+      // Payment was already processed via Razorpay in PaymentPlanSelector
+      // Just update the enquiry to reflect the new plan
+      await updateDoc(doc(db, 'enquiries', enquiry.id), {
+        selectedPlanId: planId,
+        selectedPlanPrice: price,
+        isPremium: price > 0,
+        updatedAt: serverTimestamp()
+      });
+      
+      // Update local state
+      setEnquiry({ ...enquiry, selectedPlanId: planId, isPremium: price > 0 });
+      setShowPaymentSelector(false);
+      
+      toast({
+        title: "Payment Successful! 🎉",
+        description: `Your enquiry has been upgraded to ${plan.name} plan.`,
+      });
+      
+      // Reload the page to reflect the updated plan
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Error updating plan:', error);
+      toast({
+        title: "Update Failed",
+        description: "Payment was successful but there was an error updating the enquiry. Please refresh the page.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle upgrade button click
+  const handleUpgradeClick = () => {
+    if (!enquiry) return;
+    setCurrentPlan(enquiry.selectedPlanId || 'free');
+    setShowPaymentSelector(true);
   };
 
   const formatDate = (timestamp: any) => {
@@ -592,6 +644,38 @@ const EnquiryDetail = () => {
                         >
                           View Dashboard
                         </Button>
+                        
+                        {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
+                        {(() => {
+                          const enquiryPlan = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
+                          // Don't show upgrade button for premium (top tier) or pro (hidden for future)
+                          if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
+                          const upgradeOptions = getUpgradeOptions(
+                            enquiryPlan, 
+                            'free', // User payment plan - can be enhanced later
+                            enquiry.createdAt,
+                            null // Pro activation date
+                          );
+                          return upgradeOptions.length > 0;
+                        })() && (() => {
+                          const isExpired = enquiry.deadline && (() => {
+                            const now = new Date();
+                            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                            return deadlineDate < now;
+                          })();
+                          return !isExpired;
+                        })() && (
+                          <div className="pt-1.5 border-t border-gray-200">
+                            <Button
+                              onClick={handleUpgradeClick}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-[9px] sm:text-xs py-1.5 sm:py-2 font-semibold shadow-md hover:shadow-lg transition-all duration-200 rounded min-h-[44px]"
+                              size="sm"
+                            >
+                              <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                              Upgrade to Premium
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       (() => {
@@ -684,6 +768,36 @@ const EnquiryDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Payment Plan Selector Modal for Upgrades */}
+        {showPaymentSelector && enquiry && (
+          <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
+            <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+              <DialogHeader className="mb-4 sm:mb-6">
+                <DialogTitle className="text-base sm:text-lg font-bold text-center mb-2 sm:mb-3 flex items-center justify-center gap-2">
+                  <Crown className="h-5 w-5 sm:h-5 sm:w-5 text-yellow-500" />
+                  Upgrade Plan for "{enquiry.title}"
+                </DialogTitle>
+                <DialogDescription className="text-center text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Choose a plan to unlock more responses and premium features for this enquiry
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="mt-2 sm:mt-4">
+                <PaymentPlanSelector
+                  currentPlanId={currentPlan}
+                  enquiryId={enquiry.id}
+                  userId={user?.uid || ''}
+                  onPlanSelect={handlePlanSelect}
+                  isUpgrade={true}
+                  enquiryCreatedAt={enquiry.createdAt}
+                  className="max-w-4xl mx-auto"
+                  user={user}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </Layout>
   );
