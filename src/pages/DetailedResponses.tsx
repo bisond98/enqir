@@ -7,6 +7,7 @@ import { collection, query, where, onSnapshot, orderBy, getDoc, doc } from "fire
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ArrowLeft, MessageSquare, Shield, ImageIcon, Crown, Lock, Eye, Star, Clock, User, CheckCircle, X } from "lucide-react";
 import Layout from "@/components/Layout";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
@@ -481,21 +482,18 @@ const DetailedResponses = () => {
 
       {/* Payment Plan Selector Modal */}
       {showPaymentSelector && enquiry && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h2 className="text-sm sm:text-base font-bold text-slate-900">Choose Your Plan</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPaymentSelector(false)}
-                  className="text-slate-400 hover:text-slate-600"
-                >
-                  <X className="h-6 w-6" />
-                </Button>
-              </div>
-              
+        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
+          <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+            <DialogHeader className="mb-4 sm:mb-6">
+              <DialogTitle className="text-base sm:text-lg font-bold text-center mb-2 sm:mb-3">
+                Choose Your Plan
+              </DialogTitle>
+              <DialogDescription className="text-center text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Upgrade your enquiry to unlock more responses and premium features
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="mt-2 sm:mt-4">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={enquiry.id}
@@ -503,12 +501,12 @@ const DetailedResponses = () => {
                 onPlanSelect={handlePlanSelect}
                 isUpgrade={true}
                 enquiryCreatedAt={enquiry.createdAt}
-                className="max-w-5xl mx-auto"
+                className="max-w-4xl mx-auto"
                 user={user}
               />
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </Layout>
   );

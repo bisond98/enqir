@@ -1551,18 +1551,18 @@ const Dashboard = () => {
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && selectedEnquiryForUpgrade && (
           <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-            <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-sm sm:text-base font-bold text-center mb-2 sm:mb-4 flex items-center justify-center gap-2">
-                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+            <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+              <DialogHeader className="mb-4 sm:mb-6">
+                <DialogTitle className="text-base sm:text-lg font-bold text-center mb-2 sm:mb-3 flex items-center justify-center gap-2">
+                  <Crown className="h-5 w-5 sm:h-5 sm:w-5 text-yellow-500" />
                   Upgrade Plan for "{selectedEnquiryForUpgrade.title}"
                 </DialogTitle>
-                <DialogDescription className="text-center text-[10px] sm:text-xs text-slate-600">
+                <DialogDescription className="text-center text-xs sm:text-sm text-slate-600 leading-relaxed">
                   Choose a plan to unlock more responses and premium features for this enquiry
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="mt-6">
+              <div className="mt-2 sm:mt-4">
                 <PaymentPlanSelector
                   currentPlanId={currentPlan}
                   enquiryId={selectedEnquiryForUpgrade.id}
@@ -1570,7 +1570,7 @@ const Dashboard = () => {
                   onPlanSelect={handlePlanSelect}
                   isUpgrade={true}
                   enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
-                  className="max-w-5xl mx-auto"
+                  className="max-w-4xl mx-auto"
                   user={user}
                 />
               </div>
