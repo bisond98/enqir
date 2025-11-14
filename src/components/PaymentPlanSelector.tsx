@@ -230,8 +230,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   };
 
   const getPlanBadge = (plan: PaymentPlan) => {
-    if (plan.isPro) return <Badge className="bg-yellow-100 text-yellow-800 text-[8px] sm:text-[9px] px-0.5 py-0 h-3.5 sm:h-4">Pro</Badge>;
-    if (plan.isPopular) return <Badge className="bg-blue-100 text-blue-800 text-[8px] sm:text-[9px] px-0.5 py-0 h-3.5 sm:h-4">Popular</Badge>;
+    if (plan.isPro) return <Badge className="bg-yellow-100 text-yellow-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 h-5 sm:h-5 font-semibold">Pro</Badge>;
+    if (plan.isPopular) return <Badge className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 h-5 sm:h-5 font-semibold">Popular</Badge>;
     return null;
   };
 
@@ -242,12 +242,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   // }
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 sm:mb-2">
+    <div className={`space-y-3 sm:space-y-4 px-1 sm:px-0 ${className}`}>
+      <div className="text-center mb-3 sm:mb-6 px-2 sm:px-0">
+        <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
         </h3>
-        <p className="text-[10px] sm:text-xs text-gray-600">
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
           {isUpgrade 
             ? 'Unlock more responses for this enquiry' 
             : 'Select the plan that works best for you'
@@ -255,7 +255,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         </p>
       </div>
 
-      <div className="space-y-1.5 sm:space-y-2 min-h-[120px]">
+      <div className="space-y-3 sm:space-y-2 min-h-[120px]">
         {availablePlans.length === 0 && isUpgrade && (
           <div className="flex flex-col items-center justify-center py-12 px-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
             <CheckCircle className="h-16 w-16 text-green-600 mb-4" />
@@ -271,108 +271,75 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative cursor-pointer transition-all duration-200 hover:shadow-md overflow-hidden ${
+            className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg overflow-hidden ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-blue-500 shadow-md border-blue-300'
-                : 'hover:shadow-sm'
+                ? 'ring-2 ring-blue-500 shadow-lg border-blue-400 scale-[1.02]'
+                : 'hover:shadow-md'
             } ${
-              plan.isPopular ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200'
+              plan.isPopular ? 'border-2 border-blue-300 bg-blue-50/50' : 'border border-gray-200'
             }`}
             onClick={() => handlePlanSelect(plan)}
           >
-            {/* Card Header - Ultra Compact with gray background */}
-            <div className="bg-gray-800 px-2.5 sm:px-3 py-2 h-auto min-h-[42px] flex items-center">
-              <div className="flex items-center justify-between w-full gap-1.5">
-                <div className="flex items-center space-x-1.5 flex-1 min-w-0">
+            {/* Card Header - Mobile Optimized with gray background */}
+            <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-2.5 h-auto min-h-[56px] sm:min-h-[48px] flex items-center">
+              <div className="flex items-center justify-between w-full gap-2 sm:gap-1.5">
+                <div className="flex items-center space-x-2 sm:space-x-1.5 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {getPlanIcon(plan)}
                   </div>
-                  <h3 className="text-[11px] sm:text-xs font-semibold text-white flex items-center gap-1 truncate">
-                    {plan.name}
-                    {getPlanBadge(plan)}
-                  </h3>
+                  <div className="flex items-center gap-1.5 sm:gap-1 flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
+                      {plan.name}
+                      {getPlanBadge(plan)}
+                    </h3>
+                  </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-1.5">
-                  <div className="text-xs sm:text-sm font-bold text-white">
+                <div className="text-right flex-shrink-0 ml-2">
+                  <div className="text-base sm:text-lg font-bold text-white">
                     ₹{plan.price}
                   </div>
                   {plan.price > 0 && (
-                    <div className="text-[9px] text-gray-300">per enquiry</div>
+                    <div className="text-[10px] sm:text-xs text-gray-300 whitespace-nowrap">per enquiry</div>
                   )}
                 </div>
               </div>
             </div>
             
-            {/* Card Content - Ultra Compact with white background */}
-            <CardContent className="p-2.5 sm:p-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                {/* Left side - Plan info */}
-                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <input
-                    type="radio"
-                    name="paymentPlan"
-                    checked={selectedPlan === plan.id}
-                    onChange={() => handlePlanSelect(plan)}
-                    className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[9px] sm:text-[10px] text-gray-600 truncate">{plan.description}</p>
-                  </div>
-                </div>
-
-                {/* Center - Features (Desktop only) */}
-                <div className="hidden lg:flex flex-1 justify-center max-w-md">
-                  <div className="space-y-0.5">
-                    {plan.features.slice(0, 2).map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-1">
-                        <Check className="h-2 w-2 text-green-500 flex-shrink-0" />
-                        <span className="text-[9px] sm:text-[10px] text-gray-700 truncate">{feature}</span>
-                      </div>
-                    ))}
-                    {plan.features.length > 2 && (
-                      <div className="text-[9px] sm:text-[10px] text-gray-500 ml-3">
-                        +{plan.features.length - 2} more
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right side - Button */}
-                <div className="flex items-center justify-end">
-                  <Button
-                    size="sm"
-                    className={`h-6 sm:h-7 text-[9px] sm:text-[10px] ${
-                      selectedPlan === plan.id
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : plan.isPopular
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
-                    } px-2 sm:px-3`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePlanSelect(plan);
-                    }}
-                  >
-                    <span className="hidden sm:inline">
-                      {selectedPlan === plan.id ? 'Selected' : 'Select'}
-                    </span>
-                    <span className="sm:hidden">
-                      {selectedPlan === plan.id ? '✓' : 'Select'}
-                    </span>
-                  </Button>
-                </div>
+            {/* Card Content - Mobile Optimized with white background */}
+            <CardContent className="p-3 sm:p-4">
+              {/* Description */}
+              <div className="mb-3 sm:mb-2">
+                <p className="text-xs sm:text-sm text-gray-700 font-medium leading-relaxed">{plan.description}</p>
               </div>
 
-              {/* Mobile features - shown on small screens */}
-              <div className="sm:hidden mt-2 pt-2 border-t border-gray-200">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                  {plan.features.map((feature, index) => (
-                    <div key={index} className="flex items-start space-x-1">
-                      <Check className="h-2 w-2 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-[9px] sm:text-[10px] text-gray-700 leading-tight">{feature}</span>
-                    </div>
-                  ))}
-                </div>
+              {/* Features - Mobile Optimized */}
+              <div className="space-y-2 sm:space-y-1.5 mb-3 sm:mb-0">
+                {plan.features.map((feature, index) => (
+                  <div key={index} className="flex items-start space-x-2 sm:space-x-1.5">
+                    <Check className="h-3.5 w-3.5 sm:h-3 sm:w-3 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm text-gray-700 leading-relaxed flex-1">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Select Button - Mobile Optimized */}
+              <div className="mt-4 sm:mt-3 pt-3 sm:pt-2 border-t border-gray-200">
+                <Button
+                  size="sm"
+                  className={`w-full sm:w-auto h-10 sm:h-8 text-sm sm:text-xs font-semibold ${
+                    selectedPlan === plan.id
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                      : plan.isPopular
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
+                  } px-4 sm:px-3`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlanSelect(plan);
+                  }}
+                >
+                  {selectedPlan === plan.id ? '✓ Selected' : 'Select'}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -380,13 +347,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
       </div>
 
       {selectedPlan !== currentPlanId && (
-        <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between gap-2 sm:gap-3">
+        <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] sm:text-xs font-medium text-blue-900">
+              <p className="text-sm sm:text-base font-bold text-blue-900 mb-1">
                 {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-blue-700">
+              <p className="text-xs sm:text-sm text-blue-700 leading-relaxed">
                 {isUpgrade 
                   ? 'You will be charged the difference for the upgrade'
                   : 'Proceed to payment to activate this plan'
@@ -395,7 +362,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             </div>
             <Button
               size="sm"
-              className="h-6 sm:h-7 text-[9px] sm:text-[10px] bg-blue-600 hover:bg-blue-700 text-white px-2.5 sm:px-3 flex-shrink-0"
+              className="h-11 sm:h-9 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-4 flex-shrink-0 w-full sm:w-auto"
               onClick={() => {
                 const plan = availablePlans.find(p => p.id === selectedPlan);
                 if (plan) {
