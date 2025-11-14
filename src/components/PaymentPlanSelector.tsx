@@ -242,13 +242,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   // }
 
   return (
-    <div className={`space-y-4 sm:space-y-5 ${className}`}>
-      {/* Professional Header Section */}
-      <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-2.5">
+    <div className={`space-y-3 sm:space-y-4 ${className}`}>
+      <div className="text-center mb-3 sm:mb-5">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
         </h3>
-        <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-md mx-auto">
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
           {isUpgrade 
             ? 'Unlock more responses for this enquiry' 
             : 'Select the plan that works best for you'
@@ -256,8 +255,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         </p>
       </div>
 
-      {/* Plans Grid - Professional Layout */}
-      <div className="space-y-3 sm:space-y-3 min-h-[120px]">
+      <div className="space-y-3 sm:space-y-2.5 min-h-[120px]">
         {availablePlans.length === 0 && isUpgrade && (
           <div className="flex flex-col items-center justify-center py-12 px-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
             <CheckCircle className="h-16 w-16 text-green-600 mb-4" />
@@ -273,76 +271,70 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative cursor-pointer transition-all duration-300 overflow-hidden ${
+            className={`relative cursor-pointer transition-all duration-200 overflow-hidden ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-blue-500 shadow-xl border-2 border-blue-500 bg-blue-50/30'
-                : 'hover:shadow-lg hover:border-blue-200'
+                ? 'ring-2 ring-blue-500 shadow-md border-2 border-blue-400'
+                : 'hover:shadow-sm'
             } ${
               plan.isPopular 
-                ? 'border-2 border-blue-400 bg-gradient-to-br from-blue-50/80 to-blue-100/50 shadow-md' 
-                : 'border border-gray-200 bg-white'
+                ? 'border border-blue-200 bg-blue-50/30' 
+                : 'border border-gray-200'
             }`}
             onClick={() => handlePlanSelect(plan)}
           >
-            {/* Professional Card Header */}
-            <div className={`px-4 sm:px-5 py-3.5 sm:py-3 h-auto min-h-[60px] sm:min-h-[52px] flex items-center ${
-              plan.isPopular 
-                ? 'bg-gradient-to-r from-blue-600 to-blue-700' 
-                : 'bg-gradient-to-r from-gray-800 to-gray-900'
-            }`}>
-              <div className="flex items-center justify-between w-full gap-3 sm:gap-3">
-                <div className="flex items-center space-x-3 sm:space-x-2 flex-1 min-w-0">
+            {/* Card Header */}
+            <div className="bg-gray-800 px-3 sm:px-4 py-2.5 sm:py-2.5 h-auto min-h-[52px] sm:min-h-[48px] flex items-center">
+              <div className="flex items-center justify-between w-full gap-2 sm:gap-2">
+                <div className="flex items-center space-x-2 sm:space-x-1.5 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {getPlanIcon(plan)}
                   </div>
-                  <div className="flex items-center gap-2 sm:gap-1.5 flex-1 min-w-0">
-                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-1 flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base font-semibold text-white flex items-center gap-1.5">
                       {plan.name}
                       {getPlanBadge(plan)}
                     </h3>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-lg sm:text-xl font-bold text-white">
+                  <div className="text-base sm:text-lg font-semibold text-white">
                     ₹{plan.price}
                   </div>
                   {plan.price > 0 && (
-                    <div className="text-[10px] sm:text-xs text-gray-200 whitespace-nowrap mt-0.5">per enquiry</div>
+                    <div className="text-[10px] sm:text-xs text-gray-300 whitespace-nowrap">per enquiry</div>
                   )}
                 </div>
               </div>
             </div>
             
-            {/* Professional Card Content */}
-            <CardContent className="p-4 sm:p-5 bg-white">
+            {/* Card Content */}
+            <CardContent className="p-3 sm:p-4">
               {/* Description */}
-              <div className="mb-3.5 sm:mb-3 text-center">
-                <p className="text-xs sm:text-sm text-gray-700 font-semibold leading-relaxed">{plan.description}</p>
+              <div className="mb-2.5 sm:mb-2 text-center">
+                <p className="text-xs sm:text-sm text-gray-700 leading-snug">{plan.description}</p>
               </div>
 
-              {/* Features List - Professional */}
-              <div className="space-y-2.5 sm:space-y-2 mb-4 sm:mb-3">
+              {/* Features */}
+              <div className="space-y-2 sm:space-y-1.5 mb-3 sm:mb-2">
                 {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-start space-x-2.5 sm:space-x-2">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <Check className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 text-green-600" />
-                    </div>
-                    <span className="text-xs sm:text-sm text-gray-700 leading-relaxed flex-1">{feature}</span>
+                  <div key={index} className="flex items-start space-x-2 sm:space-x-1.5">
+                    <Check className="h-3 w-3 sm:h-3 sm:w-3 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm text-gray-700 leading-snug flex-1">{feature}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Professional Select Button */}
-              <div className="mt-4 sm:mt-3.5 pt-4 sm:pt-3 border-t border-gray-200">
+              {/* Select Button */}
+              <div className="mt-3 sm:mt-2.5 pt-3 sm:pt-2 border-t border-gray-200">
                 <Button
                   size="sm"
-                  className={`w-full sm:w-auto h-10 sm:h-9 text-sm sm:text-xs font-semibold transition-all duration-200 ${
+                  className={`w-full sm:w-auto h-9 sm:h-8 text-sm sm:text-xs font-medium ${
                     selectedPlan === plan.id
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg active:bg-blue-800'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
                       : plan.isPopular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg active:bg-blue-800'
-                      : 'bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-900 border border-gray-300 hover:border-gray-400'
-                  } px-6 sm:px-4`}
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
+                  } px-4 sm:px-3`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePlanSelect(plan);
@@ -357,13 +349,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
       </div>
 
       {selectedPlan !== currentPlanId && (
-        <div className="mt-5 sm:mt-6 p-4 sm:p-5 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-100 border border-blue-300 rounded-xl shadow-md">
-          <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3.5 sm:gap-4">
+        <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-3">
             <div className="min-w-0 flex-1 text-center sm:text-left">
-              <p className="text-sm sm:text-base font-bold text-blue-900 mb-2">
+              <p className="text-sm sm:text-base font-semibold text-blue-900 mb-1">
                 {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
               </p>
-              <p className="text-xs sm:text-sm text-blue-800 leading-relaxed font-medium">
+              <p className="text-xs sm:text-sm text-blue-700 leading-tight">
                 {isUpgrade 
                   ? 'You will be charged the difference for the upgrade'
                   : 'Proceed to payment to activate this plan'
@@ -372,7 +364,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             </div>
             <Button
               size="sm"
-              className="h-11 sm:h-9 text-sm sm:text-xs font-bold bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-7 sm:px-5 flex-shrink-0 w-full sm:w-auto shadow-lg transition-all duration-200"
+              className="h-10 sm:h-8 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-4 flex-shrink-0 w-full sm:w-auto"
               onClick={() => {
                 const plan = availablePlans.find(p => p.id === selectedPlan);
                 if (plan) {
