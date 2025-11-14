@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -1074,15 +1074,15 @@ const Dashboard = () => {
                         return (
                           <div
                             key={enquiry.id}
-                            className={`rounded-2xl sm:rounded-3xl shadow-sm transition-all duration-200 overflow-hidden ${
+                            className={`relative rounded-2xl sm:rounded-3xl shadow-sm transition-all duration-200 overflow-hidden ${
                               expiredFlag
                                 ? 'opacity-70 grayscale pointer-events-none bg-gray-100 border-2 border-gray-300'
                                 : 'bg-white border-2 border-blue-200 hover:shadow-md cursor-pointer'
                             }`}
-                            onClick={() => !expiredFlag && navigate(`/my-enquiries?highlight=${enquiry.id}`)}
+                            onClick={() => !expiredFlag && navigate(`/enquiry/${enquiry.id}`)}
                           >
                             {/* Card Header - Top 10% with gray background */}
-                            <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
+                            <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-3">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
                                   <h5 className={`text-xs sm:text-lg font-semibold truncate ${expiredFlag ? 'text-gray-300' : 'text-white'}`}>
@@ -1097,11 +1097,14 @@ const Dashboard = () => {
                                   )}
                                 </div>
                                 {/* Plan Badge */}
-                                <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
+                                <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-1 ${
                                   enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
                                     ? 'bg-gray-100 text-gray-700' 
                                     : 'bg-blue-100 text-blue-800'
                                 }`}>
+                                  {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                                    <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-500" />
+                                  ) : null}
                                   {planInfo.name}
                                 </Badge>
                               </div>
@@ -1111,11 +1114,27 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Card Content - Rest with white background */}
-                            <div className="p-2 sm:p-4">
+                            <div className="p-4 sm:p-4 relative">
+                            {/* Deadline in top right corner of white space */}
+                            {enquiry.deadline && (
+                              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1">
+                                <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600" />
+                                <span className="text-[9px] sm:text-xs text-red-600 font-semibold">
+                                  {(() => {
+                                    const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                                    return deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                                  })()}
+                                </span>
+                              </div>
+                            )}
 
                             {/* Response Count */}
-                            <div className="mb-1 sm:mb-2">
-                              <span className="text-xs sm:text-base font-medium text-green-600">
+                            <div className="mb-3 sm:mb-2">
+                              <span className={`text-xs sm:text-base font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded ${
+                                allResponses.length === 0 
+                                  ? 'bg-gray-800 text-white' 
+                                  : 'text-green-600'
+                              }`}>
                                 {allResponses.length} responses
                               </span>
                               {remainingCount > 0 && (
@@ -1125,42 +1144,26 @@ const Dashboard = () => {
                               )}
                             </div>
 
-                            {/* Plan Details */}
-                            <div className="mb-2 sm:mb-3">
-                              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm text-slate-600">
-                                <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
-                                <span>{planInfo.name} ({planInfo.price})</span>
-                                {enquiry.selectedPlanPrice && enquiry.selectedPlanPrice > 0 && (
-                                  <span className="font-semibold text-blue-600">
-                                    - ₹{enquiry.selectedPlanPrice}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Time Remaining */}
-                            {enquiry.deadline && (
-                              <div className="mb-2 sm:mb-3">
-                                <CountdownTimer 
-                                  deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                  className="justify-start"
-                                />
-                              </div>
-                            )}
-
                             {/* Action Buttons */}
-                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                            <div 
+                              className="flex items-center gap-2 sm:gap-2 flex-wrap mt-3 sm:mt-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                            >
                               <Button
                                 variant="outline" 
                                 size="sm" 
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  e.preventDefault();
                                   if (!expiredFlag) {
-                                    navigate(`/enquiry/${enquiry.id}/responses`);
+                                    navigate(`/my-enquiries?highlight=${enquiry.id}`);
                                   }
                                 }}
-                                disabled={expiredFlag || allResponses.length === 0}
-                                className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
+                                disabled={expiredFlag}
+                                className="border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-400 text-[10px] sm:text-sm px-3 sm:px-3 py-2 sm:py-2 h-8 sm:h-9 cursor-pointer"
                               >
                                 View Responses
                               </Button>
@@ -1350,7 +1353,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                  className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
+                                  className="border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
                                 >
                                   Chat
                                 </Button>
