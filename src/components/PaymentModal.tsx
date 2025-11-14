@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X, CreditCard, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { PaymentPlan } from '@/config/paymentPlans';
 import { processPayment, savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan } from '@/services/paymentService';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   isUpgrade = false,
   currentPlanPrice = 0
 }) => {
+  const { user } = useAuth();
   const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'success' | 'failed'>('form');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
@@ -38,6 +40,84 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const priceDifference = selectedPlan.price - currentPlanPrice;
   const finalPrice = isUpgrade ? priceDifference : selectedPlan.price;
 
+  // Auto-trigger Razorpay for upgrades (like PostEnquiry does) - skip modal form entirely
+  useEffect(() => {
+    if (isOpen && isUpgrade && finalPrice > 0 && !paymentLoading && user) {
+      // Immediately trigger Razorpay without showing form
+      handleDirectPayment();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isUpgrade, finalPrice, user]);
+
+  const handleDirectPayment = async () => {
+    if (paymentLoading) return;
+    
+    setPaymentStep('processing');
+    setPaymentLoading(true);
+    
+    try {
+      // Validate enquiryId - for upgrades, it should be a real enquiry ID, not 'temp-enquiry-id'
+      if (!enquiryId || enquiryId === 'temp-enquiry-id') {
+        throw new Error('Invalid enquiry ID. Please try again.');
+      }
+
+      // For upgrades, create a modified plan with the price difference
+      const planForPayment = isUpgrade && finalPrice > 0 
+        ? { ...selectedPlan, price: finalPrice }
+        : selectedPlan;
+
+      // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
+      const result = await processPayment(
+        enquiryId,
+        userId,
+        planForPayment,
+        {
+          // Use user's info from Firebase auth - Razorpay will show its own card form
+          name: user?.displayName || user?.email?.split('@')[0] || '',
+          email: user?.email || '',
+          contact: '', // Optional
+        }
+      );
+      
+      if (result.success && result.transactionId) {
+        console.log('✅ Payment successful:', result.transactionId);
+        
+        // Save payment record to Firestore
+        const paymentRecordId = await savePaymentRecord(
+          enquiryId,
+          userId,
+          selectedPlan,
+          result.transactionId
+        );
+        
+        // Update enquiry premium status
+        await updateEnquiryPremiumStatus(enquiryId, true, selectedPlan.id);
+        
+        // Update user payment plan
+        await updateUserPaymentPlan(userId, selectedPlan.id, paymentRecordId, enquiryId);
+      
+        setPaymentStep('success');
+        
+        // Call success callback after a short delay
+        setTimeout(() => {
+          onPaymentSuccess(selectedPlan.id, selectedPlan.price);
+          resetModal();
+        }, 1500);
+      } else {
+        const errorMessage = result.error || 'Payment failed. Please check your internet connection and try again.';
+        throw new Error(errorMessage);
+      }
+    } catch (error: any) {
+      console.error('❌ Payment failed:', error);
+      setPaymentStep('failed');
+      setPaymentLoading(false);
+      
+      // Show more helpful error message
+      const errorMessage = error?.message || 'Payment failed. Please try again.';
+      console.error('Payment error details:', errorMessage);
+    }
+  };
+
   const handlePayment = async () => {
     setPaymentStep('processing');
     setPaymentLoading(true);
@@ -48,7 +128,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         enquiryId,
         userId,
         selectedPlan,
-        paymentDetails
+        {
+          // Use user's info from Firebase auth or form details
+          name: paymentDetails.name || user?.displayName || user?.email?.split('@')[0] || '',
+          email: user?.email || '',
+          contact: '', // Optional
+        }
       );
       
       if (result.success && result.transactionId) {
@@ -94,7 +179,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const isFormValid = paymentDetails.name && paymentDetails.name.trim().length > 2;
 
+  // For upgrades, skip the form and go directly to Razorpay (like PostEnquiry)
+  // Only show modal if payment failed or if it's not an upgrade
   if (!isOpen) return null;
+  
+  // For upgrades with valid price, don't show form - Razorpay will open directly
+  if (isUpgrade && finalPrice > 0 && paymentStep === 'form') {
+    return null; // Razorpay popup will handle the UI
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
@@ -205,15 +297,37 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="text-center py-8">
               <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Failed</h3>
-              <p className="text-slate-600 mb-4">
-                There was an error processing your payment. Please try again.
+              <p className="text-slate-600 mb-2">
+                There was an error processing your payment.
               </p>
-              <Button
-                onClick={() => setPaymentStep('form')}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Try Again
-              </Button>
+              <p className="text-xs text-red-600 mb-4 px-4">
+                If this error persists, please check that Firebase Cloud Functions are properly configured with Razorpay credentials.
+              </p>
+              <div className="flex gap-2 justify-center">
+                <Button
+                  onClick={() => {
+                    setPaymentStep('form');
+                    setPaymentLoading(false);
+                  }}
+                  variant="outline"
+                  className="border-gray-300"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setPaymentStep('form');
+                    setPaymentLoading(false);
+                    if (isUpgrade) {
+                      // Retry for upgrades
+                      setTimeout(() => handleDirectPayment(), 100);
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Try Again
+                </Button>
+              </div>
             </div>
           )}
         </div>

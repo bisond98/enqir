@@ -482,7 +482,7 @@ const MyResponses = () => {
                                   variant="outline" 
                                   size="sm" 
                                   disabled={isExpired}
-                                  className="w-full sm:w-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs sm:text-sm h-9 sm:h-10"
+                                  className="w-full sm:w-auto border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-xs sm:text-sm h-9 sm:h-10"
                                   onClick={(e) => {
                                     if (isExpired) {
                                       e.preventDefault();
@@ -490,7 +490,7 @@ const MyResponses = () => {
                                     }
                                   }}
                                 >
-                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white" />
                                   Chat Available
                                 </Button>
                               </Link>

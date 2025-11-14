@@ -97,45 +97,45 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
     let deadline: Date;
     
     switch (option) {
-      case '5min':
+        case '5min':
         deadline = addMinutes(now, 5);
         break;
-      case '15min':
+        case '15min':
         deadline = addMinutes(now, 15);
         break;
-      case '30min':
+        case '30min':
         deadline = addMinutes(now, 30);
         break;
-      case '1hour':
+        case '1hour':
         deadline = addHours(now, 1);
         break;
-      case '2hours':
+        case '2hours':
         deadline = addHours(now, 2);
         break;
-      case '6hours':
+        case '6hours':
         deadline = addHours(now, 6);
         break;
-      case '12hours':
+        case '12hours':
         deadline = addHours(now, 12);
         break;
-      case '1day':
+        case '1day':
         deadline = addDays(now, 1);
         break;
-      case '3days':
+        case '3days':
         deadline = addDays(now, 3);
         break;
-      case '1week':
+        case '1week':
         deadline = addWeeks(now, 1);
         break;
-      case '2weeks':
+        case '2weeks':
         deadline = addWeeks(now, 2);
         break;
-      case '1month':
+        case '1month':
         deadline = addMonths(now, 1);
         break;
-      default:
+        default:
         deadline = addHours(now, 1);
-    }
+      }
     
     onChange(deadline);
     setIsOpen(false); // Close popup after selection
@@ -143,29 +143,29 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
 
   const handleCustomApply = () => {
     const now = new Date();
-    const duration = parseInt(customDuration) || 1;
-    const baseDate = customDate || now;
+      const duration = parseInt(customDuration) || 1;
+      const baseDate = customDate || now;
     let deadline: Date;
-    
-    switch (customDurationType) {
-      case 'minutes':
+      
+      switch (customDurationType) {
+        case 'minutes':
         deadline = addMinutes(baseDate, duration);
         break;
-      case 'hours':
+        case 'hours':
         deadline = addHours(baseDate, duration);
         break;
-      case 'days':
+        case 'days':
         deadline = addDays(baseDate, duration);
         break;
-      case 'weeks':
+        case 'weeks':
         deadline = addWeeks(baseDate, duration);
         break;
-      case 'months':
+        case 'months':
         deadline = addMonths(baseDate, duration);
         break;
-      default:
+        default:
         deadline = addHours(baseDate, duration);
-    }
+      }
     
     onChange(deadline);
     setIsOpen(false);
@@ -269,119 +269,119 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   // Content component to avoid duplication
   const DeadlineContent = () => (
     <>
-      <Card className="border-0 shadow-none">
+          <Card className="border-0 shadow-none">
         <CardHeader className="pb-3 px-4 sm:px-6 pt-4 sm:pt-6">
           <CardTitle className="text-base sm:text-lg font-medium">Set Response Deadline</CardTitle>
-        </CardHeader>
+            </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6">
-          {/* Time Type Toggle */}
+              {/* Time Type Toggle */}
           <div className="flex space-x-2 sm:space-x-3">
-            <Button
-              variant={timeType === 'quick' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTimeType('quick')}
-              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
-            >
-              Quick Select
-            </Button>
-            <Button
-              variant={timeType === 'custom' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTimeType('custom')}
-              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
-            >
-              Custom
-            </Button>
-          </div>
-
-          {timeType === 'quick' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-              {quickOptions.map((option) => (
                 <Button
-                  key={option.value}
-                  variant={quickTime === option.value ? 'default' : 'outline'}
+                  variant={timeType === 'quick' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => handleQuickSelect(option.value)}
-                  className="justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium"
+                  onClick={() => setTimeType('quick')}
+              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
                 >
+                  Quick Select
+                </Button>
+                <Button
+                  variant={timeType === 'custom' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeType('custom')}
+              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
+                >
+                  Custom
+                </Button>
+              </div>
+
+              {timeType === 'quick' ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {quickOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      variant={quickTime === option.value ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleQuickSelect(option.value)}
+                  className="justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium"
+                    >
                   <span className="mr-1.5 sm:mr-1 text-base sm:text-sm">{option.icon}</span>
                   <span className="truncate">{option.label}</span>
-                </Button>
-              ))}
-            </div>
-          ) : (
+                    </Button>
+                  ))}
+                </div>
+              ) : (
             <div className="space-y-4 sm:space-y-6">
-              {/* Custom Date */}
-              <div>
+                  {/* Custom Date */}
+                  <div>
                 <Label className="text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block">Start Date</Label>
                 <div className="flex justify-center sm:block">
-                  <Calendar
-                    mode="single"
-                    selected={customDate}
-                    onSelect={setCustomDate}
+                    <Calendar
+                      mode="single"
+                      selected={customDate}
+                      onSelect={setCustomDate}
                     className="rounded-md border w-full"
-                  />
+                    />
                 </div>
-              </div>
+                  </div>
 
-              {/* Custom Duration */}
+                  {/* Custom Duration */}
               <div className="grid grid-cols-2 gap-3 sm:gap-2">
-                <div>
+                    <div>
                   <Label className="text-sm sm:text-xs text-slate-600 mb-2 block">Duration</Label>
-                  <Input
-                    type="number"
-                    value={customDuration}
-                    onChange={(e) => setCustomDuration(e.target.value)}
-                    min="1"
-                    max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
+                      <Input
+                        type="number"
+                        value={customDuration}
+                        onChange={(e) => setCustomDuration(e.target.value)}
+                        min="1"
+                        max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
                     className="text-base sm:text-sm h-11 sm:h-9"
-                  />
-                </div>
-                <div>
+                      />
+                    </div>
+                    <div>
                   <Label className="text-sm sm:text-xs text-slate-600 mb-2 block">Type</Label>
-                  <Select value={customDurationType} onValueChange={setCustomDurationType}>
+                      <Select value={customDurationType} onValueChange={setCustomDurationType}>
                     <SelectTrigger className="text-base sm:text-sm h-11 sm:h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationTypes.map((type) => (
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {durationTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value} className="text-base sm:text-sm">
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
 
               <Button 
                 onClick={handleCustomApply} 
                 className="w-full h-11 sm:h-9 text-base sm:text-sm font-medium"
               >
-                Apply Custom Time
-              </Button>
-            </div>
-          )}
+                    Apply Custom Time
+                  </Button>
+                </div>
+              )}
 
-          {/* Preview */}
-          {value && (
+              {/* Preview */}
+              {value && (
             <div className="pt-3 sm:pt-4 border-t">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm">
                 <span className="text-slate-600 font-medium">Deadline:</span>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5 w-fit`}>
-                    <span className="mr-1">{urgency.icon}</span>
-                    {urgency.level.toUpperCase()}
-                  </Badge>
+                        <span className="mr-1">{urgency.icon}</span>
+                        {urgency.level.toUpperCase()}
+                      </Badge>
                   <span className="font-medium text-sm sm:text-base">
-                    {format(deadline, 'MMM dd, yyyy HH:mm')}
-                  </span>
+                        {format(deadline, 'MMM dd, yyyy HH:mm')}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              )}
+            </CardContent>
+          </Card>
     </>
   );
 
@@ -425,8 +425,8 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
           </PopoverTrigger>
           <PopoverContent className="w-80 sm:w-96 p-0" align="start">
             <DeadlineContent />
-          </PopoverContent>
-        </Popover>
+        </PopoverContent>
+      </Popover>
       )}
 
     </div>

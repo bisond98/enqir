@@ -656,28 +656,19 @@ const Dashboard = () => {
   };
 
   // Handle payment plan selection for upgrades
+  // Note: Payment is already processed in PaymentPlanSelector via Razorpay
+  // This function just updates the UI after successful payment
   const handlePlanSelect = async (planId: string, price: number) => {
     if (!selectedEnquiryForUpgrade || !user) return;
     
     try {
       setUpgradeLoading(selectedEnquiryForUpgrade.id);
       
-      // 1. Save payment record
-      const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const plan = PAYMENT_PLANS.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
       
-      const paymentRecordId = await savePaymentRecord(
-        selectedEnquiryForUpgrade.id,
-        user.uid,
-        plan,
-        transactionId
-      );
-      
-      // 2. Update user payment plan
-      await updateUserPaymentPlan(user.uid, planId, paymentRecordId, selectedEnquiryForUpgrade.id);
-      
-      // 3. Update enquiry
+      // Payment was already processed via Razorpay in PaymentPlanSelector
+      // Just update the enquiry to reflect the new plan
       await updateDoc(doc(db, 'enquiries', selectedEnquiryForUpgrade.id), {
         selectedPlanId: planId,
         selectedPlanPrice: price,
@@ -704,11 +695,11 @@ const Dashboard = () => {
       });
       
     } catch (error) {
-      console.error('Error upgrading enquiry:', error);
+      console.error('Error updating enquiry after payment:', error);
       setUpgradeLoading(null);
       toast({
-        title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        title: "Update Failed",
+        description: "Payment was successful but there was an error updating the enquiry. Please refresh the page.",
         variant: "destructive",
       });
     }
@@ -1580,6 +1571,7 @@ const Dashboard = () => {
                   isUpgrade={true}
                   enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
                   className="max-w-5xl mx-auto"
+                  user={user}
                 />
               </div>
             </DialogContent>

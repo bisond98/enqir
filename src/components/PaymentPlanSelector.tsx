@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Star, Zap, CheckCircle } from 'lucide-react';
 import { PaymentPlan, PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
 import PaymentModal from './PaymentModal';
+import { useToast } from '@/hooks/use-toast';
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 import { getUserPaymentPlan, hasProEnquiriesRemaining } from '@/services/paymentService';
 
@@ -16,6 +17,7 @@ interface PaymentPlanSelectorProps {
   isUpgrade?: boolean;
   enquiryCreatedAt?: any; // For determining if enquiry is old vs new for Pro users
   className?: string;
+  user?: any; // User object for payment processing
 }
 
 const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
@@ -25,7 +27,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   onPlanSelect,
   isUpgrade = false,
   enquiryCreatedAt,
-  className = ''
+  className = '',
+  user
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>(currentPlanId);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -34,6 +37,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [userCurrentPlan, setUserCurrentPlan] = useState<string>('free');
   const [proActivationDate, setProActivationDate] = useState<any>(null);
+  const { toast } = useToast();
 
   // Check if user has Pro plan with remaining enquiries
   useEffect(() => {
@@ -82,6 +86,10 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     }
   }
 
+  // Get current plan price for upgrade calculations
+  const currentPlanObj = availablePlans.find(p => p.id === currentPlanId) || PAYMENT_PLANS.find(p => p.id === currentPlanId);
+  const currentPlanPrice = currentPlanObj?.price || 0;
+
   // Debug logging
   console.log('🔍 PaymentPlanSelector Debug:', {
     currentPlanId,
@@ -90,15 +98,119 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     availablePlans: availablePlans.map(p => ({ id: p.id, name: p.name, price: p.price }))
   });
 
-  const handlePlanSelect = (plan: PaymentPlan) => {
+  const handlePlanSelect = async (plan: PaymentPlan) => {
     setSelectedPlan(plan.id);
     setSelectedPlanData(plan);
     
     // If it's a free plan, call onPlanSelect directly
     if (plan.price === 0) {
       onPlanSelect(plan.id, plan.price);
+    } else if (isUpgrade && user) {
+      // For upgrades, process payment directly with Razorpay (like PostEnquiry)
+      try {
+        const { processPayment } = await import('@/services/paymentService');
+        
+        // Calculate price difference for upgrade
+        const priceDifference = plan.price - currentPlanPrice;
+        const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
+        
+        // Validate amount - must be greater than 0
+        if (finalPrice <= 0) {
+          console.warn('⚠️ Invalid upgrade amount:', { planPrice: plan.price, currentPlanPrice, finalPrice });
+          throw new Error('Invalid upgrade amount. Please select a higher plan.');
+        }
+        
+        // Ensure minimum amount (Razorpay minimum is 1 rupee = 100 paise)
+        if (finalPrice < 1) {
+          throw new Error('Upgrade amount is too small. Minimum amount is ₹1.');
+        }
+        
+        console.log('🚀 Processing upgrade payment directly (like PostEnquiry)...', {
+          planId: plan.id,
+          planPrice: plan.price,
+          currentPlanPrice,
+          finalPrice,
+          enquiryId
+        });
+        
+        // Create plan with adjusted price for upgrade
+        const planForPayment = { ...plan, price: finalPrice };
+        
+        // Process payment directly - Razorpay will open
+        const paymentResult = await processPayment(
+          enquiryId,
+          userId,
+          planForPayment,
+          {
+            // Use user's info from Firebase auth - Razorpay will show its own card form
+            name: user.displayName || user.email?.split('@')[0] || '',
+            email: user.email || '',
+            contact: '', // Optional
+          }
+        );
+        
+        // CRITICAL: Check if payment actually succeeded - DO NOT proceed if payment failed
+        if (!paymentResult.success) {
+          const errorMsg = paymentResult.error || 'Payment failed. Razorpay did not complete successfully.';
+          console.error('❌ Payment failed - NOT proceeding with upgrade:', errorMsg);
+          throw new Error(errorMsg);
+        }
+        
+        // CRITICAL: Must have transaction ID from Razorpay
+        if (!paymentResult.transactionId) {
+          console.error('❌ No transaction ID - NOT proceeding with upgrade');
+          throw new Error('Payment verification failed. No transaction ID received from Razorpay.');
+        }
+        
+        console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
+        
+        // Save payment record and update enquiry after successful Razorpay payment
+        try {
+          const { savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan } = await import('@/services/paymentService');
+          
+          // Save payment record with REAL transaction ID from Razorpay
+          const paymentRecordId = await savePaymentRecord(
+            enquiryId,
+            userId,
+            plan,
+            paymentResult.transactionId
+          );
+          
+          // Update enquiry premium status
+          await updateEnquiryPremiumStatus(enquiryId, true, plan.id);
+          
+          // Update user payment plan
+          await updateUserPaymentPlan(userId, plan.id, paymentRecordId, enquiryId);
+          
+          console.log('✅ Payment record saved and enquiry updated');
+        } catch (error) {
+          console.error('❌ Error saving payment record:', error);
+          // Still call onPlanSelect so the UI updates, but log the error
+        }
+        
+        // Call onPlanSelect with the plan details after successful payment
+        onPlanSelect(plan.id, plan.price);
+      } catch (error: any) {
+        console.error('❌ Error processing upgrade payment:', error);
+        // CRITICAL: Do NOT call onPlanSelect - payment failed!
+        // Show error to user and do NOT proceed with upgrade
+        const errorMessage = error?.message || 'Payment failed. Please try again.';
+        console.error('🚫 Upgrade blocked - payment failed:', errorMessage);
+        
+        // Show error toast to user
+        toast({
+          title: 'Payment Failed',
+          description: errorMessage.includes('Server error') 
+            ? 'Unable to connect to payment server. Please check your internet connection and try again.'
+            : errorMessage,
+          variant: 'destructive',
+        });
+        
+        // Exit early - do NOT call onPlanSelect - upgrade is blocked
+        return;
+      }
     } else if (isUpgrade) {
-      // For upgrades, show payment modal immediately
+      // If no user object, fallback to modal
       setShowPaymentModal(true);
     } else {
       // For new enquiries, just select the plan - payment will happen on form submit
@@ -110,9 +222,6 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     onPlanSelect(planId, price);
     setShowPaymentModal(false);
   };
-
-  const currentPlan = availablePlans.find(plan => plan.id === currentPlanId);
-  const currentPlanPrice = currentPlan?.price || 0;
 
   const getPlanIcon = (plan: PaymentPlan) => {
     if (plan.isPro) return <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-500" />;

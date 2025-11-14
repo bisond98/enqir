@@ -65,22 +65,12 @@ const DetailedResponses = () => {
       const { updateDoc, serverTimestamp } = await import('firebase/firestore');
       const { PAYMENT_PLANS } = await import('@/config/paymentPlans');
       
-      // 1. Save payment record
-      const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Payment was already processed via Razorpay in PaymentPlanSelector
+      // Just update the enquiry to reflect the new plan
       const plan = PAYMENT_PLANS.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
       
-      const paymentRecordId = await savePaymentRecord(
-        enquiry.id,
-        user.uid,
-        plan,
-        transactionId
-      );
-      
-      // 2. Update user payment plan
-      await updateUserPaymentPlan(user.uid, planId, paymentRecordId, enquiry.id);
-      
-      // 3. Update enquiry
+      // Update enquiry
       const enquiryRef = doc(db, 'enquiries', enquiry.id);
       await updateDoc(enquiryRef, {
         selectedPlanId: planId,
@@ -366,6 +356,7 @@ const DetailedResponses = () => {
                     isUpgrade={true}
                     enquiryCreatedAt={enquiry.createdAt}
                     className="max-w-4xl mx-auto"
+                    user={user}
                   />
                 </CardContent>
               </Card>
@@ -513,6 +504,7 @@ const DetailedResponses = () => {
                 isUpgrade={true}
                 enquiryCreatedAt={enquiry.createdAt}
                 className="max-w-5xl mx-auto"
+                user={user}
               />
             </div>
           </div>

@@ -292,24 +292,11 @@ const EnquiryResponsesPage = () => {
     if (!selectedEnquiryForUpgrade || !user) return;
 
     try {
-      const { updateUserPaymentPlan, savePaymentRecord } = await import('@/services/paymentService');
-      
-      // 1. Save payment record
-      const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Payment was already processed via Razorpay in PaymentPlanSelector
+      // Just update the enquiry to reflect the new plan
       const plan = PAYMENT_PLANS.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
       
-      const paymentRecordId = await savePaymentRecord(
-        selectedEnquiryForUpgrade.id,
-        user.uid,
-        plan,
-        transactionId
-      );
-      
-      // 2. Update user payment plan
-      await updateUserPaymentPlan(user.uid, planId, paymentRecordId, selectedEnquiryForUpgrade.id);
-      
-      // 3. Update enquiry
       const enquiryRef = doc(db, 'enquiries', selectedEnquiryForUpgrade.id);
       await updateDoc(enquiryRef, {
         selectedPlanId: planId,
@@ -330,8 +317,8 @@ const EnquiryResponsesPage = () => {
     } catch (error) {
       console.error('Error updating plan:', error);
       toast({
-        title: "Error",
-        description: "Failed to update plan. Please try again.",
+        title: "Update Failed",
+        description: "Payment was successful but there was an error updating the enquiry. Please refresh the page.",
         variant: "destructive"
       });
     }
@@ -718,8 +705,8 @@ const EnquiryResponsesPage = () => {
                 })();
                 
                 return (
-                  <Button
-                    variant="default"
+              <Button
+                variant="default"
                     disabled={isExpired}
                     className="bg-blue-600 hover:bg-blue-700 text-white w-full max-w-xs mt-1 sm:mt-2 py-2 sm:py-3 text-xs sm:text-base font-black rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => {
@@ -727,9 +714,9 @@ const EnquiryResponsesPage = () => {
                         handleUpgradeClick(enquiry);
                       }
                     }}
-                  >
+              >
                     {isExpired ? 'Enquiry Expired' : 'Upgrade Plan'}
-                  </Button>
+              </Button>
                 );
               })()}
             </div>
@@ -796,6 +783,7 @@ const EnquiryResponsesPage = () => {
                 isUpgrade={true}
                 enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
                 className="max-w-5xl mx-auto"
+                user={user}
               />
             </div>
           </DialogContent>

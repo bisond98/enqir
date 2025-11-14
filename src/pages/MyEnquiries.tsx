@@ -218,27 +218,15 @@ const MyEnquiries = () => {
     
     console.log('MyEnquiries: Plan selected:', { planId, price, enquiryId: selectedEnquiryForUpgrade.id });
     
-    // Update the enquiry in the database
+    // Payment was already processed via Razorpay in PaymentPlanSelector
+    // Just update the enquiry to reflect the new plan
     try {
       const { updateDoc, serverTimestamp } = await import('firebase/firestore');
-      const { updateUserPaymentPlan, savePaymentRecord } = await import('@/services/paymentService');
       
-      // 1. Save payment record
-      const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const plan = PAYMENT_PLANS.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
       
-      const paymentRecordId = await savePaymentRecord(
-        selectedEnquiryForUpgrade.id,
-        user.uid,
-        plan,
-        transactionId
-      );
-      
-      // 2. Update user payment plan
-      await updateUserPaymentPlan(user.uid, planId, paymentRecordId, selectedEnquiryForUpgrade.id);
-      
-      // 3. Update enquiry
+      // Update enquiry
       await updateDoc(doc(db, 'enquiries', selectedEnquiryForUpgrade.id), {
         selectedPlanId: planId,
         selectedPlanPrice: price,
@@ -784,6 +772,7 @@ const MyEnquiries = () => {
                 isUpgrade={true}
                 enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
                 className="max-w-5xl mx-auto"
+                user={user}
               />
             </div>
           </DialogContent>

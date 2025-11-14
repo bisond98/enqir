@@ -61,31 +61,70 @@ const createRazorpayOrder = async (
     // Use Firebase Cloud Functions URL
     const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
     const orderUrl = `${functionsUrl}/createRazorpayOrder`;
+    
+    // Validate amount before sending
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid amount: Amount must be greater than 0');
+    }
+    
+    // Ensure minimum amount (Razorpay minimum is 1 rupee = 100 paise)
+    const amountInPaise = Math.round(amount * 100);
+    if (amountInPaise < 100) {
+      throw new Error('Amount too small: Minimum amount is ₹1');
+    }
+    
+    const requestBody = {
+      amount: amountInPaise, // Convert to paise
+      currency: 'INR',
+      enquiryId,
+      userId,
+      planId,
+    };
+    
     console.log('📡 Creating order via Cloud Functions:', orderUrl);
+    console.log('📦 Request body:', requestBody);
+    console.log('💰 Amount details:', { amount, amountInPaise, currency: 'INR' });
     
     const response = await fetch(orderUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        amount: amount * 100, // Convert to paise
-        currency: 'INR',
-        enquiryId,
-        userId,
-        planId,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
+    // Get response text first to see what we're dealing with
+    const responseText = await response.text();
+    console.log('📥 Response status:', response.status);
+    console.log('📥 Response text:', responseText);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || 'Failed to create order');
+      let errorMessage = 'Failed to create order';
+      let errorDetails: any = {};
+      
+      try {
+        errorDetails = JSON.parse(responseText);
+        errorMessage = errorDetails.error || errorDetails.details || errorDetails.message || `Server error (${response.status})`;
+        console.error('❌ Order creation error details:', errorDetails);
+      } catch (e) {
+        // If response is not JSON, use the text
+        errorMessage = responseText || `Server error (${response.status}). Please check Firebase Functions configuration.`;
+        console.error('❌ Order creation error (non-JSON):', responseText);
+      }
+      
+      // More specific error message
+      if (response.status === 500) {
+        errorMessage = `Server error: ${errorMessage}. Please check Firebase Functions logs and ensure Razorpay credentials are configured.`;
+      }
+      
+      throw new Error(errorMessage);
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
+    console.log('✅ Order created successfully:', data);
     return data;
   } catch (error) {
-    console.error('Error creating Razorpay order:', error);
+    console.error('❌ Error creating Razorpay order:', error);
     throw error;
   }
 };

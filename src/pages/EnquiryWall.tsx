@@ -1041,13 +1041,13 @@ export default function EnquiryWall() {
                                   Expired
                                 </Button>
                               ) : (
-                                <Button 
-                                  className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
-                                  onClick={() => window.location.href = `/respond/${enquiry.id}`}
-                                >
-                                  Sell
-                                  <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2" />
-                                </Button>
+                              <Button 
+                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
+                                onClick={() => window.location.href = `/respond/${enquiry.id}`}
+                              >
+                                Sell
+                                <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2" />
+                              </Button>
                               )
                             ) : (
                               <Link to="/signin">

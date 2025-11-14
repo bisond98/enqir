@@ -8,11 +8,25 @@ admin.initializeApp();
 // Import Razorpay using require (CommonJS)
 const Razorpay = require("razorpay");
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: functions.config().razorpay.key_id,
-  key_secret: functions.config().razorpay.key_secret,
-});
+// Initialize Razorpay lazily (only when needed)
+const getRazorpayInstance = (): any => {
+  try {
+    const razorpayConfig = functions.config().razorpay;
+    if (!razorpayConfig || !razorpayConfig.key_id || !razorpayConfig.key_secret) {
+      console.error("❌ Razorpay credentials not configured in Firebase Functions");
+      throw new Error("Razorpay credentials not configured. Please run: firebase functions:config:set razorpay.key_id=\"YOUR_KEY\" razorpay.key_secret=\"YOUR_SECRET\"");
+    }
+    const razorpay = new Razorpay({
+      key_id: razorpayConfig.key_id,
+      key_secret: razorpayConfig.key_secret,
+    });
+    console.log("✅ Razorpay initialized successfully");
+    return razorpay;
+  } catch (error: any) {
+    console.error("❌ Failed to initialize Razorpay:", error.message);
+    throw error;
+  }
+};
 
 // Create Razorpay order
 export const createRazorpayOrder = functions.https.onRequest(async (req, res): Promise<void> => {
@@ -59,7 +73,8 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
       },
     };
 
-    // Create order with Razorpay
+    // Get Razorpay instance and create order
+    const razorpay = getRazorpayInstance();
     const order = await razorpay.orders.create(options);
 
     console.log("✅ Order created successfully:", order.id);
@@ -71,10 +86,14 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
     });
   } catch (error: any) {
     console.error("❌ Error creating order:", error);
-    res.status(500).json({
+    const errorMessage = error.message || "Unknown error";
+    const errorDetails = {
       error: "Failed to create order",
-      details: error.message,
-    });
+      details: errorMessage,
+      ...(error.response && { razorpayError: error.response }),
+    };
+    console.error("❌ Full error details:", errorDetails);
+    res.status(500).json(errorDetails);
   }
 });
 
