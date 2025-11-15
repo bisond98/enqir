@@ -774,7 +774,7 @@ const EnquiryResponsesPage = () => {
                 <span className="break-words">Upgrade Your Enquiry Plan</span>
               </DialogTitle>
               <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
-                Choose a plan to unlock more responses for "{selectedEnquiryForUpgrade.title}"
+                Select a plan to unlock premium responses
               </DialogDescription>
             </DialogHeader>
             <div className="mt-1 sm:mt-2 md:mt-4 -mx-1 sm:mx-0">

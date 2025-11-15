@@ -490,7 +490,7 @@ const DetailedResponses = () => {
                 <span>Choose Your Plan</span>
               </DialogTitle>
               <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
-                Upgrade your enquiry to unlock more responses and premium features
+                Select a plan to unlock premium responses
               </DialogDescription>
             </DialogHeader>
             

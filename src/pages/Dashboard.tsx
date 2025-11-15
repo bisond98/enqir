@@ -1558,7 +1558,7 @@ const Dashboard = () => {
                   <span className="break-words">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
                 </DialogTitle>
                 <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
-                  Choose a plan to unlock more responses and premium features for this enquiry
+                  Select a plan to unlock premium responses
                 </DialogDescription>
               </DialogHeader>
               
