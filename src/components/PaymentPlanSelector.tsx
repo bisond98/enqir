@@ -274,7 +274,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative cursor-pointer transition-all duration-200 overflow-hidden ${
+            className={`relative transition-all duration-200 overflow-hidden ${
               selectedPlan === plan.id
                 ? 'ring-2 ring-blue-500 shadow-md border-2 border-blue-400'
                 : 'hover:shadow-sm'
@@ -283,7 +283,6 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                 ? 'border border-blue-200 bg-blue-50/30' 
                 : 'border border-gray-200'
             }`}
-            onClick={() => handlePlanSelect(plan)}
           >
             {/* Card Header */}
             <div className="bg-gray-800 px-3 sm:px-4 py-2.5 sm:py-2.5 h-auto min-h-[52px] sm:min-h-[48px] flex items-center">
@@ -353,8 +352,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
 
       {selectedPlan !== currentPlanId && (() => {
         const selectedPlanObj = availablePlans.find(p => p.id === selectedPlan);
-        const priceDifference = selectedPlanObj ? (selectedPlanObj.price - currentPlanPrice) : 0;
-        const finalPrice = isUpgrade && priceDifference > 0 ? priceDifference : (selectedPlanObj?.price || 0);
+        if (!selectedPlanObj) return null;
+        
+        // Calculate price difference for upgrade
+        const priceDifference = selectedPlanObj.price - currentPlanPrice;
+        const finalPrice = isUpgrade && priceDifference > 0 ? priceDifference : selectedPlanObj.price;
+        // Round to avoid floating point issues
+        const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
         
         return (
           <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -365,24 +369,22 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                 </p>
                 <p className="text-xs sm:text-sm text-blue-700 leading-tight">
                   {isUpgrade 
-                    ? `You will be charged ₹${finalPrice} for the upgrade`
-                    : 'Proceed to payment to activate this plan'
+                    ? `You will be charged ₹${roundedFinalPrice} for the upgrade (${selectedPlanObj.name} plan: ₹${selectedPlanObj.price} - Current plan: ₹${currentPlanPrice})`
+                    : `Proceed to payment to activate ${selectedPlanObj.name} plan (₹${selectedPlanObj.price})`
                   }
                 </p>
               </div>
               <Button
                 size="sm"
                 className="h-10 sm:h-8 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-4 flex-shrink-0 w-full sm:w-auto"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   if (isUpgrade && user) {
                     // For upgrades, process payment via Razorpay
                     handleUpgradeNow();
                   } else {
                     // For new enquiries, just call onPlanSelect
-                    const plan = availablePlans.find(p => p.id === selectedPlan);
-                    if (plan) {
-                      onPlanSelect(plan.id, plan.price);
-                    }
+                    onPlanSelect(selectedPlanObj.id, selectedPlanObj.price);
                   }
                 }}
               >
