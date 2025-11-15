@@ -109,7 +109,19 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     if (plan.price === 0) {
       onPlanSelect(plan.id, plan.price);
     }
-    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now"
+    // For upgrades with paid plans, directly trigger payment
+    else if (isUpgrade && user && plan.price > 0) {
+      // Calculate price difference for upgrade
+      const priceDifference = plan.price - currentPlanPrice;
+      const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
+      const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
+      
+      // Only proceed if there's a valid upgrade amount
+      if (roundedFinalPrice > 0 && roundedFinalPrice >= 1) {
+        // Trigger payment directly
+        handleUpgradeNow();
+      }
+    }
     // For new enquiries, just select the plan - payment will happen on form submit
   };
 
@@ -340,58 +352,6 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
           </Card>
         ))}
       </div>
-
-      {selectedPlan !== currentPlanId && (() => {
-        const selectedPlanObj = availablePlans.find(p => p.id === selectedPlan);
-        if (!selectedPlanObj) return null;
-        
-        // Calculate price difference for upgrade
-        const priceDifference = selectedPlanObj.price - currentPlanPrice;
-        const finalPrice = isUpgrade && priceDifference > 0 ? priceDifference : selectedPlanObj.price;
-        // Round to avoid floating point issues
-        const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
-        
-        return (
-          <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 md:p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
-              <div className="min-w-0 flex-1 text-center sm:text-left">
-                <p className="text-xs sm:text-sm md:text-base font-semibold text-blue-900 mb-1 sm:mb-1.5">
-                  {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
-                </p>
-                <p className="text-[10px] sm:text-xs md:text-sm text-blue-700 leading-relaxed">
-                  {isUpgrade 
-                    ? (
-                      <>
-                        <span className="block sm:inline">You will be charged </span>
-                        <span className="font-bold">₹{roundedFinalPrice}</span>
-                        <span className="block sm:inline sm:ml-1"> for the upgrade</span>
-                        <span className="hidden sm:inline"> ({selectedPlanObj.name}: ₹{selectedPlanObj.price} - Current: ₹{currentPlanPrice})</span>
-                      </>
-                    )
-                    : `Proceed to payment to activate ${selectedPlanObj.name} plan (₹${selectedPlanObj.price})`
-                  }
-                </p>
-              </div>
-              <Button
-                size="sm"
-                className="h-10 sm:h-9 md:h-8 text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 flex-shrink-0 w-full sm:w-auto min-h-[44px] sm:min-h-[36px] shadow-md"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (isUpgrade && user) {
-                    // For upgrades, process payment via Razorpay
-                    handleUpgradeNow();
-                  } else {
-                    // For new enquiries, just call onPlanSelect
-                    onPlanSelect(selectedPlanObj.id, selectedPlanObj.price);
-                  }
-                }}
-              >
-                {isUpgrade ? 'Upgrade Now' : 'Continue'}
-              </Button>
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Payment Modal */}
       {selectedPlanData && (
