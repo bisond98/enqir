@@ -1092,7 +1092,7 @@ export default function PostEnquiry() {
           const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
           return diffHours < 72; // Less than 3 days is considered urgent
         })() : false,
-        status: selectedPlan && selectedPlan.price > 0 ? "pending_payment" : "pending", // Always start as pending for AI review
+        status: selectedPlan && selectedPlan.price > 0 ? "pending_payment" : (isUserVerified ? "live" : "pending"),
         isPremium: isAutoProEnquiry || (selectedPlan ? selectedPlan.price > 0 : false),
         selectedPlanId: isAutoProEnquiry ? 'premium' : (selectedPlan?.id || 'free'), // Pro enquiries get premium features
         selectedPlanPrice: isAutoProEnquiry ? 0 : (selectedPlan?.price || 0), // No charge for Pro auto-enquiries

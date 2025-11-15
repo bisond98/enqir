@@ -21,7 +21,8 @@ export interface DuplicateCheckResult {
 export class DuplicateDetectionService {
   private static instance: DuplicateDetectionService;
   private readonly TIME_WINDOW_HOURS = 24;
-  private readonly SIMILARITY_THRESHOLD = 0.95; // 95% similarity threshold
+  private readonly SAME_USER_THRESHOLD = 0.99; // 99% similarity for same user
+  private readonly DIFFERENT_USER_THRESHOLD = 1.0; // 100% exact match for different users
 
   public static getInstance(): DuplicateDetectionService {
     if (!DuplicateDetectionService.instance) {
@@ -55,7 +56,7 @@ export class DuplicateDetectionService {
       const querySnapshot = await getDocs(enquiriesQuery);
       const matches: DuplicateMatch[] = [];
 
-      // Check each enquiry for similarity (95% threshold)
+      // Check each enquiry for similarity with different thresholds based on user
       querySnapshot.forEach((doc) => {
         const enquiry = doc.data();
         
@@ -64,17 +65,23 @@ export class DuplicateDetectionService {
           return;
         }
 
-        // Check for similarity (95% threshold)
+        // Check for similarity
         const similarity = this.calculateSimilarity(title, description, enquiry.title, enquiry.description);
+        const isSameUser = enquiry.userId === userId;
         
-        if (similarity >= this.SIMILARITY_THRESHOLD) {
+        // Apply different thresholds:
+        // - Same user: 99% similarity
+        // - Different user: 100% exact match only
+        const threshold = isSameUser ? this.SAME_USER_THRESHOLD : this.DIFFERENT_USER_THRESHOLD;
+        
+        if (similarity >= threshold) {
           matches.push({
             enquiryId: doc.id,
             userId: enquiry.userId,
             title: enquiry.title,
             description: enquiry.description,
             createdAt: enquiry.createdAt,
-            isSameUser: enquiry.userId === userId,
+            isSameUser: isSameUser,
             similarity: Math.round(similarity * 100) // Convert to percentage
           });
         }
@@ -83,21 +90,22 @@ export class DuplicateDetectionService {
       // Sort matches by similarity (highest first)
       matches.sort((a, b) => b.similarity - a.similarity);
 
+      // Only flag as duplicate if we have matches that meet the strict criteria
       const isDuplicate = matches.length > 0;
       const confidence = isDuplicate ? Math.round(matches[0].similarity) : 0; // Use highest similarity as confidence
 
       let reason = '';
       if (isDuplicate) {
-        const sameUserMatches = matches.filter(m => m.isSameUser).length;
-        const differentUserMatches = matches.filter(m => !m.isSameUser).length;
+        const sameUserMatches = matches.filter(m => m.isSameUser);
+        const differentUserMatches = matches.filter(m => !m.isSameUser);
         const highestSimilarity = matches[0].similarity;
         
-        if (sameUserMatches > 0 && differentUserMatches > 0) {
-          reason = `Duplicate detected (${highestSimilarity}% similarity): ${sameUserMatches} from same user, ${differentUserMatches} from different users`;
-        } else if (sameUserMatches > 0) {
-          reason = `Duplicate detected (${highestSimilarity}% similarity): ${sameUserMatches} similar enquiry(ies) from same user`;
+        if (sameUserMatches.length > 0 && differentUserMatches.length > 0) {
+          reason = `Duplicate detected: ${sameUserMatches.length} from same account (≥99%), ${differentUserMatches.length} exact match(es) from different account(s)`;
+        } else if (sameUserMatches.length > 0) {
+          reason = `Duplicate detected: ${sameUserMatches.length} similar enquiry(ies) from same account (≥99% similarity)`;
         } else {
-          reason = `Duplicate detected (${highestSimilarity}% similarity): ${differentUserMatches} similar enquiry(ies) from different user(s)`;
+          reason = `Duplicate detected: ${differentUserMatches.length} exact match(es) from different account(s)`;
         }
       } else {
         reason = 'No duplicates found';
