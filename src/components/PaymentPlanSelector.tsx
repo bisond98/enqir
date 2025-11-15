@@ -262,18 +262,6 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
       </div>
 
       <div className="space-y-2.5 sm:space-y-3 md:space-y-2.5 min-h-[120px]">
-        {availablePlans.length === 0 && isUpgrade && (
-          <div className="flex flex-col items-center justify-center py-12 px-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
-            <CheckCircle className="h-16 w-16 text-green-600 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">You're Already at the Top! 🎉</h3>
-            <p className="text-gray-600 text-center max-w-md">
-              {currentPlanId === 'pro' 
-                ? 'Your enquiry has Pro features with unlimited responses. This is the highest tier!'
-                : 'Your enquiry already has Premium features with unlimited responses. Enjoy full access to all seller responses!'}
-            </p>
-          </div>
-        )}
-        
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}

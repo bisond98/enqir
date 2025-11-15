@@ -19,7 +19,7 @@ import CountdownTimer from "../components/CountdownTimer";
 import { fadeInUp, staggerContainer } from "../lib/motion";
 import PaymentPlanSelector from "../components/PaymentPlanSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
-import { PAYMENT_PLANS } from "../config/paymentPlans";
+import { PAYMENT_PLANS, getUpgradeOptions } from "../config/paymentPlans";
 import { savePaymentRecord, updateUserPaymentPlan } from "../services/paymentService";
 import { X } from "lucide-react";
 import { LoadingAnimation } from "../components/LoadingAnimation";
@@ -1160,22 +1160,34 @@ const Dashboard = () => {
                               </Button>
                               
                               {/* Upgrade Button - Show if not premium */}
-                              {!enquiry.isPremium && (
-                                <Button
-                                  variant="default"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!expiredFlag) {
-                                      handleUpgradeClick(enquiry, e);
-                                    }
-                                  }}
-                                  disabled={expiredFlag}
-                                  className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 bg-blue-600 hover:bg-blue-700 text-white"
-                                >
-                                  Upgrade
-                                </Button>
-                              )}
+                              {(() => {
+                                const enquiryPlan = enquiry.selectedPlanId || 'free';
+                                // Don't show upgrade button for premium (top tier) or pro
+                                if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
+                                const upgradeOptions = getUpgradeOptions(
+                                  enquiryPlan,
+                                  'free',
+                                  enquiry.createdAt,
+                                  null
+                                );
+                                if (upgradeOptions.length === 0) return null;
+                                return (
+                                  <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!expiredFlag) {
+                                        handleUpgradeClick(enquiry, e);
+                                      }
+                                    }}
+                                    disabled={expiredFlag}
+                                    className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 bg-blue-600 hover:bg-blue-700 text-white"
+                                  >
+                                    Upgrade
+                                  </Button>
+                                );
+                              })()}
                               
                               {enquiry.isPremium && (
                                 <Badge className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1">

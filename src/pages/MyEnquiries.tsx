@@ -275,12 +275,15 @@ const MyEnquiries = () => {
 
   // Handle upgrade button click
   const handleUpgradeClick = (enquiry: Enquiry) => {
-    const currentPlanId = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
+    // Always use selectedPlanId if available, otherwise default to 'free'
+    // Don't use isPremium flag to determine plan - it can be incorrectly set
+    const currentPlanId = enquiry.selectedPlanId || 'free';
     console.log('🚀 Upgrade clicked for enquiry:', {
       enquiryId: enquiry.id,
       currentPlanId: currentPlanId,
       selectedPlanId: enquiry.selectedPlanId,
-      isPremium: enquiry.isPremium
+      isPremium: enquiry.isPremium,
+      selectedPlanPrice: enquiry.selectedPlanPrice
     });
     setSelectedEnquiryForUpgrade(enquiry);
     setCurrentPlan(currentPlanId);
@@ -622,7 +625,8 @@ const MyEnquiries = () => {
                       
                       {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
                       {(() => {
-                        const enquiryPlan = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
+                        // Always use selectedPlanId - don't use isPremium flag
+                        const enquiryPlan = enquiry.selectedPlanId || 'free';
                         // Don't show upgrade button for premium (top tier) or pro (hidden for future)
                         if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
                         const upgradeOptions = getUpgradeOptions(

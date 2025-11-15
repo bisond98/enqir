@@ -647,7 +647,8 @@ const EnquiryDetail = () => {
                         
                         {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
                         {(() => {
-                          const enquiryPlan = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
+                          // Always use selectedPlanId - don't use isPremium flag
+                          const enquiryPlan = enquiry.selectedPlanId || 'free';
                           // Don't show upgrade button for premium (top tier) or pro (hidden for future)
                           if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
                           const upgradeOptions = getUpgradeOptions(

@@ -199,7 +199,9 @@ const EnquiryResponsesPage = () => {
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);
-          setCurrentPlan(enquiryData.selectedPlanId || (enquiryData.isPremium ? 'premium' : 'free'));
+          // Always use selectedPlanId if available, otherwise default to 'free'
+          // Don't use isPremium flag to determine plan - it can be incorrectly set
+          setCurrentPlan(enquiryData.selectedPlanId || 'free');
 
           // Set up real-time response listener - remove orderBy to avoid index requirement
           const responsesQuery = query(
@@ -284,7 +286,9 @@ const EnquiryResponsesPage = () => {
 
   const handleUpgradeClick = (enquiry: Enquiry) => {
     setSelectedEnquiryForUpgrade(enquiry);
-    setCurrentPlan(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'));
+    // Always use selectedPlanId if available, otherwise default to 'free'
+    // Don't use isPremium flag to determine plan - it can be incorrectly set
+    setCurrentPlan(enquiry.selectedPlanId || 'free');
     setShowPaymentSelector(true);
   };
 
@@ -671,7 +675,8 @@ const EnquiryResponsesPage = () => {
 
         {(() => {
           // Don't show unlock message for premium plans (top tier) or pro plans (hidden for future)
-          const enquiryPlan = enquiry?.selectedPlanId || (enquiry?.isPremium ? 'premium' : 'free');
+          // Always use selectedPlanId - don't use isPremium flag
+          const enquiryPlan = enquiry?.selectedPlanId || 'free';
           const isPremiumOrPro = enquiryPlan === 'premium' || enquiryPlan === 'pro';
           
           // Only show for plans below premium (free, basic, standard)
