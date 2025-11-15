@@ -1107,17 +1107,25 @@ const Dashboard = () => {
                             {/* Card Content - Rest with white background */}
                             <div className="p-4 sm:p-4 relative">
                             {/* Deadline in top right corner of white space */}
-                            {enquiry.deadline && (
-                              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1">
-                                <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600" />
-                                <span className="text-[9px] sm:text-xs text-red-600 font-semibold">
-                                  {(() => {
-                                    const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                                    return deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                                  })()}
-                                </span>
-                              </div>
-                            )}
+                            {enquiry.deadline && (() => {
+                              try {
+                                const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                                // Check if deadline is valid
+                                if (deadlineDate && !isNaN(deadlineDate.getTime())) {
+                                  return (
+                                    <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1">
+                                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600" />
+                                      <span className="text-[9px] sm:text-xs text-red-600 font-semibold">
+                                        {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                      </span>
+                                    </div>
+                                  );
+                                }
+                              } catch (e) {
+                                console.error('Error parsing deadline:', e, enquiry.id);
+                              }
+                              return null;
+                            })()}
 
                             {/* Response Count */}
                             <div className="mb-3 sm:mb-2">
