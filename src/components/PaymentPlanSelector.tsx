@@ -227,19 +227,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     if (plan.price === 0) {
       onPlanSelect(plan.id, plan.price);
     }
-    // For upgrades with paid plans, directly trigger payment
-    else if (isUpgrade && user && plan.price > 0) {
-      // Calculate price difference for upgrade
-      const priceDifference = plan.price - currentPlanPrice;
-      const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
-      const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
-      
-      // Only proceed if there's a valid upgrade amount
-      if (roundedFinalPrice > 0 && roundedFinalPrice >= 1) {
-        // Trigger payment directly with the selected plan ID
-        handleUpgradeNow(plan.id);
-      }
-    }
+    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now" button
     // For new enquiries, just select the plan - payment will happen on form submit
   };
 
@@ -359,6 +347,33 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
           </Card>
         ))}
       </div>
+
+      {selectedPlan !== currentPlanId && (() => {
+        const selectedPlanObj = availablePlans.find(p => p.id === selectedPlan);
+        if (!selectedPlanObj) return null;
+        
+        // Only show button for upgrades with paid plans
+        if (isUpgrade && selectedPlanObj.price > 0) {
+          return (
+            <div className="mt-3 sm:mt-4 flex justify-center">
+              <Button
+                size="sm"
+                className="h-10 sm:h-9 md:h-8 text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 min-h-[44px] sm:min-h-[36px] shadow-md"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (user) {
+                    // For upgrades, process payment via Razorpay
+                    handleUpgradeNow(selectedPlanObj.id);
+                  }
+                }}
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          );
+        }
+        return null;
+      })()}
 
       {/* Payment Modal */}
       {selectedPlanData && (
