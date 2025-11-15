@@ -752,18 +752,18 @@ const MyEnquiries = () => {
       {/* Payment Plan Selector Modal */}
       {showPaymentSelector && selectedEnquiryForUpgrade && (
         <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-            <DialogHeader className="mb-4 sm:mb-6">
-              <DialogTitle className="text-base sm:text-lg font-bold text-center mb-2 sm:mb-3 flex items-center justify-center gap-2">
-                <Crown className="h-5 w-5 sm:h-5 sm:w-5 text-yellow-500" />
-                Upgrade Plan for "{selectedEnquiryForUpgrade.title}"
+          <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-5 md:p-6">
+            <DialogHeader className="mb-3 sm:mb-5 md:mb-6 px-1 sm:px-0">
+              <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
+                <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
+                <span className="break-words">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
               </DialogTitle>
-              <DialogDescription className="text-center text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
                 Choose a plan to unlock more responses and premium features for this enquiry
               </DialogDescription>
             </DialogHeader>
             
-            <div className="mt-2 sm:mt-4">
+            <div className="mt-1 sm:mt-2 md:mt-4 -mx-1 sm:mx-0">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={selectedEnquiryForUpgrade.id}

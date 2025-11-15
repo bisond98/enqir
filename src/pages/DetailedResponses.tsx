@@ -483,17 +483,18 @@ const DetailedResponses = () => {
       {/* Payment Plan Selector Modal */}
       {showPaymentSelector && enquiry && (
         <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-            <DialogHeader className="mb-4 sm:mb-6">
-              <DialogTitle className="text-base sm:text-lg font-bold text-center mb-2 sm:mb-3">
-                Choose Your Plan
+          <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-5 md:p-6">
+            <DialogHeader className="mb-3 sm:mb-5 md:mb-6 px-1 sm:px-0">
+              <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
+                <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
+                <span>Choose Your Plan</span>
               </DialogTitle>
-              <DialogDescription className="text-center text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
                 Upgrade your enquiry to unlock more responses and premium features
               </DialogDescription>
             </DialogHeader>
             
-            <div className="mt-2 sm:mt-4">
+            <div className="mt-1 sm:mt-2 md:mt-4 -mx-1 sm:mx-0">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={enquiry.id}

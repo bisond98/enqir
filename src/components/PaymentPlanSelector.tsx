@@ -248,12 +248,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   // }
 
   return (
-    <div className={`space-y-3 sm:space-y-4 ${className}`}>
-      <div className="text-center mb-3 sm:mb-5">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2">
+    <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 ${className}`}>
+      <div className="text-center mb-2.5 sm:mb-4 md:mb-5 px-1 sm:px-0">
+        <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-1.5 md:mb-2">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
         </h3>
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+        <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-relaxed px-2 sm:px-0">
           {isUpgrade 
             ? 'Unlock more responses for this enquiry' 
             : 'Select the plan that works best for you'
@@ -261,7 +261,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         </p>
       </div>
 
-      <div className="space-y-3 sm:space-y-2.5 min-h-[120px]">
+      <div className="space-y-2.5 sm:space-y-3 md:space-y-2.5 min-h-[120px]">
         {availablePlans.length === 0 && isUpgrade && (
           <div className="flex flex-col items-center justify-center py-12 px-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl">
             <CheckCircle className="h-16 w-16 text-green-600 mb-4" />
@@ -279,8 +279,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             key={plan.id}
             className={`relative transition-all duration-200 overflow-hidden ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-blue-500 shadow-md border-2 border-blue-400'
-                : 'hover:shadow-sm'
+                ? 'ring-2 ring-blue-500 shadow-lg border-2 border-blue-400'
+                : 'hover:shadow-md'
             } ${
               plan.isPopular 
                 ? 'border border-blue-200 bg-blue-50/30' 
@@ -288,58 +288,58 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             }`}
           >
             {/* Card Header */}
-            <div className="bg-gray-800 px-3 sm:px-4 py-2.5 sm:py-2.5 h-auto min-h-[52px] sm:min-h-[48px] flex items-center">
-              <div className="flex items-center justify-between w-full gap-2 sm:gap-2">
-                <div className="flex items-center space-x-2 sm:space-x-1.5 flex-1 min-w-0">
+            <div className="bg-gray-800 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center">
+              <div className="flex items-center justify-between w-full gap-1.5 sm:gap-2">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {getPlanIcon(plan)}
                   </div>
-                  <div className="flex items-center gap-1.5 sm:gap-1 flex-1 min-w-0">
-                    <h3 className="text-sm sm:text-base font-semibold text-white flex items-center gap-1.5">
-                      {plan.name}
+                  <div className="flex items-center gap-1 sm:gap-1.5 flex-1 min-w-0">
+                    <h3 className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-center gap-1 sm:gap-1.5">
+                      <span className="truncate">{plan.name}</span>
                       {getPlanBadge(plan)}
                     </h3>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-base sm:text-lg font-semibold text-white">
+                <div className="text-right flex-shrink-0 ml-1 sm:ml-0">
+                  <div className="text-sm sm:text-base md:text-lg font-semibold text-white whitespace-nowrap">
                     ₹{plan.price}
                   </div>
                   {plan.price > 0 && (
-                    <div className="text-[10px] sm:text-xs text-gray-300 whitespace-nowrap">per enquiry</div>
+                    <div className="text-[9px] sm:text-[10px] md:text-xs text-gray-300 whitespace-nowrap">per enquiry</div>
                   )}
                 </div>
               </div>
             </div>
             
             {/* Card Content */}
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2.5 sm:p-3 md:p-4">
               {/* Description */}
-              <div className="mb-2.5 sm:mb-2 text-center">
-                <p className="text-xs sm:text-sm text-gray-700 leading-snug">{plan.description}</p>
+              <div className="mb-2 sm:mb-2.5 md:mb-2 text-center">
+                <p className="text-[11px] sm:text-xs md:text-sm text-gray-700 leading-relaxed">{plan.description}</p>
               </div>
 
               {/* Features */}
-              <div className="space-y-2 sm:space-y-1.5 mb-3 sm:mb-2">
+              <div className="space-y-1.5 sm:space-y-2 md:space-y-1.5 mb-2.5 sm:mb-3 md:mb-2">
                 {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-start space-x-2 sm:space-x-1.5">
-                    <Check className="h-3 w-3 sm:h-3 sm:w-3 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-xs sm:text-sm text-gray-700 leading-snug flex-1">{feature}</span>
+                  <div key={index} className="flex items-start space-x-1.5 sm:space-x-2">
+                    <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-[11px] sm:text-xs md:text-sm text-gray-700 leading-relaxed flex-1">{feature}</span>
                   </div>
                 ))}
               </div>
 
               {/* Select Button */}
-              <div className="mt-3 sm:mt-2.5 pt-3 sm:pt-2 border-t border-gray-200">
+              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t border-gray-200">
                 <Button
                   size="sm"
-                  className={`w-full sm:w-auto h-9 sm:h-8 text-sm sm:text-xs font-medium ${
+                  className={`w-full h-9 sm:h-8 text-xs sm:text-sm font-medium min-h-[44px] sm:min-h-[32px] ${
                     selectedPlan === plan.id
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
                       : plan.isPopular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
-                  } px-4 sm:px-3`}
+                  } px-3 sm:px-4`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePlanSelect(plan);
@@ -364,22 +364,29 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
         
         return (
-          <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-3">
+          <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 md:p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
               <div className="min-w-0 flex-1 text-center sm:text-left">
-                <p className="text-sm sm:text-base font-semibold text-blue-900 mb-1">
+                <p className="text-xs sm:text-sm md:text-base font-semibold text-blue-900 mb-1 sm:mb-1.5">
                   {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
                 </p>
-                <p className="text-xs sm:text-sm text-blue-700 leading-tight">
+                <p className="text-[10px] sm:text-xs md:text-sm text-blue-700 leading-relaxed">
                   {isUpgrade 
-                    ? `You will be charged ₹${roundedFinalPrice} for the upgrade (${selectedPlanObj.name} plan: ₹${selectedPlanObj.price} - Current plan: ₹${currentPlanPrice})`
+                    ? (
+                      <>
+                        <span className="block sm:inline">You will be charged </span>
+                        <span className="font-bold">₹{roundedFinalPrice}</span>
+                        <span className="block sm:inline sm:ml-1"> for the upgrade</span>
+                        <span className="hidden sm:inline"> ({selectedPlanObj.name}: ₹{selectedPlanObj.price} - Current: ₹{currentPlanPrice})</span>
+                      </>
+                    )
                     : `Proceed to payment to activate ${selectedPlanObj.name} plan (₹${selectedPlanObj.price})`
                   }
                 </p>
               </div>
               <Button
                 size="sm"
-                className="h-10 sm:h-8 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-4 flex-shrink-0 w-full sm:w-auto"
+                className="h-10 sm:h-9 md:h-8 text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 flex-shrink-0 w-full sm:w-auto min-h-[44px] sm:min-h-[36px] shadow-md"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isUpgrade && user) {
