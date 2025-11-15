@@ -221,6 +221,32 @@ export const processPayment = async (
 
     // Initialize Razorpay checkout
     return new Promise((resolve) => {
+      // Add a history entry so we can detect back button press
+      const state = { razorpayModal: true };
+      window.history.pushState(state, '', window.location.href);
+      
+      let razorpayInstance: any = null;
+      
+      // Handle browser back button to close Razorpay modal
+      const handlePopState = (event: PopStateEvent) => {
+        console.log('⚠️ Browser back button pressed - closing Razorpay modal');
+        window.removeEventListener('popstate', handlePopState);
+        // Close the Razorpay modal if it's open
+        if (razorpayInstance) {
+          try {
+            razorpayInstance.close();
+          } catch (e) {
+            console.log('Razorpay modal already closed');
+          }
+        }
+        resolve({
+          success: false,
+          error: 'Payment cancelled by user',
+        });
+      };
+      
+      window.addEventListener('popstate', handlePopState);
+      
       const options = {
         key: razorpayKeyId,
         amount: order.amount, // Amount in paise
@@ -230,6 +256,9 @@ export const processPayment = async (
         order_id: order.orderId,
         handler: async function (response: any) {
           console.log('💳 Payment completed, verifying...', response);
+          
+          // Remove back button listener on successful payment
+          window.removeEventListener('popstate', handlePopState);
           
           try {
             // Verify payment on backend
@@ -274,7 +303,9 @@ export const processPayment = async (
         },
         modal: {
           ondismiss: function() {
-            console.log('⚠️ Payment cancelled by user (back button or close)');
+            console.log('⚠️ Payment cancelled by user (close button or ESC)');
+            // Remove back button listener when modal is dismissed
+            window.removeEventListener('popstate', handlePopState);
             resolve({
               success: false,
               error: 'Payment cancelled by user',
@@ -289,8 +320,8 @@ export const processPayment = async (
         },
       };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+      razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
     });
   } catch (error) {
     console.error('❌ Payment processing error:', error);
