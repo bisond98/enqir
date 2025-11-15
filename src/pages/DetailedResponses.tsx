@@ -64,7 +64,7 @@ const DetailedResponses = () => {
     
     try {
       const { updateDoc, serverTimestamp } = await import('firebase/firestore');
-      const { PAYMENT_PLANS } = await import('@/config/paymentPlans');
+      const { PAYMENT_PLANS, getUpgradeOptions } = await import('@/config/paymentPlans');
       
       // Payment was already processed via Razorpay in PaymentPlanSelector
       // Just update the enquiry to reflect the new plan
