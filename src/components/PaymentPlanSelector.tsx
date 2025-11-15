@@ -248,12 +248,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   // }
 
   return (
-    <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 ${className}`}>
-      <div className="text-center mb-2.5 sm:mb-4 md:mb-5 px-1 sm:px-0">
+    <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 w-full ${className}`}>
+      <div className="text-center mb-2.5 sm:mb-4 md:mb-5">
         <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-1.5 md:mb-2">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
         </h3>
-        <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-relaxed px-2 sm:px-0">
+        <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-relaxed">
           {isUpgrade 
             ? 'Unlock premium responses' 
             : 'Select the plan that works best for you'

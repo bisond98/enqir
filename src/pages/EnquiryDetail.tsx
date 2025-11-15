@@ -773,18 +773,18 @@ const EnquiryDetail = () => {
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && enquiry && (
           <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-            <DialogContent className="max-w-5xl w-[calc(100vw-1rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-5 md:p-6">
-              <DialogHeader className="mb-3 sm:mb-5 md:mb-6 px-1 sm:px-0">
+            <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-5 md:p-6 mx-auto">
+              <DialogHeader className="mb-3 sm:mb-5 md:mb-6">
                 <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
                   <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
                   <span className="break-words">Upgrade Plan for "{enquiry.title}"</span>
                 </DialogTitle>
-                <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed px-1 sm:px-0">
+                <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed">
                   Select a plan to unlock premium responses
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="mt-1 sm:mt-2 md:mt-4 -mx-1 sm:mx-0">
+              <div className="mt-1 sm:mt-2 md:mt-4">
                 <PaymentPlanSelector
                   currentPlanId={currentPlan}
                   enquiryId={enquiry.id}
@@ -792,7 +792,7 @@ const EnquiryDetail = () => {
                   onPlanSelect={handlePlanSelect}
                   isUpgrade={true}
                   enquiryCreatedAt={enquiry.createdAt}
-                  className="max-w-4xl mx-auto"
+                  className="max-w-4xl mx-auto w-full"
                   user={user}
                 />
               </div>
