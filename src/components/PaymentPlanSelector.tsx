@@ -355,10 +355,10 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         // Only show button for upgrades with paid plans
         if (isUpgrade && selectedPlanObj.price > 0) {
           return (
-            <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-6 md:mb-8 flex justify-center">
+            <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-6 md:mb-8 flex items-center justify-center w-full">
               <Button
                 size="sm"
-                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
+                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg mx-auto"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (user) {
