@@ -8,6 +8,7 @@ export interface DuplicateMatch {
   description: string;
   createdAt: any;
   isSameUser: boolean;
+  similarity: number; // Similarity percentage (0-100)
 }
 
 export interface DuplicateCheckResult {
@@ -20,6 +21,7 @@ export interface DuplicateCheckResult {
 export class DuplicateDetectionService {
   private static instance: DuplicateDetectionService;
   private readonly TIME_WINDOW_HOURS = 24;
+  private readonly SIMILARITY_THRESHOLD = 0.95; // 95% similarity threshold
 
   public static getInstance(): DuplicateDetectionService {
     if (!DuplicateDetectionService.instance) {
@@ -53,7 +55,7 @@ export class DuplicateDetectionService {
       const querySnapshot = await getDocs(enquiriesQuery);
       const matches: DuplicateMatch[] = [];
 
-      // Check each enquiry for exact match
+      // Check each enquiry for similarity (95% threshold)
       querySnapshot.forEach((doc) => {
         const enquiry = doc.data();
         
@@ -62,33 +64,40 @@ export class DuplicateDetectionService {
           return;
         }
 
-        // Check for exact duplicate
-        if (this.isExactDuplicate(title, description, enquiry.title, enquiry.description)) {
+        // Check for similarity (95% threshold)
+        const similarity = this.calculateSimilarity(title, description, enquiry.title, enquiry.description);
+        
+        if (similarity >= this.SIMILARITY_THRESHOLD) {
           matches.push({
             enquiryId: doc.id,
             userId: enquiry.userId,
             title: enquiry.title,
             description: enquiry.description,
             createdAt: enquiry.createdAt,
-            isSameUser: enquiry.userId === userId
+            isSameUser: enquiry.userId === userId,
+            similarity: Math.round(similarity * 100) // Convert to percentage
           });
         }
       });
 
+      // Sort matches by similarity (highest first)
+      matches.sort((a, b) => b.similarity - a.similarity);
+
       const isDuplicate = matches.length > 0;
-      const confidence = isDuplicate ? 100 : 0; // Exact match = 100% confidence
+      const confidence = isDuplicate ? Math.round(matches[0].similarity) : 0; // Use highest similarity as confidence
 
       let reason = '';
       if (isDuplicate) {
         const sameUserMatches = matches.filter(m => m.isSameUser).length;
         const differentUserMatches = matches.filter(m => !m.isSameUser).length;
+        const highestSimilarity = matches[0].similarity;
         
         if (sameUserMatches > 0 && differentUserMatches > 0) {
-          reason = `Exact duplicate detected: ${sameUserMatches} from same user, ${differentUserMatches} from different users`;
+          reason = `Duplicate detected (${highestSimilarity}% similarity): ${sameUserMatches} from same user, ${differentUserMatches} from different users`;
         } else if (sameUserMatches > 0) {
-          reason = `Exact duplicate detected: ${sameUserMatches} identical enquiry(ies) from same user`;
+          reason = `Duplicate detected (${highestSimilarity}% similarity): ${sameUserMatches} similar enquiry(ies) from same user`;
         } else {
-          reason = `Exact duplicate detected: ${differentUserMatches} identical enquiry(ies) from different user(s)`;
+          reason = `Duplicate detected (${highestSimilarity}% similarity): ${differentUserMatches} similar enquiry(ies) from different user(s)`;
         }
       } else {
         reason = 'No duplicates found';
@@ -120,26 +129,91 @@ export class DuplicateDetectionService {
   }
 
   /**
-   * Check if two enquiries are exact duplicates
-   * Case-insensitive, trimmed, normalized whitespace
+   * Calculate similarity between two enquiries (0-1 scale)
+   * Uses weighted average: 40% title, 60% description
    */
-  private isExactDuplicate(
+  private calculateSimilarity(
     title1: string,
     description1: string,
     title2: string,
     description2: string
-  ): boolean {
+  ): number {
     const normalize = (text: string): string => {
       return text
         .trim()
         .toLowerCase()
-        .replace(/\s+/g, ' '); // Replace multiple spaces with single space
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .replace(/[^\w\s]/g, ''); // Remove punctuation for better matching
     };
 
-    const titleMatch = normalize(title1) === normalize(title2);
-    const descriptionMatch = normalize(description1) === normalize(description2);
+    const normTitle1 = normalize(title1);
+    const normTitle2 = normalize(title2);
+    const normDesc1 = normalize(description1);
+    const normDesc2 = normalize(description2);
 
-    return titleMatch && descriptionMatch;
+    // Calculate title similarity
+    const titleSimilarity = this.calculateStringSimilarity(normTitle1, normTitle2);
+    
+    // Calculate description similarity
+    const descSimilarity = this.calculateStringSimilarity(normDesc1, normDesc2);
+
+    // Weighted average: 40% title, 60% description
+    const overallSimilarity = (titleSimilarity * 0.4) + (descSimilarity * 0.6);
+
+    return overallSimilarity;
+  }
+
+  /**
+   * Calculate similarity between two strings using Levenshtein distance
+   * Returns a value between 0 and 1 (1 = identical, 0 = completely different)
+   */
+  private calculateStringSimilarity(str1: string, str2: string): number {
+    if (str1 === str2) return 1.0;
+    if (str1.length === 0 || str2.length === 0) return 0.0;
+
+    // Use longest common subsequence ratio for better performance
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+
+    // Calculate edit distance
+    const distance = this.levenshteinDistance(longer, shorter);
+    const maxLength = Math.max(str1.length, str2.length);
+    
+    // Similarity = 1 - (distance / maxLength)
+    return 1 - (distance / maxLength);
+  }
+
+  /**
+   * Calculate Levenshtein distance between two strings
+   */
+  private levenshteinDistance(str1: string, str2: string): number {
+    const matrix: number[][] = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1, // substitution
+            matrix[i][j - 1] + 1,     // insertion
+            matrix[i - 1][j] + 1      // deletion
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
   }
 
   /**

@@ -1271,15 +1271,18 @@ const Admin = () => {
                                     <div className="flex items-start gap-2">
                                       <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
                                       <div className="flex-1">
-                                        <p className="text-xs sm:text-sm font-semibold text-amber-300">Potential Duplicate Detected</p>
+                                        <p className="text-xs sm:text-sm font-semibold text-amber-300">Potential Duplicate Detected (≥95% similarity)</p>
                                         <p className="text-[10px] sm:text-xs text-amber-400 mt-1">
-                                          Matches {enquiry.duplicateMatches.length} existing enquiry{enquiry.duplicateMatches.length !== 1 ? 'ies' : 'y'}
+                                          Matches {enquiry.duplicateMatches.length} existing enquiry{enquiry.duplicateMatches.length !== 1 ? 'ies' : 'y'} with 95% or higher similarity
                                         </p>
                                         {enquiry.aiNotes && (
-                                          <p className="text-[10px] sm:text-xs text-amber-500 mt-1 font-mono break-all">
+                                          <p className="text-[10px] sm:text-xs text-amber-500 mt-1 break-words">
                                             {enquiry.aiNotes}
                                           </p>
                                         )}
+                                        <p className="text-[10px] sm:text-xs text-amber-300 mt-2 font-medium">
+                                          Review and approve/reject manually
+                                        </p>
                                       </div>
                                     </div>
                                   </div>
