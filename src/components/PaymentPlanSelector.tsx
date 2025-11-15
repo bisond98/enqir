@@ -101,33 +101,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     allPlans: PAYMENT_PLANS.map(p => ({ id: p.id, price: p.price }))
   });
 
-  const handlePlanSelect = (plan: PaymentPlan) => {
-    setSelectedPlan(plan.id);
-    setSelectedPlanData(plan);
-    
-    // If it's a free plan, call onPlanSelect directly
-    if (plan.price === 0) {
-      onPlanSelect(plan.id, plan.price);
-    }
-    // For upgrades with paid plans, directly trigger payment
-    else if (isUpgrade && user && plan.price > 0) {
-      // Calculate price difference for upgrade
-      const priceDifference = plan.price - currentPlanPrice;
-      const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
-      const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
-      
-      // Only proceed if there's a valid upgrade amount
-      if (roundedFinalPrice > 0 && roundedFinalPrice >= 1) {
-        // Trigger payment directly
-        handleUpgradeNow();
-      }
-    }
-    // For new enquiries, just select the plan - payment will happen on form submit
-  };
-
-  // Handle payment processing when "Upgrade Now" is clicked
-  const handleUpgradeNow = async () => {
-    const plan = availablePlans.find(p => p.id === selectedPlan);
+  // Handle payment processing when plan is selected for upgrade
+  const handleUpgradeNow = async (planId?: string) => {
+    const planToUse = planId 
+      ? availablePlans.find(p => p.id === planId)
+      : availablePlans.find(p => p.id === selectedPlan);
+    const plan = planToUse;
     if (!plan || !user) return;
     
     try {
@@ -216,6 +195,10 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         // Still call onPlanSelect so the UI updates, but log the error
       }
       
+      // Update selected plan state
+      setSelectedPlan(plan.id);
+      setSelectedPlanData(plan);
+      
       // Call onPlanSelect with the plan details after successful payment
       onPlanSelect(plan.id, plan.price);
     } catch (error: any) {
@@ -234,6 +217,30 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         variant: 'destructive',
       });
     }
+  };
+
+  const handlePlanSelect = (plan: PaymentPlan) => {
+    setSelectedPlan(plan.id);
+    setSelectedPlanData(plan);
+    
+    // If it's a free plan, call onPlanSelect directly
+    if (plan.price === 0) {
+      onPlanSelect(plan.id, plan.price);
+    }
+    // For upgrades with paid plans, directly trigger payment
+    else if (isUpgrade && user && plan.price > 0) {
+      // Calculate price difference for upgrade
+      const priceDifference = plan.price - currentPlanPrice;
+      const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
+      const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
+      
+      // Only proceed if there's a valid upgrade amount
+      if (roundedFinalPrice > 0 && roundedFinalPrice >= 1) {
+        // Trigger payment directly with the selected plan ID
+        handleUpgradeNow(plan.id);
+      }
+    }
+    // For new enquiries, just select the plan - payment will happen on form submit
   };
 
   const handlePaymentSuccess = (planId: string, price: number) => {
