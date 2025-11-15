@@ -1107,24 +1107,48 @@ const Dashboard = () => {
                             {/* Card Content - Rest with white background */}
                             <div className="p-4 sm:p-4 relative">
                             {/* Deadline in top right corner of white space */}
-                            {enquiry.deadline && (() => {
+                            {(() => {
+                              // Check if deadline exists in any form
+                              const deadline = enquiry.deadline;
+                              if (!deadline) return null;
+                              
                               try {
-                                const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                                // Check if deadline is valid
-                                if (deadlineDate && !isNaN(deadlineDate.getTime())) {
-                                  return (
-                                    <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1">
-                                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600" />
-                                      <span className="text-[9px] sm:text-xs text-red-600 font-semibold">
-                                        {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                      </span>
-                                    </div>
-                                  );
+                                let deadlineDate: Date;
+                                
+                                // Handle Firestore Timestamp
+                                if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
+                                  deadlineDate = deadline.toDate();
                                 }
+                                // Handle string or number
+                                else if (typeof deadline === 'string' || typeof deadline === 'number') {
+                                  deadlineDate = new Date(deadline);
+                                }
+                                // Handle Date object
+                                else if (deadline instanceof Date) {
+                                  deadlineDate = deadline;
+                                }
+                                else {
+                                  return null;
+                                }
+                                
+                                // Validate the date
+                                if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                                  return null;
+                                }
+                                
+                                // Display the deadline
+                                return (
+                                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1 z-10">
+                                    <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600 flex-shrink-0" />
+                                    <span className="text-[9px] sm:text-xs text-red-600 font-semibold whitespace-nowrap">
+                                      {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                );
                               } catch (e) {
-                                console.error('Error parsing deadline:', e, enquiry.id);
+                                console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
+                                return null;
                               }
-                              return null;
                             })()}
 
                             {/* Response Count */}
