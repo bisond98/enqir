@@ -274,12 +274,18 @@ export const processPayment = async (
         },
         modal: {
           ondismiss: function() {
-            console.log('⚠️ Payment cancelled by user');
+            console.log('⚠️ Payment cancelled by user (back button or close)');
             resolve({
               success: false,
               error: 'Payment cancelled by user',
             });
           },
+          escape: true, // Allow ESC key to close
+          backdropclose: true, // Allow clicking outside to close
+        },
+        retry: {
+          enabled: true,
+          max_count: 3,
         },
       };
 
