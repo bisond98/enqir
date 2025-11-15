@@ -175,7 +175,8 @@ export class EnquiryApprovalAI {
       adminNotes: `Manual review required - ${reason}`,
       aiNotes: aiNotes,
       requiresManualReview: true,
-      aiRejectionReason: reason
+      aiRejectionReason: reason,
+      updatedAt: serverTimestamp()
     };
 
     // Add duplicate flags if applicable
@@ -185,7 +186,13 @@ export class EnquiryApprovalAI {
       updateData.duplicateDetectedAt = serverTimestamp();
     }
 
-    await updateDoc(doc(db, 'enquiries', enquiryId), updateData);
+    try {
+      await updateDoc(doc(db, 'enquiries', enquiryId), updateData);
+      console.log('✅ Enquiry sent to manual review:', enquiryId, { isDuplicate, duplicateMatches: duplicateMatches?.length || 0 });
+    } catch (error) {
+      console.error('❌ Error sending enquiry to manual review:', enquiryId, error);
+      throw error;
+    }
   }
 
   /**
