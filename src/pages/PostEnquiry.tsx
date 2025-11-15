@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -1295,46 +1295,79 @@ export default function PostEnquiry() {
   if (isSubmitted) {
     return (
       <Layout>
-        <div className="min-h-screen bg-background flex items-center justify-center py-20 px-4">
-          <Card className="max-w-2xl w-full mx-auto p-8 text-center shadow-xl border-2 border-blue-200 rounded-2xl">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">Enquiry sent for verification</h2>
-            <p className="text-[10px] sm:text-sm text-muted-foreground mb-6 leading-relaxed">
-              Our AI system will review your enquiry and make it live shortly
-            </p>
-            
-            {/* Real-time status indicator */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6 mb-6 shadow-sm">
-              <div className="flex items-center justify-center space-x-3 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-lg font-semibold text-green-700">
-                  🤖 AI Processing Active
-                </span>
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+          <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+            {/* Header Section - Gray Background */}
+            <div className="mb-4 sm:mb-6">
+              <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
+                <div className="text-center">
+                  <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
+                    <CheckCircle className="h-8 w-8 sm:h-12 sm:w-12 text-green-400" />
+                  </div>
+                  <h2 className="text-lg sm:text-2xl font-bold text-white mb-2">
+                    Enquiry Sent for Verification
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed px-2">
+                    Our AI system will review your enquiry and make it live shortly
+                  </p>
+                </div>
               </div>
-              <p className="text-[10px] sm:text-sm font-medium text-green-600 whitespace-nowrap">
-                Auto-redirect when approved
-              </p>
-              <p className="text-[10px] sm:text-xs mt-1 text-green-500 whitespace-nowrap">
-                Watching for updates every second
-              </p>
             </div>
-            <div className="bg-pal-blue-light p-4 rounded-lg mb-6">
-              <p className="text-[10px] sm:text-sm text-pal-blue-dark whitespace-nowrap overflow-hidden text-ellipsis">
-                <Shield className="h-4 w-4 inline mr-1" />
-                Your personal details remain private
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/enquiries">
-                <Button variant="default">
+
+            {/* Main Content Card */}
+            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6">
+              {/* AI Processing Status - Card Header */}
+              <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                  <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-semibold text-white">
+                    AI Processing Active
+                  </span>
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                </div>
+              </div>
+              
+              {/* Card Content */}
+              <CardContent className="p-4 sm:p-6">
+                <div className="space-y-3 sm:space-y-4 text-center">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <p className="text-xs sm:text-sm font-medium text-green-700">
+                      Auto-redirect when approved
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-green-600">
+                      Watching for updates every second
+                    </p>
+                  </div>
+                  
+                  {/* Privacy Statement */}
+                  <div className="pt-3 sm:pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-center gap-2 text-gray-700">
+                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm font-medium">
+                        Your personal details remain private
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Link to="/enquiries" className="flex-1">
+                <Button 
+                  variant="default" 
+                  className="w-full h-11 sm:h-10 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white min-h-[44px]"
+                >
                   Browse Other Enquiries
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button variant="outline">
+              <Link to="/dashboard" className="flex-1">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-11 sm:h-10 text-sm sm:text-base font-semibold border-gray-300 min-h-[44px]"
+                >
                   View My Dashboard
                 </Button>
               </Link>
