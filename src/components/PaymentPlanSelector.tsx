@@ -255,7 +255,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   // }
 
   return (
-    <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 w-full ${className}`}>
+    <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 w-full pb-8 sm:pb-10 md:pb-12 ${className}`}>
       <div className="text-center mb-2.5 sm:mb-4 md:mb-5">
         <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-1.5 md:mb-2">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
@@ -355,10 +355,10 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         // Only show button for upgrades with paid plans
         if (isUpgrade && selectedPlanObj.price > 0) {
           return (
-            <div className="mt-3 sm:mt-4 flex justify-center">
+            <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-6 md:mb-8 flex justify-center">
               <Button
                 size="sm"
-                className="h-10 sm:h-9 md:h-8 text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 min-h-[44px] sm:min-h-[36px] shadow-md"
+                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (user) {

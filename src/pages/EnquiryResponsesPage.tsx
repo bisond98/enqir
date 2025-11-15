@@ -772,8 +772,8 @@ const EnquiryResponsesPage = () => {
       {/* Payment Plan Selector Dialog */}
       {showPaymentSelector && selectedEnquiryForUpgrade && (
         <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-5 md:p-6 mx-auto">
-            <DialogHeader className="mb-3 sm:mb-5 md:mb-6">
+          <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 mx-auto">
+            <DialogHeader className="mb-4 sm:mb-6 md:mb-8">
               <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
                 <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
                 <span className="break-words">Upgrade Your Enquiry Plan</span>
@@ -782,7 +782,7 @@ const EnquiryResponsesPage = () => {
                 Select a plan to unlock premium responses
               </DialogDescription>
             </DialogHeader>
-            <div className="mt-1 sm:mt-2 md:mt-4">
+            <div className="mt-2 sm:mt-3 md:mt-4">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={selectedEnquiryForUpgrade.id}
