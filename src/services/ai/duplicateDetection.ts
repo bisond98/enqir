@@ -69,12 +69,38 @@ export class DuplicateDetectionService {
         const similarity = this.calculateSimilarity(title, description, enquiry.title, enquiry.description);
         const isSameUser = enquiry.userId === userId;
         
-        // Apply different thresholds:
-        // - Same user: 99% similarity
-        // - Different user: 100% exact match only
-        const threshold = isSameUser ? this.SAME_USER_THRESHOLD : this.DIFFERENT_USER_THRESHOLD;
+        // For different users, require exact match (100%)
+        // For same user, require 99% similarity
+        let shouldFlag = false;
         
-        if (similarity >= threshold) {
+        if (isSameUser) {
+          // Same user: 99% similarity threshold
+          shouldFlag = similarity >= this.SAME_USER_THRESHOLD;
+        } else {
+          // Different user: Must be exactly 100% (exact match after normalization)
+          shouldFlag = similarity >= this.DIFFERENT_USER_THRESHOLD;
+          
+          // Double-check: For different users, also verify it's truly identical
+          // (not just very close due to weighted average)
+          if (shouldFlag) {
+            const normalize = (text: string): string => {
+              return text
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .replace(/[^\w\s]/g, '');
+            };
+            const normTitle1 = normalize(title);
+            const normTitle2 = normalize(enquiry.title);
+            const normDesc1 = normalize(description);
+            const normDesc2 = normalize(enquiry.description);
+            
+            // Both title and description must be exactly identical for different users
+            shouldFlag = (normTitle1 === normTitle2) && (normDesc1 === normDesc2);
+          }
+        }
+        
+        if (shouldFlag) {
           matches.push({
             enquiryId: doc.id,
             userId: enquiry.userId,
