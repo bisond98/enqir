@@ -98,123 +98,126 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     availablePlans: availablePlans.map(p => ({ id: p.id, name: p.name, price: p.price }))
   });
 
-  const handlePlanSelect = async (plan: PaymentPlan) => {
+  const handlePlanSelect = (plan: PaymentPlan) => {
     setSelectedPlan(plan.id);
     setSelectedPlanData(plan);
     
     // If it's a free plan, call onPlanSelect directly
     if (plan.price === 0) {
       onPlanSelect(plan.id, plan.price);
-    } else if (isUpgrade && user) {
-      // For upgrades, process payment directly with Razorpay (like PostEnquiry)
+    }
+    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now"
+    // For new enquiries, just select the plan - payment will happen on form submit
+  };
+
+  // Handle payment processing when "Upgrade Now" is clicked
+  const handleUpgradeNow = async () => {
+    const plan = availablePlans.find(p => p.id === selectedPlan);
+    if (!plan || !user) return;
+    
+    try {
+      const { processPayment } = await import('@/services/paymentService');
+      
+      // Calculate price difference for upgrade
+      const priceDifference = plan.price - currentPlanPrice;
+      const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
+      
+      // Round to 2 decimal places to avoid floating point issues
+      const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
+      
+      // Validate amount - must be greater than 0
+      if (roundedFinalPrice <= 0) {
+        console.warn('⚠️ Invalid upgrade amount:', { planPrice: plan.price, currentPlanPrice, priceDifference, finalPrice, roundedFinalPrice });
+        throw new Error('Invalid upgrade amount. Please select a higher plan.');
+      }
+      
+      // Ensure minimum amount (Razorpay minimum is 1 rupee = 100 paise)
+      if (roundedFinalPrice < 1) {
+        throw new Error('Upgrade amount is too small. Minimum amount is ₹1.');
+      }
+      
+      console.log('🚀 Processing upgrade payment...', {
+        planId: plan.id,
+        planPrice: plan.price,
+        currentPlanPrice,
+        priceDifference,
+        finalPrice,
+        roundedFinalPrice,
+        enquiryId
+      });
+      
+      // Create plan with adjusted price for upgrade (use rounded price)
+      const planForPayment = { ...plan, price: roundedFinalPrice };
+      
+      // Process payment directly - Razorpay will open
+      const paymentResult = await processPayment(
+        enquiryId,
+        userId,
+        planForPayment,
+        {
+          // Use user's info from Firebase auth - Razorpay will show its own card form
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          contact: '', // Optional
+        }
+      );
+      
+      // CRITICAL: Check if payment actually succeeded - DO NOT proceed if payment failed
+      if (!paymentResult.success) {
+        const errorMsg = paymentResult.error || 'Payment failed. Razorpay did not complete successfully.';
+        console.error('❌ Payment failed - NOT proceeding with upgrade:', errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      // CRITICAL: Must have transaction ID from Razorpay
+      if (!paymentResult.transactionId) {
+        console.error('❌ No transaction ID - NOT proceeding with upgrade');
+        throw new Error('Payment verification failed. No transaction ID received from Razorpay.');
+      }
+      
+      console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
+      
+      // Save payment record and update enquiry after successful Razorpay payment
       try {
-        const { processPayment } = await import('@/services/paymentService');
+        const { savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan } = await import('@/services/paymentService');
         
-        // Calculate price difference for upgrade
-        const priceDifference = plan.price - currentPlanPrice;
-        const finalPrice = priceDifference > 0 ? priceDifference : plan.price;
-        
-        // Validate amount - must be greater than 0
-        if (finalPrice <= 0) {
-          console.warn('⚠️ Invalid upgrade amount:', { planPrice: plan.price, currentPlanPrice, finalPrice });
-          throw new Error('Invalid upgrade amount. Please select a higher plan.');
-        }
-        
-        // Ensure minimum amount (Razorpay minimum is 1 rupee = 100 paise)
-        if (finalPrice < 1) {
-          throw new Error('Upgrade amount is too small. Minimum amount is ₹1.');
-        }
-        
-        console.log('🚀 Processing upgrade payment directly (like PostEnquiry)...', {
-          planId: plan.id,
-          planPrice: plan.price,
-          currentPlanPrice,
-          finalPrice,
-          enquiryId
-        });
-        
-        // Create plan with adjusted price for upgrade
-        const planForPayment = { ...plan, price: finalPrice };
-        
-        // Process payment directly - Razorpay will open
-        const paymentResult = await processPayment(
+        // Save payment record with REAL transaction ID from Razorpay
+        const paymentRecordId = await savePaymentRecord(
           enquiryId,
           userId,
-          planForPayment,
-          {
-            // Use user's info from Firebase auth - Razorpay will show its own card form
-            name: user.displayName || user.email?.split('@')[0] || '',
-            email: user.email || '',
-            contact: '', // Optional
-          }
+          plan,
+          paymentResult.transactionId
         );
         
-        // CRITICAL: Check if payment actually succeeded - DO NOT proceed if payment failed
-        if (!paymentResult.success) {
-          const errorMsg = paymentResult.error || 'Payment failed. Razorpay did not complete successfully.';
-          console.error('❌ Payment failed - NOT proceeding with upgrade:', errorMsg);
-          throw new Error(errorMsg);
-        }
+        // Update enquiry premium status
+        await updateEnquiryPremiumStatus(enquiryId, true, plan.id);
         
-        // CRITICAL: Must have transaction ID from Razorpay
-        if (!paymentResult.transactionId) {
-          console.error('❌ No transaction ID - NOT proceeding with upgrade');
-          throw new Error('Payment verification failed. No transaction ID received from Razorpay.');
-        }
+        // Update user payment plan
+        await updateUserPaymentPlan(userId, plan.id, paymentRecordId, enquiryId);
         
-        console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
-        
-        // Save payment record and update enquiry after successful Razorpay payment
-        try {
-          const { savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan } = await import('@/services/paymentService');
-          
-          // Save payment record with REAL transaction ID from Razorpay
-          const paymentRecordId = await savePaymentRecord(
-            enquiryId,
-            userId,
-            plan,
-            paymentResult.transactionId
-          );
-          
-          // Update enquiry premium status
-          await updateEnquiryPremiumStatus(enquiryId, true, plan.id);
-          
-          // Update user payment plan
-          await updateUserPaymentPlan(userId, plan.id, paymentRecordId, enquiryId);
-          
-          console.log('✅ Payment record saved and enquiry updated');
-        } catch (error) {
-          console.error('❌ Error saving payment record:', error);
-          // Still call onPlanSelect so the UI updates, but log the error
-        }
-        
-        // Call onPlanSelect with the plan details after successful payment
-        onPlanSelect(plan.id, plan.price);
-      } catch (error: any) {
-        console.error('❌ Error processing upgrade payment:', error);
-        // CRITICAL: Do NOT call onPlanSelect - payment failed!
-        // Show error to user and do NOT proceed with upgrade
-        const errorMessage = error?.message || 'Payment failed. Please try again.';
-        console.error('🚫 Upgrade blocked - payment failed:', errorMessage);
-        
-        // Show error toast to user
-        toast({
-          title: 'Payment Failed',
-          description: errorMessage.includes('Server error') 
-            ? 'Unable to connect to payment server. Please check your internet connection and try again.'
-            : errorMessage,
-          variant: 'destructive',
-        });
-        
-        // Exit early - do NOT call onPlanSelect - upgrade is blocked
-        return;
+        console.log('✅ Payment record saved and enquiry updated');
+      } catch (error) {
+        console.error('❌ Error saving payment record:', error);
+        // Still call onPlanSelect so the UI updates, but log the error
       }
-    } else if (isUpgrade) {
-      // If no user object, fallback to modal
-      setShowPaymentModal(true);
-    } else {
-      // For new enquiries, just select the plan - payment will happen on form submit
+      
+      // Call onPlanSelect with the plan details after successful payment
       onPlanSelect(plan.id, plan.price);
+    } catch (error: any) {
+      console.error('❌ Error processing upgrade payment:', error);
+      // CRITICAL: Do NOT call onPlanSelect - payment failed!
+      // Show error to user and do NOT proceed with upgrade
+      const errorMessage = error?.message || 'Payment failed. Please try again.';
+      console.error('🚫 Upgrade blocked - payment failed:', errorMessage);
+      
+      // Show error toast to user
+      toast({
+        title: 'Payment Failed',
+        description: errorMessage.includes('Server error') 
+          ? 'Unable to connect to payment server. Please check your internet connection and try again.'
+          : errorMessage,
+        variant: 'destructive',
+      });
     }
   };
 
@@ -348,35 +351,47 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         ))}
       </div>
 
-      {selectedPlan !== currentPlanId && (
-        <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-3">
-            <div className="min-w-0 flex-1 text-center sm:text-left">
-              <p className="text-sm sm:text-base font-semibold text-blue-900 mb-1">
-                {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
-              </p>
-              <p className="text-xs sm:text-sm text-blue-700 leading-tight">
-                {isUpgrade 
-                  ? 'You will be charged the difference for the upgrade'
-                  : 'Proceed to payment to activate this plan'
-                }
-              </p>
+      {selectedPlan !== currentPlanId && (() => {
+        const selectedPlanObj = availablePlans.find(p => p.id === selectedPlan);
+        const priceDifference = selectedPlanObj ? (selectedPlanObj.price - currentPlanPrice) : 0;
+        const finalPrice = isUpgrade && priceDifference > 0 ? priceDifference : (selectedPlanObj?.price || 0);
+        
+        return (
+          <div className="mt-4 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-3">
+              <div className="min-w-0 flex-1 text-center sm:text-left">
+                <p className="text-sm sm:text-base font-semibold text-blue-900 mb-1">
+                  {isUpgrade ? 'Upgrade Confirmation' : 'Plan Selected'}
+                </p>
+                <p className="text-xs sm:text-sm text-blue-700 leading-tight">
+                  {isUpgrade 
+                    ? `You will be charged ₹${finalPrice} for the upgrade`
+                    : 'Proceed to payment to activate this plan'
+                  }
+                </p>
+              </div>
+              <Button
+                size="sm"
+                className="h-10 sm:h-8 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-4 flex-shrink-0 w-full sm:w-auto"
+                onClick={() => {
+                  if (isUpgrade && user) {
+                    // For upgrades, process payment via Razorpay
+                    handleUpgradeNow();
+                  } else {
+                    // For new enquiries, just call onPlanSelect
+                    const plan = availablePlans.find(p => p.id === selectedPlan);
+                    if (plan) {
+                      onPlanSelect(plan.id, plan.price);
+                    }
+                  }
+                }}
+              >
+                {isUpgrade ? 'Upgrade Now' : 'Continue'}
+              </Button>
             </div>
-            <Button
-              size="sm"
-              className="h-10 sm:h-8 text-sm sm:text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-4 flex-shrink-0 w-full sm:w-auto"
-              onClick={() => {
-                const plan = availablePlans.find(p => p.id === selectedPlan);
-                if (plan) {
-                  onPlanSelect(plan.id, plan.price);
-                }
-              }}
-            >
-              {isUpgrade ? 'Upgrade Now' : 'Continue'}
-            </Button>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Payment Modal */}
       {selectedPlanData && (

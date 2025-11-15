@@ -67,8 +67,12 @@ const createRazorpayOrder = async (
       throw new Error('Invalid amount: Amount must be greater than 0');
     }
     
+    // Round amount to 2 decimal places first to avoid floating point issues
+    const roundedAmount = Math.round(amount * 100) / 100;
+    
     // Ensure minimum amount (Razorpay minimum is 1 rupee = 100 paise)
-    const amountInPaise = Math.round(amount * 100);
+    // Convert to paise - multiply by 100 and round to integer
+    const amountInPaise = Math.round(roundedAmount * 100);
     if (amountInPaise < 100) {
       throw new Error('Amount too small: Minimum amount is ₹1');
     }
@@ -83,7 +87,13 @@ const createRazorpayOrder = async (
     
     console.log('📡 Creating order via Cloud Functions:', orderUrl);
     console.log('📦 Request body:', requestBody);
-    console.log('💰 Amount details:', { amount, amountInPaise, currency: 'INR' });
+    console.log('💰 Amount details:', { 
+      originalAmount: amount, 
+      roundedAmount, 
+      amountInPaise, 
+      currency: 'INR',
+      amountInRupees: (amountInPaise / 100).toFixed(2)
+    });
     
     const response = await fetch(orderUrl, {
       method: 'POST',
