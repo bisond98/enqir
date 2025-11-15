@@ -87,15 +87,18 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   }
 
   // Get current plan price for upgrade calculations
-  const currentPlanObj = availablePlans.find(p => p.id === currentPlanId) || PAYMENT_PLANS.find(p => p.id === currentPlanId);
-  const currentPlanPrice = currentPlanObj?.price || 0;
+  // IMPORTANT: Always get from PAYMENT_PLANS first to ensure correct price
+  const currentPlanObj = PAYMENT_PLANS.find(p => p.id === currentPlanId) || availablePlans.find(p => p.id === currentPlanId);
+  const currentPlanPrice = currentPlanObj?.price ?? 0;
 
   // Debug logging
   console.log('🔍 PaymentPlanSelector Debug:', {
     currentPlanId,
+    currentPlanPrice,
     isUpgrade,
     availablePlansCount: availablePlans.length,
-    availablePlans: availablePlans.map(p => ({ id: p.id, name: p.name, price: p.price }))
+    availablePlans: availablePlans.map(p => ({ id: p.id, name: p.name, price: p.price })),
+    allPlans: PAYMENT_PLANS.map(p => ({ id: p.id, price: p.price }))
   });
 
   const handlePlanSelect = (plan: PaymentPlan) => {
