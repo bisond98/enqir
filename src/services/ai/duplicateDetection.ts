@@ -458,15 +458,6 @@ export class DuplicateDetectionService {
     return 0.0; // Different locations
   }
   
-  /**
-   * Alias for calculateLocationSimilarity (for consistency)
-   */
-  private calculateLocationSimilarity(
-    location1: string | undefined,
-    location2: string | undefined
-  ): number {
-    return this.calculateLocationSimilarity(location1, location2);
-  }
 
   /**
    * Calculate similarity between two strings using Levenshtein distance
