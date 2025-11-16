@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
-import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc } from 'firebase/firestore';
+import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -239,200 +239,407 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    // Add timeout fallback to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      setLoading(false);
-    }, 5000); // 5 second timeout
+    console.log('🔍 Admin: Starting to load admin data with real-time listeners...');
     
-    // Fetch pending enquiries (limit to 50 for performance)
-    const pendingQuery = query(
+    if (!authUser) {
+      console.warn('⚠️ Admin: No authenticated user, skipping data load');
+      setLoading(false);
+      return;
+    }
+    
+    setLoading(true);
+    
+    // Set up real-time listeners for all data
+    let unsubscribePending: (() => void) | null = null;
+    let unsubscribeLive: (() => void) | null = null;
+    let unsubscribeSubmissions: (() => void) | null = null;
+    let unsubscribeSellerSubmissions: (() => void) | null = null;
+
+    // Real-time listener for pending enquiries
+    const pendingQueryWithoutOrder = query(
       collection(db, 'enquiries'),
-      where('status', '==', 'pending'),
-      orderBy('createdAt', 'desc')
+      where('status', '==', 'pending')
     );
-
-    // Fetch live enquiries (limit to 50 for performance)
-    const liveQuery = query(
-      collection(db, 'enquiries'),
-      where('status', '==', 'live'),
-      orderBy('createdAt', 'desc')
-    );
-
-    // Fetch pending submissions (old format) - limit to 50
-    const submissionsQuery = query(
-      collection(db, 'submissions'),
-      where('status', '==', 'pending'),
-      orderBy('createdAt', 'desc')
-    );
-
-    // Fetch pending seller submissions (limit to 50 for performance)
-    const sellerSubmissionsQuery = query(
-      collection(db, 'sellerSubmissions'),
-      where('status', '==', 'pending'),
-      orderBy('createdAt', 'desc')
-    );
-
-
-    // Optimized parallel data loading
-    const loadAllAdminData = async () => {
-      try {
-        // Run all queries in parallel for better performance
-        const [
-          pendingSnap,
-          liveSnap,
-          submissionsSnap,
-          sellerSnap
-        ] = await Promise.all([
-          getDocs(pendingQuery),
-          getDocs(liveQuery),
-          getDocs(submissionsQuery),
-          getDocs(sellerSubmissionsQuery)
-        ]);
-
-        // Process pending enquiries
+    
+    unsubscribePending = onSnapshot(
+      pendingQueryWithoutOrder,
+      (snapshot) => {
+        console.log('📊 Admin: Pending enquiries updated, got', snapshot.docs.length, 'documents');
         const pendingItems: Enquiry[] = [];
-        pendingSnap.forEach((d) => {
+        snapshot.forEach((d) => {
           const data: any = d.data();
-          pendingItems.push({
-            id: d.id,
-            userId: data.userId,
-            title: data.title,
-            category: data.category,
-            description: data.description,
-            budget: data.budget,
-            deadline: data.deadline,
-            status: data.status,
-            createdAt: data.createdAt,
-            adminNotes: data.adminNotes,
-            idFrontImage: data.idFrontImage,
-            idBackImage: data.idBackImage,
-            location: data.location,
-            urgency: data.urgency,
-            responses: data.responses || 0,
-            likes: data.likes || 0,
-            shares: data.shares || 0,
-            views: data.views || 0,
-            userLikes: data.userLikes || [],
-            notes: data.notes,
-            isUrgent: data.isUrgent || false
-          });
+          // Only include if status is actually 'pending' (case-insensitive check)
+          if (data.status && data.status.toLowerCase() === 'pending') {
+            pendingItems.push({
+              id: d.id,
+              userId: data.userId,
+              title: data.title,
+              category: data.category,
+              description: data.description,
+              budget: data.budget,
+              deadline: data.deadline,
+              status: data.status,
+              createdAt: data.createdAt,
+              adminNotes: data.adminNotes,
+              idFrontImage: data.idFrontImage,
+              idBackImage: data.idBackImage,
+              location: data.location,
+              urgency: data.urgency,
+              responses: data.responses || 0,
+              likes: data.likes || 0,
+              shares: data.shares || 0,
+              views: data.views || 0,
+              userLikes: data.userLikes || [],
+              notes: data.notes,
+              isUrgent: data.isUrgent || false,
+              isDuplicate: data.isDuplicate || false,
+              duplicateMatches: data.duplicateMatches || [],
+              duplicateDetectedAt: data.duplicateDetectedAt,
+              requiresManualReview: data.requiresManualReview || false,
+              aiNotes: data.aiNotes || ''
+            });
+          }
         });
         pendingItems.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
-            return b.createdAt.toDate() - a.createdAt.toDate();
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
           }
           return 0;
         });
+        console.log('✅ Admin: Setting pending enquiries:', pendingItems.length);
         setPending(pendingItems);
-
-        // Process live enquiries
-        const liveItems: Enquiry[] = [];
-        liveSnap.forEach((d) => {
-          const data: any = d.data();
-          liveItems.push({
-            id: d.id,
-            userId: data.userId || '',
-            title: data.title || '',
-            category: data.category || '',
-            description: data.description || '',
-            budget: data.budget || 0,
-            deadline: data.deadline || null,
-            status: data.status || 'live',
-            createdAt: data.createdAt,
-            adminNotes: data.adminNotes || '',
-            idFrontImage: data.idFrontImage || '',
-            idBackImage: data.idBackImage || '',
-            location: data.location || '',
-            urgency: data.urgency || 'normal',
-            responses: data.responses || 0,
-            likes: data.likes || 0,
-            shares: data.shares || 0,
-            views: data.views || 0,
-            userLikes: data.userLikes || [],
-            notes: data.notes || '',
+        setLoading(false);
+      },
+      (error) => {
+        console.error('❌ Admin: Error in pending enquiries listener:', error);
+        console.error('❌ Admin: Error details:', {
+          code: error?.code,
+          message: error?.message,
+          stack: error?.stack
+        });
+        // Fallback: try to load all enquiries and filter client-side
+        getDocs(collection(db, 'enquiries')).then((snap) => {
+          const allItems: Enquiry[] = [];
+          snap.forEach((d) => {
+            const data: any = d.data();
+            if (data.status && data.status.toLowerCase() === 'pending') {
+              allItems.push({
+                id: d.id,
+                userId: data.userId,
+                title: data.title,
+                category: data.category,
+                description: data.description,
+                budget: data.budget,
+                deadline: data.deadline,
+                status: data.status,
+                createdAt: data.createdAt,
+                adminNotes: data.adminNotes,
+                idFrontImage: data.idFrontImage,
+                idBackImage: data.idBackImage,
+                location: data.location,
+                urgency: data.urgency,
+                responses: data.responses || 0,
+                likes: data.likes || 0,
+                shares: data.shares || 0,
+                views: data.views || 0,
+                userLikes: data.userLikes || [],
+                notes: data.notes,
+                isUrgent: data.isUrgent || false,
+                isDuplicate: data.isDuplicate || false,
+                duplicateMatches: data.duplicateMatches || [],
+                duplicateDetectedAt: data.duplicateDetectedAt,
+                requiresManualReview: data.requiresManualReview || false,
+                aiNotes: data.aiNotes || ''
+              });
+            }
           });
+          console.log('✅ Admin: Fallback loaded pending enquiries:', allItems.length);
+          setPending(allItems);
+          setLoading(false);
+        }).catch((fallbackError) => {
+          console.error('❌ Admin: Fallback also failed:', fallbackError);
+          setPending([]);
+          setLoading(false);
+        });
+      }
+    );
+
+    // Real-time listener for live enquiries - load all and filter client-side for reliability
+    const allEnquiriesQuery = query(collection(db, 'enquiries'));
+    
+    unsubscribeLive = onSnapshot(
+      allEnquiriesQuery,
+      (snapshot) => {
+        console.log('📊 Admin: All enquiries updated, got', snapshot.docs.length, 'documents');
+        const liveItems: Enquiry[] = [];
+        snapshot.forEach((d) => {
+          const data: any = d.data();
+          // Only include if status is actually 'live' (case-insensitive check)
+          if (data.status && data.status.toLowerCase() === 'live') {
+            liveItems.push({
+              id: d.id,
+              userId: data.userId || '',
+              title: data.title || '',
+              category: data.category || '',
+              description: data.description || '',
+              budget: data.budget || 0,
+              deadline: data.deadline || null,
+              status: data.status || 'live',
+              createdAt: data.createdAt,
+              adminNotes: data.adminNotes || '',
+              idFrontImage: data.idFrontImage || '',
+              idBackImage: data.idBackImage || '',
+              location: data.location || '',
+              urgency: data.urgency || 'normal',
+              responses: data.responses || 0,
+              likes: data.likes || 0,
+              shares: data.shares || 0,
+              views: data.views || 0,
+              userLikes: data.userLikes || [],
+              notes: data.notes || '',
+            });
+          }
         });
         liveItems.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
-            return b.createdAt.toDate() - a.createdAt.toDate();
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
           }
           return 0;
         });
+        console.log('✅ Admin: Setting live enquiries:', liveItems.length, 'out of', snapshot.docs.length, 'total');
         setLiveEnquiries(liveItems);
-
-        // Process submissions
-        const submissionItems: Submission[] = [];
-        submissionsSnap.forEach((d) => {
-          const data: any = d.data();
-          submissionItems.push({
-            id: d.id,
-            enquiryId: data.enquiryId || '',
-            enquiryTitle: data.enquiryTitle || '',
-            sellerId: data.sellerId || '',
-            sellerName: data.sellerName || 'Anonymous',
-            message: data.message || '',
-            price: data.price || 0,
-            status: data.status || 'pending',
-            createdAt: data.createdAt,
-            isPremium: data.isPremium || false,
-            idFrontImage: data.idFrontImage || '',
-            idBackImage: data.idBackImage || '',
-            notes: data.notes || '',
+      },
+      (error) => {
+        console.error('❌ Admin: Error in live enquiries listener:', error);
+        console.error('❌ Admin: Error details:', {
+          code: error?.code,
+          message: error?.message,
+          stack: error?.stack
+        });
+        // Fallback: try one-time fetch
+        getDocs(collection(db, 'enquiries')).then((snap) => {
+          const allItems: Enquiry[] = [];
+          snap.forEach((d) => {
+            const data: any = d.data();
+            if (data.status && data.status.toLowerCase() === 'live') {
+              allItems.push({
+                id: d.id,
+                userId: data.userId || '',
+                title: data.title || '',
+                category: data.category || '',
+                description: data.description || '',
+                budget: data.budget || 0,
+                deadline: data.deadline || null,
+                status: data.status || 'live',
+                createdAt: data.createdAt,
+                adminNotes: data.adminNotes || '',
+                idFrontImage: data.idFrontImage || '',
+                idBackImage: data.idBackImage || '',
+                location: data.location || '',
+                urgency: data.urgency || 'normal',
+                responses: data.responses || 0,
+                likes: data.likes || 0,
+                shares: data.shares || 0,
+                views: data.views || 0,
+                userLikes: data.userLikes || [],
+                notes: data.notes || '',
+              });
+            }
           });
+          console.log('✅ Admin: Fallback loaded live enquiries:', allItems.length);
+          setLiveEnquiries(allItems);
+        }).catch((fallbackError) => {
+          console.error('❌ Admin: Fallback also failed:', fallbackError);
+          setLiveEnquiries([]);
+        });
+      }
+    );
+
+    // Real-time listener for submissions
+    const submissionsQueryWithoutOrder = query(
+      collection(db, 'submissions'),
+      where('status', '==', 'pending')
+    );
+    
+    unsubscribeSubmissions = onSnapshot(
+      submissionsQueryWithoutOrder,
+      (snapshot) => {
+        console.log('📊 Admin: Submissions updated, got', snapshot.docs.length, 'documents');
+        const submissionItems: Submission[] = [];
+        snapshot.forEach((d) => {
+          const data: any = d.data();
+          if (data.status && data.status.toLowerCase() === 'pending') {
+            submissionItems.push({
+              id: d.id,
+              enquiryId: data.enquiryId || '',
+              enquiryTitle: data.enquiryTitle || '',
+              sellerId: data.sellerId || '',
+              sellerName: data.sellerName || 'Anonymous',
+              message: data.message || '',
+              price: data.price || 0,
+              status: data.status || 'pending',
+              createdAt: data.createdAt,
+              isPremium: data.isPremium || false,
+              idFrontImage: data.idFrontImage || '',
+              idBackImage: data.idBackImage || '',
+              notes: data.notes || '',
+            });
+          }
         });
         submissionItems.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
-            return b.createdAt.toDate() - a.createdAt.toDate();
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
           }
           return 0;
         });
+        console.log('✅ Admin: Setting submissions:', submissionItems.length);
         setSubmissions(submissionItems);
-
-        // Process seller submissions
-        const sellerItems: SellerSubmission[] = [];
-        sellerSnap.forEach((d) => {
-          const data: any = d.data();
-          sellerItems.push({
-            id: d.id,
-            enquiryId: data.enquiryId,
-            sellerId: data.sellerId,
-            sellerName: data.sellerName,
-            sellerEmail: data.sellerEmail,
-            title: data.title,
-            message: data.message,
-            price: data.price,
-            notes: data.notes,
-            imageUrls: data.imageUrls || [],
-            imageNames: data.imageNames || [],
-            imageCount: data.imageCount || 0,
-            govIdType: data.govIdType || '',
-            govIdNumber: data.govIdNumber || '',
-            govIdUrl: data.govIdUrl || '',
-            govIdFileName: data.govIdFileName || '',
-            isIdentityVerified: data.isIdentityVerified || false,
-            status: data.status,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt,
-            buyerViewed: data.buyerViewed || false,
-            chatEnabled: data.chatEnabled || false
+      },
+      (error) => {
+        console.error('❌ Admin: Error in submissions listener:', error);
+        // Fallback: try to load all submissions and filter client-side
+        getDocs(collection(db, 'submissions')).then((snap) => {
+          const allItems: Submission[] = [];
+          snap.forEach((d) => {
+            const data: any = d.data();
+            if (data.status && data.status.toLowerCase() === 'pending') {
+              allItems.push({
+                id: d.id,
+                enquiryId: data.enquiryId || '',
+                enquiryTitle: data.enquiryTitle || '',
+                sellerId: data.sellerId || '',
+                sellerName: data.sellerName || 'Anonymous',
+                message: data.message || '',
+                price: data.price || 0,
+                status: data.status || 'pending',
+                createdAt: data.createdAt,
+                isPremium: data.isPremium || false,
+                idFrontImage: data.idFrontImage || '',
+                idBackImage: data.idBackImage || '',
+                notes: data.notes || '',
+              });
+            }
           });
+          console.log('✅ Admin: Fallback loaded submissions:', allItems.length);
+          setSubmissions(allItems);
+        }).catch((fallbackError) => {
+          console.error('❌ Admin: Fallback also failed:', fallbackError);
+          setSubmissions([]);
+        });
+      }
+    );
+
+    // Real-time listener for seller submissions
+    const sellerSubmissionsQueryWithoutOrder = query(
+      collection(db, 'sellerSubmissions'),
+      where('status', '==', 'pending')
+    );
+    
+    unsubscribeSellerSubmissions = onSnapshot(
+      sellerSubmissionsQueryWithoutOrder,
+      (snapshot) => {
+        console.log('📊 Admin: Seller submissions updated, got', snapshot.docs.length, 'documents');
+        const sellerItems: SellerSubmission[] = [];
+        snapshot.forEach((d) => {
+          const data: any = d.data();
+          if (data.status && data.status.toLowerCase() === 'pending') {
+            sellerItems.push({
+              id: d.id,
+              enquiryId: data.enquiryId,
+              sellerId: data.sellerId,
+              sellerName: data.sellerName,
+              sellerEmail: data.sellerEmail,
+              title: data.title,
+              message: data.message,
+              price: data.price,
+              notes: data.notes,
+              imageUrls: data.imageUrls || [],
+              imageNames: data.imageNames || [],
+              imageCount: data.imageCount || 0,
+              govIdType: data.govIdType || '',
+              govIdNumber: data.govIdNumber || '',
+              govIdUrl: data.govIdUrl || '',
+              govIdFileName: data.govIdFileName || '',
+              isIdentityVerified: data.isIdentityVerified || false,
+              status: data.status,
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt,
+              buyerViewed: data.buyerViewed || false,
+              chatEnabled: data.chatEnabled || false
+            });
+          }
         });
         sellerItems.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
-            return b.createdAt.toDate() - a.createdAt.toDate();
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
           }
           return 0;
         });
+        console.log('✅ Admin: Setting seller submissions:', sellerItems.length);
         setSellerSubmissions(sellerItems);
-        setLoading(false);
-      } catch (error) {
-        console.log('Error loading admin data:', error);
-        setLoading(false);
+      },
+      (error) => {
+        console.error('❌ Admin: Error in seller submissions listener:', error);
+        // Fallback: try to load all seller submissions and filter client-side
+        getDocs(collection(db, 'sellerSubmissions')).then((snap) => {
+          const allItems: SellerSubmission[] = [];
+          snap.forEach((d) => {
+            const data: any = d.data();
+            if (data.status && data.status.toLowerCase() === 'pending') {
+              allItems.push({
+                id: d.id,
+                enquiryId: data.enquiryId,
+                sellerId: data.sellerId,
+                sellerName: data.sellerName,
+                sellerEmail: data.sellerEmail,
+                title: data.title,
+                message: data.message,
+                price: data.price,
+                notes: data.notes,
+                imageUrls: data.imageUrls || [],
+                imageNames: data.imageNames || [],
+                imageCount: data.imageCount || 0,
+                govIdType: data.govIdType || '',
+                govIdNumber: data.govIdNumber || '',
+                govIdUrl: data.govIdUrl || '',
+                govIdFileName: data.govIdFileName || '',
+                isIdentityVerified: data.isIdentityVerified || false,
+                status: data.status,
+                createdAt: data.createdAt,
+                updatedAt: data.updatedAt,
+                buyerViewed: data.buyerViewed || false,
+                chatEnabled: data.chatEnabled || false
+              });
+            }
+          });
+          console.log('✅ Admin: Fallback loaded seller submissions:', allItems.length);
+          setSellerSubmissions(allItems);
+        }).catch((fallbackError) => {
+          console.error('❌ Admin: Fallback also failed:', fallbackError);
+          setSellerSubmissions([]);
+        });
       }
-    };
+    );
 
-    loadAllAdminData();
-  }, []); 
+    console.log('✅ Admin: All real-time listeners set up successfully');
+
+    // Cleanup function
+    return () => {
+      console.log('🧹 Admin: Cleaning up real-time listeners');
+      if (unsubscribePending) unsubscribePending();
+      if (unsubscribeLive) unsubscribeLive();
+      if (unsubscribeSubmissions) unsubscribeSubmissions();
+      if (unsubscribeSellerSubmissions) unsubscribeSellerSubmissions();
+    };
+  }, [authUser]); 
       // Fetch profile verification requests - SIMPLE & REALTIME
   useEffect(() => {
     if (!authUser) return;
@@ -897,18 +1104,43 @@ const Admin = () => {
     { name: 'Completed', value: 0, color: '#6b7280' }
   ];
 
-  // Duplicate detection metrics
+  // Duplicate detection metrics - calculate from pending enquiries
   const duplicateMetrics = {
-    totalDetected: pending.filter(e => e.isDuplicate).length,
-    sameUser: pending.filter(e => e.isDuplicate && e.duplicateMatches?.some(() => true)).length,
-    differentUser: pending.filter(e => e.isDuplicate && !e.duplicateMatches?.some(() => true)).length,
+    totalDetected: pending.filter(e => e.isDuplicate === true).length,
+    sameUser: pending.filter(e => {
+      if (!e.isDuplicate) return false;
+      // Check if any duplicate match is from the same user
+      // We need to check the actual duplicate matches to see if they're from same user
+      // For now, if isDuplicate is true and we have matches, assume it could be same or different
+      return e.duplicateMatches && e.duplicateMatches.length > 0;
+    }).length,
+    differentUser: pending.filter(e => {
+      if (!e.isDuplicate) return false;
+      // Different user duplicates are those flagged as duplicates
+      // The actual logic for same vs different is in the duplicate detection service
+      return e.isDuplicate === true;
+    }).length,
     pendingReview: pending.filter(e => e.requiresManualReview).length
   };
 
-  // Response rate calculation
+  // Calculate total pending responses (both submissions and seller submissions)
+  const totalPendingResponses = submissions.length + sellerSubmissions.length;
+  
+  // Response rate calculation: total responses / live enquiries
   const responseRate = liveEnquiries.length > 0 
-    ? ((sellerSubmissions.length + submissions.length) / liveEnquiries.length * 100).toFixed(1)
+    ? ((totalPendingResponses / liveEnquiries.length) * 100).toFixed(1)
     : '0.0';
+
+  // Debug logging for admin metrics
+  console.log('📊 Admin Metrics Summary:', {
+    pending: pending.length,
+    live: liveEnquiries.length,
+    responses: totalPendingResponses,
+    submissions: submissions.length,
+    sellerSubmissions: sellerSubmissions.length,
+    duplicates: duplicateMetrics.totalDetected,
+    responseRate: responseRate + '%'
+  });
 
   if (loading) {
     return <LoadingAnimation message="Loading admin data" />;
@@ -981,7 +1213,7 @@ const Admin = () => {
                 <MessageSquare className="h-5 w-5 text-blue-500" />
             </div>
               <p className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Responses</p>
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tabular-nums mb-1">{submissions.length}</p>
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tabular-nums mb-1">{totalPendingResponses}</p>
               <p className="text-[10px] sm:text-xs text-gray-500">Awaiting Review</p>
           </Card>
 

@@ -322,26 +322,30 @@ const MyResponses = () => {
             <div className="space-y-4 sm:space-y-6">
               {(showAll ? sortedSubmissions : sortedSubmissions.slice(0, 7)).map((submission) => {
                 const enquiry = enquiries[submission.enquiryId];
+                const isEnquiryDeleted = !enquiry; // Enquiry is deleted if it doesn't exist in enquiries object
                 const isExpired = isEnquiryExpired(submission.enquiryId);
                 return (
-                  <Card key={submission.id} className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired ? 'opacity-60 grayscale pointer-events-none' : ''}`}>
+                  <Card key={submission.id} className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : ''}`}>
                     {/* Card Header - Compact gray background */}
-                    <div className={`bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired ? 'opacity-70' : ''}`}>
+                    <div className={`bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
-                          {isExpired ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
-                          <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
+                          {isExpired || isEnquiryDeleted ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
+                          <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
                             Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
                           </h3>
                           {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
                             <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
-                              isExpired ? 'bg-gray-400' : 'bg-blue-500'
+                              isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
                             }`}>
                               <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
                             </div>
                           )}
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                          {isEnquiryDeleted && (
+                            <Badge variant="outline" className="text-[8px] sm:text-xs text-red-500 border border-red-400 font-bold bg-red-50">Enquiry Deleted</Badge>
+                          )}
                           {isExpired && (
                             <Badge variant="outline" className="text-[8px] sm:text-xs text-gray-500 border border-gray-400 font-bold">Expired</Badge>
                           )}
@@ -353,8 +357,8 @@ const MyResponses = () => {
                         </div>
                       </div>
                       <div className="mt-1 sm:mt-2">
-                        <span className={`text-[9px] sm:text-xs font-bold opacity-95 ${isExpired ? 'text-red-200' : 'text-white'}`}>
-                          {getStatusMessage(submission)}
+                        <span className={`text-[9px] sm:text-xs font-bold opacity-95 ${isExpired || isEnquiryDeleted ? 'text-red-200' : 'text-white'}`}>
+                          {isEnquiryDeleted ? 'Enquiry has been deleted' : getStatusMessage(submission)}
                         </span>
                       </div>
                     </div>
@@ -418,12 +422,12 @@ const MyResponses = () => {
                       )}
 
                       {/* View Enquiry Button */}
-                      {enquiry && !isExpired && (
+                      {enquiry && !isExpired && !isEnquiryDeleted && (
                         <div className="pt-2">
                           <Link 
                             to={`/enquiry/${enquiry.id}`}
                             onClick={(e) => {
-                              if (isExpired) {
+                              if (isExpired || isEnquiryDeleted) {
                                 e.preventDefault();
                                 e.stopPropagation();
                               }
@@ -433,10 +437,10 @@ const MyResponses = () => {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              disabled={isExpired}
+                              disabled={isExpired || isEnquiryDeleted}
                               className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
                               onClick={(e) => {
-                                if (isExpired) {
+                                if (isExpired || isEnquiryDeleted) {
                                   e.preventDefault();
                                   e.stopPropagation();
                                 }
@@ -464,15 +468,15 @@ const MyResponses = () => {
                       </div>
 
                       {/* Status-specific Actions */}
-                      {!isExpired && (
+                      {!isExpired && !isEnquiryDeleted && (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-slate-200">
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
-                            {submission.status === 'approved' && (
+                            {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
                                 to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}
                                 className="flex-1 sm:flex-initial"
                                 onClick={(e) => {
-                                  if (isExpired) {
+                                  if (isExpired || isEnquiryDeleted) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                   }
@@ -481,10 +485,10 @@ const MyResponses = () => {
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
-                                  disabled={isExpired}
+                                  disabled={isExpired || isEnquiryDeleted}
                                   className="w-full sm:w-auto border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-xs sm:text-sm h-9 sm:h-10"
                                   onClick={(e) => {
-                                    if (isExpired) {
+                                    if (isExpired || isEnquiryDeleted) {
                                       e.preventDefault();
                                       e.stopPropagation();
                                     }

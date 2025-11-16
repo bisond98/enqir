@@ -95,6 +95,7 @@ const Dashboard = () => {
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [selectedEnquiryForUpgrade, setSelectedEnquiryForUpgrade] = useState<Enquiry | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
+  const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -279,6 +280,31 @@ const Dashboard = () => {
       console.log('Dashboard: Setting seller submissions state NOW');
       setSellerSubmissions(submissionsData);
       setResponsesSummary(submissionsData);
+      
+      // Check which enquiries are deleted
+      const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
+      const deletedSet = new Set<string>();
+      
+      // Check each enquiry to see if it exists
+      await Promise.all(
+        enquiryIds.map(async (enquiryId) => {
+          try {
+            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+            if (!enquiryDoc.exists()) {
+              deletedSet.add(enquiryId);
+              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
+            }
+          } catch (error) {
+            console.error('Error checking enquiry:', enquiryId, error);
+            // If there's an error checking, assume it might be deleted
+            deletedSet.add(enquiryId);
+          }
+        })
+      );
+      
+      setDeletedEnquiries(deletedSet);
+      console.log('Dashboard: Deleted enquiries:', Array.from(deletedSet));
+      
       // Only set ready after successfully loading data
       setResponsesReady(true);
       console.log('Dashboard: ✅ responsesSummary state updated with', submissionsData.length, 'items - responsesReady set to true');
@@ -398,6 +424,30 @@ const Dashboard = () => {
         console.log('Dashboard: Seller submissions updated (realtime):', submissionsData.length);
         setSellerSubmissions(submissionsData);
         setResponsesSummary(submissionsData);
+        
+        // Check which enquiries are deleted (for real-time updates)
+        const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
+        const deletedSet = new Set<string>();
+        
+        // Check each enquiry to see if it exists
+        Promise.all(
+          enquiryIds.map(async (enquiryId) => {
+            try {
+              const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+              if (!enquiryDoc.exists()) {
+                deletedSet.add(enquiryId);
+                console.log('🔍 Dashboard: Enquiry deleted (realtime):', enquiryId);
+              }
+            } catch (error) {
+              console.error('Error checking enquiry:', enquiryId, error);
+              deletedSet.add(enquiryId);
+            }
+          })
+        ).then(() => {
+          setDeletedEnquiries(deletedSet);
+          console.log('Dashboard: Deleted enquiries (realtime):', Array.from(deletedSet));
+        });
+        
         setResponsesReady(true);
       }, (error) => {
         // Handle Firestore listener errors gracefully (including CORS)
@@ -921,11 +971,6 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{enquiries.length}</h3>
                 <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Total Enquiries</p>
-                <div className="mt-0.5 sm:mt-3 flex items-center text-[9px] sm:text-xs text-slate-500">
-                  <span className="w-1 h-1 bg-blue-500 rounded-full mr-1 sm:mr-2"></span>
-                  <span className="hidden sm:inline">All your enquiries and needs</span>
-                  <span className="sm:hidden">All enquiries</span>
-                </div>
               </CardContent>
             </Card>
             
@@ -940,11 +985,6 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</h3>
                 <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Active Enquiries</p>
-                <div className="mt-0.5 sm:mt-3 flex items-center text-[9px] sm:text-xs text-slate-500">
-                  <span className="w-1 h-1 bg-emerald-500 rounded-full mr-1 sm:mr-2"></span>
-                  <span className="hidden sm:inline">Active enquiries getting responses</span>
-                  <span className="sm:hidden">Getting responses</span>
-                </div>
               </CardContent>
             </Card>
 
@@ -959,11 +999,6 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{savedEnquiries.length}</h3>
                 <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Saved Enquiries</p>
-                <div className="mt-0.5 sm:mt-3 flex items-center text-[9px] sm:text-xs text-slate-500">
-                  <span className="w-1 h-1 bg-orange-500 rounded-full mr-1 sm:mr-2"></span>
-                  <span className="hidden sm:inline">Your bookmarked favourites</span>
-                  <span className="sm:hidden">Bookmarked</span>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -1324,7 +1359,9 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-2 sm:space-y-3">
-                      {responsesSummary.slice(0, 3).map((submission) => (
+                      {responsesSummary.slice(0, 3).map((submission) => {
+                        const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
+                        return (
                         <div key={submission.id} className="bg-white rounded-2xl sm:rounded-3xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
                           {/* Card Header - Top 10% with gray background */}
                           <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
@@ -1339,16 +1376,24 @@ const Dashboard = () => {
                                   </div>
                                 )}
                               </div>
-                              {/* Status Badge */}
-                              <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
-                                submission.status === 'approved' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : submission.status === 'pending'
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : 'bg-red-100 text-red-700'
-                              }`}>
-                                {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                              </Badge>
+                              <div className="flex items-center gap-1.5 sm:gap-2">
+                                {/* Enquiry Deleted Badge */}
+                                {isEnquiryDeleted && (
+                                  <Badge className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-100 text-red-700 border border-red-300">
+                                    Enquiry Deleted
+                                  </Badge>
+                                )}
+                                {/* Status Badge */}
+                                <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
+                                  submission.status === 'approved' 
+                                    ? 'bg-green-100 text-green-700' 
+                                    : submission.status === 'pending'
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : 'bg-red-100 text-red-700'
+                                }`}>
+                                  {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
                           
@@ -1356,13 +1401,21 @@ const Dashboard = () => {
                           <div className="p-2 sm:p-4">
                             {/* Submission Details */}
                             <div className="mb-1 sm:mb-2">
-                              <span className="text-xs sm:text-base font-medium text-blue-600">
-                                {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
-                              </span>
-                              {submission.status === 'approved' && (
-                                <span className="text-[10px] sm:text-xs text-slate-500 ml-1 sm:ml-2">
-                                  (Ready for chat)
+                              {isEnquiryDeleted ? (
+                                <span className="text-xs sm:text-base font-medium text-red-600">
+                                  Enquiry has been deleted
                                 </span>
+                              ) : (
+                                <>
+                                  <span className="text-xs sm:text-base font-medium text-blue-600">
+                                    {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
+                                  </span>
+                                  {submission.status === 'approved' && (
+                                    <span className="text-[10px] sm:text-xs text-slate-500 ml-1 sm:ml-2">
+                                      (Ready for chat)
+                                    </span>
+                                  )}
+                                </>
                               )}
                             </div>
 
@@ -1383,7 +1436,7 @@ const Dashboard = () => {
 
                             {/* Action Buttons */}
                             <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                              {submission.status === 'approved' && (
+                              {submission.status === 'approved' && !isEnquiryDeleted && (
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1399,13 +1452,15 @@ const Dashboard = () => {
                                 size="sm" 
                                 onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
                                 className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
+                                disabled={isEnquiryDeleted}
                               >
                                 View Details
                               </Button>
                             </div>
                           </div>
                         </div>
-                      ))}
+                      );
+                      })}
                     </div>
                   )}
                 </div>

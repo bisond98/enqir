@@ -95,9 +95,11 @@ class RealtimeAIService {
         console.log('✅ Realtime AI: Enquiry auto-approved and made live:', enquiryId);
 
       } else if (result.requiresHumanReview) {
-        // Flag for human review
-        await updateDoc(doc(db, 'enquiries', enquiryId), {
+        // Flag for human review - CRITICAL: Set status to 'pending' so it shows in admin panel
+        const updateData: any = {
+          status: 'pending', // CRITICAL: Must be 'pending' to show in admin panel
           adminNotes: `AI flagged for review: ${result.reason}`,
+          requiresManualReview: true,
           aiApproval: {
             approved: false,
             confidence: result.confidence,
@@ -107,13 +109,70 @@ class RealtimeAIService {
             processingTime
           },
           updatedAt: serverTimestamp()
-        });
+        };
+
+        // Check if this is a duplicate detection (indicated by reason containing "duplicate")
+        if (result.reason && (result.reason.toLowerCase().includes('duplicate') || result.reason.toLowerCase().includes('similar'))) {
+          console.log('🔍 Realtime AI: Duplicate detected based on reason, fetching duplicate details...', {
+            enquiryId,
+            reason: result.reason
+          });
+          
+          // Get duplicate information from duplicateDetectionService
+          try {
+            const { duplicateDetectionService } = await import('./duplicateDetection');
+            const duplicateCheck = await duplicateDetectionService.checkForDuplicates(
+              enquiryData.title,
+              enquiryData.description,
+              enquiryData.userId,
+              enquiryId,
+              enquiryData.budget,
+              enquiryData.category,
+              enquiryData.location
+            );
+            
+            console.log('🔍 Realtime AI: Duplicate check result:', {
+              enquiryId,
+              isDuplicate: duplicateCheck.isDuplicate,
+              matchCount: duplicateCheck.matches.length,
+              reason: duplicateCheck.reason
+            });
+            
+            if (duplicateCheck.isDuplicate) {
+              const duplicateIds = duplicateDetectionService.getDuplicateIds(duplicateCheck.matches);
+              updateData.isDuplicate = true;
+              updateData.duplicateMatches = duplicateIds;
+              updateData.duplicateDetectedAt = serverTimestamp();
+              updateData.aiNotes = duplicateDetectionService.formatDuplicateReason(duplicateCheck);
+              console.log('✅ Realtime AI: Duplicate flags set successfully:', {
+                enquiryId,
+                duplicateMatches: duplicateIds.length,
+                duplicateIds: duplicateIds.slice(0, 3) // Log first 3 IDs
+              });
+            } else {
+              // Reason says duplicate but check didn't find any - still flag but log warning
+              console.warn('⚠️ Realtime AI: Reason indicates duplicate but check found none. Flagging anyway.', {
+                enquiryId,
+                reason: result.reason
+              });
+              updateData.isDuplicate = true;
+              updateData.aiNotes = result.reason;
+            }
+          } catch (error) {
+            console.error('❌ Realtime AI: Error checking duplicates:', error);
+            // Still flag as duplicate based on reason
+            updateData.isDuplicate = true;
+            updateData.aiNotes = result.reason;
+          }
+        }
+
+        await updateDoc(doc(db, 'enquiries', enquiryId), updateData);
 
         // Log the activity
         await aiActivityLogger.logEnquiryActivity(enquiryId, 'flagged', result.confidence, result.reason, result.aiAnalysis);
 
         action = 'flagged';
-        console.log('⏳ Realtime AI: Enquiry flagged for review:', enquiryId);
+        console.log('⏳ Realtime AI: Enquiry flagged for review (status set to pending):', enquiryId);
 
       } else {
         // Auto-reject
