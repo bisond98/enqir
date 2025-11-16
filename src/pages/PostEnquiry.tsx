@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot } from "lucide-react";
 import { format } from "date-fns";
@@ -1237,10 +1238,10 @@ export default function PostEnquiry() {
         // 🤖 AI Processing - Skip for verified users, they're already auto-approved
         if (isUserVerified) {
           console.log('✅ Trust Badge User: Enquiry automatically approved and made live!');
-        // Auto-navigate verified users to live enquiries page
-        setTimeout(() => {
-          navigate("/enquiries");
-        }, 3000);
+          // Auto-navigate verified users to live enquiries page
+          setTimeout(() => {
+            navigate("/enquiries");
+          }, 3000);
         } else {
           // Process the enquiry with AI in real-time (non-blocking)
           console.log('🤖 PostEnquiry: Starting AI processing for enquiry:', docRef.id, 'User verified:', isProfileVerified);
@@ -1429,7 +1430,7 @@ export default function PostEnquiry() {
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </div>
       </Layout>
     );
@@ -1526,77 +1527,161 @@ export default function PostEnquiry() {
                       </p>
                     </div>
                     
-                    {/* Multiple Category Selection - Dropdown Style */}
+                    {/* Multiple Category Selection - Mobile-Friendly Sheet */}
                     <div className="space-y-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={`w-full justify-between min-h-[44px] h-auto py-2 px-3 border-slate-200 focus:border-slate-400 focus:ring-slate-400 ${
-                              selectedCategories.length === 0 ? 'border-pal-blue/30 bg-pal-blue/5' : ''
-                            }`}
-                          >
-                            <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
-                              {selectedCategories.length === 0 ? (
-                                <span className="text-xs sm:text-base text-slate-500">Select categories...</span>
-                              ) : (
-                                selectedCategories.map((catValue) => {
-                                  const cat = categories.find(c => c.value === catValue);
+                      {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
+                      <div className="block sm:hidden">
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={`w-full justify-between min-h-[48px] h-auto py-3 px-4 border-slate-200 focus:border-slate-400 focus:ring-slate-400 text-base ${
+                                selectedCategories.length === 0 ? 'border-pal-blue/30 bg-pal-blue/5' : ''
+                              }`}
+                            >
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-base text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0" />
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent side="bottom" className="h-[80vh] max-h-[600px] p-0">
+                            <SheetHeader className="px-4 pt-4 pb-2 border-b">
+                              <SheetTitle className="text-lg font-semibold text-left">Select Categories</SheetTitle>
+                              <p className="text-sm text-slate-500 text-left">Choose up to 3 categories</p>
+                            </SheetHeader>
+                            <div className="overflow-y-auto h-full pb-4">
+                              <div className="px-2 py-2">
+                                {categories.map((cat) => {
+                                  const isSelected = selectedCategories.includes(cat.value);
+                                  const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                  
                                   return (
-                                    <Badge 
-                                      key={catValue} 
-                                      variant="secondary" 
-                                      className="text-[10px] sm:text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0"
+                                    <div 
+                                      key={cat.value} 
+                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
+                                        isDisabled ? 'opacity-50' : ''
+                                      }`}
+                                      onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
                                     >
-                                      {cat?.label}
-                                    </Badge>
+                                      <Checkbox
+                                        id={`mobile-${cat.value}`}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                        className="h-5 w-5"
+                                      />
+                                      <Label
+                                        htmlFor={`mobile-${cat.value}`}
+                                        className={`text-base flex-1 cursor-pointer ${
+                                          isDisabled ? 'text-slate-400' : 'text-slate-700'
+                                        }`}
+                                      >
+                                        {cat.label}
+                                      </Label>
+                                    </div>
                                   );
-                                })
+                                })}
+                              </div>
+                              {selectedCategories.length >= 3 && (
+                                <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 sticky bottom-0">
+                                  <p className="text-sm text-blue-600 font-medium text-center">
+                                    ✅ Max 3 categories selected
+                                  </p>
+                                </div>
                               )}
                             </div>
-                            <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0" align="start">
-                          <div className="max-h-60 overflow-y-auto">
-                            {categories.map((cat) => {
-                              const isSelected = selectedCategories.includes(cat.value);
-                              const isDisabled = !isSelected && selectedCategories.length >= 3;
-                              
-                              return (
-                                <div 
-                                  key={cat.value} 
-                                  className={`flex items-center space-x-2 p-3 hover:bg-slate-50 ${
-                                    isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                  }`}
-                                >
-                                  <Checkbox
-                                    id={cat.value}
-                                    checked={isSelected}
-                                    disabled={isDisabled}
-                                    onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                  />
-                                  <Label
-                                    htmlFor={cat.value}
-                                    className={`text-sm flex-1 ${
-                                      isDisabled ? 'cursor-not-allowed text-slate-400' : 'cursor-pointer text-slate-700'
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+                      
+                      {/* Desktop: Use Popover */}
+                      <div className="hidden sm:block">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={`w-full justify-between min-h-[44px] h-auto py-2 px-3 border-slate-200 focus:border-slate-400 focus:ring-slate-400 ${
+                                selectedCategories.length === 0 ? 'border-pal-blue/30 bg-pal-blue/5' : ''
+                              }`}
+                            >
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-sm text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0" align="start">
+                            <div className="max-h-60 overflow-y-auto">
+                              {categories.map((cat) => {
+                                const isSelected = selectedCategories.includes(cat.value);
+                                const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                
+                                return (
+                                  <div 
+                                    key={cat.value} 
+                                    className={`flex items-center space-x-2 p-3 hover:bg-slate-50 ${
+                                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
-                            {cat.label}
-                                  </Label>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          {selectedCategories.length >= 3 && (
-                            <div className="p-3 bg-blue-50 border-t border-blue-200">
-                              <p className="text-[10px] sm:text-xs text-blue-600 whitespace-nowrap">
-                                ✅ Max 3 categories selected
-                              </p>
+                                    <Checkbox
+                                      id={cat.value}
+                                      checked={isSelected}
+                                      disabled={isDisabled}
+                                      onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                    />
+                                    <Label
+                                      htmlFor={cat.value}
+                                      className={`text-sm flex-1 ${
+                                        isDisabled ? 'cursor-not-allowed text-slate-400' : 'cursor-pointer text-slate-700'
+                                      }`}
+                                    >
+                                      {cat.label}
+                                    </Label>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          )}
-                        </PopoverContent>
-                      </Popover>
+                            {selectedCategories.length >= 3 && (
+                              <div className="p-3 bg-blue-50 border-t border-blue-200">
+                                <p className="text-xs text-blue-600 whitespace-nowrap">
+                                  ✅ Max 3 categories selected
+                                </p>
+                              </div>
+                            )}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                       
                       {selectedCategories.length === 0 && (
                         <p className="text-[10px] sm:text-xs text-pal-blue whitespace-nowrap">
