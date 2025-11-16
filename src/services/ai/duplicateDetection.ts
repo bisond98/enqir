@@ -85,9 +85,27 @@ export class DuplicateDetectionService {
           return;
         }
 
-        // Check for similarity in title and description
-        const similarity = this.calculateSimilarity(title, description, enquiry.title, enquiry.description);
+        // AI Intelligence: Calculate comprehensive similarity across ALL fields
         const isSameUser = enquiry.userId === userId;
+        
+        // Only check similarity for same user accounts (different users are not flagged)
+        if (!isSameUser) {
+          return; // Skip different user enquiries - don't flag them
+        }
+        
+        // Calculate overall similarity including ALL fields: title, description, budget, category, location
+        const overallSimilarity = this.calculateOverallSimilarity(
+          title,
+          description,
+          budget,
+          category,
+          location,
+          enquiry.title,
+          enquiry.description,
+          enquiry.budget,
+          enquiry.category,
+          enquiry.location
+        );
         
         // Normalize text for exact comparison
         const normalize = (text: string): string => {
@@ -150,50 +168,42 @@ export class DuplicateDetectionService {
         // Location matches ONLY if both are provided and equal (stricter)
         const locationMatches = currentLocation !== null && enquiryLocation !== null && currentLocation === enquiryLocation;
         
-        // AI Intelligence: Determine if this is a duplicate based on similarity
-        // Only flag same user enquiries that are 98%+ similar (AI-based detection)
-        let shouldFlag = false;
+        // STRICT: Only flag if overall similarity (ALL fields combined) is 98% or higher
+        const similarityPercentage = overallSimilarity * 100;
+        const shouldFlag = overallSimilarity >= this.SAME_USER_THRESHOLD; // Strict 98% threshold
         
-        if (isSameUser) {
-          // Same user: Use AI-based similarity (98% threshold)
-          // Check if title + description similarity is 98% or higher
-          const similarityPercentage = similarity * 100;
-          shouldFlag = similarity >= this.SAME_USER_THRESHOLD; // 98% or higher
-          
-          if (shouldFlag) {
-            console.log('🤖 AI Duplicate Detection: Same user enquiry flagged for 98%+ similarity:', {
-              enquiryId: doc.id,
-              similarity: Math.round(similarityPercentage),
-              threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
-              title1: title.substring(0, 50),
-              title2: enquiry.title.substring(0, 50),
-              desc1: description.substring(0, 50),
-              desc2: enquiry.description.substring(0, 50)
-            });
-          } else if (similarity >= 0.90) {
-            // Log near-misses for debugging (90-98% range)
-            console.log('🔍 AI Duplicate Detection: Same user enquiry below threshold:', {
-              enquiryId: doc.id,
-              similarity: Math.round(similarityPercentage),
-              threshold: Math.round(this.SAME_USER_THRESHOLD * 100)
-            });
-          }
-        } else {
-          // Different user: Don't flag based on similarity alone
-          // Only flag if it's an exact match (100%) - but this is optional
-          // For now, we don't flag different user enquiries to avoid false positives
-          shouldFlag = false;
-          
-          // Optional: Uncomment below if you want to flag exact matches from different users
-          // shouldFlag = titleMatches && descriptionMatches && budgetMatches && categoryMatches && locationMatches;
+        if (shouldFlag) {
+          console.log('🤖 AI Duplicate Detection: Same user enquiry flagged for 98%+ overall similarity:', {
+            enquiryId: doc.id,
+            overallSimilarity: Math.round(similarityPercentage),
+            threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
+            title1: title.substring(0, 50),
+            title2: enquiry.title.substring(0, 50),
+            desc1: description.substring(0, 50),
+            desc2: enquiry.description.substring(0, 50),
+            budget1: budget,
+            budget2: enquiry.budget,
+            category1: category,
+            category2: enquiry.category,
+            location1: location,
+            location2: enquiry.location
+          });
+        } else if (overallSimilarity >= 0.90) {
+          // Log near-misses for debugging (90-98% range)
+          console.log('🔍 AI Duplicate Detection: Same user enquiry below 98% threshold:', {
+            enquiryId: doc.id,
+            overallSimilarity: Math.round(similarityPercentage),
+            threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
+            reason: 'Overall similarity must be 98%+ to flag'
+          });
         }
         
         if (shouldFlag) {
-          const similarityPercentage = Math.round(similarity * 100);
-          console.log('🤖 AI Duplicate Detection: Match found and flagged!', {
+          const similarityPercentage = Math.round(overallSimilarity * 100);
+          console.log('✅ AI Duplicate Detection: Match found and flagged (98%+ overall similarity)!', {
             enquiryId: doc.id,
-            isSameUser,
-            similarity: similarityPercentage,
+            isSameUser: true,
+            overallSimilarity: similarityPercentage,
             threshold: Math.round(this.SAME_USER_THRESHOLD * 100)
           });
           matches.push({
@@ -202,7 +212,7 @@ export class DuplicateDetectionService {
             title: enquiry.title,
             description: enquiry.description,
             createdAt: enquiry.createdAt,
-            isSameUser: isSameUser,
+            isSameUser: true,
             similarity: similarityPercentage // Store as percentage (0-100)
           });
         }
@@ -270,11 +280,47 @@ export class DuplicateDetectionService {
   }
 
   /**
-   * AI Intelligence: Calculate semantic similarity between two enquiries (0-1 scale)
-   * Uses advanced AI-based similarity: word-level analysis, semantic meaning, and weighted scoring
+   * STRICT: Calculate overall similarity across ALL fields (title, description, budget, category, location)
+   * Only flags if overall similarity is 98%+ (combining all fields)
    * Returns a value between 0 and 1 (1 = identical, 0 = completely different)
    */
-  private calculateSimilarity(
+  private calculateOverallSimilarity(
+    title1: string,
+    description1: string,
+    budget1: number | string | undefined,
+    category1: string | undefined,
+    location1: string | undefined,
+    title2: string,
+    description2: string,
+    budget2: number | string | undefined,
+    category2: string | undefined,
+    location2: string | undefined
+  ): number {
+    // Calculate text similarity (title + description) - 60% weight
+    const textSimilarity = this.calculateTextSimilarity(title1, description1, title2, description2);
+    
+    // Calculate budget similarity - 15% weight
+    const budgetSimilarity = this.calculateBudgetSimilarity(budget1, budget2);
+    
+    // Calculate category similarity - 10% weight
+    const categorySimilarity = this.calculateCategorySimilarity(category1, category2);
+    
+    // Calculate location similarity - 15% weight
+    const locationSimilarity = this.calculateLocationSimilarity(location1, location2);
+    
+    // Overall similarity: weighted combination of ALL fields
+    const overallSimilarity = (textSimilarity * 0.60) + 
+                               (budgetSimilarity * 0.15) + 
+                               (categorySimilarity * 0.10) + 
+                               (locationSimilarity * 0.15);
+    
+    return Math.min(1.0, Math.max(0.0, overallSimilarity)); // Clamp between 0 and 1
+  }
+  
+  /**
+   * Calculate text similarity (title + description)
+   */
+  private calculateTextSimilarity(
     title1: string,
     description1: string,
     title2: string,
@@ -377,6 +423,88 @@ export class DuplicateDetectionService {
     
     // Combine: 50% common words, 30% length, 20% order
     return (commonRatio * 0.5) + (lengthRatio * 0.3) + (orderSimilarity * 0.2);
+  }
+  
+  /**
+   * Calculate budget/price similarity
+   * Returns 1.0 if both match exactly, 0.0 if different or missing
+   */
+  private calculateBudgetSimilarity(
+    budget1: number | string | undefined,
+    budget2: number | string | undefined
+  ): number {
+    // Normalize budgets
+    const normalizeBudget = (budgetValue: number | string | undefined): number | null => {
+      if (budgetValue === undefined || budgetValue === null || budgetValue === '') return null;
+      if (typeof budgetValue === 'string') {
+        const numStr = budgetValue.replace(/[₹,\s]/g, '').trim();
+        const num = parseFloat(numStr);
+        return isNaN(num) ? null : num;
+      }
+      return budgetValue;
+    };
+    
+    const normBudget1 = normalizeBudget(budget1);
+    const normBudget2 = normalizeBudget(budget2);
+    
+    // If both are missing, consider it neutral (0.5 similarity)
+    if (normBudget1 === null && normBudget2 === null) return 0.5;
+    
+    // If one is missing, penalize (0.3 similarity)
+    if (normBudget1 === null || normBudget2 === null) return 0.3;
+    
+    // If both match exactly, return 1.0
+    if (normBudget1 === normBudget2) return 1.0;
+    
+    // If different, calculate percentage difference
+    const maxBudget = Math.max(normBudget1, normBudget2);
+    const minBudget = Math.min(normBudget1, normBudget2);
+    const difference = (maxBudget - minBudget) / maxBudget;
+    
+    // Return similarity based on difference (if within 5%, consider similar)
+    if (difference <= 0.05) return 0.8; // 95%+ match
+    if (difference <= 0.10) return 0.6; // 90%+ match
+    return 0.0; // Different budgets
+  }
+  
+  /**
+   * Calculate category similarity
+   * Returns 1.0 if both match exactly, 0.0 if different
+   */
+  private calculateCategorySimilarity(
+    category1: string | undefined,
+    category2: string | undefined
+  ): number {
+    if (!category1 && !category2) return 0.5; // Both missing = neutral
+    if (!category1 || !category2) return 0.3; // One missing = penalize
+    
+    const norm1 = category1.trim().toLowerCase();
+    const norm2 = category2.trim().toLowerCase();
+    
+    return norm1 === norm2 ? 1.0 : 0.0; // Exact match only
+  }
+  
+  /**
+   * Calculate location similarity
+   * Returns 1.0 if both match exactly, 0.0 if different
+   */
+  private calculateLocationSimilarity(
+    location1: string | undefined,
+    location2: string | undefined
+  ): number {
+    if (!location1 && !location2) return 0.5; // Both missing = neutral
+    if (!location1 || !location2) return 0.3; // One missing = penalize
+    
+    const norm1 = location1.trim().toLowerCase();
+    const norm2 = location2.trim().toLowerCase();
+    
+    // Exact match
+    if (norm1 === norm2) return 1.0;
+    
+    // Check if one contains the other (e.g., "Mumbai" vs "Mumbai, Maharashtra")
+    if (norm1.includes(norm2) || norm2.includes(norm1)) return 0.8;
+    
+    return 0.0; // Different locations
   }
 
   /**
