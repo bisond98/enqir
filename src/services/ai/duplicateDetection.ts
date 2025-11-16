@@ -107,67 +107,6 @@ export class DuplicateDetectionService {
           enquiry.location
         );
         
-        // Normalize text for exact comparison
-        const normalize = (text: string): string => {
-          return text
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, ' ')
-            .replace(/[^\w\s]/g, '');
-        };
-        
-        const normTitle1 = normalize(title);
-        const normTitle2 = normalize(enquiry.title);
-        const normDesc1 = normalize(description);
-        const normDesc2 = normalize(enquiry.description);
-        
-        // Check if title and description match exactly
-        const titleMatches = normTitle1 === normTitle2;
-        const descriptionMatches = normDesc1 === normDesc2;
-        
-        // Check budget/price match (convert to number for comparison)
-        // CRITICAL: Only match if BOTH budgets are provided and equal
-        // If either is missing, don't consider it a match (stricter)
-        const normalizeBudget = (budgetValue: number | string | undefined): number | null => {
-          if (budgetValue === undefined || budgetValue === null || budgetValue === '') return null;
-          if (typeof budgetValue === 'string') {
-            // Remove currency symbols and commas, extract number
-            const numStr = budgetValue.replace(/[₹,\s]/g, '').trim();
-            const num = parseFloat(numStr);
-            return isNaN(num) ? null : num;
-          }
-          return budgetValue;
-        };
-        
-        const currentBudget = normalizeBudget(budget);
-        const enquiryBudget = normalizeBudget(enquiry.budget);
-        // Budget matches ONLY if both are provided and equal (stricter - no match if either is null)
-        const budgetMatches = currentBudget !== null && enquiryBudget !== null && currentBudget === enquiryBudget;
-        
-        // Check category match (normalize for comparison)
-        // CRITICAL: Only match if BOTH categories are provided and equal
-        const normalizeCategory = (cat: string | undefined): string | null => {
-          if (!cat || cat.trim() === '') return null;
-          return cat.trim().toLowerCase();
-        };
-        
-        const currentCategory = normalizeCategory(category);
-        const enquiryCategory = normalizeCategory(enquiry.category);
-        // Category matches ONLY if both are provided and equal (stricter)
-        const categoryMatches = currentCategory !== null && enquiryCategory !== null && currentCategory === enquiryCategory;
-        
-        // Check location match (normalize for comparison)
-        // CRITICAL: Only match if BOTH locations are provided and equal
-        const normalizeLocation = (loc: string | undefined): string | null => {
-          if (!loc || loc.trim() === '') return null;
-          return loc.trim().toLowerCase();
-        };
-        
-        const currentLocation = normalizeLocation(location);
-        const enquiryLocation = normalizeLocation(enquiry.location);
-        // Location matches ONLY if both are provided and equal (stricter)
-        const locationMatches = currentLocation !== null && enquiryLocation !== null && currentLocation === enquiryLocation;
-        
         // STRICT: Only flag if overall similarity (ALL fields combined) is 98% or higher
         const similarityPercentage = overallSimilarity * 100;
         const shouldFlag = overallSimilarity >= this.SAME_USER_THRESHOLD; // Strict 98% threshold
