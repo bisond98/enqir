@@ -21,10 +21,10 @@ export interface DuplicateCheckResult {
 export class DuplicateDetectionService {
   private static instance: DuplicateDetectionService;
   private readonly TIME_WINDOW_HOURS = 24;
-  // CRITICAL: We now require EXACT matches (100%) for all fields
-  // Similarity is still calculated but only used for logging
-  private readonly SAME_USER_THRESHOLD = 1.0; // 100% exact match required (changed from 99%)
-  private readonly DIFFERENT_USER_THRESHOLD = 1.0; // 100% exact match for different users
+  // AI Intelligence: Use 98% similarity threshold for same user accounts
+  // Only flag enquiries from the same account that are 98%+ similar
+  private readonly SAME_USER_THRESHOLD = 0.98; // 98% similarity for same user (AI-based detection)
+  private readonly DIFFERENT_USER_THRESHOLD = 1.0; // Different users: exact match only (or don't flag)
 
   public static getInstance(): DuplicateDetectionService {
     if (!DuplicateDetectionService.instance) {
@@ -150,57 +150,51 @@ export class DuplicateDetectionService {
         // Location matches ONLY if both are provided and equal (stricter)
         const locationMatches = currentLocation !== null && enquiryLocation !== null && currentLocation === enquiryLocation;
         
-        // Determine if this is a duplicate based on user and field matches
-        // CRITICAL: For a duplicate, ALL fields must match (title, description, budget, category, location)
-        // If any field is missing on either side, it's NOT a duplicate
+        // AI Intelligence: Determine if this is a duplicate based on similarity
+        // Only flag same user enquiries that are 98%+ similar (AI-based detection)
         let shouldFlag = false;
         
         if (isSameUser) {
-          // Same user: Title AND description must match EXACTLY (100% match, not 99%)
-          // AND budget, category, location must ALL be provided and match
-          // If any field is missing, it's NOT a duplicate
-          const textMatches = titleMatches && descriptionMatches; // Must be exact match
-          shouldFlag = textMatches && budgetMatches && categoryMatches && locationMatches;
+          // Same user: Use AI-based similarity (98% threshold)
+          // Check if title + description similarity is 98% or higher
+          const similarityPercentage = similarity * 100;
+          shouldFlag = similarity >= this.SAME_USER_THRESHOLD; // 98% or higher
           
-          if (textMatches && !shouldFlag) {
-            console.log('🔍 Duplicate Detection: Same user enquiry matches text but not all fields:', {
+          if (shouldFlag) {
+            console.log('🤖 AI Duplicate Detection: Same user enquiry flagged for 98%+ similarity:', {
               enquiryId: doc.id,
-              titleMatches,
-              descriptionMatches,
-              budgetMatches: budgetMatches ? 'YES' : `NO (current: ${currentBudget}, existing: ${enquiryBudget})`,
-              categoryMatches: categoryMatches ? 'YES' : `NO (current: ${currentCategory}, existing: ${enquiryCategory})`,
-              locationMatches: locationMatches ? 'YES' : `NO (current: ${currentLocation}, existing: ${enquiryLocation})`,
-              similarity: Math.round(similarity * 100)
+              similarity: Math.round(similarityPercentage),
+              threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
+              title1: title.substring(0, 50),
+              title2: enquiry.title.substring(0, 50),
+              desc1: description.substring(0, 50),
+              desc2: enquiry.description.substring(0, 50)
+            });
+          } else if (similarity >= 0.90) {
+            // Log near-misses for debugging (90-98% range)
+            console.log('🔍 AI Duplicate Detection: Same user enquiry below threshold:', {
+              enquiryId: doc.id,
+              similarity: Math.round(similarityPercentage),
+              threshold: Math.round(this.SAME_USER_THRESHOLD * 100)
             });
           }
         } else {
-          // Different user: ALL fields must match EXACTLY (100% match)
-          // Title, description, budget, category, and location must ALL be provided and identical
-          // If any field is missing on either side, it's NOT a duplicate
-          shouldFlag = titleMatches && descriptionMatches && budgetMatches && categoryMatches && locationMatches;
+          // Different user: Don't flag based on similarity alone
+          // Only flag if it's an exact match (100%) - but this is optional
+          // For now, we don't flag different user enquiries to avoid false positives
+          shouldFlag = false;
           
-          if ((titleMatches || descriptionMatches) && !shouldFlag) {
-            console.log('🔍 Duplicate Detection: Different user enquiry partial match but not all fields:', {
-              enquiryId: doc.id,
-              titleMatches,
-              descriptionMatches,
-              budgetMatches: budgetMatches ? 'YES' : `NO (current: ${currentBudget}, existing: ${enquiryBudget})`,
-              categoryMatches: categoryMatches ? 'YES' : `NO (current: ${currentCategory}, existing: ${enquiryCategory})`,
-              locationMatches: locationMatches ? 'YES' : `NO (current: ${currentLocation}, existing: ${enquiryLocation})`
-            });
-          }
+          // Optional: Uncomment below if you want to flag exact matches from different users
+          // shouldFlag = titleMatches && descriptionMatches && budgetMatches && categoryMatches && locationMatches;
         }
         
         if (shouldFlag) {
-          console.log('🔍 Duplicate Detection: Match found!', {
+          const similarityPercentage = Math.round(similarity * 100);
+          console.log('🤖 AI Duplicate Detection: Match found and flagged!', {
             enquiryId: doc.id,
             isSameUser,
-            titleMatches,
-            descriptionMatches,
-            budgetMatches,
-            categoryMatches,
-            locationMatches,
-            similarity: Math.round(similarity * 100)
+            similarity: similarityPercentage,
+            threshold: Math.round(this.SAME_USER_THRESHOLD * 100)
           });
           matches.push({
             enquiryId: doc.id,
@@ -209,7 +203,7 @@ export class DuplicateDetectionService {
             description: enquiry.description,
             createdAt: enquiry.createdAt,
             isSameUser: isSameUser,
-            similarity: Math.round(similarity * 100) // Convert to percentage
+            similarity: similarityPercentage // Store as percentage (0-100)
           });
         }
       });
@@ -226,12 +220,15 @@ export class DuplicateDetectionService {
         const sameUserMatches = matches.filter(m => m.isSameUser);
         const differentUserMatches = matches.filter(m => !m.isSameUser);
         
-        if (sameUserMatches.length > 0 && differentUserMatches.length > 0) {
-          reason = `Duplicate detected: ${sameUserMatches.length} from same account, ${differentUserMatches.length} exact match(es) from different account(s). All fields (title, description, budget, category, location) match exactly.`;
-        } else if (sameUserMatches.length > 0) {
-          reason = `Duplicate detected: ${sameUserMatches.length} enquiry(ies) from same account. All fields (title, description, budget, category, location) match exactly.`;
+        if (sameUserMatches.length > 0) {
+          // AI Intelligence: Flag based on 98%+ similarity from same account
+          const highestSimilarity = sameUserMatches[0].similarity;
+          reason = `AI detected ${sameUserMatches.length} similar enquiry(ies) from your account (${Math.round(highestSimilarity)}% similarity). Flagged for manual review to prevent duplicates.`;
+        } else if (differentUserMatches.length > 0) {
+          // Different user matches (if enabled)
+          reason = `Duplicate detected: ${differentUserMatches.length} exact match(es) from different account(s).`;
         } else {
-          reason = `Duplicate detected: ${differentUserMatches.length} exact match(es) from different account(s). All fields (title, description, budget, category, location) match exactly.`;
+          reason = `Duplicate detected: ${matches.length} similar enquiry(ies) found.`;
         }
       } else {
         reason = 'No duplicates found - enquiry is unique';
@@ -273,8 +270,9 @@ export class DuplicateDetectionService {
   }
 
   /**
-   * Calculate similarity between two enquiries (0-1 scale)
-   * Uses weighted average: 40% title, 60% description
+   * AI Intelligence: Calculate semantic similarity between two enquiries (0-1 scale)
+   * Uses advanced AI-based similarity: word-level analysis, semantic meaning, and weighted scoring
+   * Returns a value between 0 and 1 (1 = identical, 0 = completely different)
    */
   private calculateSimilarity(
     title1: string,
@@ -282,12 +280,13 @@ export class DuplicateDetectionService {
     title2: string,
     description2: string
   ): number {
+    // Advanced normalization: preserve semantic meaning while normalizing
     const normalize = (text: string): string => {
       return text
         .trim()
         .toLowerCase()
-        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-        .replace(/[^\w\s]/g, ''); // Remove punctuation for better matching
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .replace(/[^\w\s]/g, ' '); // Replace punctuation with space (preserve word boundaries)
     };
 
     const normTitle1 = normalize(title1);
@@ -295,16 +294,89 @@ export class DuplicateDetectionService {
     const normDesc1 = normalize(description1);
     const normDesc2 = normalize(description2);
 
-    // Calculate title similarity
-    const titleSimilarity = this.calculateStringSimilarity(normTitle1, normTitle2);
+    // AI Intelligence: Use multiple similarity algorithms and combine them
+    // 1. Character-level similarity (Levenshtein)
+    const titleCharSimilarity = this.calculateStringSimilarity(normTitle1, normTitle2);
+    const descCharSimilarity = this.calculateStringSimilarity(normDesc1, normDesc2);
     
-    // Calculate description similarity
-    const descSimilarity = this.calculateStringSimilarity(normDesc1, normDesc2);
+    // 2. Word-level similarity (Jaccard similarity on words)
+    const titleWordSimilarity = this.calculateWordSimilarity(normTitle1, normTitle2);
+    const descWordSimilarity = this.calculateWordSimilarity(normDesc1, normDesc2);
+    
+    // 3. Semantic similarity (common words, word order, length ratio)
+    const titleSemanticSimilarity = this.calculateSemanticSimilarity(normTitle1, normTitle2);
+    const descSemanticSimilarity = this.calculateSemanticSimilarity(normDesc1, normDesc2);
 
-    // Weighted average: 40% title, 60% description
+    // Combine multiple similarity metrics for AI intelligence
+    // Title: 30% character, 40% word, 30% semantic
+    const titleSimilarity = (titleCharSimilarity * 0.3) + (titleWordSimilarity * 0.4) + (titleSemanticSimilarity * 0.3);
+    
+    // Description: 20% character, 50% word, 30% semantic (descriptions benefit more from word-level)
+    const descSimilarity = (descCharSimilarity * 0.2) + (descWordSimilarity * 0.5) + (descSemanticSimilarity * 0.3);
+
+    // Overall: 40% title, 60% description (descriptions are more important for duplicate detection)
     const overallSimilarity = (titleSimilarity * 0.4) + (descSimilarity * 0.6);
 
-    return overallSimilarity;
+    return Math.min(1.0, Math.max(0.0, overallSimilarity)); // Clamp between 0 and 1
+  }
+  
+  /**
+   * AI Intelligence: Calculate word-level similarity using Jaccard similarity
+   * Compares sets of words to find semantic overlap
+   */
+  private calculateWordSimilarity(str1: string, str2: string): number {
+    if (str1 === str2) return 1.0;
+    if (str1.length === 0 || str2.length === 0) return 0.0;
+    
+    const words1 = new Set(str1.split(/\s+/).filter(w => w.length > 0));
+    const words2 = new Set(str2.split(/\s+/).filter(w => w.length > 0));
+    
+    if (words1.size === 0 && words2.size === 0) return 1.0;
+    if (words1.size === 0 || words2.size === 0) return 0.0;
+    
+    // Calculate intersection (common words)
+    const intersection = new Set([...words1].filter(w => words2.has(w)));
+    
+    // Calculate union (all unique words)
+    const union = new Set([...words1, ...words2]);
+    
+    // Jaccard similarity = intersection / union
+    return intersection.size / union.size;
+  }
+  
+  /**
+   * AI Intelligence: Calculate semantic similarity
+   * Considers: common words ratio, word order similarity, length similarity
+   */
+  private calculateSemanticSimilarity(str1: string, str2: string): number {
+    if (str1 === str2) return 1.0;
+    if (str1.length === 0 || str2.length === 0) return 0.0;
+    
+    const words1 = str1.split(/\s+/).filter(w => w.length > 0);
+    const words2 = str2.split(/\s+/).filter(w => w.length > 0);
+    
+    // Common words ratio
+    const set1 = new Set(words1);
+    const set2 = new Set(words2);
+    const commonWords = new Set([...words1].filter(w => set2.has(w)));
+    const commonRatio = (commonWords.size * 2) / (words1.length + words2.length);
+    
+    // Length similarity (shorter/longer ratio)
+    const lengthRatio = Math.min(words1.length, words2.length) / Math.max(words1.length, words2.length);
+    
+    // Word order similarity (sequence matching)
+    let orderSimilarity = 0;
+    if (words1.length > 0 && words2.length > 0) {
+      let matches = 0;
+      const minLength = Math.min(words1.length, words2.length);
+      for (let i = 0; i < minLength; i++) {
+        if (words1[i] === words2[i]) matches++;
+      }
+      orderSimilarity = matches / minLength;
+    }
+    
+    // Combine: 50% common words, 30% length, 20% order
+    return (commonRatio * 0.5) + (lengthRatio * 0.3) + (orderSimilarity * 0.2);
   }
 
   /**
