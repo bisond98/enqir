@@ -21,7 +21,9 @@ export interface DuplicateCheckResult {
 export class DuplicateDetectionService {
   private static instance: DuplicateDetectionService;
   private readonly TIME_WINDOW_HOURS = 24;
-  private readonly SAME_USER_THRESHOLD = 0.99; // 99% similarity for same user
+  // CRITICAL: We now require EXACT matches (100%) for all fields
+  // Similarity is still calculated but only used for logging
+  private readonly SAME_USER_THRESHOLD = 1.0; // 100% exact match required (changed from 99%)
   private readonly DIFFERENT_USER_THRESHOLD = 1.0; // 100% exact match for different users
 
   public static getInstance(): DuplicateDetectionService {
@@ -33,14 +35,26 @@ export class DuplicateDetectionService {
 
   /**
    * Check for duplicate enquiries in the last 24 hours
+   * A duplicate is defined as: same title, same description, same budget, same category, same location
    */
   async checkForDuplicates(
     title: string,
     description: string,
-    userId: string
+    userId: string,
+    excludeEnquiryId?: string, // Exclude current enquiry from duplicate check
+    budget?: number | string, // Budget/price to compare
+    category?: string, // Category to compare
+    location?: string // Location to compare
   ): Promise<DuplicateCheckResult> {
     try {
-      console.log('🔍 Duplicate Detection: Checking for duplicates...', { title: title.substring(0, 30), userId });
+      console.log('🔍 Duplicate Detection: Checking for duplicates...', { 
+        title: title.substring(0, 30), 
+        userId,
+        excludeEnquiryId: excludeEnquiryId || 'none',
+        budget,
+        category,
+        location
+      });
 
       // Calculate 24 hours ago timestamp
       const timestamp24HoursAgo = Timestamp.fromDate(
@@ -60,47 +74,134 @@ export class DuplicateDetectionService {
       querySnapshot.forEach((doc) => {
         const enquiry = doc.data();
         
+        // CRITICAL: Skip the current enquiry itself (prevents self-matching)
+        if (excludeEnquiryId && doc.id === excludeEnquiryId) {
+          console.log('🔍 Duplicate Detection: Skipping current enquiry:', doc.id);
+          return;
+        }
+        
         // Skip if it's a test enquiry or already rejected
         if (enquiry.status === 'rejected' || enquiry.status === 'deleted') {
           return;
         }
 
-        // Check for similarity
+        // Check for similarity in title and description
         const similarity = this.calculateSimilarity(title, description, enquiry.title, enquiry.description);
         const isSameUser = enquiry.userId === userId;
         
-        // For different users, require exact match (100%)
-        // For same user, require 99% similarity
+        // Normalize text for exact comparison
+        const normalize = (text: string): string => {
+          return text
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .replace(/[^\w\s]/g, '');
+        };
+        
+        const normTitle1 = normalize(title);
+        const normTitle2 = normalize(enquiry.title);
+        const normDesc1 = normalize(description);
+        const normDesc2 = normalize(enquiry.description);
+        
+        // Check if title and description match exactly
+        const titleMatches = normTitle1 === normTitle2;
+        const descriptionMatches = normDesc1 === normDesc2;
+        
+        // Check budget/price match (convert to number for comparison)
+        // CRITICAL: Only match if BOTH budgets are provided and equal
+        // If either is missing, don't consider it a match (stricter)
+        const normalizeBudget = (budgetValue: number | string | undefined): number | null => {
+          if (budgetValue === undefined || budgetValue === null || budgetValue === '') return null;
+          if (typeof budgetValue === 'string') {
+            // Remove currency symbols and commas, extract number
+            const numStr = budgetValue.replace(/[₹,\s]/g, '').trim();
+            const num = parseFloat(numStr);
+            return isNaN(num) ? null : num;
+          }
+          return budgetValue;
+        };
+        
+        const currentBudget = normalizeBudget(budget);
+        const enquiryBudget = normalizeBudget(enquiry.budget);
+        // Budget matches ONLY if both are provided and equal (stricter - no match if either is null)
+        const budgetMatches = currentBudget !== null && enquiryBudget !== null && currentBudget === enquiryBudget;
+        
+        // Check category match (normalize for comparison)
+        // CRITICAL: Only match if BOTH categories are provided and equal
+        const normalizeCategory = (cat: string | undefined): string | null => {
+          if (!cat || cat.trim() === '') return null;
+          return cat.trim().toLowerCase();
+        };
+        
+        const currentCategory = normalizeCategory(category);
+        const enquiryCategory = normalizeCategory(enquiry.category);
+        // Category matches ONLY if both are provided and equal (stricter)
+        const categoryMatches = currentCategory !== null && enquiryCategory !== null && currentCategory === enquiryCategory;
+        
+        // Check location match (normalize for comparison)
+        // CRITICAL: Only match if BOTH locations are provided and equal
+        const normalizeLocation = (loc: string | undefined): string | null => {
+          if (!loc || loc.trim() === '') return null;
+          return loc.trim().toLowerCase();
+        };
+        
+        const currentLocation = normalizeLocation(location);
+        const enquiryLocation = normalizeLocation(enquiry.location);
+        // Location matches ONLY if both are provided and equal (stricter)
+        const locationMatches = currentLocation !== null && enquiryLocation !== null && currentLocation === enquiryLocation;
+        
+        // Determine if this is a duplicate based on user and field matches
+        // CRITICAL: For a duplicate, ALL fields must match (title, description, budget, category, location)
+        // If any field is missing on either side, it's NOT a duplicate
         let shouldFlag = false;
         
         if (isSameUser) {
-          // Same user: 99% similarity threshold
-          shouldFlag = similarity >= this.SAME_USER_THRESHOLD;
-        } else {
-          // Different user: Must be exactly 100% (exact match after normalization)
-          shouldFlag = similarity >= this.DIFFERENT_USER_THRESHOLD;
+          // Same user: Title AND description must match EXACTLY (100% match, not 99%)
+          // AND budget, category, location must ALL be provided and match
+          // If any field is missing, it's NOT a duplicate
+          const textMatches = titleMatches && descriptionMatches; // Must be exact match
+          shouldFlag = textMatches && budgetMatches && categoryMatches && locationMatches;
           
-          // Double-check: For different users, also verify it's truly identical
-          // (not just very close due to weighted average)
-          if (shouldFlag) {
-            const normalize = (text: string): string => {
-              return text
-                .trim()
-                .toLowerCase()
-                .replace(/\s+/g, ' ')
-                .replace(/[^\w\s]/g, '');
-            };
-            const normTitle1 = normalize(title);
-            const normTitle2 = normalize(enquiry.title);
-            const normDesc1 = normalize(description);
-            const normDesc2 = normalize(enquiry.description);
-            
-            // Both title and description must be exactly identical for different users
-            shouldFlag = (normTitle1 === normTitle2) && (normDesc1 === normDesc2);
+          if (textMatches && !shouldFlag) {
+            console.log('🔍 Duplicate Detection: Same user enquiry matches text but not all fields:', {
+              enquiryId: doc.id,
+              titleMatches,
+              descriptionMatches,
+              budgetMatches: budgetMatches ? 'YES' : `NO (current: ${currentBudget}, existing: ${enquiryBudget})`,
+              categoryMatches: categoryMatches ? 'YES' : `NO (current: ${currentCategory}, existing: ${enquiryCategory})`,
+              locationMatches: locationMatches ? 'YES' : `NO (current: ${currentLocation}, existing: ${enquiryLocation})`,
+              similarity: Math.round(similarity * 100)
+            });
+          }
+        } else {
+          // Different user: ALL fields must match EXACTLY (100% match)
+          // Title, description, budget, category, and location must ALL be provided and identical
+          // If any field is missing on either side, it's NOT a duplicate
+          shouldFlag = titleMatches && descriptionMatches && budgetMatches && categoryMatches && locationMatches;
+          
+          if ((titleMatches || descriptionMatches) && !shouldFlag) {
+            console.log('🔍 Duplicate Detection: Different user enquiry partial match but not all fields:', {
+              enquiryId: doc.id,
+              titleMatches,
+              descriptionMatches,
+              budgetMatches: budgetMatches ? 'YES' : `NO (current: ${currentBudget}, existing: ${enquiryBudget})`,
+              categoryMatches: categoryMatches ? 'YES' : `NO (current: ${currentCategory}, existing: ${enquiryCategory})`,
+              locationMatches: locationMatches ? 'YES' : `NO (current: ${currentLocation}, existing: ${enquiryLocation})`
+            });
           }
         }
         
         if (shouldFlag) {
+          console.log('🔍 Duplicate Detection: Match found!', {
+            enquiryId: doc.id,
+            isSameUser,
+            titleMatches,
+            descriptionMatches,
+            budgetMatches,
+            categoryMatches,
+            locationMatches,
+            similarity: Math.round(similarity * 100)
+          });
           matches.push({
             enquiryId: doc.id,
             userId: enquiry.userId,
@@ -124,24 +225,33 @@ export class DuplicateDetectionService {
       if (isDuplicate) {
         const sameUserMatches = matches.filter(m => m.isSameUser);
         const differentUserMatches = matches.filter(m => !m.isSameUser);
-        const highestSimilarity = matches[0].similarity;
         
         if (sameUserMatches.length > 0 && differentUserMatches.length > 0) {
-          reason = `Duplicate detected: ${sameUserMatches.length} from same account (≥99%), ${differentUserMatches.length} exact match(es) from different account(s)`;
+          reason = `Duplicate detected: ${sameUserMatches.length} from same account, ${differentUserMatches.length} exact match(es) from different account(s). All fields (title, description, budget, category, location) match exactly.`;
         } else if (sameUserMatches.length > 0) {
-          reason = `Duplicate detected: ${sameUserMatches.length} similar enquiry(ies) from same account (≥99% similarity)`;
+          reason = `Duplicate detected: ${sameUserMatches.length} enquiry(ies) from same account. All fields (title, description, budget, category, location) match exactly.`;
         } else {
-          reason = `Duplicate detected: ${differentUserMatches.length} exact match(es) from different account(s)`;
+          reason = `Duplicate detected: ${differentUserMatches.length} exact match(es) from different account(s). All fields (title, description, budget, category, location) match exactly.`;
         }
       } else {
-        reason = 'No duplicates found';
+        reason = 'No duplicates found - enquiry is unique';
       }
 
       console.log('🔍 Duplicate Detection Result:', {
         isDuplicate,
         matchCount: matches.length,
-        reason
+        reason,
+        matches: matches.map(m => ({
+          enquiryId: m.enquiryId,
+          isSameUser: m.isSameUser,
+          similarity: m.similarity
+        }))
       });
+      
+      // CRITICAL: Log if no duplicates found to help debug false positives
+      if (!isDuplicate) {
+        console.log('✅ Duplicate Detection: No duplicates found. Enquiry is unique and should be approved.');
+      }
 
       return {
         isDuplicate,

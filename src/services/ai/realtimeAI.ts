@@ -112,8 +112,9 @@ class RealtimeAIService {
         };
 
         // Check if this is a duplicate detection (indicated by reason containing "duplicate")
+        // CRITICAL: Only flag as duplicate if the duplicate check actually found matches
         if (result.reason && (result.reason.toLowerCase().includes('duplicate') || result.reason.toLowerCase().includes('similar'))) {
-          console.log('🔍 Realtime AI: Duplicate detected based on reason, fetching duplicate details...', {
+          console.log('🔍 Realtime AI: Potential duplicate detected, verifying with duplicate check...', {
             enquiryId,
             reason: result.reason
           });
@@ -135,34 +136,44 @@ class RealtimeAIService {
               enquiryId,
               isDuplicate: duplicateCheck.isDuplicate,
               matchCount: duplicateCheck.matches.length,
-              reason: duplicateCheck.reason
+              reason: duplicateCheck.reason,
+              matches: duplicateCheck.matches.map(m => ({
+                enquiryId: m.enquiryId,
+                isSameUser: m.isSameUser,
+                similarity: m.similarity
+              }))
             });
             
-            if (duplicateCheck.isDuplicate) {
+            // CRITICAL: Only flag as duplicate if the check actually found matches
+            // Don't flag based on reason alone - verify with actual duplicate check
+            if (duplicateCheck.isDuplicate && duplicateCheck.matches.length > 0) {
               const duplicateIds = duplicateDetectionService.getDuplicateIds(duplicateCheck.matches);
               updateData.isDuplicate = true;
               updateData.duplicateMatches = duplicateIds;
               updateData.duplicateDetectedAt = serverTimestamp();
               updateData.aiNotes = duplicateDetectionService.formatDuplicateReason(duplicateCheck);
-              console.log('✅ Realtime AI: Duplicate flags set successfully:', {
+              console.log('✅ Realtime AI: Duplicate confirmed - flags set successfully:', {
                 enquiryId,
                 duplicateMatches: duplicateIds.length,
                 duplicateIds: duplicateIds.slice(0, 3) // Log first 3 IDs
               });
             } else {
-              // Reason says duplicate but check didn't find any - still flag but log warning
-              console.warn('⚠️ Realtime AI: Reason indicates duplicate but check found none. Flagging anyway.', {
+              // Duplicate check found no matches - don't flag as duplicate
+              // This means the reason was incorrect or the enquiry is actually unique
+              console.log('✅ Realtime AI: Duplicate check found NO matches - enquiry is unique, not flagging as duplicate:', {
                 enquiryId,
-                reason: result.reason
+                reason: result.reason,
+                duplicateCheckReason: duplicateCheck.reason
               });
-              updateData.isDuplicate = true;
-              updateData.aiNotes = result.reason;
+              // Don't set isDuplicate flag - just flag for review without duplicate status
+              updateData.isDuplicate = false;
+              updateData.aiNotes = 'Flagged for review but no duplicates found';
             }
           } catch (error) {
             console.error('❌ Realtime AI: Error checking duplicates:', error);
-            // Still flag as duplicate based on reason
-            updateData.isDuplicate = true;
-            updateData.aiNotes = result.reason;
+            // On error, don't flag as duplicate - just flag for review
+            updateData.isDuplicate = false;
+            updateData.aiNotes = result.reason || 'Flagged for review';
           }
         }
 
