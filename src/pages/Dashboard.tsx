@@ -1320,12 +1320,6 @@ const Dashboard = () => {
                                   );
                                 })()}
                                 
-                                {enquiry.isPremium && (
-                                  <Badge className="w-full sm:w-auto bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-300/60 text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md flex items-center justify-center h-auto sm:h-9 lg:h-8 xl:h-8.5 sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]">
-                                    Premium
-                                  </Badge>
-                                )}
-                                
                                 <Button 
                                   variant="destructive" 
                                   size="sm" 
