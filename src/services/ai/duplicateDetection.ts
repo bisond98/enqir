@@ -93,8 +93,9 @@ export class DuplicateDetectionService {
           return; // Skip different user enquiries - don't flag them
         }
         
-        // Calculate overall similarity including ALL fields: title, description, budget, category, location
-        const overallSimilarity = this.calculateOverallSimilarity(
+        // STRICT: Calculate similarity for EACH field individually
+        // Only flag if ALL fields (text, budget, category, location) are 99%+ similar
+        const similarityResult = this.calculateOverallSimilarity(
           title,
           description,
           budget,
@@ -107,15 +108,17 @@ export class DuplicateDetectionService {
           enquiry.location
         );
         
-        // STRICT: Only flag if overall similarity (ALL fields combined) is 98% or higher
-        const similarityPercentage = overallSimilarity * 100;
-        const shouldFlag = overallSimilarity >= this.SAME_USER_THRESHOLD; // Strict 98% threshold
+        // STRICT: Only flag if ALL fields match 99%+ individually
+        const shouldFlag = similarityResult.allMatch;
         
         if (shouldFlag) {
-          console.log('🤖 AI Duplicate Detection: Same user enquiry flagged for 98%+ overall similarity:', {
+          console.log('✅ AI Duplicate Detection: Same user enquiry flagged - ALL fields match 99%+:', {
             enquiryId: doc.id,
-            overallSimilarity: Math.round(similarityPercentage),
-            threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
+            textSimilarity: Math.round(similarityResult.textSimilarity * 100) + '%',
+            budgetSimilarity: Math.round(similarityResult.budgetSimilarity * 100) + '%',
+            categorySimilarity: Math.round(similarityResult.categorySimilarity * 100) + '%',
+            locationSimilarity: Math.round(similarityResult.locationSimilarity * 100) + '%',
+            overallPercentage: Math.round(similarityResult.overallPercentage * 100) + '%',
             title1: title.substring(0, 50),
             title2: enquiry.title.substring(0, 50),
             desc1: description.substring(0, 50),
@@ -127,24 +130,8 @@ export class DuplicateDetectionService {
             location1: location,
             location2: enquiry.location
           });
-        } else if (overallSimilarity >= 0.90) {
-          // Log near-misses for debugging (90-98% range)
-          console.log('🔍 AI Duplicate Detection: Same user enquiry below 98% threshold:', {
-            enquiryId: doc.id,
-            overallSimilarity: Math.round(similarityPercentage),
-            threshold: Math.round(this.SAME_USER_THRESHOLD * 100),
-            reason: 'Overall similarity must be 98%+ to flag'
-          });
-        }
-        
-        if (shouldFlag) {
-          const similarityPercentage = Math.round(overallSimilarity * 100);
-          console.log('✅ AI Duplicate Detection: Match found and flagged (98%+ overall similarity)!', {
-            enquiryId: doc.id,
-            isSameUser: true,
-            overallSimilarity: similarityPercentage,
-            threshold: Math.round(this.SAME_USER_THRESHOLD * 100)
-          });
+          
+          const overallPercentage = Math.round(similarityResult.overallPercentage * 100);
           matches.push({
             enquiryId: doc.id,
             userId: enquiry.userId,
@@ -152,7 +139,24 @@ export class DuplicateDetectionService {
             description: enquiry.description,
             createdAt: enquiry.createdAt,
             isSameUser: true,
-            similarity: similarityPercentage // Store as percentage (0-100)
+            similarity: overallPercentage // Store as percentage (0-100)
+          });
+        } else {
+          // Log why it wasn't flagged (which fields didn't match 99%+)
+          const failedFields: string[] = [];
+          if (similarityResult.textSimilarity < 0.99) failedFields.push(`Text: ${Math.round(similarityResult.textSimilarity * 100)}%`);
+          if (similarityResult.budgetSimilarity < 0.99) failedFields.push(`Budget: ${Math.round(similarityResult.budgetSimilarity * 100)}%`);
+          if (similarityResult.categorySimilarity < 0.99) failedFields.push(`Category: ${Math.round(similarityResult.categorySimilarity * 100)}%`);
+          if (similarityResult.locationSimilarity < 0.99) failedFields.push(`Location: ${Math.round(similarityResult.locationSimilarity * 100)}%`);
+          
+          console.log('🔍 AI Duplicate Detection: Same user enquiry NOT flagged - fields below 99%:', {
+            enquiryId: doc.id,
+            failedFields: failedFields.join(', '),
+            textSimilarity: Math.round(similarityResult.textSimilarity * 100) + '%',
+            budgetSimilarity: Math.round(similarityResult.budgetSimilarity * 100) + '%',
+            categorySimilarity: Math.round(similarityResult.categorySimilarity * 100) + '%',
+            locationSimilarity: Math.round(similarityResult.locationSimilarity * 100) + '%',
+            reason: 'ALL fields must be 99%+ to flag'
           });
         }
       });
