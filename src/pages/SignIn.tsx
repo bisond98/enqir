@@ -11,14 +11,34 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react";
 import { auth } from "@/firebase";
-import { signInWithEmailLink, isSignInWithEmailLink } from "firebase/auth";
+import { signInWithEmailLink, isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
 import { toast } from "@/hooks/use-toast";
 
 const SignIn = () => {
   // Use Firebase authentication directly since it's working
-  const { signUp, signIn } = useAuth();
+  const { user, signUp, signIn, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  // STRICT: Redirect if user is already signed in - check both AuthContext and Firebase directly
+  useEffect(() => {
+    // Check AuthContext user first
+    if (user && !authLoading) {
+      console.log('✅ SignIn: User already authenticated, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    
+    // Also check Firebase auth state directly for immediate detection on refresh
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser && !authLoading) {
+        console.log('✅ SignIn: Firebase user detected, redirecting to dashboard');
+        navigate('/dashboard', { replace: true });
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [user, authLoading, navigate]);
   
   // Form states
   const [identifier, setIdentifier] = useState("");

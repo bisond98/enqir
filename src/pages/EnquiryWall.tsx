@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check } from "lucide-react";
 import newLogo from "@/assets/new-logo.png";
-import { collection, query, where, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "@/firebase";
 import CountdownTimer from "@/components/CountdownTimer";
 import { AISearchService } from "@/services/ai/aiSearchService";
@@ -98,15 +98,94 @@ export default function EnquiryWall() {
     }
   }, [showSuggestions]);
 
-  // Load enquiries
+  // Load enquiries with real-time updates
   useEffect(() => {
-    const loadEnquiries = async () => {
+    setLoading(true);
+    
+    // Try query with orderBy first (requires composite index)
+    const enquiriesQueryWithOrder = query(
+      collection(db, "enquiries"),
+      where("status", "==", "live"),
+      orderBy("createdAt", "desc")
+    );
+    
+    // Fallback query without orderBy (if index doesn't exist)
+    const enquiriesQueryWithoutOrder = query(
+      collection(db, "enquiries"),
+      where("status", "==", "live")
+    );
+    
+    let unsubscribe: (() => void) | null = null;
+    
+    // Try with orderBy first
+    const tryWithOrder = () => {
+      console.log('🔍 EnquiryWall: Attempting query with orderBy...');
+      unsubscribe = onSnapshot(
+        enquiriesQueryWithOrder,
+        (snapshot) => {
+          console.log('✅ EnquiryWall: Query with orderBy succeeded');
+          processEnquiries(snapshot);
+        },
+        (error: any) => {
+          // If index error, fallback to query without orderBy
+          if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
+            console.warn("⚠️ EnquiryWall: Firestore index missing, using fallback query:", error);
+            console.warn("⚠️ EnquiryWall: Please create a composite index for: status == 'live' AND orderBy createdAt desc");
+            tryWithoutOrder();
+          } else {
+            console.error("❌ EnquiryWall: Error loading enquiries:", error);
+            console.error("❌ EnquiryWall: Error details:", {
+              code: error?.code,
+              message: error?.message,
+              stack: error?.stack
+            });
+            // Try fallback even on other errors
+            tryWithoutOrder();
+          }
+        }
+      );
+    };
+    
+    // Fallback without orderBy
+    const tryWithoutOrder = () => {
+      console.log('🔍 EnquiryWall: Attempting fallback query without orderBy...');
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+      unsubscribe = onSnapshot(
+        enquiriesQueryWithoutOrder,
+        (snapshot) => {
+          console.log('✅ EnquiryWall: Fallback query succeeded');
+          processEnquiries(snapshot);
+        },
+        (error) => {
+          console.error("❌ EnquiryWall: Error loading enquiries (fallback):", error);
+          console.error("❌ EnquiryWall: Fallback error details:", {
+            code: error?.code,
+            message: error?.message,
+            stack: error?.stack
+          });
+          setLoading(false);
+        }
+      );
+    };
+    
+    // Process enquiries data
+    const processEnquiries = (snapshot: any) => {
       try {
-        const snapshot = await getDocs(query(collection(db, "enquiries"), where("status", "==", "live")));
-        const enquiriesData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Enquiry[];
+        console.log('📊 EnquiryWall: Received snapshot with', snapshot.docs.length, 'documents');
+        
+        const enquiriesData = snapshot.docs.map((doc: any) => {
+          const data = doc.data();
+          console.log('📄 EnquiryWall: Processing enquiry', doc.id, 'status:', data.status);
+          return {
+            id: doc.id,
+            ...data
+          };
+        }) as Enquiry[];
+        
+        console.log('📊 EnquiryWall: Total enquiries from query:', enquiriesData.length);
         
         // Separate live and expired enquiries
         const now = new Date();
@@ -121,6 +200,8 @@ export default function EnquiryWall() {
           const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
           return deadlineDate < now;
         });
+        
+        console.log('📊 EnquiryWall: Live enquiries:', liveEnquiries.length, 'Expired:', expiredEnquiries.length);
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -144,15 +225,23 @@ export default function EnquiryWall() {
           new Map(combinedEnquiries.map(enquiry => [enquiry.id, enquiry])).values()
         );
         
+        console.log('📊 EnquiryWall: Final unique enquiries to display:', uniqueEnquiries.length);
+        
         setEnquiries(uniqueEnquiries);
         setLoading(false);
       } catch (error) {
-        console.error("Error loading enquiries:", error);
+        console.error("❌ EnquiryWall: Error processing enquiries:", error);
         setLoading(false);
       }
     };
+    
+    // Start with orderBy query
+    tryWithOrder();
 
-    loadEnquiries();
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   // Fetch user profiles for all enquiry owners to show trust badges
@@ -804,9 +893,6 @@ export default function EnquiryWall() {
                           <div className="flex items-center gap-1 sm:gap-2">
                             {!isEnquiryOutdated(enquiry) && (
                               <Badge className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
-                            )}
-                            {enquiry.isUrgent && !isEnquiryOutdated(enquiry) && (
-                              <Badge className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">Urgent</Badge>
                             )}
                             {isEnquiryOutdated(enquiry) && (
                               <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-gray-800">Expired</Badge>
