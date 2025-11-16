@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,7 +14,7 @@ import { collection, query, where, doc, updateDoc, deleteDoc, orderBy, getDocs, 
 import VerifiedUser from "../components/VerifiedUser";
 import { toast } from "../hooks/use-toast";
 import { useUsage } from "../contexts/UsageContext";
-import { Crown, Lock } from "lucide-react";
+import { Crown } from "lucide-react";
 import CountdownTimer from "../components/CountdownTimer";
 import { fadeInUp, staggerContainer } from "../lib/motion";
 import PaymentPlanSelector from "../components/PaymentPlanSelector";
@@ -925,82 +925,106 @@ const Dashboard = () => {
             </Button>
           </div>
           
-          {/* Welcome Header */}
-          <div className="mb-4 sm:mb-16 -mt-2 sm:-mt-6">
-            <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
-              <div className="text-center">
-                <div className="flex justify-center items-center gap-2 sm:gap-4 mb-1.5 sm:mb-3">
-                  <div className="inline-flex items-center justify-center w-8 h-8 sm:w-20 sm:h-20 bg-white/10 rounded-lg sm:rounded-2xl shadow-lg sm:shadow-xl">
-                    <Users className="h-4 w-4 sm:h-10 sm:w-10 text-white" />
+          {/* Professional Welcome Header */}
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+            <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden shadow-2xl">
+              {/* Elegant pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+              
+              {/* Subtle gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-emerald-600/5"></div>
+              
+              <div className="relative text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5 mb-3 sm:mb-4 lg:mb-5">
+                  <div className="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl sm:shadow-2xl lg:shadow-3xl flex-shrink-0">
+                    <Users className="h-5 w-5 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
                   </div>
                   <Button
                     onClick={handleRefresh}
                     disabled={refreshing}
                     variant="outline"
                     size="sm"
-                    className="h-7 w-7 sm:h-12 sm:w-12 rounded-full shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-105 bg-white/10 border-white/20 hover:bg-white/20"
+                    className="h-9 w-9 sm:h-12 sm:w-12 lg:h-14 lg:w-14 rounded-full shadow-xl sm:shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 active:scale-95 bg-white/10 border-white/20 hover:bg-white/20 backdrop-blur-sm"
                     title="Refresh Dashboard Data"
                   >
-                    <RefreshCw className={`h-3 w-3 sm:h-5 sm:w-5 text-white ${refreshing ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white ${refreshing ? 'animate-spin' : ''}`} />
                   </Button>
                 </div>
-                <h1 className="mb-0.5 sm:mb-2">
+                <h1 className="mb-2 sm:mb-3 lg:mb-4">
                   <VerifiedUser 
                     name={userProfile?.fullName || 'User'}
                     isVerified={userProfile?.isProfileVerified || false}
-                    className="text-2xl sm:text-7xl font-bold text-white inline-flex items-center gap-1.5 justify-center"
+                    className="text-2xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight drop-shadow-lg"
                   />
                 </h1>
-                <p className="text-xs sm:text-base text-gray-300 max-w-3xl mx-auto leading-relaxed px-2 text-center">
+                <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed px-3 sm:px-4 text-center font-medium">
                   Use AI to search for you
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Your Stats Grid */}
-          <div className="grid grid-cols-3 md:grid-cols-2 gap-2 sm:gap-6 mb-3 sm:mb-20">
+          {/* Professional Stats Grid */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 mb-6 sm:mb-12 lg:mb-16">
             {/* Total Enquiries */}
-            <Card className="border shadow-sm bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
-              <CardContent className="p-2 sm:p-4">
-                <div className="flex items-center justify-between mb-1 sm:mb-3">
-                  <div className="w-5 h-5 sm:w-8 sm:h-8 bg-blue-600 rounded-md flex items-center justify-center">
-                    <Eye className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-white" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <Card className="group border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
+                <CardContent className="p-3 sm:p-5 lg:p-6">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Eye className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
+                    </div>
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <TrendingUp className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-blue-600 opacity-60" />
-                </div>
-                <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{enquiries.length}</h3>
-                <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Total Enquiries</p>
-              </CardContent>
-            </Card>
+                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.length}</h3>
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Total Enquiries</p>
+                </CardContent>
+              </Card>
+            </motion.div>
             
             {/* Active Enquiries */}
-            <Card className="border shadow-sm bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
-              <CardContent className="p-2 sm:p-4">
-                <div className="flex items-center justify-between mb-1 sm:mb-3">
-                  <div className="w-5 h-5 sm:w-8 sm:h-8 bg-emerald-600 rounded-md flex items-center justify-center">
-                    <MessageSquare className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-white" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <Card className="group border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
+                <CardContent className="p-3 sm:p-5 lg:p-6">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <MessageSquare className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
+                    </div>
+                    <Activity className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-emerald-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <Activity className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-emerald-600 opacity-60" />
-                </div>
-                <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</h3>
-                <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Active Enquiries</p>
-              </CardContent>
-            </Card>
+                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.filter(e => e.status === 'live').length}</h3>
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Active Enquiries</p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Saved Enquiries */}
-            <Card className="border shadow-sm bg-white rounded-lg" onClick={(e) => e.stopPropagation()}>
-              <CardContent className="p-2 sm:p-4">
-                <div className="flex items-center justify-between mb-1 sm:mb-3">
-                  <div className="w-5 h-5 sm:w-8 sm:h-8 bg-orange-600 rounded-md flex items-center justify-center">
-                    <Bookmark className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-white" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            >
+              <Card className="group border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
+                <CardContent className="p-3 sm:p-5 lg:p-6">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Bookmark className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
+                    </div>
+                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-orange-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <Bookmark className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-orange-600 opacity-60" />
-                </div>
-                <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-0.5 sm:mb-2">{savedEnquiries.length}</h3>
-                <p className="text-slate-600 font-semibold text-[10px] sm:text-xs">Saved Enquiries</p>
-              </CardContent>
-            </Card>
+                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{savedEnquiries.length}</h3>
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Saved Enquiries</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
 
           {/* Quick Action Cards */}
@@ -1033,29 +1057,29 @@ const Dashboard = () => {
                 </div>
               </CardHeader>
 
-              <CardContent className="p-3 sm:p-6 lg:p-8 pt-0 relative z-10">
-                <div className="grid grid-cols-3 gap-1 sm:gap-4 mb-3 sm:mb-8">
-                  <div className="text-center p-1 sm:p-5 bg-emerald-50 rounded-lg sm:rounded-2xl border border-emerald-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-emerald-600 mb-0.5 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</div>
-                    <div className="text-[10px] sm:text-sm text-emerald-700 font-semibold">Live</div>
-                  </div>
-                  <div className="text-center p-1 sm:p-5 bg-amber-50 rounded-lg sm:rounded-2xl border border-amber-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-amber-600 mb-0.5 sm:mb-2">{enquiries.filter(e => e.status === 'pending').length}</div>
-                    <div className="text-[10px] sm:text-sm text-amber-700 font-semibold">Pending</div>
-                  </div>
-                  <div className="text-center p-1 sm:p-5 bg-slate-50 rounded-lg sm:rounded-2xl border border-slate-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-slate-600 mb-0.5 sm:mb-2">{enquiries.filter(e => e.status === 'completed').length}</div>
-                    <div className="text-[10px] sm:text-sm text-slate-700 font-semibold">Completed</div>
-                  </div>
-                </div>
-
-                {/* Clean Enquiry Cards Display */}
-                <div className="mb-3 sm:mb-8">
-                  <h4 className="text-xs sm:text-xl font-semibold text-slate-800 mb-1 sm:mb-4">Your Enquiries</h4>
+              <CardContent className="p-4 sm:p-6 lg:p-8 xl:p-10 relative z-10">
+                {/* Professional Enquiry Cards Section */}
+                <div className="mb-6 sm:mb-12 lg:mb-16">
+                  {/* Empty State - Professional */}
                   {enquiries.length === 0 ? (
-                    <p className="text-slate-500 text-center py-3 text-xs sm:text-sm">No enquiries yet</p>
+                    <div className="flex flex-col items-center justify-center py-16 sm:py-20 lg:py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem] border-2 border-dashed border-gray-300/60">
+                      <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
+                        <Plus className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
+                      </div>
+                      <h5 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2.5 sm:mb-3 lg:mb-4 tracking-tight text-center">No Enquiries Yet</h5>
+                      <p className="text-sm sm:text-base lg:text-lg text-gray-600 text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
+                        Start by posting your first enquiry to connect with sellers and get quality responses
+                      </p>
+                      <Button
+                        onClick={() => navigate('/post-enquiry')}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center"
+                      >
+                        <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
+                        Post Your First Enquiry
+                      </Button>
+                    </div>
                   ) : (
-                    <div className="space-y-2 sm:space-y-3">
+                    <div className="space-y-4 sm:space-y-5 lg:space-y-6 lg:grid lg:grid-cols-1 xl:grid-cols-1 lg:gap-6">
                       {(() => {
                         const now = new Date();
                         const isExpired = (e: Enquiry) => {
@@ -1098,298 +1122,416 @@ const Dashboard = () => {
                         const planInfo = getPlanDisplay();
 
                         return (
-                          <div
+                          <motion.div
                             key={enquiry.id}
-                            className={`relative rounded-2xl sm:rounded-3xl shadow-sm transition-all duration-200 overflow-hidden ${
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden transition-all duration-300 ${
                               expiredFlag
-                                ? 'opacity-70 grayscale pointer-events-none bg-gray-100 border-2 border-gray-300'
-                                : 'bg-white border-2 border-blue-200 hover:shadow-md cursor-pointer'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 shadow-sm'
+                                : 'bg-white border border-gray-200/80 hover:border-blue-400/60 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                             }`}
                             onClick={() => !expiredFlag && navigate(`/enquiry/${enquiry.id}`)}
                           >
-                            {/* Card Header - Top 10% with gray background */}
-                            <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-3">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
-                                  <h5 className={`text-xs sm:text-lg font-semibold truncate ${expiredFlag ? 'text-gray-300' : 'text-white'}`}>
-                                    {enquiry.title}
-                                  </h5>
-                                  {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
-                                    <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm ${
-                                      expiredFlag ? 'bg-gray-400' : 'bg-blue-500'
+                            {/* Premium Header with Sophisticated Design */}
+                            <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
+                              expiredFlag ? 'opacity-70' : ''
+                            }`}>
+                              {/* Elegant pattern overlay */}
+                              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                              
+                              {/* Shine effect on hover */}
+                              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                              
+                              <div className="relative flex items-start justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
+                                {/* Title Section with Better Typography */}
+                                <div className="flex-1 min-w-0 pr-2 sm:pr-3 lg:pr-2 xl:pr-2.5">
+                                  <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 mb-2.5 lg:mb-1.5 xl:mb-2">
+                                    <h5 className={`text-sm sm:text-lg lg:text-sm xl:text-base font-bold truncate leading-snug tracking-tight ${
+                                      expiredFlag ? 'text-gray-400' : 'text-white drop-shadow-sm'
                                     }`}>
-                                      <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                                      {enquiry.title}
+                                    </h5>
+                                    {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                                      <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
+                                        expiredFlag ? 'bg-gray-500' : 'bg-blue-500'
+                                      }`}>
+                                        <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Status Badge - More Refined */}
+                                  {expiredFlag && (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-0.5 xl:py-1 bg-red-500/25 border border-red-400/40 rounded-md lg:rounded-md xl:rounded-md backdrop-blur-sm shadow-sm mt-0.5 lg:mt-0.5 xl:mt-0.5">
+                                      <span className="w-1.5 h-1.5 lg:w-1.5 lg:h-1.5 xl:w-1.5 xl:h-1.5 bg-red-400 rounded-full animate-pulse"></span>
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-red-200 font-semibold tracking-wide">Expired</span>
                                     </div>
                                   )}
                                 </div>
-                                {/* Plan Badge */}
-                                <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-1 ${
+                                
+                                {/* Premium Plan Badge */}
+                                <Badge className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1 xl:gap-1.5 px-3 sm:px-4 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-xl lg:rounded-md xl:rounded-lg shadow-lg border backdrop-blur-md ${
                                   enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                                    ? 'bg-gray-100 text-gray-700' 
-                                    : 'bg-blue-100 text-blue-800'
-                                }`}>
+                                    ? 'bg-white/15 text-gray-100 border-white/20' 
+                                    : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                                } flex-shrink-0`}>
                                   {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                                    <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-500" />
+                                    <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-yellow-300 drop-shadow-sm" />
                                   ) : null}
-                                  {planInfo.name}
+                                  <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold whitespace-nowrap tracking-wide">
+                                    {planInfo.name}
+                                  </span>
                                 </Badge>
                               </div>
-                              {expiredFlag && (
-                                <div className="mt-1 text-[10px] sm:text-xs text-red-300">Expired</div>
-                              )}
                             </div>
                             
-                            {/* Card Content - Rest with white background */}
-                            <div className="p-4 sm:p-4 relative">
-                            {/* Deadline in top right corner of white space */}
-                            {(() => {
-                              // Check if deadline exists in any form
-                              const deadline = enquiry.deadline;
-                              if (!deadline) return null;
+                            {/* Premium Content Area with Better Structure */}
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-4">
+                              {/* Subtle background texture */}
+                              <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
-                              try {
-                                let deadlineDate: Date;
+                              {/* Deadline Badge - Premium Design */}
+                              {(() => {
+                                const deadline = enquiry.deadline;
+                                if (!deadline) return null;
                                 
-                                // Handle Firestore Timestamp
-                                if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
-                                  deadlineDate = deadline.toDate();
-                                }
-                                // Handle string or number
-                                else if (typeof deadline === 'string' || typeof deadline === 'number') {
-                                  deadlineDate = new Date(deadline);
-                                }
-                                // Handle Date object
-                                else if (deadline instanceof Date) {
-                                  deadlineDate = deadline;
-                                }
-                                else {
+                                try {
+                                  let deadlineDate: Date;
+                                  
+                                  if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
+                                    deadlineDate = deadline.toDate();
+                                  } else if (typeof deadline === 'string' || typeof deadline === 'number') {
+                                    deadlineDate = new Date(deadline);
+                                  } else if (deadline instanceof Date) {
+                                    deadlineDate = deadline;
+                                  } else {
+                                    return null;
+                                  }
+                                  
+                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                                    return null;
+                                  }
+                                  
+                                  return (
+                                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-3 lg:right-3 xl:top-3.5 xl:right-3.5 flex items-center gap-1 lg:gap-1.5 bg-gradient-to-r from-red-50 to-red-100/80 border-2 border-red-200/60 rounded-md lg:rounded-lg px-2 lg:px-2.5 xl:px-2.5 py-1 lg:py-1.5 xl:py-1.5 shadow-lg z-20 backdrop-blur-sm max-w-[140px] sm:max-w-[160px] lg:max-w-[150px] xl:max-w-[160px]">
+                                      <div className="flex items-center justify-center w-3 h-3 lg:w-3.5 lg:h-3.5 xl:w-3.5 xl:h-3.5 bg-red-500 rounded-full flex-shrink-0">
+                                        <Clock className="h-1.5 w-1.5 lg:h-2 lg:w-2 xl:h-2 xl:w-2 text-white" />
+                                      </div>
+                                      <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
+                                        {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                      </span>
+                                    </div>
+                                  );
+                                } catch (e) {
+                                  console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
                                   return null;
                                 }
-                                
-                                // Validate the date
-                                if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                                  return null;
-                                }
-                                
-                                // Display the deadline
-                                return (
-                                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-1 z-10">
-                                    <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600 flex-shrink-0" />
-                                    <span className="text-[9px] sm:text-xs text-red-600 font-semibold whitespace-nowrap">
-                                      {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              })()}
+
+                              {/* Response Metrics - Premium Card Design with Perfect Alignment */}
+                              <div className="mb-4 sm:mb-5 lg:mb-4 xl:mb-4.5 relative">
+                                {/* Desktop: Add padding-right only if deadline exists */}
+                                <div className={`flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-2.5 xl:gap-3 ${
+                                  enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-28 xl:pr-32' : ''
+                                }`}>
+                                  <div className={`flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2.5 lg:py-1.5 xl:py-2 rounded-lg lg:rounded-lg font-bold shadow-md border-2 transition-all duration-200 ${
+                                    allResponses.length === 0 
+                                      ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white border-gray-700' 
+                                      : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
+                                  }`}>
+                                    <div className={`flex items-center justify-center w-4.5 h-4.5 sm:w-5 sm:h-5 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 rounded-lg lg:rounded-md flex-shrink-0 ${
+                                      allResponses.length === 0 ? 'bg-white/20' : 'bg-green-500/20'
+                                    }`}>
+                                      <MessageSquare className={`h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 ${
+                                        allResponses.length === 0 ? 'text-white' : 'text-green-600'
+                                      }`} />
+                                    </div>
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold tracking-tight whitespace-nowrap">
+                                      {allResponses.length} {allResponses.length === 1 ? 'Response' : 'Responses'}
                                     </span>
                                   </div>
-                                );
-                              } catch (e) {
-                                console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
-                                return null;
-                              }
-                            })()}
+                                  {remainingCount > 0 && (
+                                    <div className="flex items-center gap-1.5 lg:gap-1.5 xl:gap-2 px-3 sm:px-3.5 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300/60 rounded-lg lg:rounded-lg shadow-md">
+                                      <div className="flex items-center justify-center w-3.5 h-3.5 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 bg-amber-500/20 rounded-md lg:rounded-md flex-shrink-0">
+                                        <Lock className="h-3 w-3 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-amber-700" />
+                                      </div>
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-amber-800 font-bold tracking-tight whitespace-nowrap">
+                                        {remainingCount} Locked
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
 
-                            {/* Response Count */}
-                            <div className="mb-3 sm:mb-2">
-                              <span className={`text-xs sm:text-base font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded ${
-                                allResponses.length === 0 
-                                  ? 'bg-gray-800 text-white' 
-                                  : 'text-green-600'
-                              }`}>
-                                {allResponses.length} responses
-                              </span>
-                              {remainingCount > 0 && (
-                                <span className="text-[10px] sm:text-xs text-slate-500 ml-1 sm:ml-2">
-                                  ({remainingCount} locked)
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div 
-                              className="flex items-center gap-2 sm:gap-2 flex-wrap mt-3 sm:mt-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                              }}
-                            >
-                              <Button
-                                variant="outline" 
-                                size="sm" 
+                              {/* Premium Action Buttons - Perfectly Aligned */}
+                              <div 
+                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
-                                  if (!expiredFlag) {
-                                    navigate(`/my-enquiries?highlight=${enquiry.id}`);
-                                  }
                                 }}
-                                disabled={expiredFlag}
-                                className="border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-400 text-[10px] sm:text-sm px-3 sm:px-3 py-2 sm:py-2 h-8 sm:h-9 cursor-pointer"
                               >
-                                View Responses
-                              </Button>
-                              
-                              {/* Upgrade Button - Show if not premium */}
-                              {(() => {
-                                const enquiryPlan = enquiry.selectedPlanId || 'free';
-                                // Don't show upgrade button for premium (top tier) or pro
-                                if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
-                                const upgradeOptions = getUpgradeOptions(
-                                  enquiryPlan,
-                                  'free',
-                                  enquiry.createdAt,
-                                  null
-                                );
-                                if (upgradeOptions.length === 0) return null;
-                                return (
-                                  <Button
-                                    variant="default"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (!expiredFlag) {
-                                        handleUpgradeClick(enquiry, e);
-                                      }
-                                    }}
-                                    disabled={expiredFlag}
-                                    className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 bg-blue-600 hover:bg-blue-700 text-white"
-                                  >
-                                    Upgrade
-                                  </Button>
-                                );
-                              })()}
-                              
-                              {enquiry.isPremium && (
-                                <Badge className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1">
-                                  Premium
-                                </Badge>
-                              )}
-                              
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
-                                    handleDeleteEnquiry(enquiry.id);
-                                  }
-                                }}
-                                disabled={expiredFlag}
-                                className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
-                              >
-                                Delete
-                              </Button>
+                                <Button
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    if (!expiredFlag) {
+                                      navigate(`/my-enquiries?highlight=${enquiry.id}`);
+                                    }
+                                  }}
+                                  disabled={expiredFlag}
+                                  className="w-full sm:flex-none border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-xs sm:text-sm lg:text-[11px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
+                                >
+                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
+                                  <span className="tracking-tight whitespace-nowrap">View Responses</span>
+                                </Button>
+                                
+                                {/* Premium Upgrade Button */}
+                                {(() => {
+                                  const enquiryPlan = enquiry.selectedPlanId || 'free';
+                                  if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
+                                  const upgradeOptions = getUpgradeOptions(
+                                    enquiryPlan,
+                                    'free',
+                                    enquiry.createdAt,
+                                    null
+                                  );
+                                  if (upgradeOptions.length === 0) return null;
+                                  return (
+                                    <Button
+                                      variant="default"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!expiredFlag) {
+                                          handleUpgradeClick(enquiry, e);
+                                        }
+                                      }}
+                                      disabled={expiredFlag}
+                                      className="w-full sm:flex-none bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-xs sm:text-sm lg:text-[11px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border-2 border-blue-500/20 flex items-center justify-center sm:min-w-[110px] lg:min-w-[90px] xl:min-w-[100px]"
+                                    >
+                                      <Crown className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
+                                      <span className="tracking-tight whitespace-nowrap">Upgrade</span>
+                                    </Button>
+                                  );
+                                })()}
+                                
+                                {enquiry.isPremium && (
+                                  <Badge className="w-full sm:w-auto bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-300/60 text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md flex items-center justify-center h-auto sm:h-9 lg:h-8 xl:h-8.5 sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]">
+                                    Premium
+                                  </Badge>
+                                )}
+                                
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                      handleDeleteEnquiry(enquiry.id);
+                                    }
+                                  }}
+                                  disabled={expiredFlag}
+                                  className="w-full sm:flex-none bg-gradient-to-r from-red-50 to-red-100/80 hover:from-red-100 hover:to-red-200 text-red-700 border-2 border-red-300/60 hover:border-red-400/80 text-xs sm:text-sm lg:text-[11px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
+                                  <span className="tracking-tight whitespace-nowrap">Delete</span>
+                                </Button>
+                              </div>
                             </div>
-                            </div>
-                          </div>
+                          </motion.div>
                         );
                         })
                       })()}
+                      
+                      {/* View All Button - Professional Design */}
+                      {enquiries.length > 3 && (
+                        <div className="flex justify-center pt-5 sm:pt-7 lg:pt-8 mt-5 sm:mt-6 lg:mt-8 border-t-2 border-gray-200/60">
+                          <Button 
+                            variant="outline" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              navigate('/my-enquiries'); 
+                            }} 
+                            className="group/btn border-2 border-gray-300/80 bg-white hover:bg-gray-50 hover:border-blue-400/60 text-gray-700 hover:text-gray-900 font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 h-auto sm:h-12 lg:h-14 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                          >
+                            <span className="mr-2 tracking-tight">View All Enquiries</span>
+                            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-
-                {enquiries.length > 3 && (
-                  <div className="flex justify-center mt-1 sm:mt-4">
-                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); navigate('/my-enquiries'); }} className="h-5 sm:h-9 text-[9px] sm:text-sm px-2 sm:px-4">
-                      Show More
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
-            {/* Responses Card */}
+            {/* Responses Card - Professional Redesign */}
             <Card 
-              className="group cursor-pointer border-2 border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl relative"
+              className="group cursor-pointer border-2 border-gray-200/80 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-responses');
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              <CardHeader className="p-3 sm:p-8 pb-2 sm:pb-6 relative z-10">
-                <div className="flex items-center justify-between mb-3 sm:mb-8">
-                  <div className="w-10 h-10 sm:w-20 sm:h-20 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg sm:shadow-xl group-hover:scale-110 transition-transform duration-300">
-                    <Rocket className="h-5 w-5 sm:h-10 sm:w-10 text-white" />
+              
+              {/* Professional Header with Gray Background */}
+              <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-4 sm:px-6 lg:px-5 xl:px-6 py-4 sm:py-6 lg:py-4 xl:py-5">
+                {/* Elegant pattern overlay */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                
+                {/* Shine effect on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                
+                <div className="relative flex items-center justify-between mb-3 sm:mb-4 lg:mb-3 xl:mb-3.5">
+                  <div className="flex items-center gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
+                    <div className="w-11 h-11 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl lg:shadow-lg xl:shadow-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                      <MessageSquare className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1 tracking-tight">Your Responses</h2>
+                      <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-gray-300 leading-snug">
+                        Track your seller submissions and their status
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <Badge className="bg-gray-100 text-gray-800 text-xs sm:text-sm font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                  <div className="text-right flex-shrink-0">
+                    <Badge className="bg-white/15 text-gray-100 border border-white/20 text-xs sm:text-sm lg:text-xs xl:text-sm font-bold px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 rounded-xl lg:rounded-lg xl:rounded-xl backdrop-blur-sm shadow-lg">
                       {responsesReady ? `${responsesSummary.length} Total` : 'Loading...'}
                     </Badge>
                   </div>
                 </div>
-                <div className="text-left lg:text-center">
-                  <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-1 sm:mb-4 whitespace-nowrap">Your Responses</h2>
-                  <p className="text-xs sm:text-lg text-slate-600 leading-relaxed">
-                    Track your seller submissions and their status
-                  </p>
-                </div>
-              </CardHeader>
+              </div>
 
-              <CardContent className="p-3 sm:p-6 lg:p-8 pt-0 relative z-10">
-                <div className="grid grid-cols-3 gap-1 sm:gap-4 mb-3 sm:mb-8">
-                  <div className="text-center p-1 sm:p-5 bg-emerald-50 rounded-lg sm:rounded-2xl border border-emerald-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-emerald-600 mb-0.5 sm:mb-2">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
+              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
+                {/* Professional Stats Grid with Gradients */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-2.5 xl:gap-3 mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-emerald-50 via-emerald-50/80 to-emerald-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-emerald-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative">
+                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-emerald-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
+                      </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-emerald-800 font-bold uppercase tracking-wide">Approved</div>
                     </div>
-                    <div className="text-[10px] sm:text-sm text-emerald-700 font-semibold">Approved</div>
-                  </div>
-                  <div className="text-center p-1 sm:p-5 bg-amber-50 rounded-lg sm:rounded-2xl border border-amber-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-amber-600 mb-0.5 sm:mb-2">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-amber-50 via-amber-50/80 to-amber-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-amber-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative">
+                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-amber-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
+                      </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-amber-800 font-bold uppercase tracking-wide">Reviewing</div>
                     </div>
-                    <div className="text-[10px] sm:text-sm text-amber-700 font-semibold">Reviewing</div>
-                  </div>
-                  <div className="text-center p-1 sm:p-5 bg-red-50 rounded-lg sm:rounded-2xl border border-red-200">
-                    <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-red-600 mb-0.5 sm:mb-2">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-red-50 via-red-50/80 to-red-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-red-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative">
+                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-red-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
+                      </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-red-800 font-bold uppercase tracking-wide">Rejected</div>
                     </div>
-                    <div className="text-[10px] sm:text-sm text-red-700 font-semibold">Rejected</div>
-                  </div>
+                  </motion.div>
                 </div>
 
-                {/* List all submissions with status badge */}
-                <div className="mb-3 sm:mb-8">
-                  <h4 className="text-xs sm:text-xl font-semibold text-slate-800 mb-1 sm:mb-4">Your Submissions</h4>
+                {/* Professional Submissions Section */}
+                <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+                  {/* Section Header */}
+                  <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4 pb-2.5 sm:pb-3 lg:pb-2.5 xl:pb-3 border-b-2 border-gray-200/60">
+                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-md flex-shrink-0">
+                      <Rocket className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                    </div>
+                    <h4 className="text-sm sm:text-xl lg:text-base xl:text-lg font-bold text-gray-900 tracking-tight">Your Submissions</h4>
+                  </div>
+                  
                   {!responsesReady ? (
-                    <div className="text-slate-500 text-center py-3 text-xs sm:text-sm">
-                      <p>Loading your submissions...</p>
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-12 lg:py-8 xl:py-10 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-dashed border-gray-300/60">
+                      <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-blue-100 rounded-full mb-3 sm:mb-4 lg:mb-3 xl:mb-4 shadow-md">
+                        <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-blue-600 animate-spin" />
+                      </div>
+                      <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">Loading your submissions...</p>
                     </div>
                   ) : responsesSummary.length === 0 ? (
-                    <div className="text-slate-500 text-center py-3 text-xs sm:text-sm">
-                      <p>No submissions yet</p>
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-12 lg:py-8 xl:py-10 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-dashed border-gray-300/60">
+                      <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gray-100 rounded-full mb-3 sm:mb-4 lg:mb-3 xl:mb-4 shadow-md">
+                        <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-gray-400" />
+                      </div>
+                      <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">No submissions yet</p>
                     </div>
                   ) : (
-                    <div className="space-y-2 sm:space-y-3">
+                    <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                       {responsesSummary.slice(0, 3).map((submission) => {
                         const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
                         return (
-                        <div key={submission.id} className="bg-white rounded-2xl sm:rounded-3xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
-                          {/* Card Header - Top 10% with gray background */}
-                          <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
-                                <h5 className="text-xs sm:text-lg font-semibold text-white truncate">
+                        <motion.div
+                          key={submission.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
+                            isEnquiryDeleted
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 shadow-sm'
+                              : 'bg-white border border-gray-200/80 hover:border-blue-400/60 hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                          }`}
+                        >
+                          {/* Premium Header with Sophisticated Design */}
+                          <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
+                            isEnquiryDeleted ? 'opacity-70' : ''
+                          }`}>
+                            {/* Elegant pattern overlay */}
+                            <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                            
+                            {/* Shine effect on hover */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                            
+                            <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
+                                <h5 className="text-xs sm:text-base lg:text-xs xl:text-sm font-bold text-white truncate leading-snug tracking-tight">
                                   {submission.title}
                                 </h5>
                                 {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                                  <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm bg-blue-500">
-                                    <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                                  <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
+                                    <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
                                   </div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-1.5 sm:gap-2">
+                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                 {/* Enquiry Deleted Badge */}
                                 {isEnquiryDeleted && (
-                                  <Badge className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-100 text-red-700 border border-red-300">
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
                                     Enquiry Deleted
                                   </Badge>
                                 )}
                                 {/* Status Badge */}
-                                <Badge className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 ${
+                                <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm shadow-sm ${
                                   submission.status === 'approved' 
-                                    ? 'bg-green-100 text-green-700' 
+                                    ? 'bg-green-500/30 text-green-50 border-green-400/40' 
                                     : submission.status === 'pending'
-                                    ? 'bg-amber-100 text-amber-700'
-                                    : 'bg-red-100 text-red-700'
+                                    ? 'bg-amber-500/30 text-amber-50 border-amber-400/40'
+                                    : 'bg-red-500/30 text-red-50 border-red-400/40'
                                 }`}>
                                   {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
                                 </Badge>
@@ -1397,68 +1539,95 @@ const Dashboard = () => {
                             </div>
                           </div>
                           
-                          {/* Card Content - Rest with white background */}
-                          <div className="p-2 sm:p-4">
-                            {/* Submission Details */}
-                            <div className="mb-1 sm:mb-2">
-                              {isEnquiryDeleted ? (
-                                <span className="text-xs sm:text-base font-medium text-red-600">
-                                  Enquiry has been deleted
-                                </span>
-                              ) : (
-                                <>
-                                  <span className="text-xs sm:text-base font-medium text-blue-600">
-                                    {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
-                                  </span>
-                                  {submission.status === 'approved' && (
-                                    <span className="text-[10px] sm:text-xs text-slate-500 ml-1 sm:ml-2">
+                          {/* Premium Content Area */}
+                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-3 sm:p-4 lg:p-3.5 xl:p-4">
+                            {/* Subtle background texture */}
+                            <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
+                            
+                            <div className="relative space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3">
+                              {/* Submission Status */}
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                                {isEnquiryDeleted ? (
+                                  <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50 border border-red-200 rounded-lg lg:rounded-md xl:rounded-lg">
+                                    <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-red-600 flex-shrink-0" />
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-semibold text-red-700">
+                                      Enquiry has been deleted
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold ${
+                                    submission.status === 'approved'
+                                      ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
+                                      : 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-300/60'
+                                  }`}>
+                                    <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-full flex-shrink-0 ${
+                                      submission.status === 'approved' ? 'bg-green-500/20' : 'bg-amber-500/20'
+                                    }`}>
+                                      {submission.status === 'approved' ? (
+                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-green-600" />
+                                      ) : (
+                                        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
+                                      )}
+                                    </div>
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm">
+                                      {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
+                                    </span>
+                                    {submission.status === 'approved' && (
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-600/80 ml-0.5 sm:ml-1">
                                       (Ready for chat)
                                     </span>
-                                  )}
-                                </>
-                              )}
-                            </div>
-
-                            {/* Experience/Details */}
-                            <div className="mb-2 sm:mb-3">
-                              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm text-slate-600">
-                                <span className="font-medium">Experience:</span>
-                                <span>{submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}</span>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                            </div>
 
-                            {/* Submission Time */}
-                            <div className="mb-2 sm:mb-3">
-                              <div className="text-[10px] sm:text-sm text-slate-500">
-                                Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                              {/* Experience/Details */}
+                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                                <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-600 font-medium">Experience: </span>
+                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 truncate">
+                                    {submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                              {submission.status === 'approved' && !isEnquiryDeleted && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                  className="border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
+                              {/* Submission Time */}
+                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
+                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-400 flex-shrink-0" />
+                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500">
+                                  Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                </span>
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
+                                {submission.status === 'approved' && !isEnquiryDeleted && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
+                                    className="flex-1 sm:flex-none border-2 border-emerald-500 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
+                                  >
+                                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
+                                    Chat
+                                  </Button>
+                                )}
+                                
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
+                                  className="flex-1 sm:flex-none border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                  disabled={isEnquiryDeleted}
                                 >
-                                  Chat
+                                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
+                                  View Details
                                 </Button>
-                              )}
-                              
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
-                                className="text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9"
-                                disabled={isEnquiryDeleted}
-                              >
-                                View Details
-                              </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                       })}
                     </div>
@@ -1466,16 +1635,17 @@ const Dashboard = () => {
                 </div>
 
                 {responsesSummary.length > 3 && (
-                  <div className="flex justify-center mt-1 sm:mt-4">
+                  <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4 border-t-2 border-gray-200/60">
                     <Button 
                       variant="outline" 
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate('/my-responses');
                       }} 
-                      className="h-5 sm:h-9 text-[9px] sm:text-sm px-2 sm:px-4"
+                      className="group/btn border-2 border-gray-300/80 bg-white hover:bg-gray-50 hover:border-blue-400/60 text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
                     >
-                      Show More
+                      <span className="mr-2 tracking-tight">Show More</span>
+                      <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
                     </Button>
                   </div>
                 )}
@@ -1483,163 +1653,231 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Saved Enquiries Card */}
+          {/* Saved Enquiries Card - Professional Redesign */}
           <Card 
-            className="group cursor-pointer border-2 border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl mt-8 sm:mt-6 lg:mt-8"
+            className="group cursor-pointer border-2 border-gray-200/80 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             style={{ position: 'relative', zIndex: 10 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <CardHeader className="p-3 sm:p-8 pb-2 sm:pb-6 relative z-10">
-              <div className="flex items-center justify-between mb-3 sm:mb-8">
-                <div className="w-10 h-10 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg sm:shadow-xl group-hover:scale-110 transition-transform duration-300">
-                  <Bookmark className="h-5 w-5 sm:h-10 sm:w-10 text-white" />
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            
+            {/* Professional Header with Gray Background */}
+            <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-4 sm:px-6 lg:px-5 xl:px-6 py-4 sm:py-6 lg:py-4 xl:py-5">
+              {/* Elegant pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+              
+              {/* Shine effect on hover */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+              
+              <div className="relative flex items-center justify-between mb-3 sm:mb-4 lg:mb-3 xl:mb-3.5">
+                <div className="flex items-center gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
+                  <div className="w-11 h-11 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl lg:shadow-lg xl:shadow-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                    <Bookmark className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1 tracking-tight">Your Saved Favorites</h2>
+                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-gray-300 leading-snug">
+                      Quickly access your bookmarked enquiries anytime
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <Badge className="bg-orange-100 text-orange-800 text-xs sm:text-sm font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                <div className="text-right flex-shrink-0">
+                  <Badge className="bg-white/15 text-gray-100 border border-white/20 text-xs sm:text-sm lg:text-xs xl:text-sm font-bold px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 rounded-xl lg:rounded-lg xl:rounded-xl backdrop-blur-sm shadow-lg">
                     {savedEnquiries.length} Total
                   </Badge>
                 </div>
               </div>
-                <div className="text-left lg:text-center">
-                <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-1 sm:mb-4 whitespace-nowrap">Your Saved Favorites</h2>
-                <p className="text-xs sm:text-lg text-slate-600 leading-relaxed">
-                  Quickly access your bookmarked enquiries anytime
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-6 lg:p-8 pt-0 relative z-10">
-              <div className="grid grid-cols-3 gap-1 sm:gap-4 mb-3 sm:mb-8">
-                <div className="text-center p-1 sm:p-5 bg-orange-50 rounded-lg sm:rounded-2xl border border-orange-200">
-                  <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-orange-600 mb-0.5 sm:mb-2">
-                    {savedEnquiries.length}
+            </div>
+            
+            <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 pt-0 relative z-10">
+              {/* Professional Stats Grid with Gradients */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-2.5 xl:gap-3 mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-orange-50 via-orange-50/80 to-orange-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-orange-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-orange-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                      {savedEnquiries.length}
+                    </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-orange-800 font-bold uppercase tracking-wide">Total</div>
                   </div>
-                  <div className="text-[10px] sm:text-sm text-orange-700 font-semibold">Total</div>
-                </div>
-                <div className="text-center p-1 sm:p-5 bg-blue-50 rounded-lg sm:rounded-2xl border border-blue-200">
-                  <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-0.5 sm:mb-2">
-                    {savedEnquiries.filter(e => e.status === 'live').length}
+                </motion.div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-blue-50 via-blue-50/80 to-blue-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-blue-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-blue-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                      {savedEnquiries.filter(e => e.status === 'live').length}
+                    </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-blue-800 font-bold uppercase tracking-wide">Live</div>
                   </div>
-                  <div className="text-[10px] sm:text-sm text-blue-700 font-semibold">Live</div>
-                </div>
-                <div className="text-center p-1 sm:p-5 bg-purple-50 rounded-lg sm:rounded-2xl border border-purple-200">
-                  <div className="text-xs sm:text-2xl lg:text-3xl font-bold text-purple-600 mb-0.5 sm:mb-2">
-                    {savedEnquiries.filter(e => e.status === 'completed').length}
+                </motion.div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/60 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-purple-200/60 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-purple-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                      {savedEnquiries.filter(e => e.status === 'completed').length}
+                    </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-purple-800 font-bold uppercase tracking-wide">Completed</div>
                   </div>
-                  <div className="text-[10px] sm:text-sm text-purple-700 font-semibold">Completed</div>
-                </div>
+                </motion.div>
               </div>
 
-              {/* Saved Enquiries List */}
-              <div className="mb-3 sm:mb-8">
-                <h4 className="text-xs sm:text-xl font-semibold text-slate-800 mb-1 sm:mb-4">Your Saved Enquiries</h4>
+              {/* Professional Saved Enquiries List */}
+              <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+                {/* Section Header */}
+                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4 pb-2.5 sm:pb-3 lg:pb-2.5 xl:pb-3 border-b-2 border-gray-200/60">
+                  <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-md flex-shrink-0">
+                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                  </div>
+                  <h4 className="text-sm sm:text-xl lg:text-base xl:text-lg font-bold text-gray-900 tracking-tight">Your Saved Enquiries</h4>
+                </div>
+                
                 {savedEnquiries.length === 0 ? (
-                  <p className="text-slate-500 text-center py-3 text-xs sm:text-sm">No saved enquiries yet</p>
-              ) : (
-                <div className="space-y-2 sm:space-y-3">
-                  {savedEnquiries.slice(0, 3).map((enquiry) => {
-                    const now = new Date();
-                    const isExpired = enquiry.deadline && (() => {
-                      const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                      return deadlineDate < now;
-                    })();
-                    
-                    return (
-                      <div 
-                        key={enquiry.id} 
-                        className={`bg-white rounded-2xl sm:rounded-3xl border-2 shadow-sm hover:shadow-md transition-all duration-200 p-2 sm:p-4 ${
-                          isExpired 
-                            ? 'opacity-60 grayscale border-gray-300' 
-                            : 'border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1 flex-wrap">
-                              <h4 className={`text-xs sm:text-base font-semibold line-clamp-1 ${
-                                isExpired ? 'text-gray-500' : 'text-gray-900'
+                  <div className="flex flex-col items-center justify-center py-8 sm:py-12 lg:py-8 xl:py-10 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-dashed border-gray-300/60">
+                    <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gray-100 rounded-full mb-3 sm:mb-4 lg:mb-3 xl:mb-4 shadow-md">
+                      <Bookmark className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-gray-400" />
+                    </div>
+                    <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">No saved enquiries yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
+                    {savedEnquiries.slice(0, 3).map((enquiry) => {
+                      const now = new Date();
+                      const isExpired = enquiry.deadline && (() => {
+                        const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                        return deadlineDate < now;
+                      })();
+                      
+                      return (
+                        <motion.div
+                          key={enquiry.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
+                            isExpired 
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 shadow-sm'
+                              : 'bg-white border border-gray-200/80 hover:border-orange-400/60 hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                          }`}
+                        >
+                          {/* Premium Header */}
+                          <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
+                            isExpired ? 'opacity-70' : ''
+                          }`}>
+                            <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                            <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                              <h4 className={`text-xs sm:text-base lg:text-xs xl:text-sm font-bold text-white truncate leading-snug tracking-tight flex-1 min-w-0 pr-2 ${
+                                isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
                               }`}>
                                 {enquiry.title}
                               </h4>
                               {isExpired && (
-                                <Badge className="text-[9px] sm:text-[10px] bg-red-100 text-red-800 border-red-300 px-1.5 sm:px-2 py-0.5">
+                                <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
                                   Expired
                                 </Badge>
                               )}
                             </div>
-                            <p className={`text-[10px] sm:text-sm mb-2 line-clamp-2 ${
-                              isExpired ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
-                              {enquiry.description}
-                            </p>
-                            <div className="flex items-center gap-3 text-[10px] sm:text-sm text-gray-500">
-                              <Badge variant="secondary" className="text-[9px] sm:text-xs">{enquiry.category}</Badge>
-                              <span>₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                              {enquiry.location && <span>• {enquiry.location}</span>}
+                          </div>
+                          
+                          {/* Premium Content Area */}
+                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-3 sm:p-4 lg:p-3.5 xl:p-4">
+                            <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
+                            
+                            <div className="relative space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3">
+                              <p className={`text-[10px] sm:text-sm lg:text-xs xl:text-sm mb-2 line-clamp-2 leading-snug ${
+                                isExpired ? 'text-gray-400' : 'text-gray-700'
+                              }`}>
+                                {enquiry.description}
+                              </p>
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-wrap">
+                                <Badge variant="secondary" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-gray-100 text-gray-700 border border-gray-200">{enquiry.category}</Badge>
+                                <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-600 font-semibold">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                                {enquiry.location && <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500">• {enquiry.location}</span>}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  if (!isExpired) {
+                                    navigate(`/enquiry/${enquiry.id}`);
+                                  }
+                                }}
+                                disabled={isExpired}
+                                className="w-full border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-orange-400/60 hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
+                                View Details
+                              </Button>
                             </div>
                           </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            if (!isExpired) {
-                              navigate(`/enquiry/${enquiry.id}`);
-                            }
-                          }}
-                          disabled={isExpired}
-                          className={`w-full mt-2 text-[10px] sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-6 sm:h-9 ${
-                            isExpired ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+              
               {savedEnquiries.length > 3 && (
-                <div className="flex justify-center mt-1 sm:mt-4" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4 border-t-2 border-gray-200/60" onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="outline"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('Navigating to saved enquiries');
                       navigate('/saved-enquiries');
                     }}
-                    className="h-5 sm:h-9 text-[9px] sm:text-sm px-2 sm:px-4"
+                    className="group/btn border-2 border-gray-300/80 bg-white hover:bg-gray-50 hover:border-orange-400/60 text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
                   >
-                    Show More
-                    </Button>
+                    <span className="mr-2 tracking-tight">Show More</span>
+                    <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
+                  </Button>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
-          <Card className="border-2 border-blue-200 shadow-xl bg-gradient-to-r from-slate-50 to-white overflow-hidden rounded-2xl mt-4 sm:mt-6 lg:mt-8 mb-2 sm:mb-4" onClick={(e) => e.stopPropagation()}>
-            <CardContent className="p-3 sm:p-12">
-              <div className="text-center mb-2 sm:mb-10">
-                <h3 className="text-base sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-4">Quick Actions</h3>
-                <p className="text-xs sm:text-lg text-slate-600 text-center">Post your needs or help others with their requests</p>
+          {/* Professional Quick Actions */}
+          <Card className="border-2 border-gray-200/80 shadow-xl bg-gradient-to-br from-white via-slate-50/50 to-white overflow-hidden rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 mb-4 sm:mb-6 lg:mb-8" onClick={(e) => e.stopPropagation()}>
+            <CardContent className="p-5 sm:p-8 lg:p-10 xl:p-12">
+              <div className="text-center mb-4 sm:mb-8 lg:mb-10">
+                <div className="flex items-center justify-center gap-2.5 sm:gap-3 lg:gap-3.5 mb-2 sm:mb-3 lg:mb-4">
+                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl">
+                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-slate-900 mb-2 sm:mb-3 lg:mb-4 tracking-tight">Quick Actions</h3>
+                <p className="text-xs sm:text-base lg:text-lg text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">Post your needs or help others with their requests</p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 items-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 items-stretch sm:items-center">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-                    <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span className="text-xs sm:text-sm font-semibold">Post Your Need</span>
+                  <button className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border-2 border-blue-500/20">
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Post Your Need</span>
                   </button>
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span className="text-xs sm:text-sm font-semibold">Show All Enquiries</span>
+                  <button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border-2 border-emerald-500/20">
+                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Show All Enquiries</span>
                   </button>
                 </Link>
               </div>
