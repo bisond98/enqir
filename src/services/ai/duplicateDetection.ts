@@ -219,9 +219,9 @@ export class DuplicateDetectionService {
   }
 
   /**
-   * STRICT: Calculate overall similarity across ALL fields (title, description, budget, category, location)
-   * Only flags if overall similarity is 98%+ (combining all fields)
-   * Returns a value between 0 and 1 (1 = identical, 0 = completely different)
+   * STRICT: Check if ALL fields match 99%+ individually
+   * Only flags if EACH field (text, budget, category, location) is 99%+ similar
+   * Returns: { allMatch: boolean, textSimilarity: number, budgetSimilarity: number, categorySimilarity: number, locationSimilarity: number }
    */
   private calculateOverallSimilarity(
     title1: string,
@@ -234,26 +234,38 @@ export class DuplicateDetectionService {
     budget2: number | string | undefined,
     category2: string | undefined,
     location2: string | undefined
-  ): number {
-    // Calculate text similarity (title + description) - 60% weight
+  ): { allMatch: boolean; textSimilarity: number; budgetSimilarity: number; categorySimilarity: number; locationSimilarity: number; overallPercentage: number } {
+    // Calculate similarity for EACH field individually
     const textSimilarity = this.calculateTextSimilarity(title1, description1, title2, description2);
-    
-    // Calculate budget similarity - 15% weight
     const budgetSimilarity = this.calculateBudgetSimilarity(budget1, budget2);
-    
-    // Calculate category similarity - 10% weight
     const categorySimilarity = this.calculateCategorySimilarity(category1, category2);
-    
-    // Calculate location similarity - 15% weight
     const locationSimilarity = this.calculateLocationSimilarity(location1, location2);
     
-    // Overall similarity: weighted combination of ALL fields
-    const overallSimilarity = (textSimilarity * 0.60) + 
+    // STRICT: Each field must be 99%+ (0.99) to flag
+    const FIELD_THRESHOLD = 0.99; // 99% threshold for each field
+    
+    const textMatches = textSimilarity >= FIELD_THRESHOLD;
+    const budgetMatches = budgetSimilarity >= FIELD_THRESHOLD;
+    const categoryMatches = categorySimilarity >= FIELD_THRESHOLD;
+    const locationMatches = locationSimilarity >= FIELD_THRESHOLD;
+    
+    // ALL fields must match 99%+ to flag
+    const allMatch = textMatches && budgetMatches && categoryMatches && locationMatches;
+    
+    // Calculate overall percentage for logging (weighted average)
+    const overallPercentage = (textSimilarity * 0.60) + 
                                (budgetSimilarity * 0.15) + 
                                (categorySimilarity * 0.10) + 
                                (locationSimilarity * 0.15);
     
-    return Math.min(1.0, Math.max(0.0, overallSimilarity)); // Clamp between 0 and 1
+    return {
+      allMatch,
+      textSimilarity,
+      budgetSimilarity,
+      categorySimilarity,
+      locationSimilarity,
+      overallPercentage
+    };
   }
   
   /**
@@ -444,6 +456,16 @@ export class DuplicateDetectionService {
     if (norm1.includes(norm2) || norm2.includes(norm1)) return 0.8;
     
     return 0.0; // Different locations
+  }
+  
+  /**
+   * Alias for calculateLocationSimilarity (for consistency)
+   */
+  private calculateLocationSimilarity(
+    location1: string | undefined,
+    location2: string | undefined
+  ): number {
+    return this.calculateLocationSimilarity(location1, location2);
   }
 
   /**
