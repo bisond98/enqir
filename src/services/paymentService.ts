@@ -62,6 +62,16 @@ const createRazorpayOrder = async (
     const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
     const orderUrl = `${functionsUrl}/createRazorpayOrder`;
     
+    console.log('🌐 Creating Razorpay order:', {
+      hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
+      functionsUrl,
+      orderUrl,
+      amount,
+      enquiryId,
+      userId,
+      planId
+    });
+    
     // Validate amount before sending
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount: Amount must be greater than 0');
@@ -216,11 +226,83 @@ export const processPayment = async (
     const razorpayKeyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
     
     if (!razorpayKeyId) {
-      throw new Error('Razorpay Key ID not configured. Please add VITE_RAZORPAY_KEY_ID to your .env file.');
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const errorMessage = isProduction
+        ? 'Razorpay Key ID not configured. Please add VITE_RAZORPAY_KEY_ID in Vercel Dashboard → Settings → Environment Variables.'
+        : 'Razorpay Key ID not configured. Please add VITE_RAZORPAY_KEY_ID to your .env file.';
+      console.error('❌ Razorpay Configuration Error:', errorMessage);
+      console.error('📍 Current hostname:', window.location.hostname);
+      console.error('📍 Environment check:', {
+        isProduction,
+        hasKeyId: !!razorpayKeyId,
+        envKeys: Object.keys(import.meta.env).filter(key => key.includes('RAZORPAY') || key.includes('VITE'))
+      });
+      throw new Error(errorMessage);
     }
+    
+    console.log('✅ Razorpay Key ID loaded:', razorpayKeyId.substring(0, 10) + '...');
 
     // Initialize Razorpay checkout
     return new Promise((resolve) => {
+      // CRITICAL: Remove any blocking overlays and ensure body scroll is enabled
+      // Hide all app overlays that might block Razorpay
+      const hideAppOverlays = () => {
+        // Hide Radix dialog overlays
+        const radixOverlays = document.querySelectorAll('[data-radix-dialog-overlay]');
+        radixOverlays.forEach(overlay => {
+          (overlay as HTMLElement).style.display = 'none';
+          (overlay as HTMLElement).style.pointerEvents = 'none';
+        });
+        
+        // Hide any fixed overlays with z-50 or lower (but not Razorpay itself)
+        const appOverlays = document.querySelectorAll('[class*="fixed"][class*="inset-0"]');
+        appOverlays.forEach(overlay => {
+          const el = overlay as HTMLElement;
+          // Skip Razorpay elements
+          if (el.classList.contains('razorpay-container') || 
+              el.closest('.razorpay-container') || 
+              el.querySelector('[class*="razorpay"]')) {
+            return;
+          }
+          const zIndex = window.getComputedStyle(el).zIndex;
+          if (zIndex && parseInt(zIndex) < 10000) {
+            el.style.display = 'none';
+            el.style.pointerEvents = 'none';
+          }
+        });
+      };
+      
+      // Restore app overlays function
+      const restoreAppOverlays = () => {
+        const radixOverlays = document.querySelectorAll('[data-radix-dialog-overlay]');
+        radixOverlays.forEach(overlay => {
+          (overlay as HTMLElement).style.display = '';
+          (overlay as HTMLElement).style.pointerEvents = '';
+        });
+        const appOverlays = document.querySelectorAll('[class*="fixed"][class*="inset-0"]');
+        appOverlays.forEach(overlay => {
+          const el = overlay as HTMLElement;
+          // Skip Razorpay elements
+          if (el.classList.contains('razorpay-container') || 
+              el.closest('.razorpay-container') || 
+              el.querySelector('[class*="razorpay"]')) {
+            return;
+          }
+          el.style.display = '';
+          el.style.pointerEvents = '';
+        });
+      };
+      
+      // Ensure body scroll is NOT locked
+      document.body.style.overflow = '';
+      document.body.style.overflowY = 'auto';
+      document.body.style.position = 'relative';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowY = 'auto';
+      
+      // Hide app overlays
+      hideAppOverlays();
+      
       // Add a history entry so we can detect back button press
       const state = { razorpayModal: true };
       window.history.pushState(state, '', window.location.href);
@@ -231,6 +313,8 @@ export const processPayment = async (
       const handlePopState = (event: PopStateEvent) => {
         console.log('⚠️ Browser back button pressed - closing Razorpay modal');
         window.removeEventListener('popstate', handlePopState);
+        // Restore app overlays
+        restoreAppOverlays();
         // Close the Razorpay modal if it's open
         if (razorpayInstance) {
           try {
@@ -256,6 +340,9 @@ export const processPayment = async (
         order_id: order.orderId,
         handler: async function (response: any) {
           console.log('💳 Payment completed, verifying...', response);
+          
+          // Restore app overlays
+          restoreAppOverlays();
           
           // Remove back button listener on successful payment
           window.removeEventListener('popstate', handlePopState);
@@ -304,6 +391,13 @@ export const processPayment = async (
         modal: {
           ondismiss: function() {
             console.log('⚠️ Payment cancelled by user (close button or ESC)');
+            // Restore app overlays
+            restoreAppOverlays();
+            // Restore body scroll when modal is dismissed
+            document.body.style.overflow = '';
+            document.body.style.overflowY = 'auto';
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.overflowY = 'auto';
             // Remove back button listener when modal is dismissed
             window.removeEventListener('popstate', handlePopState);
             resolve({
@@ -321,6 +415,32 @@ export const processPayment = async (
       };
 
       razorpayInstance = new window.Razorpay(options);
+      
+      // CRITICAL: Wait a moment for Razorpay to initialize, then ensure it's on top and interactive
+      setTimeout(() => {
+        // Ensure Razorpay modal has highest z-index and is interactive
+        const razorpayElements = document.querySelectorAll('.razorpay-container, [class*="razorpay"], iframe[src*="razorpay"]');
+        razorpayElements.forEach((element) => {
+          const el = element as HTMLElement;
+          el.style.zIndex = '99999';
+          el.style.pointerEvents = 'auto';
+          el.style.position = 'fixed';
+          // Ensure all child elements are interactive
+          const inputs = el.querySelectorAll('input, button, select, a, [role="button"]');
+          inputs.forEach((input) => {
+            (input as HTMLElement).style.pointerEvents = 'auto';
+            (input as HTMLElement).style.touchAction = 'manipulation';
+            (input as HTMLElement).style.cursor = 'pointer';
+          });
+        });
+        
+        // Ensure body scroll is still enabled
+        document.body.style.overflow = '';
+        document.body.style.overflowY = 'auto';
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.overflowY = 'auto';
+      }, 200);
+      
       razorpayInstance.open();
     });
   } catch (error) {

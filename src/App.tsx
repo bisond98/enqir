@@ -52,6 +52,14 @@ const queryClient = new QueryClient();
 if (typeof window !== 'undefined') {
   // Ensure body can scroll
   const ensureScroll = () => {
+    // CRITICAL: Don't interfere if Razorpay modal is open
+    const razorpayModal = document.querySelector('.razorpay-container, [class*="razorpay"], iframe[src*="razorpay"]');
+    if (razorpayModal) {
+      // Razorpay is open - don't touch anything, let Razorpay manage its own state
+      return;
+    }
+    
+    // Only restore scroll if no Radix dialog is open AND no Razorpay
     if (document.body.style.overflow === 'hidden' && !document.querySelector('[data-radix-dialog-overlay][data-state="open"]')) {
       document.body.style.overflow = '';
       document.body.style.overflowY = 'auto';

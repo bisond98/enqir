@@ -267,123 +267,172 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   const urgency = getUrgencyLevel(deadline);
 
   // Content component to avoid duplication
-  const DeadlineContent = () => (
-    <>
-          <Card className="border-0 shadow-none">
-        <CardHeader className="pb-3 px-4 sm:px-6 pt-4 sm:pt-6">
-          <CardTitle className="text-base sm:text-lg font-medium">Set Response Deadline</CardTitle>
-            </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6">
-              {/* Time Type Toggle */}
-          <div className="flex space-x-2 sm:space-x-3">
-                <Button
-                  variant={timeType === 'quick' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setTimeType('quick')}
-              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
-                >
-                  Quick Select
-                </Button>
-                <Button
-                  variant={timeType === 'custom' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setTimeType('custom')}
-              className="flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium"
-                >
-                  Custom
-                </Button>
+  const DeadlineContent = () => {
+    const isDesktop = !isMobile;
+    
+    return (
+      <>
+        <Card className="border-0 shadow-none">
+          <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
+            <CardTitle className={`text-base sm:text-lg font-medium ${isDesktop ? 'text-xl font-semibold' : ''}`}>
+              Set Response Deadline
+            </CardTitle>
+            {isDesktop && (
+              <p className="text-sm text-slate-500 mt-1">Choose when you need responses by</p>
+            )}
+          </CardHeader>
+          <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop ? 'px-8 pb-8 space-y-6' : ''}`}>
+            {/* Time Type Toggle */}
+            <div className={`flex space-x-2 sm:space-x-3 ${isDesktop ? 'space-x-4 mb-2' : ''}`}>
+              <Button
+                variant={timeType === 'quick' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setTimeType('quick')}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
+              >
+                <Zap className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
+                Quick Select
+              </Button>
+              <Button
+                variant={timeType === 'custom' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setTimeType('custom')}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
+              >
+                <CalendarIcon className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
+                Custom
+              </Button>
+            </div>
+
+            {timeType === 'quick' ? (
+              <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 ${isDesktop ? 'grid-cols-4 gap-3' : ''}`}>
+                {quickOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    variant={quickTime === option.value ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickSelect(option.value)}
+                    className={`justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium transition-all ${
+                      isDesktop 
+                        ? 'h-14 px-4 text-sm hover:scale-105 hover:shadow-md flex-col items-center justify-center gap-1.5 py-3' 
+                        : ''
+                    } ${
+                      quickTime === option.value && isDesktop
+                        ? 'bg-blue-600 text-white shadow-lg scale-105'
+                        : ''
+                    }`}
+                  >
+                    <span className={`${isDesktop ? 'text-2xl mb-0.5' : 'mr-1.5 sm:mr-1 text-base sm:text-sm'}`}>
+                      {option.icon}
+                    </span>
+                    <span className={`truncate ${isDesktop ? 'text-xs font-medium' : ''}`}>
+                      {option.label}
+                    </span>
+                  </Button>
+                ))}
               </div>
-
-              {timeType === 'quick' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                  {quickOptions.map((option) => (
-                    <Button
-                      key={option.value}
-                      variant={quickTime === option.value ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleQuickSelect(option.value)}
-                  className="justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium"
-                    >
-                  <span className="mr-1.5 sm:mr-1 text-base sm:text-sm">{option.icon}</span>
-                  <span className="truncate">{option.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              ) : (
-            <div className="space-y-4 sm:space-y-6">
-                  {/* Custom Date */}
-                  <div>
-                <Label className="text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block">Start Date</Label>
-                <div className="flex justify-center sm:block">
-                    <Calendar
-                      mode="single"
-                      selected={customDate}
-                      onSelect={setCustomDate}
-                    className="rounded-md border w-full"
-                    />
-                </div>
-                  </div>
-
-                  {/* Custom Duration */}
-              <div className="grid grid-cols-2 gap-3 sm:gap-2">
-                    <div>
-                  <Label className="text-sm sm:text-xs text-slate-600 mb-2 block">Duration</Label>
-                      <Input
-                        type="number"
-                        value={customDuration}
-                        onChange={(e) => setCustomDuration(e.target.value)}
-                        min="1"
-                        max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
-                    className="text-base sm:text-sm h-11 sm:h-9"
+            ) : (
+              <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : ''}`}>
+                {/* Custom Date - Desktop: Side by side layout */}
+                <div className={isDesktop ? 'grid grid-cols-2 gap-6 items-start' : ''}>
+                  <div className={isDesktop ? '' : ''}>
+                    <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : ''}`}>
+                      Start Date & Time
+                    </Label>
+                    <div className={isDesktop ? 'flex justify-start' : 'flex justify-center sm:block'}>
+                      <Calendar
+                        mode="single"
+                        selected={customDate}
+                        onSelect={setCustomDate}
+                        className={`rounded-md border w-full ${isDesktop ? 'w-auto' : ''}`}
                       />
                     </div>
-                    <div>
-                  <Label className="text-sm sm:text-xs text-slate-600 mb-2 block">Type</Label>
-                      <Select value={customDurationType} onValueChange={setCustomDurationType}>
-                    <SelectTrigger className="text-base sm:text-sm h-11 sm:h-9">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {durationTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value} className="text-base sm:text-sm">
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
 
-              <Button 
-                onClick={handleCustomApply} 
-                className="w-full h-11 sm:h-9 text-base sm:text-sm font-medium"
-              >
+                  {/* Custom Duration - Desktop: Show next to calendar */}
+                  <div className={isDesktop ? 'space-y-4' : ''}>
+                    <div>
+                      <Label className={`text-sm sm:text-xs text-slate-600 mb-2 block ${isDesktop ? 'text-sm font-medium mb-3' : ''}`}>
+                        Add Duration
+                      </Label>
+                      <div className={`grid grid-cols-2 gap-3 sm:gap-2 ${isDesktop ? 'gap-4' : ''}`}>
+                        <div>
+                          <Input
+                            type="number"
+                            value={customDuration}
+                            onChange={(e) => setCustomDuration(e.target.value)}
+                            min="1"
+                            max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
+                            className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}
+                            placeholder="1"
+                          />
+                        </div>
+                        <div>
+                          <Select value={customDurationType} onValueChange={setCustomDurationType}>
+                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {durationTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value} className={`text-base sm:text-sm ${isDesktop ? 'text-base' : ''}`}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {isDesktop && (
+                      <Button 
+                        onClick={handleCustomApply} 
+                        className={`w-full h-11 sm:h-9 text-base sm:text-sm font-medium ${isDesktop ? 'h-11 text-base bg-blue-600 hover:bg-blue-700' : ''}`}
+                      >
+                        Apply Custom Time
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {!isDesktop && (
+                  <Button 
+                    onClick={handleCustomApply} 
+                    className="w-full h-11 sm:h-9 text-base sm:text-sm font-medium"
+                  >
                     Apply Custom Time
                   </Button>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* Preview */}
-              {value && (
-            <div className="pt-3 sm:pt-4 border-t">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm">
-                <span className="text-slate-600 font-medium">Deadline:</span>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5 w-fit`}>
-                        <span className="mr-1">{urgency.icon}</span>
-                        {urgency.level.toUpperCase()}
-                      </Badge>
-                  <span className="font-medium text-sm sm:text-base">
-                        {format(deadline, 'MMM dd, yyyy HH:mm')}
-                      </span>
-                    </div>
+            {/* Preview - Enhanced for desktop */}
+            {value && (
+              <div className={`pt-3 sm:pt-4 border-t ${isDesktop ? 'pt-6 border-t-2' : ''}`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm ${isDesktop ? 'gap-3' : ''}`}>
+                  <span className={`text-slate-600 font-medium ${isDesktop ? 'text-base' : ''}`}>Selected Deadline:</span>
+                  <div className={`flex flex-col sm:flex-row sm:items-center gap-2 ${isDesktop ? 'gap-3 items-center' : ''}`}>
+                    <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5 w-fit ${isDesktop ? 'text-sm px-4 py-1.5' : ''}`}>
+                      <span className="mr-1">{urgency.icon}</span>
+                      {urgency.level.toUpperCase()}
+                    </Badge>
+                    <span className={`font-medium text-sm sm:text-base ${isDesktop ? 'text-base font-semibold text-slate-900' : ''}`}>
+                      {format(deadline, 'MMM dd, yyyy HH:mm')}
+                    </span>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-    </>
-  );
+                {isDesktop && (
+                  <p className="text-xs text-slate-500 mt-2">
+                    {formatDeadline(deadline)} from now
+                  </p>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
 
   return (
     <div className={`space-y-3 sm:space-y-4 ${className}`}>
@@ -418,12 +467,12 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm hover:bg-slate-50 transition-colors">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80 sm:w-96 p-0" align="start">
+          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto" align="start">
             <DeadlineContent />
         </PopoverContent>
       </Popover>

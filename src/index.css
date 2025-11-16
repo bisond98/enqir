@@ -1422,3 +1422,49 @@
     animation: shimmer 2s infinite;
   }
 }
+
+/* CRITICAL: Ensure Razorpay modal is always on top and interactive */
+.razorpay-container,
+[class*="razorpay"],
+iframe[src*="razorpay"],
+div[id*="razorpay"],
+div[class*="razorpay-checkout"] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  touch-action: manipulation !important;
+}
+
+/* Ensure all Razorpay input fields and buttons are interactive */
+.razorpay-container input,
+.razorpay-container select,
+.razorpay-container textarea,
+.razorpay-container button,
+.razorpay-container a,
+.razorpay-container [role="button"],
+[class*="razorpay"] input,
+[class*="razorpay"] select,
+[class*="razorpay"] textarea,
+[class*="razorpay"] button,
+[class*="razorpay"] a,
+[class*="razorpay"] [role="button"],
+iframe[src*="razorpay"] input,
+iframe[src*="razorpay"] select,
+iframe[src*="razorpay"] textarea,
+iframe[src*="razorpay"] button,
+iframe[src*="razorpay"] a,
+iframe[src*="razorpay"] [role="button"] {
+  pointer-events: auto !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+}
+
+/* When Razorpay is open, ensure body can scroll */
+body.razorpay-open,
+html.razorpay-open {
+  overflow: auto !important;
+  overflow-y: auto !important;
+  position: relative !important;
+}
