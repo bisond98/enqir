@@ -194,32 +194,10 @@ export default function EnquiryWall() {
         
         console.log('📊 EnquiryWall: Enquiries with status=live:', liveStatusEnquiries.length);
         
-        // Separate live and expired enquiries based on deadline
-        const now = new Date();
-        const liveEnquiries = liveStatusEnquiries.filter(enquiry => {
-          if (!enquiry.deadline) return true; // No deadline = live
-          try {
-            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-            return deadlineDate.getTime() >= now.getTime();
-          } catch {
-            return true; // If error, assume live
-          }
-        });
-        
-        const expiredEnquiries = liveStatusEnquiries.filter(enquiry => {
-          if (!enquiry.deadline) return false; // No deadline = not expired
-          try {
-            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-            return deadlineDate.getTime() < now.getTime();
-          } catch {
-            return false; // If error, assume not expired
-          }
-        });
-        
-        console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length);
-        
-        // Sort live enquiries by date (newest first)
-        liveEnquiries.sort((a, b) => {
+        // Show ALL enquiries with status='live' regardless of deadline
+        // Deadline check is only for UI display (grayscale/disabled), not for filtering
+        // Sort all live status enquiries by date (newest first)
+        liveStatusEnquiries.sort((a, b) => {
           try {
             const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
             const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
@@ -229,19 +207,8 @@ export default function EnquiryWall() {
           }
         });
         
-        // Sort expired enquiries by date (newest first)
-        expiredEnquiries.sort((a, b) => {
-          try {
-            const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-            const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-            return bDate.getTime() - aDate.getTime();
-          } catch {
-            return 0;
-          }
-        });
-        
-        // Combine live first, then expired (both already sorted)
-        const combinedEnquiries = [...liveEnquiries, ...expiredEnquiries];
+        // Use all live status enquiries (deadline check is only for UI, not filtering)
+        const combinedEnquiries = liveStatusEnquiries;
         
         // Deduplicate by enquiry ID to prevent duplicates
         const uniqueEnquiries = Array.from(

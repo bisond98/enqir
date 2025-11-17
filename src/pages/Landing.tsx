@@ -695,38 +695,24 @@ const Landing = () => {
         new Map(liveStatusItems.map(e => [e.id, e])).values()
       );
       
-      // Separate live and expired
-      const live = uniqueItems.filter(e => !isEnquiryOutdated(e));
-      const expired = uniqueItems.filter(e => isEnquiryOutdated(e));
-      
-      // Sort both by createdAt (newest first)
-      live.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
+      // Show ALL enquiries with status='live' regardless of deadline
+      // Deadline check is only for UI display (grayscale/disabled), not for filtering
+      // Sort all by createdAt (newest first)
+      uniqueItems.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
       });
-      expired.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      });
-      
-      // Deduplicate again after combining (extra safety)
-      const allUnique = Array.from(
-        new Map([...live, ...expired].map(e => [e.id, e])).values()
-      );
       
       // Set all live enquiries for count and search (deduplicated)
-      setAllLiveEnquiries(allUnique);
+      setAllLiveEnquiries(uniqueItems);
       
-      // Set display enquiries (first 3 live, then expired if needed)
-      let combined: any[] = [];
-      if (live.length >= 3) {
-        combined = live.slice(0, 3);
-      } else {
-        const needed = 3 - live.length;
-        combined = [...live, ...expired.slice(0, needed)];
-      }
+      // Set display enquiries (first 3)
+      const combined = uniqueItems.slice(0, 3);
       
       // Final deduplication on display enquiries
       const uniqueCombined = Array.from(
