@@ -277,7 +277,7 @@ export default function PostEnquiry() {
   };
 
   // Direct payment handler - skips custom card form, goes straight to Razorpay checkout
-  const handleDirectPayment = async () => {
+  const handleDirectPayment = async (): Promise<void> => {
     if (!selectedPlan || !user?.uid) {
       console.error('❌ Cannot process payment: Missing plan or user', { selectedPlan, user: !!user });
       toast({
@@ -411,7 +411,7 @@ export default function PostEnquiry() {
         }
         
         setPaymentLoading(false);
-      }, 1000);
+      }, 1000); */
       
     } catch (error) {
       console.error('❌ Payment failed:', error);
@@ -1017,22 +1017,31 @@ export default function PostEnquiry() {
     }
 
     // Check if premium option is selected
-    console.log('Checking premium status:', { selectedPlan });
+    console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
     
     // If premium option is selected, go directly to Razorpay checkout (Razorpay has its own card form)
     if (selectedPlan && selectedPlan.price > 0) {
-      console.log('💳 Opening Razorpay checkout directly (Razorpay has built-in card form)');
-      // Call handleDirectPayment but don't await - it will handle the payment flow
-      // Make sure to prevent form submission
-      handleDirectPayment().catch((error) => {
+      console.log('💳 Premium plan selected - Opening Razorpay checkout directly (Razorpay has built-in card form)');
+      console.log('💳 Plan details:', { id: selectedPlan.id, name: selectedPlan.name, price: selectedPlan.price });
+      
+      // CRITICAL: Prevent form submission and wait for payment
+      // Call handleDirectPayment and wait for it to complete
+      // The payment handler will create the enquiry after successful payment
+      try {
+        await handleDirectPayment();
+        // If payment succeeds, handleDirectPayment will create the enquiry
+        // So we should return here to prevent double submission
+        return;
+      } catch (error) {
         console.error('❌ Error in handleDirectPayment:', error);
         toast({
           title: "Payment Error",
           description: error instanceof Error ? error.message : "Failed to open payment gateway. Please try again.",
           variant: "destructive",
         });
-      });
-      return; // Don't submit enquiry yet
+        // Don't submit enquiry if payment failed
+        return;
+      }
     }
     
     // PRO PLAN LOGIC - KEPT FOR FUTURE UPDATES

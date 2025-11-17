@@ -223,12 +223,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     setSelectedPlan(plan.id);
     setSelectedPlanData(plan);
     
-    // If it's a free plan, call onPlanSelect directly
-    if (plan.price === 0) {
+    // Always call onPlanSelect so the parent component knows which plan was selected
+    // For free plans, call immediately
+    // For paid plans in new enquiries, call so form knows to trigger payment on submit
+    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now" button
+    if (plan.price === 0 || !isUpgrade) {
       onPlanSelect(plan.id, plan.price);
     }
-    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now" button
-    // For new enquiries, just select the plan - payment will happen on form submit
   };
 
   const handlePaymentSuccess = (planId: string, price: number) => {
