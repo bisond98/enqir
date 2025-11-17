@@ -562,6 +562,20 @@ const EnquiryDetail = () => {
                         </div>
                       </div>
                     </div>
+                    
+                    {enquiry.createdAt && (
+                      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                          <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[11px] sm:text-xs text-gray-600 mb-1">Posted</p>
+                            <p className="text-xs sm:text-sm md:text-base font-semibold text-gray-800">
+                              {formatDate(enquiry.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {enquiry.notes && (
@@ -745,13 +759,11 @@ const EnquiryDetail = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm sm:text-base text-gray-900 truncate mb-1">{userProfile.displayName || 'User'}</p>
-                        {userProfile.isVerified ? (
+                        {userProfile.isVerified && (
                           <div className="flex items-center gap-1.5 text-blue-600 text-[11px] sm:text-xs font-medium">
                             <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             Trust Badge
                           </div>
-                        ) : (
-                          <div className="text-gray-500 text-[11px] sm:text-xs">Regular User</div>
                         )}
                       </div>
                     </div>
