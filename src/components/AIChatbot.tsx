@@ -251,7 +251,8 @@ const AIChatbot: React.FC = () => {
                  
           <SheetContent 
             side="right" 
-            className="w-[86vw] max-w-[380px] sm:w-[480px] h-[70vh] sm:h-[70vh] p-0 bg-white border-l border-gray-200 flex flex-col [&>button]:hidden rounded-2xl sm:rounded-3xl"
+            className="w-[86vw] max-w-[380px] sm:w-[480px] h-[85vh] sm:h-[80vh] md:h-[75vh] p-0 bg-white border-l border-gray-200 flex flex-col [&>button]:hidden rounded-2xl sm:rounded-3xl"
+            style={{ height: 'calc(100dvh - 2rem)' }}
           >
             {/* Clean Minimal Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white rounded-t-2xl sm:rounded-t-3xl">
@@ -286,7 +287,7 @@ const AIChatbot: React.FC = () => {
             </div>
 
             {/* Clean Chat Messages - Optimized for better visibility */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 min-h-0 bg-gray-50/50">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 min-h-0 bg-gray-50/50" style={{ maxHeight: 'calc(100% - 200px)' }}>
               {messages.map((message, index) => (
                 <div
                   key={message.id}

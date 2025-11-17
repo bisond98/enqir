@@ -706,7 +706,8 @@ export default function PostEnquiry() {
                         placeholder="1234 5678 9012 3456"
                         value={paymentDetails.cardNumber}
                         onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                        style={{ fontSize: '16px' }}
                       />
                     </div>
                     
@@ -725,7 +726,8 @@ export default function PostEnquiry() {
                             setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
                           }}
                           maxLength={5}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                          style={{ fontSize: '16px' }}
                         />
                       </div>
                       <div>
@@ -735,7 +737,8 @@ export default function PostEnquiry() {
                           placeholder="123"
                           value={paymentDetails.cvv}
                           onChange={(e) => setPaymentDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                          style={{ fontSize: '16px' }}
                         />
                       </div>
                     </div>
@@ -747,7 +750,8 @@ export default function PostEnquiry() {
                         placeholder="John Doe"
                         value={paymentDetails.name}
                         onChange={(e) => setPaymentDetails(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                        style={{ fontSize: '16px' }}
                       />
                     </div>
                   </div>
@@ -1511,7 +1515,8 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                      className="h-12 sm:h-11 text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                      style={{ fontSize: '16px' }}
                       required
                     />
                   </div>
@@ -1702,7 +1707,8 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={4}
-                      className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base min-h-[120px] min-touch"
+                      className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-base min-h-[120px] min-touch"
+                      style={{ fontSize: '16px' }}
                       required
                     />
                   </div>
@@ -1730,7 +1736,8 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                        className="h-12 sm:h-11 text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                        style={{ fontSize: '16px' }}
                         required
                       />
                     </div>
@@ -1747,7 +1754,8 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                        className="h-12 sm:h-11 text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch pl-4 pr-4"
+                        style={{ fontSize: '16px' }}
                         required
                       />
                         
@@ -1795,7 +1803,8 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={3}
-                        className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base pl-4 pr-4 py-3"
+                        className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-base pl-4 pr-4 py-3"
+                        style={{ fontSize: '16px' }}
                       />
                     </div>
                   </div>
