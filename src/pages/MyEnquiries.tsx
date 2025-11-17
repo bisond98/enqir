@@ -419,21 +419,16 @@ const MyEnquiries = () => {
                   >
                     <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                   </Button>
-                  <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-xl sm:shadow-2xl lg:shadow-3xl flex-shrink-0">
-                      <Eye className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                    </div>
-                    <div className="text-center flex-1">
-                      <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight drop-shadow-lg mb-1 sm:mb-2">
-                        Your Enquiries
-                      </h1>
-                    </div>
-                    <div className="w-10 sm:w-14 lg:w-16"></div> {/* Spacer for balance */}
+                  <div className="flex-1 text-center">
+                    <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight drop-shadow-lg mb-2 sm:mb-2.5 lg:mb-3">
+                      Your Enquiries
+                    </h1>
+                    <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-snug font-medium whitespace-nowrap">
+                      Track and manage your enquiries
+                    </p>
                   </div>
+                  <div className="w-10 sm:w-14 lg:w-16"></div> {/* Spacer for balance */}
                 </div>
-                <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center font-medium">
-                  Manage and track your requests with AI-powered insights
-                </p>
               </div>
             </div>
           </div>
