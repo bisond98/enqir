@@ -269,8 +269,8 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   // Content component to avoid duplication
   const DeadlineContent = () => {
     const isDesktop = !isMobile;
-    
-    return (
+
+  return (
       <>
         <Card className="border-0 shadow-none">
           <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
@@ -280,38 +280,38 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
             {isDesktop && (
               <p className="text-sm text-slate-500 mt-1">Choose when you need responses by</p>
             )}
-          </CardHeader>
+            </CardHeader>
           <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop ? 'px-8 pb-8 space-y-6' : ''}`}>
-            {/* Time Type Toggle */}
+              {/* Time Type Toggle */}
             <div className={`flex space-x-2 sm:space-x-3 ${isDesktop ? 'space-x-4 mb-2' : ''}`}>
-              <Button
-                variant={timeType === 'quick' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeType('quick')}
+                <Button
+                  variant={timeType === 'quick' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeType('quick')}
                 className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
-              >
+                >
                 <Zap className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
-                Quick Select
-              </Button>
-              <Button
-                variant={timeType === 'custom' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimeType('custom')}
+                  Quick Select
+                </Button>
+                <Button
+                  variant={timeType === 'custom' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTimeType('custom')}
                 className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
-              >
+                >
                 <CalendarIcon className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
-                Custom
-              </Button>
-            </div>
+                  Custom
+                </Button>
+              </div>
 
-            {timeType === 'quick' ? (
+              {timeType === 'quick' ? (
               <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 ${isDesktop ? 'grid-cols-4 gap-3' : ''}`}>
-                {quickOptions.map((option) => (
-                  <Button
-                    key={option.value}
-                    variant={quickTime === option.value ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleQuickSelect(option.value)}
+                  {quickOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      variant={quickTime === option.value ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleQuickSelect(option.value)}
                     className={`justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium transition-all ${
                       isDesktop 
                         ? 'h-14 px-4 text-sm hover:scale-105 hover:shadow-md flex-col items-center justify-center gap-1.5 py-3' 
@@ -321,17 +321,17 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         ? 'bg-blue-600 text-white shadow-lg scale-105'
                         : ''
                     }`}
-                  >
+                    >
                     <span className={`${isDesktop ? 'text-2xl mb-0.5' : 'mr-1.5 sm:mr-1 text-base sm:text-sm'}`}>
                       {option.icon}
                     </span>
                     <span className={`truncate ${isDesktop ? 'text-xs font-medium' : ''}`}>
                       {option.label}
                     </span>
-                  </Button>
-                ))}
-              </div>
-            ) : (
+                    </Button>
+                  ))}
+                </div>
+              ) : (
               <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : ''}`}>
                 {/* Custom Date - Desktop: Side by side layout */}
                 <div className={isDesktop ? 'grid grid-cols-2 gap-6 items-start' : ''}>
@@ -340,12 +340,12 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                       Start Date & Time
                     </Label>
                     <div className={isDesktop ? 'flex justify-start' : 'flex justify-center sm:block'}>
-                      <Calendar
-                        mode="single"
-                        selected={customDate}
-                        onSelect={setCustomDate}
+                    <Calendar
+                      mode="single"
+                      selected={customDate}
+                      onSelect={setCustomDate}
                         className={`rounded-md border w-full ${isDesktop ? 'w-auto' : ''}`}
-                      />
+                    />
                     </div>
                   </div>
 
@@ -357,33 +357,33 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                       </Label>
                       <div className={`grid grid-cols-2 gap-3 sm:gap-2 ${isDesktop ? 'gap-4' : ''}`}>
                         <div>
-                          <Input
-                            type="number"
-                            value={customDuration}
-                            onChange={(e) => setCustomDuration(e.target.value)}
-                            min="1"
-                            max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
+                      <Input
+                        type="number"
+                        value={customDuration}
+                        onChange={(e) => setCustomDuration(e.target.value)}
+                        min="1"
+                        max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
                             className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}
                             placeholder="1"
-                          />
-                        </div>
-                        <div>
-                          <Select value={customDurationType} onValueChange={setCustomDurationType}>
-                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {durationTypes.map((type) => (
-                                <SelectItem key={type.value} value={type.value} className={`text-base sm:text-sm ${isDesktop ? 'text-base' : ''}`}>
-                                  {type.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+                      />
                     </div>
-                    
+                    <div>
+                      <Select value={customDurationType} onValueChange={setCustomDurationType}>
+                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {durationTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value} className={`text-base sm:text-sm ${isDesktop ? 'text-base' : ''}`}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                        </div>
+                    </div>
+                  </div>
+
                     {isDesktop && (
                       <Button 
                         onClick={handleCustomApply} 
@@ -403,22 +403,22 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                     Apply Custom Time
                   </Button>
                 )}
-              </div>
-            )}
+                </div>
+              )}
 
             {/* Preview - Enhanced for desktop */}
-            {value && (
+              {value && (
               <div className={`pt-3 sm:pt-4 border-t ${isDesktop ? 'pt-6 border-t-2' : ''}`}>
                 <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm ${isDesktop ? 'gap-3' : ''}`}>
                   <span className={`text-slate-600 font-medium ${isDesktop ? 'text-base' : ''}`}>Selected Deadline:</span>
                   <div className={`flex flex-col sm:flex-row sm:items-center gap-2 ${isDesktop ? 'gap-3 items-center' : ''}`}>
                     <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5 w-fit ${isDesktop ? 'text-sm px-4 py-1.5' : ''}`}>
-                      <span className="mr-1">{urgency.icon}</span>
-                      {urgency.level.toUpperCase()}
-                    </Badge>
+                        <span className="mr-1">{urgency.icon}</span>
+                        {urgency.level.toUpperCase()}
+                      </Badge>
                     <span className={`font-medium text-sm sm:text-base ${isDesktop ? 'text-base font-semibold text-slate-900' : ''}`}>
-                      {format(deadline, 'MMM dd, yyyy HH:mm')}
-                    </span>
+                        {format(deadline, 'MMM dd, yyyy HH:mm')}
+                      </span>
                   </div>
                 </div>
                 {isDesktop && (
@@ -426,10 +426,10 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                     {formatDeadline(deadline)} from now
                   </p>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </div>
+              )}
+            </CardContent>
+          </Card>
       </>
     );
   };

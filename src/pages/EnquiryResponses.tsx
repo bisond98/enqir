@@ -797,6 +797,95 @@ const EnquiryResponses = () => {
   };
 
   // WebRTC Call Functions
+  // Play ringtone for incoming calls
+  const playRingtone = () => {
+    try {
+      // Stop any existing ringtone first
+      stopRingtone();
+      
+      // Create audio context for ringtone
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Function to play one ring cycle
+      const playRingCycle = () => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Configure ringtone: alternating tones (like a phone)
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.4);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.6);
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Volume
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.8); // Fade out
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.8);
+      };
+      
+      // Play first ring immediately
+      playRingCycle();
+      
+      // Store audio context for cleanup
+      ringtoneAudioRef.current = audioContext;
+      
+      // Repeat ringtone every 2 seconds (ring for 0.8s, pause for 1.2s)
+      ringtoneIntervalRef.current = setInterval(() => {
+        // Only continue if still ringing or connecting
+        if (callStatusRef.current === 'ringing' || callStatusRef.current === 'connecting') {
+          playRingCycle();
+        } else {
+          stopRingtone();
+        }
+      }, 2000);
+      
+      console.log('🔔 Ringtone started');
+    } catch (error) {
+      console.error('Error playing ringtone:', error);
+      // Fallback: try using HTML5 audio if Web Audio API fails
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE=');
+        audio.loop = true;
+        audio.volume = 0.3;
+        audio.play().catch(err => console.error('Error playing fallback ringtone:', err));
+        ringtoneAudioRef.current = audio;
+      } catch (fallbackError) {
+        console.error('Fallback ringtone also failed:', fallbackError);
+      }
+    }
+  };
+  
+  // Stop ringtone
+  const stopRingtone = () => {
+    try {
+      // Clear interval
+      if (ringtoneIntervalRef.current) {
+        clearInterval(ringtoneIntervalRef.current);
+        ringtoneIntervalRef.current = null;
+      }
+      
+      // Stop audio context or HTML audio
+      if (ringtoneAudioRef.current) {
+        if (ringtoneAudioRef.current instanceof AudioContext || (ringtoneAudioRef.current as any).close) {
+          (ringtoneAudioRef.current as AudioContext).close().catch(err => console.error('Error closing audio context:', err));
+        } else if (ringtoneAudioRef.current instanceof HTMLAudioElement) {
+          ringtoneAudioRef.current.pause();
+          ringtoneAudioRef.current.currentTime = 0;
+        }
+        ringtoneAudioRef.current = null;
+      }
+      
+      console.log('🔇 Ringtone stopped');
+    } catch (error) {
+      console.error('Error stopping ringtone:', error);
+    }
+  };
+
   const createPeerConnection = async (stream: MediaStream) => {
     const configuration: RTCConfiguration = {
       iceServers: [
@@ -832,6 +921,8 @@ const EnquiryResponses = () => {
             setCallStatus('active');
             callStatusRef.current = 'active';
             setIsInCall(true);
+            // Stop ringtone when call becomes active
+            stopRingtone();
           }
         }
       }
@@ -880,6 +971,8 @@ const EnquiryResponses = () => {
           setCallStatus('active');
           callStatusRef.current = 'active';
           setIsInCall(true);
+          // Stop ringtone when call becomes active
+          stopRingtone();
         }
       } else if (connState === 'connecting') {
         // Still connecting - this is normal, just log it
@@ -931,6 +1024,8 @@ const EnquiryResponses = () => {
           setCallStatus('active');
           callStatusRef.current = 'active';
           setIsInCall(true);
+          // Stop ringtone when call becomes active
+          stopRingtone();
         }
       }
       
@@ -1299,6 +1394,9 @@ const EnquiryResponses = () => {
 
   const answerCall = async () => {
     if (!selectedResponse || !enquiry || !user) return;
+
+    // Don't stop ringtone here - let it continue during connecting
+    // It will stop when call becomes active
 
     try {
       // Check microphone permission first

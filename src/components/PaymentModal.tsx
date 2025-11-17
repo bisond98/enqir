@@ -332,7 +332,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 >
                   Cancel
                 </Button>
-                <Button
+              <Button
                   onClick={() => {
                     setPaymentStep('form');
                     setPaymentLoading(false);
@@ -341,10 +341,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       setTimeout(() => handleDirectPayment(), 100);
                     }
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Try Again
-                </Button>
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Try Again
+              </Button>
               </div>
             </div>
           )}
