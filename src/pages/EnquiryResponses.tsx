@@ -814,8 +814,8 @@ const EnquiryResponses = () => {
 
     // Handle remote stream
     peerConnection.ontrack = (event) => {
-      console.log('Received remote track:', event.track);
-      console.log('Remote streams:', event.streams);
+      console.log('✅ Received remote track:', event.track);
+      console.log('✅ Remote streams:', event.streams);
       if (event.streams[0]) {
         setRemoteStream(event.streams[0]);
         if (remoteAudioRef.current) {
@@ -823,7 +823,16 @@ const EnquiryResponses = () => {
           remoteAudioRef.current.play().catch(err => {
             console.error('Error playing remote audio:', err);
           });
-          console.log('Remote audio element set and playing');
+          console.log('✅ Remote audio element set and playing');
+          
+          // When we receive remote track, connection is established
+          // Set status to active if we're still connecting
+          if (callStatusRef.current === 'connecting') {
+            console.log('✅ Remote track received - call is now active!');
+            setCallStatus('active');
+            callStatusRef.current = 'active';
+            setIsInCall(true);
+          }
         }
       }
     };
@@ -861,12 +870,24 @@ const EnquiryResponses = () => {
     };
 
     peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state changed:', peerConnection.connectionState);
-      if (peerConnection.connectionState === 'connected') {
-        setCallStatus('active');
-        callStatusRef.current = 'active';
-        setIsInCall(true);
-        console.log('Call connected successfully!');
+      const connState = peerConnection.connectionState;
+      console.log('📡 Connection state changed:', connState);
+      
+      if (connState === 'connected') {
+        // Connection is established
+        if (callStatusRef.current === 'connecting' || callStatusRef.current === 'calling') {
+          console.log('✅ Call connected successfully!');
+          setCallStatus('active');
+          callStatusRef.current = 'active';
+          setIsInCall(true);
+        }
+      } else if (connState === 'connecting') {
+        // Still connecting - this is normal, just log it
+        console.log('🔄 Still connecting...');
+        if (callStatusRef.current !== 'connecting' && callStatusRef.current !== 'active') {
+          setCallStatus('connecting');
+          callStatusRef.current = 'connecting';
+        }
       } else if (peerConnection.connectionState === 'disconnected') {
         // Only end call if we were in an active call, not if still ringing/connecting
         const currentStatus = callStatusRef.current;
@@ -901,7 +922,17 @@ const EnquiryResponses = () => {
     
     peerConnection.oniceconnectionstatechange = () => {
       const iceState = peerConnection.iceConnectionState;
-      console.log('ICE connection state:', iceState);
+      console.log('🧊 ICE connection state:', iceState);
+      
+      // When ICE connection is established, mark call as active
+      if (iceState === 'connected' || iceState === 'completed') {
+        if (callStatusRef.current === 'connecting' || callStatusRef.current === 'calling') {
+          console.log('✅ ICE connection established - call is now active!');
+          setCallStatus('active');
+          callStatusRef.current = 'active';
+          setIsInCall(true);
+        }
+      }
       
       // Handle network connectivity issues
       if (iceState === 'failed') {
@@ -1006,6 +1037,16 @@ const EnquiryResponses = () => {
 
   const initiateCall = async () => {
     if (!selectedResponse || !enquiry || !user) return;
+    
+    // Check if calls are enabled
+    if (!callsEnabled) {
+      toast({
+        title: 'Calls Disabled',
+        description: 'Calls have been disabled for this chat. Please enable calls to make a call.',
+        variant: 'default'
+      });
+      return;
+    }
 
     try {
       // Check microphone permission first
@@ -1350,7 +1391,26 @@ const EnquiryResponses = () => {
         console.log('Creating answer...');
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
-        console.log('Answer created and local description set');
+        console.log('✅ Answer created and local description set');
+        
+        // Start connection timeout - if not connected in 30 seconds, end call
+        setTimeout(() => {
+          if (callStatusRef.current === 'connecting' && peerConnectionRef.current) {
+            const iceState = peerConnectionRef.current.iceConnectionState;
+            const connState = peerConnectionRef.current.connectionState;
+            console.log('⏱️ Connection timeout check (answer side) - ICE:', iceState, 'Connection:', connState);
+            
+            if (iceState !== 'connected' && iceState !== 'completed' && connState !== 'connected') {
+              console.log('❌ Connection timeout - ending call');
+              toast({
+                title: 'Connection Timeout',
+                description: 'Unable to establish connection. Please check your internet connection and try again.',
+                variant: 'destructive'
+              });
+              endCall(false);
+            }
+          }
+        }, 30000); // 30 second timeout
 
         // Send answer
         await updateDoc(callSignalingDoc, {
@@ -1559,8 +1619,8 @@ const EnquiryResponses = () => {
         return;
       }
 
-      // Only process incoming calls if we're not already in a call
-      if (!currentIsCalling && !currentIsInCall && currentStatus === 'idle') {
+      // Only process incoming calls if we're not already in a call AND calls are enabled
+      if (!currentIsCalling && !currentIsInCall && currentStatus === 'idle' && callsEnabled) {
         // Check if there's an incoming call
         if (data.status === 'calling' && data.callerId && data.callerId !== user.uid) {
           // Check if the call is recent (within last 2 minutes)
