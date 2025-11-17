@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight } from "lucide-react";
+import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -396,358 +397,505 @@ const MyEnquiries = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8">
-          {/* Header with gray background */}
-          <div className="mb-3 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 border-gray-700">
-            {/* Header Section - Top 10% with gray background */}
-            <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 py-3 sm:px-6 sm:py-6">
-              <div className="flex items-start justify-between mb-2 sm:mb-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/dashboard')}
-                  className="p-1.5 sm:p-2 hover:bg-gray-700 rounded-lg text-white font-bold"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-                <div className="text-center flex-1">
-                  <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight drop-shadow-lg">
-                    Your Enquiries
-                  </h1>
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
+          {/* Professional Header with AI-Inspired Design */}
+          <div className="mb-6 sm:mb-12 lg:mb-16">
+            <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden shadow-2xl">
+              {/* Elegant pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+              
+              {/* Subtle AI-inspired gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-emerald-600/5"></div>
+              
+              {/* Animated grid pattern (futuristic effect) */}
+              <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent)] bg-[length:100%_50px]"></div>
+              
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4 lg:mb-5">
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate('/dashboard')}
+                    className="p-2 sm:p-2.5 lg:p-3 hover:bg-white/10 rounded-xl sm:rounded-2xl text-white font-bold transition-all duration-300 hover:scale-110 active:scale-95 backdrop-blur-sm border border-white/10"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
+                  </Button>
+                  <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-xl sm:shadow-2xl lg:shadow-3xl flex-shrink-0">
+                      <Eye className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                    </div>
+                    <div className="text-center flex-1">
+                      <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight drop-shadow-lg mb-1 sm:mb-2">
+                        Your Enquiries
+                      </h1>
+                    </div>
+                    <div className="w-10 sm:w-14 lg:w-16"></div> {/* Spacer for balance */}
+                  </div>
                 </div>
-                <div className="w-8 sm:w-10"></div> {/* Spacer for balance */}
+                <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center font-medium">
+                  Manage and track your requests with AI-powered insights
+                </p>
               </div>
-              <p className="text-gray-200 text-[10px] sm:text-xs lg:text-sm max-w-2xl mx-auto leading-relaxed text-center font-medium">
-                Manage and track your requests
-              </p>
             </div>
           </div>
 
-          {/* Post New Enquiry Button */}
-          <div className="flex justify-center mb-3 sm:mb-8">
-            <Link to="/post-enquiry" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 sm:px-8 sm:py-3 text-xs sm:text-sm font-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg">
-                <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                Post New Enquiry
+          {/* Professional Post New Enquiry Button */}
+          <div className="flex justify-center mb-6 sm:mb-10 lg:mb-12">
+            <Link to="/post-enquiry" className="w-full sm:w-auto group">
+              <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-blue-500/20 flex items-center justify-center gap-2 sm:gap-3">
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <span>Post New Enquiry</span>
               </Button>
             </Link>
           </div>
 
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-5 mb-3 sm:mb-8">
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
-              <div className="text-xl sm:text-4xl font-black text-blue-600 mb-1 sm:mb-2">{enquiries.length}</div>
-              <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Total Enquiries</p>
-            </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
-              <div className="text-xl sm:text-4xl font-black text-green-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</div>
-              <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Live</p>
-            </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
-              <div className="text-xl sm:text-4xl font-black text-yellow-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'pending').length}</div>
-              <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Pending</p>
-            </Card>
-            <Card className="p-2.5 sm:p-6 text-center border border-gray-200 shadow-md bg-white hover:shadow-lg transition-all duration-300 rounded-2xl">
-              <div className="text-xl sm:text-4xl font-black text-gray-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'completed').length}</div>
-              <p className="text-[9px] sm:text-sm text-gray-700 font-black uppercase tracking-wider">Completed</p>
-            </Card>
+          {/* Professional Stats Summary with Animations */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-10 lg:mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <TrendingUp className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-blue-600 mb-2 sm:mb-3 tracking-tight">{enquiries.length}</div>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Total Enquiries</p>
+              </Card>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-emerald-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'live').length}</div>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Live</p>
+              </Card>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            >
+              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-amber-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'pending').length}</div>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Pending</p>
+              </Card>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+            >
+              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Star className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'completed').length}</div>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Completed</p>
+              </Card>
+            </motion.div>
           </div>
 
           {/* Enquiries List */}
           {enquiries.length === 0 ? (
-            <Card className="p-6 sm:p-12 text-center border-0 shadow-lg rounded-2xl">
-              <div className="w-12 h-12 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <Eye className="h-6 w-6 sm:h-10 sm:w-10 text-blue-600" />
-              </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-3">No enquiries yet</h3>
-              <p className="text-xs sm:text-base text-slate-600 mb-4 sm:mb-6 max-w-md mx-auto">
-                Start by posting your first enquiry to find what you're looking for in our community.
-              </p>
-              <Link to="/post-enquiry">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-base">
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                  Post Your First Enquiry
-                </Button>
-              </Link>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-dashed border-gray-300/60 shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
+                <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
+                  <Eye className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
+                </div>
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 mb-2.5 sm:mb-3 lg:mb-4 tracking-tight">No enquiries yet</h3>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-md lg:max-w-lg mx-auto leading-relaxed px-4">
+                  Start by posting your first enquiry to find what you're looking for in our community.
+                </p>
+                <Link to="/post-enquiry">
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center mx-auto">
+                    <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
+                    Post Your First Enquiry
+                  </Button>
+                </Link>
+              </Card>
+            </motion.div>
           ) : (
-            <div className="space-y-2.5 sm:space-y-6">
-              {enquiries.map((enquiry) => {
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+              {enquiries.map((enquiry, index) => {
                 const isExpired = (() => {
                   if (!enquiry.deadline) return false;
                   const d = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
                   return d < new Date();
                 })();
                 return (
-                <Card key={enquiry.id} className={`${isExpired ? 'opacity-70 bg-gray-100 border-2 sm:border-4 border-gray-400 grayscale' : 'border-2 sm:border-4 border-blue-300'} shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden`}>
-                  {/* Card Header - Compact gray background */}
-                  <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700">
-                    <div className="flex items-center justify-between gap-1 sm:gap-2">
-                      <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
-                        {getStatusIcon(enquiry.status)}
-                        <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
-                          {enquiry.title}
-                        </h3>
-                        {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
-                          <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0 shadow-sm ${
-                            isExpired ? 'bg-gray-400' : 'bg-blue-500'
-                          }`}>
-                            <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                <motion.div
+                  key={enquiry.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden transition-all duration-300 ${
+                    isExpired
+                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 shadow-sm'
+                      : 'bg-white border border-gray-200/80 hover:border-blue-400/60 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
+                  }`}>
+                    {/* Premium Header with Sophisticated Design */}
+                    <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
+                      isExpired ? 'opacity-70' : ''
+                    }`}>
+                      {/* Elegant pattern overlay */}
+                      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                      
+                      {/* Shine effect on hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                      
+                      <div className="relative flex items-start justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
+                        {/* Title Section with Better Typography */}
+                        <div className="flex-1 min-w-0 pr-2 sm:pr-3 lg:pr-2 xl:pr-2.5">
+                          <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 mb-2.5 lg:mb-1.5 xl:mb-2">
+                            {getStatusIcon(enquiry.status)}
+                            <h3 className={`text-sm sm:text-lg lg:text-sm xl:text-base font-bold truncate leading-snug tracking-tight ${
+                              isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
+                            }`}>
+                              {enquiry.title}
+                            </h3>
+                            {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                              <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
+                                isExpired ? 'bg-gray-500' : 'bg-blue-500'
+                              }`}>
+                                <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                        {isExpired && (
-                          <Badge variant="outline" className="text-[8px] sm:text-xs text-gray-500 border border-gray-400 font-bold">Expired</Badge>
-                        )}
-                        {getStatusBadge(enquiry.status)}
+                          
+                          {/* Status Badge - More Refined */}
+                          {isExpired && (
+                            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-0.5 xl:py-1 bg-red-500/25 border border-red-400/40 rounded-md lg:rounded-md xl:rounded-md backdrop-blur-sm shadow-sm mt-0.5 lg:mt-0.5 xl:mt-0.5">
+                              <span className="w-1.5 h-1.5 lg:w-1.5 lg:h-1.5 xl:w-1.5 xl:h-1.5 bg-red-400 rounded-full animate-pulse"></span>
+                              <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-red-200 font-semibold tracking-wide">Expired</span>
+                            </div>
+                          )}
+                          
+                          {/* Status Message */}
+                          <div className="mt-2 sm:mt-2.5 lg:mt-1.5 xl:mt-2">
+                            <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-300 font-semibold opacity-95">{getStatusMessage(enquiry)}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Premium Plan Badge */}
+                        <Badge className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1 xl:gap-1.5 px-3 sm:px-4 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-xl lg:rounded-md xl:rounded-lg shadow-lg border backdrop-blur-md ${
+                          enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
+                            ? 'bg-white/15 text-gray-100 border-white/20' 
+                            : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                        } flex-shrink-0`}>
+                          {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-yellow-300 drop-shadow-sm" />
+                          ) : null}
+                          <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold whitespace-nowrap tracking-wide">
+                            {enquiry.selectedPlanId ? (
+                              enquiry.selectedPlanId === 'free' ? 'Free Plan' :
+                              enquiry.selectedPlanId === 'basic' ? 'Basic Plan' :
+                              enquiry.selectedPlanId === 'standard' ? 'Standard Plan' :
+                              enquiry.selectedPlanId === 'premium' ? 'Premium Plan' :
+                              enquiry.selectedPlanId === 'pro' ? 'Pro Plan' : 'Paid Plan'
+                            ) : (
+                              enquiry.isPremium ? 'Premium Plan' : 'Free Plan'
+                            )}
+                          </span>
+                        </Badge>
+                        
+                        {/* Status Badge */}
+                        <div className="flex-shrink-0">
+                          {getStatusBadge(enquiry.status)}
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-1 sm:mt-2">
-                      <span className="text-[9px] sm:text-xs text-white font-bold opacity-95">{getStatusMessage(enquiry)}</span>
-                    </div>
-                  </div>
                   
-                  {/* Card Content - Rest with white background */}
-                  <CardContent className="p-2 sm:p-4 space-y-2 sm:space-y-3">
-
-                    {/* Enquiry Information Group */}
-                    <div className="space-y-1.5 sm:space-y-2 pb-2 border-b border-gray-200">
-                      {/* Deadline Timer */}
-                      {enquiry.deadline && (
-                        <div className="pb-1.5">
-                          <CountdownTimer 
-                            deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                            className="justify-start"
-                          />
-                        </div>
-                      )}
+                    {/* Premium Content Area with Better Structure */}
+                    <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-4">
+                      {/* Subtle background texture */}
+                      <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                       
-                      {/* Description */}
-                      {enquiry.isUrgent && (
-                        <Badge variant="destructive" className="text-[8px] sm:text-xs font-bold mb-1">
-                          ⚡ Urgent
-                        </Badge>
-                      )}
-                      <p className="text-[10px] sm:text-sm text-gray-900 leading-snug line-clamp-2 font-bold">{enquiry.description}</p>
-                      
-                      {/* Stats & Category */}
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-1">
-                        <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
-                          <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-600" />
-                          <span>{enquiry.responses || 0}</span>
-                        </span>
-                        <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
-                          <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-600" />
-                          <span>{enquiry.views || 0}</span>
-                        </span>
-                        <Badge variant="outline" className="text-[8px] sm:text-xs font-black border border-gray-300 text-gray-800 px-1.5 py-0">
-                          {enquiry.category}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Budget & Location Group */}
-                    <div className="flex items-center justify-between gap-2 p-2 bg-white rounded border border-gray-200 shadow-sm">
-                      <div className="flex items-center space-x-1.5">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
-                        </div>
-                        <div>
-                          <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Budget</div>
-                          <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
-                        </div>
-                      </div>
-                      {enquiry.location && (
-                        <div className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-bold">
-                          <span className="text-sm">📍</span>
-                          <span className="truncate max-w-[120px] sm:max-w-none">{enquiry.location}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Plan Information Group - All plan data together */}
-                    <div className="space-y-1.5 sm:space-y-2 p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-200 shadow-sm">
-                      {/* Current Plan & Response Limit */}
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold uppercase">Plan</div>
-                            <div className="text-[10px] sm:text-xs font-black text-gray-900 truncate">
-                              {enquiry.selectedPlanId ? (
-                                enquiry.selectedPlanId === 'free' ? 'Free' :
-                                enquiry.selectedPlanId === 'basic' ? 'Basic (₹99)' :
-                                enquiry.selectedPlanId === 'standard' ? 'Standard (₹199)' :
-                                enquiry.selectedPlanId === 'premium' ? 'Premium (₹499)' :
-                                enquiry.selectedPlanId === 'pro' ? 'Pro (₹1,499)' : 'Paid'
-                              ) : (
-                                enquiry.isPremium ? 'Premium (Legacy)' : 'Free'
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
-                          <span className="text-[9px] sm:text-xs font-black text-blue-700">
-                            {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Plan Badge */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-1.5">
-                          {enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free' && (
-                            <Badge className={`${
-                              enquiry.selectedPlanId === 'basic' ? 'bg-blue-100 text-blue-800 border-blue-300' :
-                              enquiry.selectedPlanId === 'standard' ? 'bg-blue-100 text-blue-800 border-blue-300' :
-                              enquiry.selectedPlanId === 'premium' ? 'bg-blue-600 text-white border-blue-700' :
-                              'bg-gray-100 text-gray-800 border-gray-300'
-                            } text-[8px] sm:text-xs font-black border shadow-sm px-1.5 py-0`}>
-                              {enquiry.selectedPlanId === 'basic' ? 'Basic' :
-                               enquiry.selectedPlanId === 'standard' ? 'Standard' :
-                               enquiry.selectedPlanId === 'premium' ? 'Premium' :
-                               enquiry.selectedPlanId === 'pro' ? 'Pro' : 'Paid'}
-                            </Badge>
-                          )}
-                          {!enquiry.selectedPlanId && enquiry.isPremium && (
-                            <Badge className="bg-blue-600 text-white text-[8px] sm:text-xs font-black border border-blue-700 shadow-sm px-1.5 py-0">
-                              Premium
-                            </Badge>
-                          )}
-                          {!enquiry.selectedPlanId && !enquiry.isPremium && (
-                            <Badge className="bg-gray-100 text-gray-800 text-[8px] sm:text-xs font-black border border-gray-300 shadow-sm px-1.5 py-0">
-                              Free
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
+                      {/* Deadline Badge - Premium Design */}
                       {(() => {
-                        // Always use selectedPlanId - don't use isPremium flag
-                        const enquiryPlan = enquiry.selectedPlanId || 'free';
-                        // Don't show upgrade button for premium (top tier) or pro (hidden for future)
-                        if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
-                        const upgradeOptions = getUpgradeOptions(
-                          enquiryPlan, 
-                          userPaymentPlan?.currentPlan,
-                          enquiry.createdAt,
-                          userPaymentPlan?.proActivationDate
-                        );
-                        return upgradeOptions.length > 0;
-                      })() && !isExpired && (
-                        <div className="pt-1.5 border-t border-gray-200">
-                          <Button
-                            onClick={() => handleUpgradeClick(enquiry)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-[9px] sm:text-xs py-1.5 sm:py-2 font-black shadow-md hover:shadow-lg transition-all duration-200 rounded"
-                            size="sm"
-                          >
-                            <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                            Upgrade to Premium
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                        const deadline = enquiry.deadline;
+                        if (!deadline) return null;
+                        
+                        try {
+                          let deadlineDate: Date;
+                          
+                          if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
+                            deadlineDate = deadline.toDate();
+                          } else if (typeof deadline === 'string' || typeof deadline === 'number') {
+                            deadlineDate = new Date(deadline);
+                          } else if (deadline instanceof Date) {
+                            deadlineDate = deadline;
+                          } else {
+                            return null;
+                          }
+                          
+                          if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                            return null;
+                          }
+                          
+                          return (
+                            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-3 lg:right-3 xl:top-3.5 xl:right-3.5 flex items-center gap-1 lg:gap-1.5 bg-gradient-to-r from-red-50 to-red-100/80 border-2 border-red-200/60 rounded-md lg:rounded-lg px-2 lg:px-2.5 xl:px-2.5 py-1 lg:py-1.5 xl:py-1.5 shadow-lg z-20 backdrop-blur-sm max-w-[140px] sm:max-w-[160px] lg:max-w-[150px] xl:max-w-[160px]">
+                              <div className="flex items-center justify-center w-3 h-3 lg:w-3.5 lg:h-3.5 xl:w-3.5 xl:h-3.5 bg-red-500 rounded-full flex-shrink-0">
+                                <Clock className="h-1.5 w-1.5 lg:h-2 lg:w-2 xl:h-2 xl:w-2 text-white" />
+                              </div>
+                              <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
+                                {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                              </span>
+                            </div>
+                          );
+                        } catch (e) {
+                          console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
+                          return null;
+                        }
+                      })()}
 
-                    {/* Timestamps & Admin Notes Group */}
-                    <div className="space-y-1.5 pt-1.5 border-t border-gray-200">
-                      {/* Admin Notes */}
-                      {enquiry.adminNotes && (
-                        <div className="p-2 bg-yellow-50 border-l-2 border-yellow-500 rounded">
-                          <div className="flex items-start space-x-1.5">
-                            <div className="w-3.5 h-3.5 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-white text-[8px] font-bold">!</span>
+                      <div className="relative space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
+                        {/* Enquiry Information Group */}
+                        <div className="space-y-2 sm:space-y-2.5 lg:space-y-2 pb-3 sm:pb-3.5 lg:pb-2.5 xl:pb-3 border-b-2 border-gray-200/60">
+                          {/* Deadline Timer - Desktop only, mobile shows badge */}
+                          {enquiry.deadline && (
+                            <div className="hidden sm:block pb-2">
+                              <CountdownTimer 
+                                deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
+                                className="justify-start"
+                              />
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[9px] font-bold text-gray-900 mb-0.5">Admin Notes:</h4>
-                              <p className="text-gray-700 text-[9px] leading-tight">{enquiry.adminNotes}</p>
+                          )}
+                          
+                          {/* Description */}
+                          <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                            {enquiry.isUrgent && (
+                              <Badge variant="destructive" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 flex-shrink-0">
+                                <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1" />
+                                Urgent
+                              </Badge>
+                            )}
+                            <p className={`text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-900 leading-snug line-clamp-2 font-semibold flex-1 ${enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-28 xl:pr-32' : ''}`}>
+                              {enquiry.description}
+                            </p>
+                          </div>
+                          
+                          {/* Stats & Category */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 pt-1.5 sm:pt-2 lg:pt-1.5 xl:pt-2">
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-sm">
+                              <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
+                              <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-bold">{enquiry.responses || 0}</span>
                             </div>
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-sm">
+                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-600 flex-shrink-0" />
+                              <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-bold">{enquiry.views || 0}</span>
+                            </div>
+                            <Badge variant="outline" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold border-2 border-gray-300/80 text-gray-800 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white shadow-sm">
+                              {enquiry.category}
+                            </Badge>
                           </div>
                         </div>
-                      )}
-                      
-                      {/* Timestamps */}
-                      <div className="flex flex-wrap items-center gap-1.5 text-[8px] sm:text-[9px] text-gray-500">
-                        <span className="flex items-center space-x-0.5">
-                          <Clock className="h-2.5 w-2.5" />
-                          <span className="font-medium">Created: {formatDate(enquiry.createdAt)}</span>
-                        </span>
-                        {enquiry.approvedAt && (
-                          <span className="flex items-center space-x-0.5 text-green-600 font-medium">
-                            <CheckCircle className="h-2.5 w-2.5" />
-                            <span>Approved: {formatDate(enquiry.approvedAt)}</span>
-                          </span>
-                        )}
-                        {enquiry.rejectedAt && (
-                          <span className="flex items-center space-x-0.5 text-red-600 font-medium">
-                            <AlertTriangle className="h-2.5 w-2.5" />
-                            <span>Rejected: {formatDate(enquiry.rejectedAt)}</span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Actions Group */}
-                    <div className="flex flex-col gap-1.5 sm:gap-2 pt-2 border-t-2 border-gray-200 bg-gray-50 rounded-lg p-2 shadow-sm">
-                      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-                        {isExpired ? (
-                          <Button variant="outline" size="sm" disabled className="w-full sm:w-auto border border-gray-300 text-gray-400 bg-gray-100 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black">
-                            <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
-                            <span className="whitespace-nowrap">View Details</span>
-                          </Button>
-                        ) : (
-                          <Link to={`/enquiry/${enquiry.id}`} className="flex-1 sm:flex-none min-w-[100px]">
-                            <Button variant="outline" size="sm" className="w-full sm:w-auto border border-blue-400 text-blue-800 hover:bg-blue-100 hover:border-blue-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white">
-                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
+                        {/* Budget & Location Group */}
+                        <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4 p-3 sm:p-4 lg:p-3 xl:p-3.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-gray-200/60 shadow-md">
+                          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                              <span className="text-white font-black text-xs sm:text-sm lg:text-xs xl:text-sm">₹</span>
+                            </div>
+                            <div>
+                              <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Budget</div>
+                              <div className="text-sm sm:text-lg lg:text-base xl:text-lg font-black text-gray-900 tracking-tight">{formatBudget(enquiry.budget)}</div>
+                            </div>
+                          </div>
+                          {enquiry.location && (
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                              <span className="text-base sm:text-lg lg:text-base xl:text-lg">📍</span>
+                              <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-semibold truncate max-w-[120px] sm:max-w-none">{enquiry.location}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Plan Information Group - Premium Design */}
+                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-blue-200/60 shadow-md">
+                          {/* Current Plan & Response Limit */}
+                          <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                            <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                                <Crown className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Plan</div>
+                                <div className="text-xs sm:text-sm lg:text-xs xl:text-sm font-black text-gray-900 truncate">
+                                  {enquiry.selectedPlanId ? (
+                                    enquiry.selectedPlanId === 'free' ? 'Free' :
+                                    enquiry.selectedPlanId === 'basic' ? 'Basic (₹99)' :
+                                    enquiry.selectedPlanId === 'standard' ? 'Standard (₹199)' :
+                                    enquiry.selectedPlanId === 'premium' ? 'Premium (₹499)' :
+                                    enquiry.selectedPlanId === 'pro' ? 'Pro (₹1,499)' : 'Paid'
+                                  ) : (
+                                    enquiry.isPremium ? 'Premium (Legacy)' : 'Free'
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-blue-100/80 border border-blue-300/60 rounded-lg lg:rounded-md xl:rounded-lg flex-shrink-0">
+                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0"></div>
+                              <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap">
+                                {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
+                          {(() => {
+                            // Always use selectedPlanId - don't use isPremium flag
+                            const enquiryPlan = enquiry.selectedPlanId || 'free';
+                            // Don't show upgrade button for premium (top tier) or pro (hidden for future)
+                            if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
+                            const upgradeOptions = getUpgradeOptions(
+                              enquiryPlan, 
+                              userPaymentPlan?.currentPlan,
+                              enquiry.createdAt,
+                              userPaymentPlan?.proActivationDate
+                            );
+                            return upgradeOptions.length > 0;
+                          })() && !isExpired && (
+                            <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5 border-t-2 border-blue-200/60">
+                              <Button
+                                onClick={() => handleUpgradeClick(enquiry)}
+                                className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2.5 lg:py-2 xl:py-2.5 font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2"
+                                size="sm"
+                              >
+                                <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 flex-shrink-0" />
+                                Upgrade to Premium
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Timestamps & Admin Notes Group */}
+                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 pt-2.5 sm:pt-3 lg:pt-2.5 xl:pt-3 border-t-2 border-gray-200/60">
+                          {/* Admin Notes */}
+                          {enquiry.adminNotes && (
+                            <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
+                              <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                                <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6 lg:h-6 xl:w-7 xl:h-7 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                                  <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-white" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-gray-900 mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
+                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{enquiry.adminNotes}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Timestamps */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
+                            <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                              <span className="font-semibold">Created: {formatDate(enquiry.createdAt)}</span>
+                            </span>
+                            {enquiry.approvedAt && (
+                              <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-green-50/80 border border-green-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-green-700 font-semibold">
+                                <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                                <span>Approved: {formatDate(enquiry.approvedAt)}</span>
+                              </span>
+                            )}
+                            {enquiry.rejectedAt && (
+                              <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50/80 border border-red-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-red-700 font-semibold">
+                                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                                <span>Rejected: {formatDate(enquiry.rejectedAt)}</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Premium Action Buttons - Perfectly Aligned */}
+                        <div 
+                          className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          {isExpired ? (
+                            <Button variant="outline" size="sm" disabled className="w-full sm:flex-none border-2 border-gray-300/80 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                               <span className="whitespace-nowrap">View Details</span>
                             </Button>
-                          </Link>
-                        )}
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          disabled={isExpired}
-                          className="flex-1 sm:flex-none min-w-[110px] sm:min-w-[140px] w-full sm:w-auto border border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                          onClick={() => {
-                            if (!isExpired) {
-                              navigate(`/enquiry/${enquiry.id}/responses-page`);
-                            }
-                          }}
-                        >
-                          <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
-                          <span className="whitespace-nowrap text-[8px] sm:text-xs">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
-                        </Button>
-                        {enquiry.status === 'live' && !isExpired && (
-                          <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-1 sm:flex-none min-w-[100px]">
-                            <Button variant="outline" size="sm" className="w-full sm:w-auto border border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white">
-                              <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
-                              <span className="whitespace-nowrap">View Chats</span>
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                      
-                      <div className="flex justify-center sm:justify-end pt-1 border-t border-gray-300">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            if (!isExpired) {
-                              deleteEnquiry(enquiry.id);
-                            }
-                          }}
-                          disabled={isExpired}
-                          className="border border-red-400 text-red-800 hover:bg-red-100 hover:border-red-500 text-[9px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3 font-black shadow-sm hover:shadow-md transition-all duration-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
-                          <span className="hidden sm:inline">Delete Enquiry</span>
-                          <span className="sm:hidden">Delete</span>
-                        </Button>
+                          ) : (
+                            <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-none min-w-[110px] sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]">
+                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
+                                <span className="whitespace-nowrap tracking-tight">View Details</span>
+                              </Button>
+                            </Link>
+                          )}
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            disabled={isExpired}
+                            className="w-full sm:flex-none min-w-[110px] sm:min-w-[140px] lg:min-w-[120px] xl:min-w-[130px] border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
+                            onClick={() => {
+                              if (!isExpired) {
+                                navigate(`/enquiry/${enquiry.id}/responses-page`);
+                              }
+                            }}
+                          >
+                            <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/responses:scale-110 transition-transform" />
+                            <span className="whitespace-nowrap tracking-tight">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
+                          </Button>
+                          
+                          {enquiry.status === 'live' && !isExpired && (
+                            <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-none min-w-[100px] sm:min-w-[120px] lg:min-w-[100px] xl:min-w-[110px]">
+                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-emerald-400/60 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
+                                <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/chats:scale-110 transition-transform" />
+                                <span className="whitespace-nowrap tracking-tight">View Chats</span>
+                              </Button>
+                            </Link>
+                          )}
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (!isExpired) {
+                                deleteEnquiry(enquiry.id);
+                              }
+                            }}
+                            disabled={isExpired}
+                            className="w-full sm:flex-none border-2 border-red-300/80 bg-white text-red-700 hover:bg-red-50 hover:border-red-400/80 hover:text-red-800 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
+                            <span className="hidden sm:inline whitespace-nowrap tracking-tight">Delete Enquiry</span>
+                            <span className="sm:hidden whitespace-nowrap tracking-tight">Delete</span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </Card>
+                </motion.div>
               );})}
             </div>
           )}
