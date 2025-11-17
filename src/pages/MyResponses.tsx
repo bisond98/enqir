@@ -66,30 +66,99 @@ const MyResponses = () => {
     console.log('MyResponses: Current user:', user.uid);
 
     // Real-time listener for seller submissions (like Dashboard)
-    const sellerSubmissionsQuery = query(
+    // Try with orderBy first, fallback without if index missing
+    const sellerSubmissionsQueryWithOrder = query(
+      collection(db, 'sellerSubmissions'),
+      where('sellerId', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const sellerSubmissionsQueryWithoutOrder = query(
       collection(db, 'sellerSubmissions'),
       where('sellerId', '==', user.uid)
     );
-    const unsubscribe = onSnapshot(sellerSubmissionsQuery, (snapshot) => {
-      const submissionsData: SellerSubmission[] = [];
-      snapshot.forEach((doc) => {
-        const submissionData = { id: doc.id, ...doc.data() } as SellerSubmission;
-        submissionData.userProfileVerified = isProfileVerified;
-        submissionsData.push(submissionData);
-      });
-      // Sort by createdAt in JavaScript (will be re-sorted after enquiries are loaded)
-      submissionsData.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      });
-      setSellerSubmissions(submissionsData);
-      setLoading(false);
-      console.log('MyResponses: Real-time seller submissions:', submissionsData.length);
-    }, (error) => {
-      console.log('Error loading seller submissions (real-time):', error);
-      setLoading(false);
-    });
+    
+    let unsubscribe: (() => void) | null = null;
+    
+    // Try with orderBy first
+    const tryWithOrder = () => {
+      console.log('MyResponses: Attempting query with orderBy...');
+      unsubscribe = onSnapshot(
+        sellerSubmissionsQueryWithOrder,
+        (snapshot) => {
+          console.log('✅ MyResponses: Query with orderBy succeeded');
+          processSubmissions(snapshot);
+        },
+        (error: any) => {
+          // If index error, fallback to query without orderBy
+          if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
+            console.warn("⚠️ MyResponses: Firestore index missing, using fallback query:", error);
+            tryWithoutOrder();
+          } else {
+            console.error("❌ MyResponses: Error loading seller submissions:", error);
+            // Try fallback even on other errors
+            tryWithoutOrder();
+          }
+        }
+      );
+    };
+    
+    // Fallback without orderBy
+    const tryWithoutOrder = () => {
+      console.log('MyResponses: Attempting fallback query without orderBy...');
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+      unsubscribe = onSnapshot(
+        sellerSubmissionsQueryWithoutOrder,
+        (snapshot) => {
+          console.log('✅ MyResponses: Fallback query succeeded');
+          processSubmissions(snapshot);
+        },
+        (error) => {
+          console.error("❌ MyResponses: Error loading seller submissions (fallback):", error);
+          setLoading(false);
+        }
+      );
+    };
+    
+    // Process submissions data
+    const processSubmissions = (snapshot: any) => {
+      try {
+        console.log('📊 MyResponses: Received snapshot with', snapshot.docs.length, 'documents');
+        
+        const submissionsData: SellerSubmission[] = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          console.log('📄 MyResponses: Processing submission', doc.id, 'status:', data.status, 'enquiryId:', data.enquiryId);
+          const submissionData = { id: doc.id, ...data } as SellerSubmission;
+          submissionData.userProfileVerified = isProfileVerified;
+          submissionsData.push(submissionData);
+        });
+        
+        console.log('📊 MyResponses: Total submissions from query:', submissionsData.length);
+        
+        // Sort by createdAt in JavaScript (will be re-sorted after enquiries are loaded)
+        submissionsData.sort((a, b) => {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        });
+        
+        console.log('📊 MyResponses: Final submissions to display:', submissionsData.length);
+        console.log('📊 MyResponses: Sample submission IDs:', submissionsData.slice(0, 5).map(s => ({ id: s.id, status: s.status, enquiryId: s.enquiryId })));
+        
+        setSellerSubmissions(submissionsData);
+        setLoading(false);
+      } catch (error) {
+        console.error("❌ MyResponses: Error processing submissions:", error);
+        setLoading(false);
+      }
+    };
+    
+    // Start with orderBy query
+    tryWithOrder();
     return () => unsubscribe();
   }, [user?.uid, isProfileVerified]);
 
