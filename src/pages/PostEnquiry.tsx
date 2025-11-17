@@ -278,18 +278,33 @@ export default function PostEnquiry() {
 
   // Direct payment handler - skips custom card form, goes straight to Razorpay checkout
   const handleDirectPayment = async () => {
-    if (!selectedPlan || !user?.uid) return;
+    if (!selectedPlan || !user?.uid) {
+      console.error('❌ Cannot process payment: Missing plan or user', { selectedPlan, user: !!user });
+      toast({
+        title: "Error",
+        description: "Please select a plan and ensure you're signed in.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Prevent double submission
     if (loading || paymentLoading || isSubmitted) {
-      console.warn('⚠️ Payment blocked: Already processing or already submitted');
+      console.warn('⚠️ Payment blocked: Already processing or already submitted', { loading, paymentLoading, isSubmitted });
       return;
     }
+    
+    console.log('🚀 Starting direct payment process...', {
+      planId: selectedPlan.id,
+      planPrice: selectedPlan.price,
+      userId: user.uid
+    });
     
     setPaymentLoading(true);
     
     try {
       // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
+      console.log('💳 Calling processPayment...');
       const paymentResult = await processPayment(
         'temp-enquiry-id', // Will be updated after enquiry is created
         user.uid,
@@ -302,8 +317,11 @@ export default function PostEnquiry() {
         }
       );
       
+      console.log('📊 Payment result received:', paymentResult);
+      
       // Check if payment actually succeeded
       if (!paymentResult.success) {
+        console.error('❌ Payment failed:', paymentResult.error);
         throw new Error(paymentResult.error || 'Payment failed');
       }
       
@@ -396,10 +414,16 @@ export default function PostEnquiry() {
       }, 1000);
       
     } catch (error) {
-      console.error('Payment failed:', error);
+      console.error('❌ Payment failed:', error);
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        selectedPlan,
+        userId: user?.uid
+      });
       toast({
         title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Please try again.",
+        description: error instanceof Error ? error.message : "Please try again. Check console for details.",
         variant: "destructive",
       });
       setPaymentLoading(false);

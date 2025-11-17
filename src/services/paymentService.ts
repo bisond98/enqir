@@ -414,12 +414,16 @@ export const processPayment = async (
         },
       };
 
+      console.log('🔧 Creating Razorpay instance...');
       razorpayInstance = new window.Razorpay(options);
+      console.log('✅ Razorpay instance created');
       
       // CRITICAL: Wait a moment for Razorpay to initialize, then ensure it's on top and interactive
       setTimeout(() => {
+        console.log('🔧 Ensuring Razorpay modal is visible and interactive...');
         // Ensure Razorpay modal has highest z-index and is interactive
         const razorpayElements = document.querySelectorAll('.razorpay-container, [class*="razorpay"], iframe[src*="razorpay"]');
+        console.log('🔍 Found Razorpay elements:', razorpayElements.length);
         razorpayElements.forEach((element) => {
           const el = element as HTMLElement;
           el.style.zIndex = '99999';
@@ -441,7 +445,19 @@ export const processPayment = async (
         document.documentElement.style.overflowY = 'auto';
       }, 200);
       
-      razorpayInstance.open();
+      console.log('🚀 Opening Razorpay modal...');
+      try {
+        razorpayInstance.open();
+        console.log('✅ Razorpay modal opened successfully');
+      } catch (openError) {
+        console.error('❌ Error opening Razorpay modal:', openError);
+        restoreAppOverlays();
+        window.removeEventListener('popstate', handlePopState);
+        resolve({
+          success: false,
+          error: 'Failed to open payment gateway. Please try again.',
+        });
+      }
     });
   } catch (error) {
     console.error('❌ Payment processing error:', error);
