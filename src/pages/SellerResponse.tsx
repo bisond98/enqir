@@ -798,7 +798,7 @@ const SellerResponse = () => {
                 <FileText className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
               </div>
               <h1 className="text-lg sm:text-2xl lg:text-4xl xl:text-5xl font-black mb-2 sm:mb-3 lg:mb-4 text-white px-2">
-                Help with this Request
+                sell
               </h1>
               <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2 mb-3 sm:mb-4 lg:mb-6">
                 Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
