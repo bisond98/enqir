@@ -38,15 +38,35 @@ declare global {
 const loadRazorpayScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (window.Razorpay) {
+      console.log('✅ Razorpay script already loaded');
       resolve();
       return;
     }
 
+    console.log('📥 Loading Razorpay script...');
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Razorpay script'));
+    script.onload = () => {
+      console.log('✅ Razorpay script loaded successfully');
+      // Double check that Razorpay is available
+      if (window.Razorpay) {
+        resolve();
+      } else {
+        reject(new Error('Razorpay script loaded but window.Razorpay is not available'));
+      }
+    };
+    script.onerror = () => {
+      console.error('❌ Failed to load Razorpay script');
+      reject(new Error('Failed to load Razorpay script'));
+    };
     document.body.appendChild(script);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => {
+      if (!window.Razorpay) {
+        reject(new Error('Razorpay script loading timeout'));
+      }
+    }, 10000);
   });
 };
 

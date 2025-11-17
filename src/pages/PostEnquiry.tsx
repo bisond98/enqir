@@ -1022,7 +1022,16 @@ export default function PostEnquiry() {
     // If premium option is selected, go directly to Razorpay checkout (Razorpay has its own card form)
     if (selectedPlan && selectedPlan.price > 0) {
       console.log('💳 Opening Razorpay checkout directly (Razorpay has built-in card form)');
-      handleDirectPayment();
+      // Call handleDirectPayment but don't await - it will handle the payment flow
+      // Make sure to prevent form submission
+      handleDirectPayment().catch((error) => {
+        console.error('❌ Error in handleDirectPayment:', error);
+        toast({
+          title: "Payment Error",
+          description: error instanceof Error ? error.message : "Failed to open payment gateway. Please try again.",
+          variant: "destructive",
+        });
+      });
       return; // Don't submit enquiry yet
     }
     
