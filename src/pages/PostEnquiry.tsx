@@ -1503,7 +1503,7 @@ export default function PostEnquiry() {
                 <div className="w-10"></div> {/* Spacer for balance */}
               </div>
               <p className="text-gray-300 text-[10px] sm:text-xs lg:text-sm max-w-2xl mx-auto text-center whitespace-nowrap">
-                AI matches you with verified sellers
+                what in the world are you looking for?
               </p>
             </div>
           </div>
