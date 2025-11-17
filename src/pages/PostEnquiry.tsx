@@ -327,91 +327,88 @@ export default function PostEnquiry() {
       
       console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
       
-      // Submit enquiry after successful payment
-      setTimeout(async () => {
-        // Prevent double submission
-        if (isSubmitted) {
-          console.warn('⚠️ Enquiry creation blocked: Already submitted');
-          setPaymentLoading(false);
-          return;
-        }
-        
-        try {
-          setLoading(true);
-          
-          // Create enquiry data
-          const enquiryData: any = {
-            title: title.trim(),
-            description: description.trim(),
-            category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
-            categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
-            budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-            location: location.trim(),
-            deadline: deadline,
-            isUrgent: deadline ? (() => {
-              const now = new Date();
-              const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
-              return diffHours < 72;
-            })() : false,
-            status: "live",
-            isPremium: selectedPlan.price > 0,
-            selectedPlanId: selectedPlan.id,
-            selectedPlanPrice: selectedPlan.price,
-            paymentStatus: "completed",
-            createdAt: serverTimestamp(),
-            userId: user?.uid,
-            userEmail: user?.email,
-            userName: user?.displayName || user?.email?.split('@')[0],
-            notes: notes.trim() || null,
-            governmentIdFront: null,
-            governmentIdBack: null,
-            isUserVerified: isUserVerified,
-            profileVerificationStatus: profileVerificationStatus
-          };
-
-          // Add enquiry to database
-          const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
-          const enquiryId = docRef.id;
-          console.log('Premium enquiry saved successfully with ID:', enquiryId);
-          
-          // Save payment record with actual enquiry ID
-          const paymentRecordId = await savePaymentRecord(
-            enquiryId,
-            user.uid,
-            selectedPlan,
-            paymentResult.transactionId || ''
-          );
-          
-          // Update user payment plan
-          await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
-          
-          setSubmittedEnquiryId(enquiryId);
-          setEnquiryStatus('live');
-          setIsEnquiryApproved(true);
-          
-          // Mark as submitted
-          incrementEnquiries();
-          setIsSubmitted(true);
-          setIsPaymentSuccessful(true);
-          
-          toast({
-            title: "Payment Successful! 🎉",
-            description: "Your premium enquiry is now live!",
-          });
-          
-        } catch (error) {
-          console.error('Error creating premium enquiry:', error);
-          toast({
-            title: "Error",
-            description: "Failed to create enquiry. Please try again.",
-            variant: "destructive",
-          });
-        } finally {
-          setLoading(false);
-        }
-        
+      // Create enquiry immediately after successful payment
+      // Prevent double submission
+      if (isSubmitted) {
+        console.warn('⚠️ Enquiry creation blocked: Already submitted');
         setPaymentLoading(false);
-      }, 1000); */
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        
+        // Create enquiry data
+        const enquiryData: any = {
+          title: title.trim(),
+          description: description.trim(),
+          category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
+          categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
+          budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+          location: location.trim(),
+          deadline: deadline,
+          isUrgent: deadline ? (() => {
+            const now = new Date();
+            const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+            return diffHours < 72;
+          })() : false,
+          status: "live",
+          isPremium: selectedPlan.price > 0,
+          selectedPlanId: selectedPlan.id,
+          selectedPlanPrice: selectedPlan.price,
+          paymentStatus: "completed",
+          createdAt: serverTimestamp(),
+          userId: user?.uid,
+          userEmail: user?.email,
+          userName: user?.displayName || user?.email?.split('@')[0],
+          notes: notes.trim() || null,
+          governmentIdFront: null,
+          governmentIdBack: null,
+          isUserVerified: isUserVerified,
+          profileVerificationStatus: profileVerificationStatus
+        };
+
+        // Add enquiry to database
+        const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
+        const enquiryId = docRef.id;
+        console.log('Premium enquiry saved successfully with ID:', enquiryId);
+        
+        // Save payment record with actual enquiry ID
+        const paymentRecordId = await savePaymentRecord(
+          enquiryId,
+          user.uid,
+          selectedPlan,
+          paymentResult.transactionId || ''
+        );
+        
+        // Update user payment plan
+        await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
+        
+        setSubmittedEnquiryId(enquiryId);
+        setEnquiryStatus('live');
+        setIsEnquiryApproved(true);
+        
+        // Mark as submitted
+        incrementEnquiries();
+        setIsSubmitted(true);
+        setIsPaymentSuccessful(true);
+        
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Your premium enquiry is now live!",
+        });
+        
+      } catch (error) {
+        console.error('Error creating premium enquiry:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create enquiry. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+        setPaymentLoading(false);
+      }
       
     } catch (error) {
       console.error('❌ Payment failed:', error);
