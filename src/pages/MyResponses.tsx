@@ -159,7 +159,10 @@ const MyResponses = () => {
     
     // Start with orderBy query
     tryWithOrder();
-    return () => unsubscribe();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [user?.uid, isProfileVerified]);
 
   // Fetch enquiry details for each submission (optimized)
