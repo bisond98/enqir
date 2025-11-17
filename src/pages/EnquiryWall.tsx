@@ -102,17 +102,16 @@ export default function EnquiryWall() {
   useEffect(() => {
     setLoading(true);
     
-    // Try query with orderBy first (requires composite index)
+    // Fetch all enquiries and filter client-side to ensure all 'live' enquiries are shown
+    // This ensures we catch all admin-approved enquiries regardless of query/index issues
     const enquiriesQueryWithOrder = query(
       collection(db, "enquiries"),
-      where("status", "==", "live"),
       orderBy("createdAt", "desc")
     );
     
     // Fallback query without orderBy (if index doesn't exist)
     const enquiriesQueryWithoutOrder = query(
-      collection(db, "enquiries"),
-      where("status", "==", "live")
+      collection(db, "enquiries")
     );
     
     let unsubscribe: (() => void) | null = null;
@@ -130,7 +129,6 @@ export default function EnquiryWall() {
           // If index error, fallback to query without orderBy
           if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
             console.warn("⚠️ EnquiryWall: Firestore index missing, using fallback query:", error);
-            console.warn("⚠️ EnquiryWall: Please create a composite index for: status == 'live' AND orderBy createdAt desc");
             tryWithoutOrder();
           } else {
             console.error("❌ EnquiryWall: Error loading enquiries:", error);
@@ -176,7 +174,7 @@ export default function EnquiryWall() {
       try {
         console.log('📊 EnquiryWall: Received snapshot with', snapshot.docs.length, 'documents');
         
-        const enquiriesData = snapshot.docs.map((doc: any) => {
+        const allEnquiriesData = snapshot.docs.map((doc: any) => {
           const data = doc.data();
           console.log('📄 EnquiryWall: Processing enquiry', doc.id, 'status:', data.status);
           return {
@@ -185,36 +183,61 @@ export default function EnquiryWall() {
           };
         }) as Enquiry[];
         
-        console.log('📊 EnquiryWall: Total enquiries from query:', enquiriesData.length);
+        console.log('📊 EnquiryWall: Total enquiries from query:', allEnquiriesData.length);
         
-        // Separate live and expired enquiries
+        // Filter to only show enquiries with status='live' (admin accepted)
+        // Use case-insensitive check to catch any variations
+        const liveStatusEnquiries = allEnquiriesData.filter(enquiry => {
+          const status = (enquiry.status || '').toLowerCase().trim();
+          return status === 'live';
+        });
+        
+        console.log('📊 EnquiryWall: Enquiries with status=live:', liveStatusEnquiries.length);
+        
+        // Separate live and expired enquiries based on deadline
         const now = new Date();
-        const liveEnquiries = enquiriesData.filter(enquiry => {
+        const liveEnquiries = liveStatusEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return true; // No deadline = live
-          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate >= now;
+          try {
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            return deadlineDate.getTime() >= now.getTime();
+          } catch {
+            return true; // If error, assume live
+          }
         });
         
-        const expiredEnquiries = enquiriesData.filter(enquiry => {
+        const expiredEnquiries = liveStatusEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return false; // No deadline = not expired
-          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate < now;
+          try {
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            return deadlineDate.getTime() < now.getTime();
+          } catch {
+            return false; // If error, assume not expired
+          }
         });
         
-        console.log('📊 EnquiryWall: Live enquiries:', liveEnquiries.length, 'Expired:', expiredEnquiries.length);
+        console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length);
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
-          const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return bDate.getTime() - aDate.getTime();
+          try {
+            const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return bDate.getTime() - aDate.getTime();
+          } catch {
+            return 0;
+          }
         });
         
         // Sort expired enquiries by date (newest first)
         expiredEnquiries.sort((a, b) => {
-          const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return bDate.getTime() - aDate.getTime();
+          try {
+            const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return bDate.getTime() - aDate.getTime();
+          } catch {
+            return 0;
+          }
         });
         
         // Combine live first, then expired (both already sorted)
@@ -226,6 +249,7 @@ export default function EnquiryWall() {
         );
         
         console.log('📊 EnquiryWall: Final unique enquiries to display:', uniqueEnquiries.length);
+        console.log('📊 EnquiryWall: Sample enquiry IDs:', uniqueEnquiries.slice(0, 5).map(e => e.id));
         
         setEnquiries(uniqueEnquiries);
         setLoading(false);

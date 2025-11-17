@@ -663,9 +663,10 @@ const Landing = () => {
 
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
+    // Fetch all enquiries and filter client-side to ensure all 'live' enquiries are shown
+    // This ensures we catch all admin-approved enquiries regardless of query/index issues
     const q = query(
       collection(db, 'enquiries'),
-      where('status', '==', 'live'),
       orderBy('createdAt', 'desc')
     );
     const unsubscribe = onSnapshot(q, (snap) => {
@@ -678,9 +679,20 @@ const Landing = () => {
         });
       });
       
+      console.log('📊 Landing: Total enquiries from query:', items.length);
+      
+      // Filter to only show enquiries with status='live' (admin accepted)
+      // Use case-insensitive check to catch any variations
+      const liveStatusItems = items.filter(e => {
+        const status = (e.status || '').toLowerCase().trim();
+        return status === 'live';
+      });
+      
+      console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
+      
       // Deduplicate by ID first (in case same document appears multiple times)
       const uniqueItems = Array.from(
-        new Map(items.map(e => [e.id, e])).values()
+        new Map(liveStatusItems.map(e => [e.id, e])).values()
       );
       
       // Separate live and expired
