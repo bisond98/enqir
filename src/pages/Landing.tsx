@@ -695,10 +695,22 @@ const Landing = () => {
         new Map(liveStatusItems.map(e => [e.id, e])).values()
       );
       
-      // Show ALL enquiries with status='live' regardless of deadline
-      // Deadline check is only for UI display (grayscale/disabled), not for filtering
-      // Sort all by createdAt (newest first)
-      uniqueItems.sort((a, b) => {
+      // Filter out expired enquiries - only show live (not expired) enquiries
+      const now = new Date();
+      const liveEnquiries = uniqueItems.filter(enquiry => {
+        if (!enquiry.deadline) return true; // No deadline = live
+        try {
+          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+          return deadlineDate.getTime() >= now.getTime();
+        } catch {
+          return true; // If error, assume live
+        }
+      });
+      
+      console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
+      
+      // Sort live enquiries by createdAt (newest first)
+      liveEnquiries.sort((a, b) => {
         try {
           const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
           const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
@@ -708,19 +720,16 @@ const Landing = () => {
         }
       });
       
-      // Set all live enquiries for count and search (deduplicated)
+      // Set all live enquiries for count and search (includes expired for count/search)
       setAllLiveEnquiries(uniqueItems);
       
-      // Set display enquiries (first 3)
-      const combined = uniqueItems.slice(0, 3);
+      // Set display enquiries - only live (not expired) enquiries for the 3 cards
+      // Store all live enquiries for shuffling (not just first 3)
+      setPublicRecentEnquiries(liveEnquiries);
       
-      // Final deduplication on display enquiries
-      const uniqueCombined = Array.from(
-        new Map(combined.map(e => [e.id, e])).values()
-      );
-      
-      setPublicRecentEnquiries(uniqueCombined);
-      setShuffledEnquiries(uniqueCombined);
+      // Set initial shuffled display (3 random from all live enquiries)
+      const initialShuffled = getRandomThree(liveEnquiries);
+      setShuffledEnquiries(initialShuffled);
     }, (error) => {
       console.error('Error loading enquiries:', error);
       // Set empty arrays on error
@@ -731,32 +740,57 @@ const Landing = () => {
     return () => unsubscribe();
   }, []);
 
-  // Shuffle every 1 minute
+  // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
   useEffect(() => {
     // Deduplicate before processing
     const uniqueEnquiries = Array.from(
       new Map(publicRecentEnquiries.map(e => [e.id, e])).values()
     );
     
-    if (uniqueEnquiries.length <= 1) {
-      setShuffledEnquiries(uniqueEnquiries);
+    // Filter out expired enquiries (in case any slipped through)
+    const now = new Date();
+    const liveOnlyEnquiries = uniqueEnquiries.filter(enquiry => {
+      if (!enquiry.deadline) return true; // No deadline = live
+      try {
+        const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+        return deadlineDate.getTime() >= now.getTime();
+      } catch {
+        return true; // If error, assume live
+      }
+    });
+    
+    if (liveOnlyEnquiries.length <= 1) {
+      setShuffledEnquiries(liveOnlyEnquiries);
       return;
     }
     
-    // Set initial shuffled (deduplicated)
-    const initialShuffled = getRandomThree(uniqueEnquiries);
+    // Set initial shuffled (deduplicated, live only)
+    const initialShuffled = getRandomThree(liveOnlyEnquiries);
     const uniqueInitial = Array.from(
       new Map(initialShuffled.map(e => [e.id, e])).values()
     );
     setShuffledEnquiries(uniqueInitial);
     
     const interval = setInterval(() => {
-      const shuffled = getRandomThree(uniqueEnquiries);
-      const uniqueShuffled = Array.from(
-        new Map(shuffled.map(e => [e.id, e])).values()
-      );
-      setShuffledEnquiries(uniqueShuffled);
-    }, 60000); // 1 minute
+      // Re-filter to ensure we only shuffle live enquiries
+      const currentLiveEnquiries = liveOnlyEnquiries.filter(enquiry => {
+        if (!enquiry.deadline) return true;
+        try {
+          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+          return deadlineDate.getTime() >= now.getTime();
+        } catch {
+          return true;
+        }
+      });
+      
+      if (currentLiveEnquiries.length > 0) {
+        const shuffled = getRandomThree(currentLiveEnquiries);
+        const uniqueShuffled = Array.from(
+          new Map(shuffled.map(e => [e.id, e])).values()
+        );
+        setShuffledEnquiries(uniqueShuffled);
+      }
+    }, 5000); // 5 seconds
     return () => clearInterval(interval);
   }, [publicRecentEnquiries]);
 
