@@ -1639,6 +1639,9 @@ const EnquiryResponses = () => {
           callStartTimeRef.current = Date.now();
           setCallDuration(0);
           
+          // Play ringtone for incoming call
+          playRingtone();
+          
           // Update call duration every second
           if (callTimeoutRef.current) {
             clearInterval(callTimeoutRef.current);
@@ -1703,6 +1706,7 @@ const EnquiryResponses = () => {
                 callStatusRef.current = 'idle';
                 setIsCalling(false);
                 setIsInCall(false);
+                stopRingtone(); // Stop ringtone on timeout
               }
             }
           }, 1000);
