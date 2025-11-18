@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -91,8 +92,8 @@ type SellerSubmission = {
 };
 
 const Admin = () => {
-    // ... rest of the existing code
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const notificationContext = useContext(NotificationContext);
   const createNotificationForUser = notificationContext?.createNotificationForUser || (async () => {
     console.warn('NotificationContext not available');
@@ -106,6 +107,7 @@ const Admin = () => {
   const [selectedSellerSubmission, setSelectedSellerSubmission] = useState<SellerSubmission | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [processingVerification, setProcessingVerification] = useState<string | null>(null);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
@@ -151,13 +153,52 @@ const Admin = () => {
     }
   };
 
+  // Check admin access
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      if (!authUser) {
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userProfileRef = doc(db, 'userProfiles', authUser.uid);
+        const userProfileSnap = await getDoc(userProfileRef);
+
+        if (userProfileSnap.exists()) {
+          const userData = userProfileSnap.data();
+          if (userData.role === 'admin' || userData.isAdmin === true) {
+            setIsAuthorized(true);
+            return;
+          }
+        }
+
+        // Fallback: Check email (for backward compatibility)
+        if (authUser.email === 'admin@example.com') {
+          setIsAuthorized(true);
+          return;
+        }
+
+        setIsAuthorized(false);
+      } catch (error) {
+        console.error('Error checking admin access:', error);
+        setIsAuthorized(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdminAccess();
+  }, [authUser]);
+
   // Start background AI service only when admin is authenticated
   useEffect(() => {
-    if (authUser) {
+    if (authUser && isAuthorized) {
       console.log('🤖 Admin: Starting background AI service for authenticated admin');
       backgroundAIService.startForAdmin();
     } else {
-      console.log('🤖 Admin: Stopping background AI service - no authenticated user');
+      console.log('🤖 Admin: Stopping background AI service - no authenticated user or not authorized');
       backgroundAIService.stop();
     }
 
@@ -165,7 +206,7 @@ const Admin = () => {
     return () => {
       backgroundAIService.stop();
     };
-  }, [authUser]);
+  }, [authUser, isAuthorized]);
 
   // Function to check if enquiry is outdated
   const isEnquiryOutdated = (enquiry: Enquiry) => {
@@ -1144,6 +1185,26 @@ const Admin = () => {
 
   if (loading) {
     return <LoadingAnimation message="Loading admin data" />;
+  }
+
+  // Check authorization before rendering admin panel
+  if (!isAuthorized) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+          <Card className="max-w-md w-full mx-4">
+            <CardContent className="p-8 text-center">
+              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+              <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+              <Button onClick={() => navigate('/')} className="w-full" size="lg">
+                Go Home
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
   }
 
   return (

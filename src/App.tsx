@@ -39,6 +39,7 @@ import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import AdminAccess from "./pages/AdminAccess";
 import PremiumTestDataGenerator from "./components/PremiumTestDataGenerator";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -110,6 +111,7 @@ const App = () => {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/admin/access/:secretToken" element={<AdminAccess />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
