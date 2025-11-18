@@ -438,7 +438,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
     <div className={`space-y-3 sm:space-y-4 ${className}`}>
       <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
         <Clock className="h-5 w-5 sm:h-5 sm:w-5 text-slate-600 flex-shrink-0" />
-        <Label className="text-sm sm:text-base font-medium">Response Deadline</Label>
+        <Label className="text-xs sm:text-sm font-medium">Response Deadline</Label>
         {value && (
           <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5`}>
             <span className="mr-1">{urgency.icon}</span>
@@ -450,7 +450,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>

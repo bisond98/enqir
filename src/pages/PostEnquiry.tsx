@@ -20,7 +20,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
 import { uploadToCloudinary } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -182,7 +182,7 @@ export default function PostEnquiry() {
             categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
             budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
             location: location.trim(),
-            deadline: deadline ? Timestamp.fromDate(deadline) : null,
+            deadline: deadline,
             isUrgent: deadline ? (() => {
               const now = new Date();
               const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -346,7 +346,7 @@ export default function PostEnquiry() {
           categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
           budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
           location: location.trim(),
-          deadline: deadline ? Timestamp.fromDate(deadline) : null,
+          deadline: deadline,
           isUrgent: deadline ? (() => {
             const now = new Date();
             const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -445,7 +445,7 @@ export default function PostEnquiry() {
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
         location: location.trim(),
-        deadline: deadline ? Timestamp.fromDate(deadline) : null,
+        deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
           const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -686,187 +686,7 @@ export default function PostEnquiry() {
     );
   }
 
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Complete Payment</h2>
-                <button
-                  onClick={resetPaymentModal}
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              {paymentStep === 'form' && (
-                <div className="space-y-4">
-                  {/* Payment Details */}
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-slate-900">
-                        {selectedPlan?.name || 'Premium Enquiry'}
-                      </span>
-                      <span className="text-lg font-bold text-slate-900">
-                        ₹{selectedPlan?.price || 0}
-                      </span>
-                    </div>
-                    <p className="text-[10px] sm:text-sm text-slate-600 whitespace-nowrap overflow-hidden text-ellipsis">
-                      {selectedPlan?.description || 'Premium enquiry benefits'}
-                    </p>
-                  </div>
-
-                  {/* Payment Form */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
-                      <input
-                        type="text"
-                        placeholder="1234 5678 9012 3456"
-                        value={paymentDetails.cardNumber}
-                        onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        style={{ fontSize: '16px' }}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Expiry Date</label>
-                        <input
-                          type="text"
-                          placeholder="MM/YY"
-                          value={paymentDetails.expiryDate}
-                          onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-                            if (value.length >= 2) {
-                              value = value.slice(0, 2) + '/' + value.slice(2, 4);
-                            }
-                            setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
-                          }}
-                          maxLength={5}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                          style={{ fontSize: '16px' }}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">CVV</label>
-                        <input
-                          type="text"
-                          placeholder="123"
-                          value={paymentDetails.cvv}
-                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                          style={{ fontSize: '16px' }}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Cardholder Name</label>
-                      <input
-                        type="text"
-                        placeholder="John Doe"
-                        value={paymentDetails.name}
-                        onChange={(e) => setPaymentDetails(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                        style={{ fontSize: '16px' }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Test Payment Notice */}
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <span className="text-yellow-600 text-xs">🧪</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-yellow-800 text-sm">Test Mode</p>
-                        <p className="text-yellow-700 text-[10px] sm:text-xs whitespace-nowrap">Test mode - any card works</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Buttons */}
-                  <div className="flex space-x-3 pt-4">
-                    <Button
-                      onClick={resetPaymentModal}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handlePayment}
-                      disabled={paymentLoading || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv || !paymentDetails.name}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      {paymentLoading ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Processing...</span>
-                        </div>
-                      ) : (
-                        `Pay ₹${selectedPlan?.price || 0}`
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {paymentStep === 'processing' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Processing Payment</h3>
-                  <p className="text-slate-600">Please wait while we process your payment...</p>
-                </div>
-              )}
-
-              {paymentStep === 'success' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-3xl text-green-600">✓</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
-                  <p className="text-slate-600">Your premium enquiry is now ready to be submitted.</p>
-                </div>
-              )}
-
-              {paymentStep === 'failed' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-pal-blue/10 rounded-full flex items-center justify-center">
-                    <span className="text-3xl text-pal-blue">✗</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Failed</h3>
-                  <p className="text-slate-600 mb-4">Something went wrong. Please try again.</p>
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={resetPaymentModal}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={() => setPaymentStep('form')}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      Try Again
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-
+  // Categories array - defined before return
   let categories = [
     // Professional & Business
     { value: "jobs", label: "Jobs & Employment", group: "Professional" },
@@ -1012,12 +832,6 @@ export default function PostEnquiry() {
       alert('Please fill in all required fields (title, description, categories, budget, location).');
       return;
     }
-    
-    // Validate deadline is required
-    if (!deadline) {
-      alert('Please select a deadline for your enquiry.');
-      return;
-    }
 
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
@@ -1136,7 +950,7 @@ export default function PostEnquiry() {
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
         location: location.trim(),
-        deadline: deadline ? Timestamp.fromDate(deadline) : null,
+        deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
           const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -1492,25 +1306,22 @@ export default function PostEnquiry() {
           {/* Header - Enhanced Professional Design */}
           <div className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-gray-200/50">
             {/* Header Section - Premium Gray Background */}
-            <div className="bg-gradient-to-r from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-7">
-              <div className="flex items-start justify-between mb-3 sm:mb-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => window.history.back()}
-                  className="p-2.5 sm:p-3 hover:bg-gray-700/80 rounded-xl text-white transition-all duration-200 hover:scale-105"
-                >
-                  <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-                </Button>
-                <div className="text-center flex-1">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                    Post Enquiry
-                  </h1>
-                </div>
-                <div className="w-10 sm:w-12"></div> {/* Spacer for balance */}
+            <div className="bg-gradient-to-r from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-7 relative">
+              <Button
+                variant="ghost"
+                onClick={() => window.history.back()}
+                className="absolute left-5 sm:left-6 lg:left-8 top-5 sm:top-6 lg:top-7 p-2.5 sm:p-3 hover:bg-gray-700/80 rounded-xl text-white transition-all duration-200 hover:scale-105 flex-shrink-0 z-10"
+              >
+                <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+              </Button>
+              <div className="text-center flex flex-col items-center justify-center gap-1.5 sm:gap-2 w-full">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
+                  Post Enquiry
+                </h1>
+                <p className="text-gray-300 text-xs sm:text-sm lg:text-base whitespace-nowrap">
+                  what in the world are you looking for?
+                </p>
               </div>
-              <p className="text-gray-300 text-xs sm:text-sm lg:text-base max-w-2xl mx-auto text-center">
-                what in the world are you looking for?
-              </p>
             </div>
           </div>
 
@@ -1547,12 +1358,12 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design */}
           {!isSubmitted && (
-            <Card className="border border-gray-200 shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
+            <Card className="border border-gray-800 shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden" style={{ borderWidth: '1px' }}>
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="title" className="text-sm sm:text-base font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {category === "jobs" ? "Job Title" : "What you need"}
                     </Label>
@@ -1561,7 +1372,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-14 text-base border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-slate-300"
+                      className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1570,11 +1381,11 @@ export default function PostEnquiry() {
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2 sm:space-y-2.5">
-                      <Label className="text-sm sm:text-base font-semibold text-slate-800 flex items-center gap-2">
+                      <Label className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Choose Categories
                       </Label>
-                      <p className="text-xs sm:text-sm text-slate-600 flex items-center gap-1.5">
+                      <p className="text-[10px] sm:text-xs text-slate-600 flex items-center gap-1.5">
                         <span className="text-blue-500">💡</span>
                         Select up to 3 categories for better reach
                       </p>
@@ -1596,7 +1407,7 @@ export default function PostEnquiry() {
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
-                                  <span className="text-base text-slate-500">Select categories...</span>
+                                  <span className="text-xs text-slate-500">Select categories...</span>
                                 ) : (
                                   selectedCategories.map((catValue) => {
                                     const cat = categories.find(c => c.value === catValue);
@@ -1679,7 +1490,7 @@ export default function PostEnquiry() {
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
-                                  <span className="text-sm text-slate-500">Select categories...</span>
+                                  <span className="text-xs text-slate-500">Select categories...</span>
                                 ) : (
                                   selectedCategories.map((catValue) => {
                                     const cat = categories.find(c => c.value === catValue);
@@ -1741,7 +1552,7 @@ export default function PostEnquiry() {
                       </div>
                       
                       {selectedCategories.length === 0 && (
-                        <p className="text-xs sm:text-sm text-amber-600 flex items-center gap-1.5 font-medium">
+                        <p className="text-[10px] sm:text-xs text-amber-600 flex items-center gap-1.5 font-medium">
                           <span>⚠️</span>
                           Select at least one category
                         </p>
@@ -1751,7 +1562,7 @@ export default function PostEnquiry() {
 
                   {/* Description - Enhanced Professional Textarea */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="description" className="text-sm sm:text-base font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="description" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
@@ -1761,7 +1572,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-slate-300"
+                      className="border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-gray-700"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1770,7 +1581,7 @@ export default function PostEnquiry() {
                   {/* Budget & Location - Enhanced Side by Side Layout */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="budget" className="text-sm sm:text-base font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="budget" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
@@ -1791,14 +1602,14 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-slate-300"
+                        className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
                         style={{ fontSize: '16px' }}
                         required
                       />
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="location" className="text-sm sm:text-base font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="location" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Location
                       </Label>
@@ -1810,7 +1621,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-slate-300"
+                          className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -1850,7 +1661,7 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="notes" className="text-sm sm:text-base font-semibold text-slate-800">
+                      <Label htmlFor="notes" className="text-xs sm:text-sm font-semibold text-slate-800">
                         Notes <span className="text-slate-500 font-normal">(Optional)</span>
                       </Label>
                       <Textarea
@@ -1859,7 +1670,7 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className="border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-slate-300"
+                        className="border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-gray-700"
                         style={{ fontSize: '16px' }}
                       />
                     </div>
@@ -1884,8 +1695,8 @@ export default function PostEnquiry() {
                       </div>
                     ) : ( */}
                     <div className="space-y-3">
-                      <Label className="text-sm sm:text-base font-semibold text-slate-800">
-                        Choose Your Plan <span className="text-slate-500 font-normal">(Optional)</span>
+                      <Label className="text-xs sm:text-sm font-semibold text-slate-800">
+                        Choose Your Plan
                       </Label>
                       
                       <PaymentPlanSelector
@@ -2279,8 +2090,8 @@ export default function PostEnquiry() {
         </div>
       </div>
 
-        {/* Simplified Payment Modal */}
-        {showPaymentModal && (
+      {/* Simplified Payment Modal */}
+      {showPaymentModal && (
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             onClick={(e) => {

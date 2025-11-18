@@ -35,14 +35,135 @@ const Landing = () => {
     }
   ];
 
-  const categories = [
-    { name: "Household & Personal", icon: Home, color: "from-blue-50 to-blue-100/50" },
-    { name: "Community Help", icon: Heart, color: "from-purple-50 to-purple-100/50" },
-    { name: "Services & Skills", icon: Briefcase, color: "from-emerald-50 to-emerald-100/50" },
-    { name: "Collectibles & Hobbies", icon: Package, color: "from-amber-50 to-amber-100/50" },
-    { name: "Transportation", icon: Car, color: "from-slate-50 to-slate-100/50" },
-    { name: "Home & Garden", icon: Sprout, color: "from-green-50 to-green-100/50" }
+  // All categories from enquiry form
+  const allEnquiryCategories = [
+    { value: "jobs", label: "Jobs & Employment" },
+    { value: "professional-services", label: "Professional Services" },
+    { value: "real-estate", label: "Real Estate" },
+    { value: "real-estate-services", label: "Real Estate Services" },
+    { value: "legal-financial", label: "Legal & Financial" },
+    { value: "marketing-advertising", label: "Marketing & Advertising" },
+    { value: "insurance-services", label: "Insurance Services" },
+    { value: "government-public", label: "Government & Public" },
+    { value: "non-profit-charity", label: "Non-Profit & Charity" },
+    { value: "antiques", label: "Antiques" },
+    { value: "art", label: "Art & Artifacts" },
+    { value: "automobile", label: "Automobile" },
+    { value: "books-publications", label: "Books & Publications" },
+    { value: "collectibles", label: "Collectibles" },
+    { value: "electronics-gadgets", label: "Electronics & Gadgets" },
+    { value: "fashion-apparel", label: "Fashion & Apparel" },
+    { value: "home-furniture", label: "Home & Furniture" },
+    { value: "jewelry-accessories", label: "Jewelry & Accessories" },
+    { value: "memorabilia", label: "Memorabilia" },
+    { value: "sneakers", label: "Sneakers" },
+    { value: "souvenir", label: "Souvenir" },
+    { value: "thrift", label: "Thrift" },
+    { value: "vintage", label: "Vintage Items" },
+    { value: "agriculture-farming", label: "Agriculture & Farming" },
+    { value: "childcare-family", label: "Childcare & Family" },
+    { value: "education-training", label: "Education & Training" },
+    { value: "entertainment-media", label: "Entertainment & Media" },
+    { value: "events-entertainment", label: "Events & Entertainment" },
+    { value: "food-beverage", label: "Food & Beverage" },
+    { value: "gaming-recreation", label: "Gaming & Recreation" },
+    { value: "health-beauty", label: "Health & Beauty" },
+    { value: "pets", label: "Pets & Animals" },
+    { value: "sports-outdoor", label: "Sports & Outdoor" },
+    { value: "travel-tourism", label: "Travel & Tourism" },
+    { value: "wedding-events", label: "Wedding & Events" },
+    { value: "technology", label: "Technology" },
+    { value: "renewable-energy", label: "Renewable Energy" },
+    { value: "construction-renovation", label: "Construction & Renovation" },
+    { value: "raw-materials-industrial", label: "Raw Materials & Industrial" },
+    { value: "transportation-logistics", label: "Transportation & Logistics" },
+    { value: "waste-management", label: "Waste Management" },
+    { value: "security-safety", label: "Security & Safety" },
+    { value: "other", label: "Other" }
   ];
+
+  // Icon mapping for categories
+  const getCategoryIcon = (value: string) => {
+    const iconMap: { [key: string]: any } = {
+      "jobs": Briefcase,
+      "professional-services": Briefcase,
+      "real-estate": Home,
+      "real-estate-services": Home,
+      "legal-financial": FileText,
+      "marketing-advertising": BarChart3,
+      "insurance-services": Shield,
+      "government-public": Users,
+      "non-profit-charity": Heart,
+      "antiques": Package,
+      "art": Package,
+      "automobile": Car,
+      "books-publications": FileText,
+      "collectibles": Package,
+      "electronics-gadgets": Package,
+      "fashion-apparel": Package,
+      "home-furniture": Home,
+      "jewelry-accessories": Package,
+      "memorabilia": Package,
+      "sneakers": Package,
+      "souvenir": Package,
+      "thrift": Package,
+      "vintage": Package,
+      "agriculture-farming": Sprout,
+      "childcare-family": Heart,
+      "education-training": FileText,
+      "entertainment-media": MessageSquare,
+      "events-entertainment": Calendar,
+      "food-beverage": Package,
+      "gaming-recreation": Package,
+      "health-beauty": Heart,
+      "pets": Heart,
+      "sports-outdoor": Package,
+      "travel-tourism": Calendar,
+      "wedding-events": Calendar,
+      "technology": Package,
+      "renewable-energy": Sprout,
+      "construction-renovation": Home,
+      "raw-materials-industrial": Package,
+      "transportation-logistics": Car,
+      "waste-management": Package,
+      "security-safety": Shield,
+      "other": Package
+    };
+    return iconMap[value] || Package;
+  };
+
+  // State for shuffled categories (showing 6 at a time)
+  const [displayedCategories, setDisplayedCategories] = useState<any[]>([]);
+  const [isShufflingCategories, setIsShufflingCategories] = useState(false);
+
+  // Function to shuffle and get 6 random categories
+  const getRandomCategories = () => {
+    const shuffled = [...allEnquiryCategories].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6).map(cat => ({
+      name: cat.label,
+      icon: getCategoryIcon(cat.value),
+      value: cat.value
+    }));
+  };
+
+  // Initialize and shuffle categories every 20 seconds
+  useEffect(() => {
+    // Set initial categories
+    setDisplayedCategories(getRandomCategories());
+
+    // Shuffle every 20 seconds
+    const interval = setInterval(() => {
+      setIsShufflingCategories(true);
+      setTimeout(() => {
+        setDisplayedCategories(getRandomCategories());
+        setTimeout(() => {
+          setIsShufflingCategories(false);
+        }, 100);
+      }, 500); // Fade out duration
+    }, 20000); // 20 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const { user, signOut } = useAuth();
   const notificationContext = useContext(NotificationContext);
@@ -790,10 +911,10 @@ const Landing = () => {
       });
       
       if (currentLiveEnquiries.length > 0) {
-        // Trigger shuffle animation
+        // Trigger shuffle animation - smooth fade out
         setIsShuffling(true);
         
-        // Wait for fade out, then update cards
+        // Wait for smooth fade out (500ms for smooth transition), then update cards
         setTimeout(() => {
           const shuffled = getRandomThree(currentLiveEnquiries);
           const uniqueShuffled = Array.from(
@@ -801,11 +922,11 @@ const Landing = () => {
           );
           setShuffledEnquiries(uniqueShuffled);
           
-          // Fade in new cards
+          // Smooth fade in new cards (small delay for seamless transition)
           setTimeout(() => {
             setIsShuffling(false);
-          }, 50);
-        }, 300);
+          }, 100);
+        }, 500);
       }
     }, 10000); // 10 seconds
     return () => clearInterval(interval);
@@ -1612,13 +1733,14 @@ const Landing = () => {
                     // Z-index: rightmost card (index 0) = 30, middle (index 1) = 20, leftmost (index 2) = 10
                     const baseZIndex = showAllEnquiries ? 10 : (3 - index) * 10;
                     const zIndex = isHovered ? 50 : (isAnyCardHovered && !isHovered ? 40 : baseZIndex);
-                    // Horizontal overlap: Each card shows at least 40% visibility
+                    // Horizontal overlap: Each card shows enough to see the enquiry title/heading text
                     // Right-to-left: Cards positioned to center the entire stack
                     // Card widths: mobile 180px (fits 3 cards on screen), tablet 280px, desktop 320px
-                    // Overlap adjusted for mobile: 50% overlap for better fit (90px visible per card)
-                    // Tablet/Desktop: 60% overlap for 40% visibility
+                    // Overlap adjusted: Show enough of card to see header section + title text area clearly
+                    // Title text is at the top of content area, so we need ~80% visible to ensure title is visible on all cards
                     const cardWidth = windowWidth >= 1024 ? 320 : (windowWidth >= 640 ? 280 : 180);
-                    const shiftAmount = windowWidth >= 640 ? (cardWidth * 0.6) : (cardWidth * 0.5); // 50% overlap on mobile, 60% on larger screens
+                    // Desktop: 20% overlap (80% visible - title text clearly visible on all cards), Tablet: 25%, Mobile: 50%
+                    const shiftAmount = windowWidth >= 1024 ? (cardWidth * 0.20) : (windowWidth >= 640 ? (cardWidth * 0.25) : (cardWidth * 0.5));
                     // Position cards so the middle card (index 1) is centered below "Live Needs" heading
                     // Middle card should be at 50% (page center)
                     // Rightmost card (index 0) at: 50% - shiftAmount
@@ -1636,18 +1758,19 @@ const Landing = () => {
                     return (
                     <motion.div
                       key={enquiry.id}
-                      initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                      initial={{ opacity: 0, x: 15, scale: 0.96, y: 10 }}
                       animate={{ 
                         opacity: isShuffling ? 0 : 1, 
-                        x: isShuffling ? 20 : popUpOffset, 
-                        y: isShuffling ? 0 : popUpY,
-                        scale: isShuffling ? 0.9 : scaleAmount,
+                        x: isShuffling ? 15 : popUpOffset, 
+                        y: isShuffling ? 10 : popUpY,
+                        scale: isShuffling ? 0.92 : scaleAmount,
+                        rotateY: isShuffling ? 5 : 0,
                       }}
-                      exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                      exit={{ opacity: 0, x: 15, scale: 0.96, y: 10 }}
                       transition={{ 
-                        duration: 0.4,
-                        ease: [0.34, 1.56, 0.64, 1],
-                        delay: index * 0.06
+                        duration: isShuffling ? 0.5 : 0.4,
+                        ease: isShuffling ? [0.4, 0, 0.2, 1] : [0.34, 1.56, 0.64, 1],
+                        delay: isShuffling ? index * 0.08 : index * 0.06
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
@@ -1708,12 +1831,12 @@ const Landing = () => {
                         }
                       }}
                     >
-                    <motion.div 
-                      className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
-                        isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
-                      } ${isHovered ? 'shadow-2xl border-blue-300' : ''}`}
-                      transition={{ duration: 0.3 }}
-                    >
+            <motion.div 
+              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-800 hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
+                isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
+              } ${isHovered ? 'shadow-2xl border-gray-800' : ''}`}
+              transition={{ duration: 0.3 }}
+            >
                       {/* Subtle glow effect for mobile-friendly animation */}
                       {!isEnquiryOutdated(enquiry) && (
                         <motion.div 
@@ -1734,8 +1857,8 @@ const Landing = () => {
                         />
                       )}
                       <div className="relative z-10">
-                      {/* Card Header - Compact on mobile, spacious on desktop */}
-                      <div className={`bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
+                      {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
+                      <div className={`bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
@@ -1767,57 +1890,57 @@ const Landing = () => {
                       
                       {/* Category Mural - Hidden */}
                       
-                      {/* Card Content - Optimized for all screen sizes, all content visible */}
-                      <div className={`${windowWidth < 640 ? 'p-2.5' : 'p-3 sm:p-4 lg:p-5'} flex-1 flex flex-col overflow-y-auto`}>
-                      {/* Title - Responsive sizing, show full when any card hovered/touched */}
-                      <h3 className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-1.5' : 'mb-2 sm:mb-3 lg:mb-3.5'} leading-tight ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-1' : 'line-clamp-2')} font-heading text-gray-900 ${
+                      {/* Card Content - Professional Layout with Better Spacing */}
+                      <div className={`${windowWidth < 640 ? 'p-3' : 'p-4 sm:p-5 lg:p-6'} flex-1 flex flex-col overflow-y-auto space-y-3 sm:space-y-4`}>
+                      {/* Title - Professional Typography */}
+                      <h3 className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-3 sm:mb-4'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       }`}>
                         {enquiry.title}
                       </h3>
                       
-                      {/* Budget and Location - Compact layout */}
-                      <div className={`${windowWidth < 640 ? 'mb-1.5 space-y-1' : 'mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2'} sm:space-y-0 sm:flex sm:flex-row sm:items-center sm:gap-2.5 lg:gap-3`}>
+                      {/* Budget and Location - Professional Layout */}
+                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-2' : 'mb-3 sm:mb-4 space-y-2.5'} flex flex-col`}>
                         {enquiry.budget && (
-                          <div className={`inline-flex items-center bg-gray-50 rounded-lg ${windowWidth < 640 ? 'px-1.5 py-1' : 'px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-3.5 lg:py-2'} border border-gray-200 w-full sm:w-auto justify-center sm:justify-start`}>
-                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
-                            <span className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold text-gray-900`}>{formatIndianCurrency(enquiry.budget)}</span>
+                          <div className={`inline-flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg ${windowWidth < 640 ? 'px-2.5 py-1.5' : 'px-3 py-2 sm:px-4 sm:py-2.5 lg:px-4 lg:py-3'} border border-gray-200 w-fit`}>
+                            <span className={`${windowWidth < 640 ? 'text-base' : 'text-lg sm:text-xl lg:text-2xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-1' : 'mr-1.5 sm:mr-2'}`}>₹</span>
+                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900`}>{formatIndianCurrency(enquiry.budget)}</span>
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1' : 'gap-1.5 sm:gap-2'} ${windowWidth < 640 ? 'text-[10px]' : 'text-xs sm:text-sm lg:text-sm'} text-gray-600 justify-center sm:justify-start`}>
-                            <MapPin className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4'} text-gray-500 flex-shrink-0`} />
-                            <span className={`font-medium ${isAnyCardHovered ? '' : 'line-clamp-1'}`}>{enquiry.location}</span>
+                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1.5' : 'gap-2 sm:gap-2.5'} ${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-base'} text-gray-700`}>
+                            <MapPin className={`${windowWidth < 640 ? 'h-3.5 w-3.5' : 'h-4 w-4 sm:h-4 sm:w-4 lg:h-5 lg:w-5'} text-gray-600 flex-shrink-0`} />
+                            <span className={`font-semibold ${isAnyCardHovered ? '' : 'line-clamp-1'}`}>{enquiry.location}</span>
                           </div>
                         )}
                       </div>
                       
-                      {/* Meta Information - Compact */}
-                      <div className="mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2 sm:space-y-2">
-                        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-2.5">
-                          <Badge variant="secondary" className="text-[10px] sm:text-xs lg:text-xs px-2 sm:px-2.5 lg:px-3 py-1 sm:py-1 lg:py-1.5 bg-gray-100 text-gray-700 border border-gray-200 font-semibold rounded-lg">
+                      {/* Meta Information - Professional Grouping */}
+                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-2' : 'mb-3 sm:mb-4 space-y-2.5'}`}>
+                        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
+                          <Badge variant="secondary" className="text-[11px] sm:text-xs lg:text-sm px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 bg-gray-100 text-gray-800 border border-gray-300 font-semibold rounded-lg shadow-sm">
                             {enquiry.category}
                           </Badge>
-                          <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1.5 text-[10px] sm:text-xs lg:text-xs text-gray-500">
-                            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3.5 lg:w-3.5 text-gray-400" />
-                            <span className="whitespace-nowrap font-medium">
+                          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs lg:text-sm text-gray-600">
+                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-gray-500 flex-shrink-0" />
+                            <span className="whitespace-nowrap font-semibold">
                               {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
                             </span>
                           </div>
                         </div>
                         {/* Deadline Timer */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                          <div className="pt-1.5 sm:pt-2 border-t border-gray-100">
+                          <div className="pt-2 sm:pt-2.5 border-t border-gray-200">
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className="text-[10px] sm:text-xs lg:text-xs"
+                              className="text-[11px] sm:text-xs lg:text-sm"
                             />
                           </div>
                         )}
                       </div>
                       
-                      {/* Primary Action Button - Compact but visible */}
-                      <div className="mt-auto pt-3 sm:pt-3.5 lg:pt-3 border-t border-gray-100">
+                      {/* Primary Action Button - Professional Styling */}
+                      <div className="mt-auto pt-3 sm:pt-4 border-t border-gray-200">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
@@ -1854,8 +1977,8 @@ const Landing = () => {
                         )}
                       </div>
                       
-                      {/* Footer - Save and Share - Compact */}
-                      <div className="mt-2 sm:mt-2.5 lg:mt-2.5 pt-2 sm:pt-2.5 lg:pt-2.5 border-t border-gray-100">
+                      {/* Footer - Save and Share - Professional Layout */}
+                      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
                         <div className="flex items-center justify-between">
                           <button 
                             onClick={(e) => {
@@ -1866,10 +1989,10 @@ const Landing = () => {
                               }
                             }}
                             disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-1.5 lg:py-1.5 rounded-lg transition-all duration-200 font-medium text-[10px] sm:text-xs lg:text-xs min-h-[36px] sm:min-h-[36px] ${
+                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2 lg:py-2.5 rounded-lg transition-all duration-200 font-semibold text-[11px] sm:text-xs lg:text-sm min-h-[40px] sm:min-h-[44px] ${
                               savedEnquiries.includes(enquiry.id) 
-                                ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                ? 'text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200' 
+                                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 border border-transparent hover:border-gray-200'
                             } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
                             <Bookmark className={`h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
@@ -1884,7 +2007,7 @@ const Landing = () => {
                               }
                             }}
                             disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-1.5 lg:py-1.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-medium text-[10px] sm:text-xs lg:text-xs min-h-[36px] sm:min-h-[36px] ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2 lg:py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[11px] sm:text-xs lg:text-sm min-h-[40px] sm:min-h-[44px] border border-transparent hover:border-gray-200 ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
                             <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 hover:scale-110" />
                             <span className="font-semibold">Share</span>
@@ -2038,21 +2161,48 @@ const Landing = () => {
 
                 {/* Categories Single Row - Professional Circles */}
                 <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
-                {categories.map((category, index) => {
+                <AnimatePresence mode="wait">
+                {displayedCategories.map((category, index) => {
                   const IconComponent = category.icon;
                   return (
-                    <div
-                      key={index}
-                        className="group flex justify-center items-center animate-slide-up"
-                        style={{ animationDelay: `${1.4 + index * 0.1}s` }}
+                    <motion.div
+                      key={`${category.value}-${index}`}
+                        className="group flex justify-center items-center"
+                        initial={{ opacity: 0, scale: 0.5, y: 40, rotateX: -90, filter: "blur(8px)" }}
+                        animate={{ 
+                          opacity: isShufflingCategories ? 0 : 1, 
+                          scale: isShufflingCategories ? 0.5 : 1,
+                          y: isShufflingCategories ? 40 : 0,
+                          rotateX: isShufflingCategories ? -90 : 0,
+                          filter: isShufflingCategories ? "blur(8px)" : "blur(0px)"
+                        }}
+                        exit={{ opacity: 0, scale: 0.5, y: -40, rotateX: 90, filter: "blur(8px)" }}
+                        transition={{ 
+                          duration: 0.7, 
+                          delay: index * 0.06,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          type: "spring",
+                          stiffness: 120,
+                          damping: 18
+                        }}
+                        whileHover={{ 
+                          scale: 1.15,
+                          y: -8,
+                          transition: { duration: 0.3 }
+                        }}
                     >
                         <div className="relative">
                           {/* Glow Effect on Hover */}
                           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/20 group-hover:to-purple-400/20 rounded-full blur-xl transition-all duration-500 scale-0 group-hover:scale-150"></div>
                           
                           {/* Circle Container */}
-                      <div
-                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 hover:scale-110 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                      <motion.div
+                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                            whileHover={{ 
+                              scale: 1.1,
+                              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)"
+                            }}
+                            transition={{ duration: 0.3 }}
                       >
                             {/* Shine Effect */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -2071,11 +2221,12 @@ const Landing = () => {
                               </h4>
                               </div>
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
+                </AnimatePresence>
               </div>
 
               {/* View All CTA */}
@@ -2117,7 +2268,7 @@ const Landing = () => {
           </div>
 
           {/* Animated SVG Flow - Compact Layout */}
-          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border border-gray-200 sm:border-2 shadow-md sm:shadow-lg">
+          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border border-gray-800 shadow-md sm:shadow-lg">
             <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
               {/* Step 1: Larger Animated Human Character */}
               <g transform="translate(120, 150)">

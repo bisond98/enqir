@@ -83,28 +83,11 @@ export default {
 					700: 'hsl(var(--gray-700))',
 					800: 'hsl(var(--gray-800))',
 					900: 'hsl(var(--gray-900))'
-				},
-				beige: {
-					primary: '#F5EDE6',
-					secondary: '#F5E8E0',
-				},
-				text: {
-					primary: '#1A1A1A',
-					secondary: '#6F6F6F',
-					placeholder: '#777777',
-				},
-				borderLight: '#E2E2E2',
+				}
 			},
 			fontFamily: {
-				sans: ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-				heading: ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-			},
-			fontWeight: {
-				normal: '400',
-				medium: '500',
-				semibold: '600',
-				bold: '700',
-				extrabold: '800',
+				sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Helvetica Neue', 'sans-serif'],
+				heading: ['Poppins', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

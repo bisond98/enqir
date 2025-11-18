@@ -394,7 +394,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   return (
     <div className="flex flex-col">
             {/* Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-borderLight bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 safe-area-top">
+            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
           <div className="flex h-14 sm:h-20 items-center justify-between min-w-0">
             {/* Logo with Dropdown Menu */}
@@ -593,7 +593,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
       </header>
 
       {/* Main Content */}
-      <main className={`flex-1 ${isMobile && showNavigation ? 'pb-24 safe-area-bottom' : ''} min-h-screen bg-white`}>
+      <main className={`flex-1 ${isMobile && showNavigation ? 'pb-24 safe-area-bottom' : ''} min-h-screen`}>
         <Suspense fallback={<div className="min-h-screen">{children}</div>}>
           <MobileAIController>
             {children}
@@ -603,7 +603,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
       {/* Mobile Bottom Navigation */}
       {isMobile && showNavigation && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-t border-borderLight safe-area-bottom">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom">
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
             {navigationItems.slice(0, 4).map((item) => {
               const Icon = item.icon;
