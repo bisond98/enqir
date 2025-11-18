@@ -68,6 +68,8 @@ const Landing = () => {
   const [isShuffling, setIsShuffling] = useState(false);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
+  // State for expanded card (for hover/click interaction)
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   // State for search functionality
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -77,6 +79,8 @@ const Landing = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchPosition, setSearchPosition] = useState({ top: 0, left: 0, width: 0 });
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
+  // Track window width for responsive behavior
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   // Keyword to category mapping for smart search
   const keywordToCategory = {
@@ -809,6 +813,15 @@ const Landing = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Track window width for responsive card behavior
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Fetch user's dashboard data
@@ -1586,45 +1599,120 @@ const Landing = () => {
                 </span>
               </div>
             </div>
-            {/* Recent Enquiries Grid */}
+            {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
               <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+              {/* Container for overlapped cards - horizontal right-to-left layout */}
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible" style={{ minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')) }}>
                 <AnimatePresence mode="wait">
-                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => (
-                  <motion.div
-                    key={enquiry.id}
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ 
-                      opacity: isShuffling ? 0 : 1, 
-                      y: isShuffling ? -20 : 0, 
-                      scale: isShuffling ? 0.9 : 1,
-                    }}
-                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    transition={{ 
-                      duration: 0.4,
-                      ease: [0.34, 1.56, 0.64, 1],
-                      delay: index * 0.06
-                    }}
-                    className="h-full"
-                  >
-                  <Link 
-                    key={enquiry.id} 
-                    to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
-                    className="block h-full lg:aspect-square lg:min-h-[450px] lg:max-h-[600px]"
-                    onClick={(e) => {
-                      if (isEnquiryOutdated(enquiry)) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }
-                    }}
-                  >
+                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
+                    const isHovered = expandedCardId === enquiry.id;
+                    const isAnyCardHovered = expandedCardId !== null;
+                    const isRightmostCard = index === 0 && !showAllEnquiries; // Rightmost card is index 0 in right-to-left
+                    // Z-index: rightmost card (index 0) = 30, middle (index 1) = 20, leftmost (index 2) = 10
+                    const baseZIndex = showAllEnquiries ? 10 : (3 - index) * 10;
+                    const zIndex = isHovered ? 50 : (isAnyCardHovered && !isHovered ? 40 : baseZIndex);
+                    // Horizontal overlap: Each card shows at least 40% visibility
+                    // Right-to-left: Cards positioned to center the entire stack
+                    // Card widths: mobile 180px (fits 3 cards on screen), tablet 280px, desktop 320px
+                    // Overlap adjusted for mobile: 50% overlap for better fit (90px visible per card)
+                    // Tablet/Desktop: 60% overlap for 40% visibility
+                    const cardWidth = windowWidth >= 1024 ? 320 : (windowWidth >= 640 ? 280 : 180);
+                    const shiftAmount = windowWidth >= 640 ? (cardWidth * 0.6) : (cardWidth * 0.5); // 50% overlap on mobile, 60% on larger screens
+                    // Position cards so the middle card (index 1) is centered below "Live Needs" heading
+                    // Middle card should be at 50% (page center)
+                    // Rightmost card (index 0) at: 50% - shiftAmount
+                    // Middle card (index 1) at: 50% - shiftAmount + shiftAmount = 50% ✓
+                    // Leftmost card (index 2) at: 50% + shiftAmount
+                    // Also need to account for card width to center the card itself, not just its left edge
+                    const cardCenterOffset = cardWidth / 2; // Half card width to center the card
+                    const baseLeft = showAllEnquiries ? 'auto' : `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
+                    // When any card is hovered/touched, all cards expand and others "pop up"
+                    // Same behavior for both desktop hover and mobile touch
+                    const popUpOffset = isAnyCardHovered && !isHovered ? -15 : 0;
+                    const scaleAmount = isAnyCardHovered ? 1.05 : 1;
+                    const popUpY = isAnyCardHovered && !isHovered ? -20 : 0; // Pop up effect for non-hovered cards
+                    
+                    return (
+                    <motion.div
+                      key={enquiry.id}
+                      initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                      animate={{ 
+                        opacity: isShuffling ? 0 : 1, 
+                        x: isShuffling ? 20 : popUpOffset, 
+                        y: isShuffling ? 0 : popUpY,
+                        scale: isShuffling ? 0.9 : scaleAmount,
+                      }}
+                      exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                      transition={{ 
+                        duration: 0.4,
+                        ease: [0.34, 1.56, 0.64, 1],
+                        delay: index * 0.06
+                      }}
+                      className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
+                      style={{
+                        // Position cards right-to-left: middle card centered below "Live Needs"
+                        left: baseLeft,
+                        transform: showAllEnquiries ? 'none' : 'none',
+                        zIndex: zIndex,
+                        // Same dimensions for all cards - optimized for mobile to fit 3 cards
+                        ...(showAllEnquiries ? {} : {
+                          width: windowWidth >= 1024 ? '320px' : (windowWidth >= 640 ? '280px' : '180px'),
+                          height: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                        }),
+                      }}
+                      onMouseEnter={() => {
+                        if (!isEnquiryOutdated(enquiry) && windowWidth >= 1024) {
+                          setExpandedCardId(enquiry.id);
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        if (windowWidth >= 1024) {
+                          setExpandedCardId(null);
+                        }
+                      }}
+                      onTouchStart={(e) => {
+                        if (!isEnquiryOutdated(enquiry)) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // Toggle expansion - same as desktop hover
+                          setExpandedCardId(expandedCardId === enquiry.id ? null : enquiry.id);
+                        }
+                      }}
+                      onTouchEnd={(e) => {
+                        // Prevent default link navigation when touching to expand/view details
+                        if (isAnyCardHovered) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
+                    <Link 
+                      key={enquiry.id} 
+                      to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
+                      className="block h-full"
+                      style={{
+                        height: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                      }}
+                      onClick={(e) => {
+                        if (isEnquiryOutdated(enquiry)) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        } else if (isHovered && isAnyCardHovered) {
+                          // Allow navigation when card is hovered/expanded
+                          // Don't prevent default
+                        } else if (!isHovered && isAnyCardHovered) {
+                          // When another card is hovered, prevent navigation to allow viewing details
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
                     <motion.div 
-                      className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 flex flex-col h-full transform transition-all duration-300 ease-out hover:-translate-y-1 overflow-hidden group relative ${
-                        isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : ''
-                      }`}
-                      whileHover={{ scale: 1.01 }}
-                      transition={{ duration: 0.2 }}
+                      className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
+                        isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
+                      } ${isHovered ? 'shadow-2xl border-blue-300' : ''}`}
+                      transition={{ duration: 0.3 }}
                     >
                       {/* Subtle glow effect for mobile-friendly animation */}
                       {!isEnquiryOutdated(enquiry) && (
@@ -1647,7 +1735,7 @@ const Landing = () => {
                       )}
                       <div className="relative z-10">
                       {/* Card Header - Compact on mobile, spacious on desktop */}
-                      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5">
+                      <div className={`bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
@@ -1679,27 +1767,27 @@ const Landing = () => {
                       
                       {/* Category Mural - Hidden */}
                       
-                      {/* Card Content - Optimized for square desktop, all content visible */}
-                      <div className="p-3 sm:p-4 lg:p-5 flex-1 flex flex-col">
-                      {/* Title - Responsive sizing */}
-                      <h3 className={`text-sm sm:text-base lg:text-lg font-extrabold mb-2 sm:mb-3 lg:mb-3.5 leading-tight line-clamp-2 font-heading text-gray-900 ${
+                      {/* Card Content - Optimized for all screen sizes, all content visible */}
+                      <div className={`${windowWidth < 640 ? 'p-2.5' : 'p-3 sm:p-4 lg:p-5'} flex-1 flex flex-col overflow-y-auto`}>
+                      {/* Title - Responsive sizing, show full when any card hovered/touched */}
+                      <h3 className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-1.5' : 'mb-2 sm:mb-3 lg:mb-3.5'} leading-tight ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-1' : 'line-clamp-2')} font-heading text-gray-900 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       }`}>
                         {enquiry.title}
                       </h3>
                       
                       {/* Budget and Location - Compact layout */}
-                      <div className="mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2 sm:space-y-0 sm:flex sm:flex-row sm:items-center sm:gap-2.5 lg:gap-3">
+                      <div className={`${windowWidth < 640 ? 'mb-1.5 space-y-1' : 'mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2'} sm:space-y-0 sm:flex sm:flex-row sm:items-center sm:gap-2.5 lg:gap-3`}>
                         {enquiry.budget && (
-                          <div className="inline-flex items-center bg-gray-50 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-3.5 lg:py-2 border border-gray-200 w-full sm:w-auto justify-center sm:justify-start">
-                            <span className="text-base sm:text-lg lg:text-xl font-extrabold text-gray-900 mr-1 sm:mr-1.5">₹</span>
-                            <span className="text-sm sm:text-base lg:text-lg font-extrabold text-gray-900">{formatIndianCurrency(enquiry.budget)}</span>
+                          <div className={`inline-flex items-center bg-gray-50 rounded-lg ${windowWidth < 640 ? 'px-1.5 py-1' : 'px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-3.5 lg:py-2'} border border-gray-200 w-full sm:w-auto justify-center sm:justify-start`}>
+                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
+                            <span className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold text-gray-900`}>{formatIndianCurrency(enquiry.budget)}</span>
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 justify-center sm:justify-start">
-                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-gray-500 flex-shrink-0" />
-                            <span className="font-medium line-clamp-1">{enquiry.location}</span>
+                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1' : 'gap-1.5 sm:gap-2'} ${windowWidth < 640 ? 'text-[10px]' : 'text-xs sm:text-sm lg:text-sm'} text-gray-600 justify-center sm:justify-start`}>
+                            <MapPin className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4'} text-gray-500 flex-shrink-0`} />
+                            <span className={`font-medium ${isAnyCardHovered ? '' : 'line-clamp-1'}`}>{enquiry.location}</span>
                           </div>
                         )}
                       </div>
@@ -1808,8 +1896,23 @@ const Landing = () => {
                     </motion.div>
                   </Link>
                   </motion.div>
-                  ))}
+                    );
+                  })}
                 </AnimatePresence>
+                {/* Backdrop overlay when card is expanded (mobile) */}
+                {expandedCardId && windowWidth < 1024 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black z-40"
+                    onClick={() => setExpandedCardId(null)}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      setExpandedCardId(null);
+                    }}
+                  />
+                )}
               </div>
                 
             {/* Load More Button */}
