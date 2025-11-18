@@ -153,9 +153,36 @@ const Admin = () => {
     }
   };
 
-  // Check admin access
+  // Check admin access - require secure link access
   useEffect(() => {
     const checkAdminAccess = async () => {
+      // First check: Must have accessed via secure link (stored in sessionStorage)
+      const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
+      const secureLinkTimestamp = sessionStorage.getItem('admin_secure_link_timestamp');
+      
+      if (!secureLinkAccess) {
+        console.log('🔒 Admin: No secure link access found - redirecting');
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
+      // Check if session has expired (24 hours)
+      if (secureLinkTimestamp) {
+        const timestamp = parseInt(secureLinkTimestamp, 10);
+        const now = Date.now();
+        const hoursSinceAccess = (now - timestamp) / (1000 * 60 * 60);
+        
+        if (hoursSinceAccess > 24) {
+          console.log('🔒 Admin: Secure link session expired - redirecting');
+          sessionStorage.removeItem('admin_secure_link_accessed');
+          sessionStorage.removeItem('admin_secure_link_timestamp');
+          setIsAuthorized(false);
+          setLoading(false);
+          return;
+        }
+      }
+
       if (!authUser) {
         setIsAuthorized(false);
         setLoading(false);
@@ -1189,6 +1216,7 @@ const Admin = () => {
 
   // Check authorization before rendering admin panel
   if (!isAuthorized) {
+    const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
@@ -1196,7 +1224,14 @@ const Admin = () => {
             <CardContent className="p-8 text-center">
               <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
-              <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+              {!secureLinkAccess ? (
+                <>
+                  <p className="text-slate-600 mb-4">You must use the secure admin access link to access this page.</p>
+                  <p className="text-sm text-slate-500 mb-4">Direct access to /admin is not allowed for security reasons.</p>
+                </>
+              ) : (
+                <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+              )}
               <Button onClick={() => navigate('/')} className="w-full" size="lg">
                 Go Home
               </Button>

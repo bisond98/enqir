@@ -97,6 +97,10 @@ const AdminAccess = () => {
           throw firestoreError; // Re-throw to be caught by outer catch
         }
 
+        // Set sessionStorage flag to allow access to /admin
+        sessionStorage.setItem('admin_secure_link_accessed', 'true');
+        sessionStorage.setItem('admin_secure_link_timestamp', Date.now().toString());
+
         setStatus('success');
         toast({
           title: '✅ Admin Access Granted!',
