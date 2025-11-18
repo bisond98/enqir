@@ -128,32 +128,32 @@ const MyResponses = () => {
       try {
         console.log('📊 MyResponses: Received snapshot with', snapshot.docs.length, 'documents');
         
-        const submissionsData: SellerSubmission[] = [];
-        snapshot.forEach((doc) => {
+      const submissionsData: SellerSubmission[] = [];
+      snapshot.forEach((doc) => {
           const data = doc.data();
           console.log('📄 MyResponses: Processing submission', doc.id, 'status:', data.status, 'enquiryId:', data.enquiryId);
           const submissionData = { id: doc.id, ...data } as SellerSubmission;
-          submissionData.userProfileVerified = isProfileVerified;
-          submissionsData.push(submissionData);
-        });
+        submissionData.userProfileVerified = isProfileVerified;
+        submissionsData.push(submissionData);
+      });
         
         console.log('📊 MyResponses: Total submissions from query:', submissionsData.length);
         
         // Sort by createdAt in JavaScript (will be re-sorted after enquiries are loaded)
-        submissionsData.sort((a, b) => {
-          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return dateB.getTime() - dateA.getTime();
-        });
+      submissionsData.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
         
         console.log('📊 MyResponses: Final submissions to display:', submissionsData.length);
         console.log('📊 MyResponses: Sample submission IDs:', submissionsData.slice(0, 5).map(s => ({ id: s.id, status: s.status, enquiryId: s.enquiryId })));
         
-        setSellerSubmissions(submissionsData);
-        setLoading(false);
+      setSellerSubmissions(submissionsData);
+      setLoading(false);
       } catch (error) {
         console.error("❌ MyResponses: Error processing submissions:", error);
-        setLoading(false);
+      setLoading(false);
       }
     };
     
@@ -567,11 +567,11 @@ const MyResponses = () => {
                                   }}
                                 >
                                   <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white" />
-                                  Chat Available
-                                </Button>
-                              </Link>
-                            )}
-                            {submission.status === 'rejected' && (
+                                Chat Available
+                              </Button>
+                            </Link>
+                          )}
+                          {submission.status === 'rejected' && (
                               <Link 
                                 to="/enquiries"
                                 className="flex-1 sm:flex-initial"
@@ -595,12 +595,12 @@ const MyResponses = () => {
                                   }}
                                 >
                                   <Rocket className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                                  Submit New Response
-                                </Button>
-                              </Link>
-                            )}
-                          </div>
-                          
+                                Submit New Response
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+                        
                           {submission.buyerViewed && (
                             <div className="text-xs sm:text-sm text-emerald-600 flex items-center gap-1.5">
                               <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

@@ -938,28 +938,28 @@ const Dashboard = () => {
                 <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5 mb-3 sm:mb-4 lg:mb-5">
                   <div className="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl sm:shadow-2xl lg:shadow-3xl flex-shrink-0">
                     <Users className="h-5 w-5 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
-                  </div>
-                  <Button
-                    onClick={handleRefresh}
-                    disabled={refreshing}
-                    variant="outline"
-                    size="sm"
+              </div>
+              <Button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
                     className="h-9 w-9 sm:h-12 sm:w-12 lg:h-14 lg:w-14 rounded-full shadow-xl sm:shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 active:scale-95 bg-white/10 border-white/20 hover:bg-white/20 backdrop-blur-sm"
-                    title="Refresh Dashboard Data"
-                  >
+                title="Refresh Dashboard Data"
+              >
                     <RefreshCw className={`h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white ${refreshing ? 'animate-spin' : ''}`} />
-                  </Button>
-                </div>
+              </Button>
+            </div>
                 <h1 className="mb-2 sm:mb-3 lg:mb-4">
-                  <VerifiedUser 
-                    name={userProfile?.fullName || 'User'}
-                    isVerified={userProfile?.isProfileVerified || false}
+              <VerifiedUser 
+                name={userProfile?.fullName || 'User'}
+                isVerified={userProfile?.isProfileVerified || false}
                     className="text-2xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight drop-shadow-lg"
-                  />
-                </h1>
+              />
+            </h1>
                 <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed px-3 sm:px-4 text-center font-medium">
-                  Use AI to search for you
-                </p>
+              Use AI to search for you
+            </p>
               </div>
             </div>
           </div>
@@ -977,13 +977,13 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
                     <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <Eye className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                    </div>
-                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                   <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.length}</h3>
                   <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Total Enquiries</p>
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
             </motion.div>
             
             {/* Active Enquiries */}
@@ -997,13 +997,13 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
                     <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <MessageSquare className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                    </div>
-                    <Activity className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-emerald-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
+                    <Activity className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-emerald-600 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                   <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.filter(e => e.status === 'live').length}</h3>
                   <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Active Enquiries</p>
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
             </motion.div>
 
             {/* Saved Enquiries */}
@@ -1017,13 +1017,13 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
                     <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <Bookmark className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                    </div>
-                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-orange-600 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
+                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-orange-600 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
                   <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{savedEnquiries.length}</h3>
                   <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Saved Enquiries</p>
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
             </motion.div>
           </div>
 
@@ -1065,7 +1065,7 @@ const Dashboard = () => {
                     <div className="flex flex-col items-center justify-center py-16 sm:py-20 lg:py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem] border-2 border-dashed border-gray-300/60">
                       <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
                         <Plus className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
-                      </div>
+                  </div>
                       <h5 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2.5 sm:mb-3 lg:mb-4 tracking-tight text-center">No Enquiries Yet</h5>
                       <p className="text-sm sm:text-base lg:text-lg text-gray-600 text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
                         Start by posting your first enquiry to connect with sellers and get quality responses
@@ -1077,7 +1077,7 @@ const Dashboard = () => {
                         <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
                         Post Your First Enquiry
                       </Button>
-                    </div>
+                  </div>
                   ) : (
                     <div className="space-y-4 sm:space-y-5 lg:space-y-6 lg:grid lg:grid-cols-1 xl:grid-cols-1 lg:gap-6">
                       {(() => {
@@ -1151,26 +1151,26 @@ const Dashboard = () => {
                                     <h5 className={`text-sm sm:text-lg lg:text-sm xl:text-base font-bold truncate leading-snug tracking-tight ${
                                       expiredFlag ? 'text-gray-400' : 'text-white drop-shadow-sm'
                                     }`}>
-                                      {enquiry.title}
-                                    </h5>
+                                  {enquiry.title}
+                                </h5>
                                     {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
                                       <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
                                         expiredFlag ? 'bg-gray-500' : 'bg-blue-500'
-                                      }`}>
+                                }`}>
                                         <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
-                                      </div>
+                              </div>
                                     )}
                                   </div>
                                   
                                   {/* Status Badge - More Refined */}
-                                  {expiredFlag && (
+                              {expiredFlag && (
                                     <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-0.5 xl:py-1 bg-red-500/25 border border-red-400/40 rounded-md lg:rounded-md xl:rounded-md backdrop-blur-sm shadow-sm mt-0.5 lg:mt-0.5 xl:mt-0.5">
                                       <span className="w-1.5 h-1.5 lg:w-1.5 lg:h-1.5 xl:w-1.5 xl:h-1.5 bg-red-400 rounded-full animate-pulse"></span>
                                       <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-red-200 font-semibold tracking-wide">Expired</span>
                                     </div>
-                                  )}
-                                </div>
-                                
+                              )}
+                            </div>
+                            
                                 {/* Premium Plan Badge */}
                                 <Badge className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1 xl:gap-1.5 px-3 sm:px-4 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-xl lg:rounded-md xl:rounded-lg shadow-lg border backdrop-blur-md ${
                                   enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
@@ -1221,8 +1221,8 @@ const Dashboard = () => {
                                       </div>
                                       <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
                                         {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                                      </span>
-                                    </div>
+                              </span>
+                            </div>
                                   );
                                 } catch (e) {
                                   console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
@@ -1250,18 +1250,18 @@ const Dashboard = () => {
                                     </div>
                                     <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold tracking-tight whitespace-nowrap">
                                       {allResponses.length} {allResponses.length === 1 ? 'Response' : 'Responses'}
-                                    </span>
-                                  </div>
+                                  </span>
+                              </div>
                                   {remainingCount > 0 && (
                                     <div className="flex items-center gap-1.5 lg:gap-1.5 xl:gap-2 px-3 sm:px-3.5 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300/60 rounded-lg lg:rounded-lg shadow-md">
                                       <div className="flex items-center justify-center w-3.5 h-3.5 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 bg-amber-500/20 rounded-md lg:rounded-md flex-shrink-0">
                                         <Lock className="h-3 w-3 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-amber-700" />
-                                      </div>
+                            </div>
                                       <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-amber-800 font-bold tracking-tight whitespace-nowrap">
                                         {remainingCount} Locked
                                       </span>
-                                    </div>
-                                  )}
+                              </div>
+                            )}
                                 </div>
                               </div>
 
@@ -1273,23 +1273,23 @@ const Dashboard = () => {
                                   e.preventDefault();
                                 }}
                               >
-                                <Button
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                              <Button
+                                variant="outline" 
+                                size="sm" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                     e.preventDefault();
                                     if (!expiredFlag) {
                                       navigate(`/my-enquiries?highlight=${enquiry.id}`);
                                     }
-                                  }}
+                                }}
                                   disabled={expiredFlag}
                                   className="w-full sm:flex-none border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-xs sm:text-sm lg:text-[11px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
-                                >
+                              >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
                                   <span className="tracking-tight whitespace-nowrap">View Responses</span>
-                                </Button>
-                                
+                              </Button>
+                              
                                 {/* Premium Upgrade Button */}
                                 {(() => {
                                   const enquiryPlan = enquiry.selectedPlanId || 'free';
@@ -1302,9 +1302,9 @@ const Dashboard = () => {
                                   );
                                   if (upgradeOptions.length === 0) return null;
                                   return (
-                                    <Button
-                                      variant="default"
-                                      size="sm"
+                                <Button
+                                  variant="default"
+                                  size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         if (!expiredFlag) {
@@ -1316,34 +1316,34 @@ const Dashboard = () => {
                                     >
                                       <Crown className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
                                       <span className="tracking-tight whitespace-nowrap">Upgrade</span>
-                                    </Button>
+                                </Button>
                                   );
                                 })()}
-                                
-                                <Button 
-                                  variant="destructive" 
-                                  size="sm" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                              
+                              <Button 
+                                variant="destructive" 
+                                size="sm" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                     if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
-                                      handleDeleteEnquiry(enquiry.id);
-                                    }
-                                  }}
+                                    handleDeleteEnquiry(enquiry.id);
+                                  }
+                                }}
                                   disabled={expiredFlag}
                                   className="w-full sm:flex-none bg-gradient-to-r from-red-50 to-red-100/80 hover:from-red-100 hover:to-red-200 text-red-700 border-2 border-red-300/60 hover:border-red-400/80 text-xs sm:text-sm lg:text-[11px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]"
-                                >
+                              >
                                   <Trash2 className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
                                   <span className="tracking-tight whitespace-nowrap">Delete</span>
-                                </Button>
-                              </div>
+                              </Button>
+                            </div>
                             </div>
                           </motion.div>
                         );
                         })
                       })()}
-                      
+
                       {/* View All Button - Professional Design */}
-                      {enquiries.length > 3 && (
+                {enquiries.length > 3 && (
                         <div className="flex justify-center pt-5 sm:pt-7 lg:pt-8 mt-5 sm:mt-6 lg:mt-8 border-t-2 border-gray-200/60">
                           <Button 
                             variant="outline" 
@@ -1355,9 +1355,9 @@ const Dashboard = () => {
                           >
                             <span className="mr-2 tracking-tight">View All Enquiries</span>
                             <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
-                          </Button>
-                        </div>
-                      )}
+                    </Button>
+                  </div>
+                )}
                     </div>
                   )}
                 </div>
@@ -1386,7 +1386,7 @@ const Dashboard = () => {
                   <div className="flex items-center gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
                     <div className="w-11 h-11 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl lg:shadow-lg xl:shadow-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <MessageSquare className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
-                    </div>
+                  </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1 tracking-tight">Your Responses</h2>
                       <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-gray-300 leading-snug">
@@ -1400,7 +1400,7 @@ const Dashboard = () => {
                     </Badge>
                   </div>
                 </div>
-              </div>
+                </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
                 {/* Professional Stats Grid with Gradients */}
@@ -1414,10 +1414,10 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative">
                       <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-emerald-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
-                      </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-emerald-800 font-bold uppercase tracking-wide">Approved</div>
+                      {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
                     </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-emerald-800 font-bold uppercase tracking-wide">Approved</div>
+                  </div>
                   </motion.div>
                   
                   <motion.div 
@@ -1429,10 +1429,10 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative">
                       <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-amber-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
-                      </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-amber-800 font-bold uppercase tracking-wide">Reviewing</div>
+                      {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
                     </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-amber-800 font-bold uppercase tracking-wide">Reviewing</div>
+                  </div>
                   </motion.div>
                   
                   <motion.div 
@@ -1444,10 +1444,10 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative">
                       <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-red-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
-                      </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-red-800 font-bold uppercase tracking-wide">Rejected</div>
+                      {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
                     </div>
+                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-red-800 font-bold uppercase tracking-wide">Rejected</div>
+                  </div>
                   </motion.div>
                 </div>
 
@@ -1504,8 +1504,8 @@ const Dashboard = () => {
                             <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
                                 <h5 className="text-xs sm:text-base lg:text-xs xl:text-sm font-bold text-white truncate leading-snug tracking-tight">
-                                  {submission.title}
-                                </h5>
+                                {submission.title}
+                              </h5>
                                 {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
                                   <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
                                     <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
@@ -1519,16 +1519,16 @@ const Dashboard = () => {
                                     Enquiry Deleted
                                   </Badge>
                                 )}
-                                {/* Status Badge */}
+                              {/* Status Badge */}
                                 <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm shadow-sm ${
-                                  submission.status === 'approved' 
+                                submission.status === 'approved' 
                                     ? 'bg-green-500/30 text-green-50 border-green-400/40' 
-                                    : submission.status === 'pending'
+                                  : submission.status === 'pending'
                                     ? 'bg-amber-500/30 text-amber-50 border-amber-400/40'
                                     : 'bg-red-500/30 text-red-50 border-red-400/40'
-                                }`}>
-                                  {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                                </Badge>
+                              }`}>
+                                {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                              </Badge>
                               </div>
                             </div>
                           </div>
@@ -1564,18 +1564,18 @@ const Dashboard = () => {
                                       )}
                                     </div>
                                     <span className="text-xs sm:text-sm lg:text-xs xl:text-sm">
-                                      {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
-                                    </span>
-                                    {submission.status === 'approved' && (
+                                {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
+                              </span>
+                              {submission.status === 'approved' && (
                                       <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-600/80 ml-0.5 sm:ml-1">
-                                      (Ready for chat)
-                                    </span>
+                                  (Ready for chat)
+                                </span>
                                     )}
                                   </div>
-                                )}
-                              </div>
+                              )}
+                            </div>
 
-                              {/* Experience/Details */}
+                            {/* Experience/Details */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
@@ -1583,44 +1583,44 @@ const Dashboard = () => {
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 truncate">
                                     {submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}
                                   </span>
-                                </div>
                               </div>
+                            </div>
 
-                              {/* Submission Time */}
+                            {/* Submission Time */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
                                 <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-400 flex-shrink-0" />
                                 <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500">
-                                  Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
                                 </span>
-                              </div>
+                            </div>
 
-                              {/* Action Buttons */}
+                            {/* Action Buttons */}
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
                                 {submission.status === 'approved' && !isEnquiryDeleted && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
                                     className="flex-1 sm:flex-none border-2 border-emerald-500 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
-                                  >
+                                >
                                     <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                                    Chat
-                                  </Button>
-                                )}
-                                
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
+                                  Chat
+                                </Button>
+                              )}
+                              
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
                                   className="flex-1 sm:flex-none border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                   disabled={isEnquiryDeleted}
-                                >
+                              >
                                   <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                                  View Details
-                                </Button>
-                              </div>
+                                View Details
+                              </Button>
                             </div>
                           </div>
+                        </div>
                         </motion.div>
                       );
                       })}
@@ -1668,7 +1668,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
                   <div className="w-11 h-11 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl lg:shadow-lg xl:shadow-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                     <Bookmark className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
-                  </div>
+                </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1 tracking-tight">Your Saved Favorites</h2>
                     <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-gray-300 leading-snug">
@@ -1682,7 +1682,7 @@ const Dashboard = () => {
                   </Badge>
                 </div>
               </div>
-            </div>
+              </div>
             
             <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 pt-0 relative z-10">
               {/* Professional Stats Grid with Gradients */}
@@ -1696,10 +1696,10 @@ const Dashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
                     <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-orange-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {savedEnquiries.length}
-                    </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-orange-800 font-bold uppercase tracking-wide">Total</div>
+                    {savedEnquiries.length}
                   </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-orange-800 font-bold uppercase tracking-wide">Total</div>
+                </div>
                 </motion.div>
                 
                 <motion.div 
@@ -1711,10 +1711,10 @@ const Dashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
                     <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-blue-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {savedEnquiries.filter(e => e.status === 'live').length}
-                    </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-blue-800 font-bold uppercase tracking-wide">Live</div>
+                    {savedEnquiries.filter(e => e.status === 'live').length}
                   </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-blue-800 font-bold uppercase tracking-wide">Live</div>
+                </div>
                 </motion.div>
                 
                 <motion.div 
@@ -1726,10 +1726,10 @@ const Dashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
                     <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-purple-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {savedEnquiries.filter(e => e.status === 'completed').length}
-                    </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-purple-800 font-bold uppercase tracking-wide">Completed</div>
+                    {savedEnquiries.filter(e => e.status === 'completed').length}
                   </div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-purple-800 font-bold uppercase tracking-wide">Completed</div>
+                </div>
                 </motion.div>
               </div>
 
@@ -1750,7 +1750,7 @@ const Dashboard = () => {
                     </div>
                     <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">No saved enquiries yet</p>
                   </div>
-                ) : (
+              ) : (
                   <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                     {savedEnquiries.slice(0, 3).map((enquiry) => {
                       const now = new Date();
@@ -1787,8 +1787,8 @@ const Dashboard = () => {
                                   Expired
                                 </Badge>
                               )}
-                            </div>
                           </div>
+                        </div>
                           
                           {/* Premium Content Area */}
                           <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-3 sm:p-4 lg:p-3.5 xl:p-4">
@@ -1804,10 +1804,10 @@ const Dashboard = () => {
                                 <Badge variant="secondary" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-gray-100 text-gray-700 border border-gray-200">{enquiry.category}</Badge>
                                 <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-600 font-semibold">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
                                 {enquiry.location && <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500">• {enquiry.location}</span>}
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
                                 onClick={() => {
                                   if (!isExpired) {
                                     navigate(`/enquiry/${enquiry.id}`);
@@ -1815,17 +1815,17 @@ const Dashboard = () => {
                                 }}
                                 disabled={isExpired}
                                 className="w-full border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-orange-400/60 hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
+                      >
                                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                                View Details
-                              </Button>
-                            </div>
+                        View Details
+                      </Button>
+                    </div>
                           </div>
                         </motion.div>
                       );
                     })}
-                  </div>
-                )}
+                </div>
+              )}
               </div>
               
               {savedEnquiries.length > 3 && (
@@ -1841,7 +1841,7 @@ const Dashboard = () => {
                   >
                     <span className="mr-2 tracking-tight">Show More</span>
                     <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
-                  </Button>
+                    </Button>
                 </div>
               )}
             </CardContent>

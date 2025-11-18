@@ -332,16 +332,16 @@ const DetailedResponses = () => {
                     );
                     if (upgradeOptions.length === 0) return null;
                     return (
-                      <div className="pt-2 sm:pt-3 border-t border-gray-200">
-                        <Button
-                          onClick={() => setShowPaymentSelector(true)}
-                          className="w-full sm:w-auto h-8 sm:h-9 text-[10px] sm:text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4"
-                          size="sm"
-                        >
-                          <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
-                          Upgrade Plan
-                        </Button>
-                      </div>
+                    <div className="pt-2 sm:pt-3 border-t border-gray-200">
+                      <Button
+                        onClick={() => setShowPaymentSelector(true)}
+                        className="w-full sm:w-auto h-8 sm:h-9 text-[10px] sm:text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4"
+                        size="sm"
+                      >
+                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
+                        Upgrade Plan
+                      </Button>
+                    </div>
                     );
                   })()}
                 </div>

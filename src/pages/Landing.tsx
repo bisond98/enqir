@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import CountdownTimer from "@/components/CountdownTimer";
 import { useEffect, useState, useRef, useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/firebase";
 import { collection, query, where, orderBy, limit, doc, updateDoc, setDoc, arrayUnion, arrayRemove, increment, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { createPortal } from "react-dom";
@@ -64,6 +65,7 @@ const Landing = () => {
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
   // State for search functionality
@@ -784,13 +786,24 @@ const Landing = () => {
       });
       
       if (currentLiveEnquiries.length > 0) {
-        const shuffled = getRandomThree(currentLiveEnquiries);
-        const uniqueShuffled = Array.from(
-          new Map(shuffled.map(e => [e.id, e])).values()
-        );
-        setShuffledEnquiries(uniqueShuffled);
+        // Trigger shuffle animation
+        setIsShuffling(true);
+        
+        // Wait for fade out, then update cards
+        setTimeout(() => {
+          const shuffled = getRandomThree(currentLiveEnquiries);
+          const uniqueShuffled = Array.from(
+            new Map(shuffled.map(e => [e.id, e])).values()
+          );
+          setShuffledEnquiries(uniqueShuffled);
+          
+          // Fade in new cards
+          setTimeout(() => {
+            setIsShuffling(false);
+          }, 50);
+        }, 300);
       }
-    }, 5000); // 5 seconds
+    }, 10000); // 10 seconds
     return () => clearInterval(interval);
   }, [publicRecentEnquiries]);
 
@@ -1576,12 +1589,29 @@ const Landing = () => {
             {/* Recent Enquiries Grid */}
             {filteredEnquiries.length > 0 ? (
               <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 px-1 sm:px-0">
-                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <AnimatePresence mode="wait">
+                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => (
+                  <motion.div
+                    key={enquiry.id}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ 
+                      opacity: isShuffling ? 0 : 1, 
+                      y: isShuffling ? -20 : 0, 
+                      scale: isShuffling ? 0.9 : 1,
+                    }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    transition={{ 
+                      duration: 0.4,
+                      ease: [0.34, 1.56, 0.64, 1],
+                      delay: index * 0.06
+                    }}
+                    className="h-full"
+                  >
                   <Link 
                     key={enquiry.id} 
                     to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
-                    className="block h-full"
+                    className="block h-full lg:aspect-square lg:min-h-[450px] lg:max-h-[600px]"
                     onClick={(e) => {
                       if (isEnquiryOutdated(enquiry)) {
                         e.preventDefault();
@@ -1589,11 +1619,35 @@ const Landing = () => {
                       }
                     }}
                   >
-                    <div className={`bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-200 hover:border-gray-300 flex flex-col h-full transform transition-all duration-200 hover:scale-[1.01] overflow-hidden group ${
-                      isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-100 border-gray-300 grayscale pointer-events-none' : ''
-                    }`}>
+                    <motion.div 
+                      className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 flex flex-col h-full transform transition-all duration-300 ease-out hover:-translate-y-1 overflow-hidden group relative ${
+                        isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : ''
+                      }`}
+                      whileHover={{ scale: 1.01 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {/* Subtle glow effect for mobile-friendly animation */}
+                      {!isEnquiryOutdated(enquiry) && (
+                        <motion.div 
+                          className="absolute inset-0 rounded-xl sm:rounded-2xl lg:rounded-3xl pointer-events-none z-0"
+                          animate={{
+                            opacity: [0.2, 0.3, 0.2],
+                            background: [
+                              "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 70%)",
+                              "radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 70%)",
+                              "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 70%)",
+                            ]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                      <div className="relative z-10">
                       {/* Card Header - Compact on mobile, spacious on desktop */}
-                      <div className="bg-gray-800 px-2.5 sm:px-3 lg:px-6 py-1.5 sm:py-2 lg:py-4">
+                      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
@@ -1625,92 +1679,76 @@ const Landing = () => {
                       
                       {/* Category Mural - Hidden */}
                       
-                      {/* Card Content - Compact on mobile, spacious on desktop */}
-                      <div className="p-2.5 sm:p-3 lg:p-6 flex-1 flex flex-col">
-                      {/* Title */}
-                      <h3 className={`text-[12px] sm:text-[13px] lg:text-lg font-semibold mb-1 sm:mb-1.5 lg:mb-3 leading-snug line-clamp-2 ${
-                        isEnquiryOutdated(enquiry) ? 'text-gray-600' : 'text-gray-900'
+                      {/* Card Content - Optimized for square desktop, all content visible */}
+                      <div className="p-3 sm:p-4 lg:p-5 flex-1 flex flex-col">
+                      {/* Title - Responsive sizing */}
+                      <h3 className={`text-sm sm:text-base lg:text-lg font-extrabold mb-2 sm:mb-3 lg:mb-3.5 leading-tight line-clamp-2 font-heading text-gray-900 ${
+                        isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       }`}>
                         {enquiry.title}
                       </h3>
                       
-                      {/* Quick facts: Budget (location moved on mobile) */}
-                      <div className="mb-1.5 sm:mb-2.5 lg:mb-4">
-                        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 text-[10px] sm:text-[11px] lg:text-base text-slate-700 flex-wrap">
-                          {enquiry.budget && (
-                            <span className="inline-flex items-center font-semibold text-slate-900">
-                              <span className="mr-0.5 sm:mr-1 lg:mr-1.5 text-[12px] sm:text-[13px] lg:text-lg">₹</span>{formatIndianCurrency(enquiry.budget)}
-                            </span>
-                          )}
-                          {/* Keep location inline on larger screens */}
-                          {enquiry.budget && enquiry.location && (
-                            <span className="hidden sm:inline text-slate-300">•</span>
-                          )}
-                          {enquiry.location && (
-                            <span className="hidden sm:inline-flex items-center">
-                              <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 mr-1 lg:mr-1.5 text-slate-500" />
-                              <span className="line-clamp-1">
-                                {enquiry.location}
-                              </span>
-                            </span>
-                          )}
-                        </div>
+                      {/* Budget and Location - Compact layout */}
+                      <div className="mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2 sm:space-y-0 sm:flex sm:flex-row sm:items-center sm:gap-2.5 lg:gap-3">
+                        {enquiry.budget && (
+                          <div className="inline-flex items-center bg-gray-50 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-3.5 lg:py-2 border border-gray-200 w-full sm:w-auto justify-center sm:justify-start">
+                            <span className="text-base sm:text-lg lg:text-xl font-extrabold text-gray-900 mr-1 sm:mr-1.5">₹</span>
+                            <span className="text-sm sm:text-base lg:text-lg font-extrabold text-gray-900">{formatIndianCurrency(enquiry.budget)}</span>
+                          </div>
+                        )}
+                        {enquiry.location && (
+                          <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm lg:text-sm text-gray-600 justify-center sm:justify-start">
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-gray-500 flex-shrink-0" />
+                            <span className="font-medium line-clamp-1">{enquiry.location}</span>
+                          </div>
+                        )}
                       </div>
                       
-                      {/* Meta: Category at left, Created date at right */}
-                      <div className="mb-2 sm:mb-3 lg:mb-4">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="secondary" className="text-[9px] sm:text-[10px] lg:text-sm px-1.5 sm:px-2 lg:px-3 py-0.5 lg:py-1">
+                      {/* Meta Information - Compact */}
+                      <div className="mb-2.5 sm:mb-3 lg:mb-3.5 space-y-2 sm:space-y-2">
+                        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-2.5">
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs lg:text-xs px-2 sm:px-2.5 lg:px-3 py-1 sm:py-1 lg:py-1.5 bg-gray-100 text-gray-700 border border-gray-200 font-semibold rounded-lg">
                             {enquiry.category}
                           </Badge>
-                          <div className="flex items-center text-[9px] sm:text-[10px] lg:text-sm text-slate-500">
-                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 mr-0.5 sm:mr-1 lg:mr-1.5" />
-                            <span className="whitespace-nowrap">
+                          <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1.5 text-[10px] sm:text-xs lg:text-xs text-gray-500">
+                            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3.5 lg:w-3.5 text-gray-400" />
+                            <span className="whitespace-nowrap font-medium">
                               {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
                             </span>
                           </div>
                         </div>
-                        {/* Mobile-only location aligned to right, slightly larger */}
-                        {enquiry.location && (
-                          <div className="sm:hidden mt-1.5">
-                            <div className="flex items-start justify-end gap-1">
-                              <MapPin className="h-2.5 w-2.5 mt-0.5 text-slate-600" />
-                              <span className="text-[9px] text-slate-700 text-right break-words">{enquiry.location}</span>
-                            </div>
-                          </div>
-                        )}
                         {/* Deadline Timer */}
-                        {enquiry.deadline && !isEnquiryOutdated(enquiry) && (
-                          <div className="mt-0.5 sm:mt-1 lg:mt-2">
+                        {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
+                          <div className="pt-1.5 sm:pt-2 border-t border-gray-100">
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className="text-[9px] sm:text-[10px] lg:text-sm"
+                              className="text-[10px] sm:text-xs lg:text-xs"
                             />
                           </div>
                         )}
                       </div>
                       
-                      {/* Primary action - before footer */}
-                      <div className="flex flex-col gap-0.5 sm:gap-1 lg:gap-2 mt-auto -mx-2.5 sm:-mx-3 lg:-mx-6 px-2.5 sm:px-3 lg:px-6">
+                      {/* Primary Action Button - Compact but visible */}
+                      <div className="mt-auto pt-3 sm:pt-3.5 lg:pt-3 border-t border-gray-100">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className="w-full h-5 sm:h-6 lg:h-10 bg-gray-100 text-gray-600 text-[8px] sm:text-[9px] lg:text-sm font-medium rounded border border-gray-300" disabled>
+                                <button className="w-full h-10 sm:h-10 lg:h-11 bg-gray-100 text-gray-500 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border border-gray-200 cursor-not-allowed min-h-[40px]" disabled>
                                   ✅ Your Enquiry
                                 </button>
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className="w-full h-5 sm:h-6 lg:h-10 bg-gray-100 text-gray-600 text-[8px] sm:text-[9px] lg:text-sm font-medium rounded border border-gray-300" disabled>
+                                <button className="w-full h-10 sm:h-10 lg:h-11 bg-gray-100 text-gray-500 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border border-gray-200 cursor-not-allowed min-h-[40px]" disabled>
                                   Expired
                                 </button>
                               );
                             } else {
                               return (
                                 <button 
-                                  className="w-full h-5 sm:h-6 lg:h-10 bg-gray-800 text-white text-[8px] sm:text-[9px] lg:text-sm font-medium rounded hover:bg-gray-900 transition-colors"
+                                  className="w-full h-10 sm:h-10 lg:h-11 bg-gray-800 hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-heading min-h-[40px]"
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
                                   Sell
@@ -1720,17 +1758,17 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className="w-full h-5 sm:h-6 lg:h-10 bg-gray-100 text-gray-700 text-[8px] sm:text-[9px] lg:text-sm font-medium rounded border border-gray-300 hover:bg-gray-200 transition-colors"
+                            className="w-full h-10 sm:h-10 lg:h-11 bg-white text-gray-800 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border-2 border-gray-800 hover:bg-gray-50 hover:border-gray-900 transition-all duration-200 font-heading shadow-sm min-h-[40px]"
                             onClick={() => navigate('/signin')}
                           >
-                            Sign In to Respond
+                            Sign In
                           </button>
                         )}
                       </div>
                       
-                      {/* Footer - Save and Share only */}
-                      <div className="border-t border-gray-700 bg-gray-800 rounded-b-lg -mx-2.5 sm:-mx-3 lg:-mx-6 -mb-2.5 sm:-mb-3 lg:-mb-6 px-2.5 sm:px-3 lg:px-6 py-1.5 sm:py-2 lg:py-4">
-                        <div className="flex items-center justify-between h-[18px] sm:h-[20px] lg:h-[28px]">
+                      {/* Footer - Save and Share - Compact */}
+                      <div className="mt-2 sm:mt-2.5 lg:mt-2.5 pt-2 sm:pt-2.5 lg:pt-2.5 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
                           <button 
                             onClick={(e) => {
                               e.preventDefault();
@@ -1740,10 +1778,14 @@ const Landing = () => {
                               }
                             }}
                             disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm transition-all duration-150 ${savedEnquiries.includes(enquiry.id) ? 'text-blue-300 hover:text-blue-200' : 'text-gray-300 hover:text-blue-300'} ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-1.5 lg:py-1.5 rounded-lg transition-all duration-200 font-medium text-[10px] sm:text-xs lg:text-xs min-h-[36px] sm:min-h-[36px] ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Bookmark className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 transition-transform duration-150 ${savedEnquiries.includes(enquiry.id) ? 'fill-current scale-110' : 'hover:scale-110'}`} />
-                            <span className="hidden sm:inline">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                            <Bookmark className={`h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                           </button>
                           <button 
                             onClick={(e) => {
@@ -1754,17 +1796,20 @@ const Landing = () => {
                               }
                             }}
                             disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-0.5 sm:gap-1 lg:gap-2 px-1 sm:px-1.5 lg:px-3 py-0.5 lg:py-1 h-auto text-[8px] sm:text-[9px] lg:text-sm text-gray-300 hover:text-blue-300 transition-all duration-150 ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-1.5 lg:py-1.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-medium text-[10px] sm:text-xs lg:text-xs min-h-[36px] sm:min-h-[36px] ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Share2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 transition-transform duration-150 hover:scale-110" />
-                            <span className="hidden sm:inline">Share</span>
+                            <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
                           </button>
                         </div>
                       </div>
                       </div>
-                    </div>
+                      </div>
+                    </motion.div>
                   </Link>
-                ))}
+                  </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
                 
             {/* Load More Button */}

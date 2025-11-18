@@ -561,7 +561,7 @@ const EnquiryDetail = () => {
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Deadline</p>
                           <div className="text-sm sm:text-sm md:text-base font-bold text-gray-800 leading-tight">
-                            {enquiry.deadline ? (
+                            {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) ? (
                               <CountdownTimer deadline={enquiry.deadline} />
                             ) : (
                               <span className="text-gray-500 text-xs sm:text-xs">No deadline</span>

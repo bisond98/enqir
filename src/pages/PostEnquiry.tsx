@@ -20,7 +20,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc, Timestamp } from "firebase/firestore";
 import { uploadToCloudinary } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -182,7 +182,7 @@ export default function PostEnquiry() {
             categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
             budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
             location: location.trim(),
-            deadline: deadline,
+            deadline: deadline ? Timestamp.fromDate(deadline) : null,
             isUrgent: deadline ? (() => {
               const now = new Date();
               const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -346,7 +346,7 @@ export default function PostEnquiry() {
           categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
           budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
           location: location.trim(),
-          deadline: deadline,
+          deadline: deadline ? Timestamp.fromDate(deadline) : null,
           isUrgent: deadline ? (() => {
             const now = new Date();
             const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -445,7 +445,7 @@ export default function PostEnquiry() {
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
         location: location.trim(),
-        deadline: deadline,
+        deadline: deadline ? Timestamp.fromDate(deadline) : null,
         isUrgent: deadline ? (() => {
           const now = new Date();
           const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -1012,6 +1012,12 @@ export default function PostEnquiry() {
       alert('Please fill in all required fields (title, description, categories, budget, location).');
       return;
     }
+    
+    // Validate deadline is required
+    if (!deadline) {
+      alert('Please select a deadline for your enquiry.');
+      return;
+    }
 
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
@@ -1130,7 +1136,7 @@ export default function PostEnquiry() {
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
         location: location.trim(),
-        deadline: deadline,
+        deadline: deadline ? Timestamp.fromDate(deadline) : null,
         isUrgent: deadline ? (() => {
           const now = new Date();
           const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);

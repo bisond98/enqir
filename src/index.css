@@ -383,9 +383,9 @@
 
 @layer base {
   :root {
-    /* Core Colors - Minimalist Palette */
-    --background: 0 0% 98%;
-    --foreground: 223 47% 11%;
+    /* Core Colors - White Design System */
+    --background: 0 0% 100%; /* #FFFFFF - White */
+    --foreground: 0 0% 10%; /* #1A1A1A - Deep charcoal */
     
     /* Corporate Brand Colors - Professional & Trustworthy */
     --accent-primary: 214 84% 56%;  /* #3b82f6 Professional Blue */
@@ -532,11 +532,24 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: #FFFFFF !important;
+    color: #1A1A1A;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 400;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  
+  html {
+    background-color: #FFFFFF;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  /* Force DM Sans on all text elements */
+  button, input, textarea, select, label, span, div, p, a, li, td, th {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   /* Mobile-specific improvements */
@@ -568,38 +581,106 @@
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: hsl(var(--foreground));
+  /* DM Sans Typography - Exact match from presentation */
+  * {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   
-  /* Corporate Typography Hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Main Headings - Very Bold (matching presentation) */
   h1 {
     font-size: 2.5rem;
     font-weight: 800;
     line-height: 1.1;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.03em;
+    color: #1A1A1A;
+    font-family: 'DM Sans', sans-serif;
   }
   
+  /* Subheadings - Bold */
   h2 {
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #1A1A1A;
+    font-family: 'DM Sans', sans-serif;
   }
   
   h3 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: #1A1A1A;
+    font-family: 'DM Sans', sans-serif;
   }
   
-  /* Professional Body Text */
+  /* Body Text - Regular weight */
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 400;
     line-height: 1.6;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  p {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: #1A1A1A;
+    line-height: 1.6;
+  }
+  
+  .text-secondary {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: #6F6F6F;
+  }
+  
+  /* Bold text for emphasis */
+  strong, b {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+  }
+  
+  /* Card titles - Extra bold like presentation */
+  .card-title, [class*="card-title"] {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800;
+    color: #1A1A1A;
+  }
+  
+  /* Presentation-style spacing utilities */
+  .section-spacing {
+    margin-top: 40px;
+    margin-bottom: 24px;
+  }
+  
+  .section-spacing-lg {
+    margin-top: 60px;
+    margin-bottom: 40px;
+  }
+  
+  .card-spacing {
+    padding: 16px;
+  }
+  
+  .field-spacing {
+    margin-bottom: 16px;
+  }
+  
+  .field-spacing-lg {
+    margin-bottom: 24px;
   }
   
   /* Apple-like smooth scrolling */
@@ -1026,6 +1107,45 @@
   }
 }
 
+/* Futuristic AI Card Animation */
+@keyframes aiGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1), 0 0 40px rgba(59, 130, 246, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.15), 0 0 60px rgba(139, 92, 246, 0.08);
+  }
+}
+
+@keyframes aiShimmer {
+  0% {
+    background-position: -200% 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    background-position: 200% 0;
+    opacity: 0.3;
+  }
+}
+
+.ai-card-glow {
+  animation: aiGlow 3s ease-in-out infinite;
+}
+
+.ai-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: aiShimmer 2s infinite;
+}
+
 @keyframes pulse-subtle {
   0%, 100% {
     opacity: 1;
@@ -1349,6 +1469,127 @@
     @apply focus:ring-2 focus:ring-pal-blue/30 focus:outline-none rounded;
   }
   
+  /* Icon button affordance */
+  .icon-btn-affordance {
+    @apply p-2 sm:p-3 rounded-xl transition-all duration-200;
+    @apply hover:bg-gray-100 hover:scale-110;
+    @apply active:scale-95 active:bg-gray-200;
+    @apply cursor-pointer;
+  }
+  
+  /* Input affordance - clearly editable */
+  .input-affordance {
+    @apply transition-all duration-200;
+    @apply border-2 border-gray-200 hover:border-gray-300;
+    @apply focus:border-pal-blue focus:ring-4 focus:ring-pal-blue/10;
+    @apply bg-white hover:bg-gray-50 focus:bg-white;
+  }
+  
+  /* Elevated surfaces with depth */
+  .surface-elevated {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100;
+    @apply hover:shadow-xl transition-shadow duration-300;
+  }
+  
+  /* CTA button - maximum prominence */
+  .btn-cta {
+    @apply relative overflow-hidden;
+    @apply bg-gradient-to-r from-pal-blue via-blue-600 to-pal-blue-dark;
+    @apply text-white font-semibold text-base sm:text-lg;
+    @apply px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl;
+    @apply shadow-lg hover:shadow-2xl;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:scale-105 hover:-translate-y-1;
+    @apply active:scale-95;
+    @apply focus:ring-4 focus:ring-pal-blue/30 focus:outline-none;
+  }
+  
+  /* Badge with clear purpose */
+  .badge-affordance {
+    @apply inline-flex items-center gap-1.5;
+    @apply px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium;
+    @apply shadow-sm border;
+  }
+  
+  /* Subtle hover lift for cards */
+  .hover-lift-subtle {
+    @apply transition-all duration-300 ease-out;
+    @apply hover:-translate-y-1 hover:shadow-md;
+  }
+  
+  /* Strong hover lift for interactive elements */
+  .hover-lift-strong {
+    @apply transition-all duration-300 ease-out;
+    @apply hover:-translate-y-2 hover:shadow-xl hover:scale-[1.02];
+  }
+  
+  /* Glow effect for premium elements */
+  .glow-effect {
+    @apply relative;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Pulse animation for attention */
+  .pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
+  }
+  
+  /* Shimmer effect for loading/premium */
+  .shimmer-effect {
+    @apply relative overflow-hidden;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+/* CRITICAL: Ensure Razorpay modal is always on top and interactive */
+.razorpay-container,
+[class*="razorpay"],
+iframe[src*="razorpay"],
+div[id*="razorpay"],
+div[class*="razorpay-checkout"] {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  touch-action: manipulation !important;
+}
+
+/* Ensure all Razorpay input fields and buttons are interactive */
+.razorpay-container input,
+.razorpay-container select,
+.razorpay-container textarea,
+.razorpay-container button,
+.razorpay-container a,
+.razorpay-container [role="button"],
+[class*="razorpay"] input,
+[class*="razorpay"] select,
+[class*="razorpay"] textarea,
+[class*="razorpay"] button,
+[class*="razorpay"] a,
+[class*="razorpay"] [role="button"],
+iframe[src*="razorpay"] input,
+iframe[src*="razorpay"] select,
+iframe[src*="razorpay"] textarea,
+iframe[src*="razorpay"] button,
+iframe[src*="razorpay"] a,
+iframe[src*="razorpay"] [role="button"] {
+  pointer-events: auto !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+}
+
+/* When Razorpay is open, ensure body can scroll */
+body.razorpay-open,
+html.razorpay-open {
+  overflow: auto !important;
+  overflow-y: auto !important;
+  position: relative !important;
+}
+
+@layer components {
   /* Icon button affordance */
   .icon-btn-affordance {
     @apply p-2 sm:p-3 rounded-xl transition-all duration-200;
