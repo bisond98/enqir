@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Star, Zap, CheckCircle } from 'lucide-react';
+import { Check, Crown, Star, Zap, CheckCircle, Loader2 } from 'lucide-react';
 import { PaymentPlan, PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
 import PaymentModal from './PaymentModal';
 import { useToast } from '@/hooks/use-toast';
@@ -35,6 +35,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   const [selectedPlanData, setSelectedPlanData] = useState<PaymentPlan | null>(null);
   const [hasProRemaining, setHasProRemaining] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
   const [userCurrentPlan, setUserCurrentPlan] = useState<string>('free');
   const [proActivationDate, setProActivationDate] = useState<any>(null);
   const { toast } = useToast();
@@ -107,9 +108,10 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
       ? availablePlans.find(p => p.id === planId)
       : availablePlans.find(p => p.id === selectedPlan);
     const plan = planToUse;
-    if (!plan || !user) return;
+    if (!plan || !user || isProcessingPayment) return;
     
     try {
+      setIsProcessingPayment(true);
       const { processPayment } = await import('@/services/paymentService');
       
       // Calculate price difference for upgrade
@@ -216,6 +218,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
           : errorMessage,
         variant: 'destructive',
       });
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -364,16 +368,24 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-6 md:mb-8 flex items-center justify-center w-full">
               <Button
                 size="sm"
-                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg mx-auto"
+                disabled={isProcessingPayment}
+                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (user) {
+                  if (user && !isProcessingPayment) {
                     // For upgrades, process payment via Razorpay
                     handleUpgradeNow(selectedPlanObj.id);
                   }
                 }}
               >
-                Upgrade Now
+                {isProcessingPayment ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Opening Razorpay...</span>
+                  </span>
+                ) : (
+                  'Upgrade Now'
+                )}
               </Button>
             </div>
           );
