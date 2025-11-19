@@ -423,7 +423,7 @@ const MyEnquiries = () => {
                     </h2>
                   </div>
                   <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-medium">
-                    Track & manage your fuckiin' enquiries
+                    Track & manage your f**Kiin' enquiries
                   </p>
                 </div>
               </div>
