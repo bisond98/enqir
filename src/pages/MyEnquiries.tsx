@@ -400,7 +400,7 @@ const MyEnquiries = () => {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
           {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-gray-800 border border-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Back Button */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">
@@ -435,7 +435,7 @@ const MyEnquiries = () => {
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
                 <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-gray-800 hover:border-gray-900 flex items-center justify-center gap-2 sm:gap-3">
                 <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <span>post a fuckin' need</span>
+                <span>post a fu**in' need</span>
               </Button>
             </Link>
           </div>

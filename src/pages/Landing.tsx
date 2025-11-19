@@ -21,17 +21,17 @@ const Landing = () => {
     {
       icon: Shield,
       title: "Trust Badge (Optional)",
-      description: "Get a trust badge by sharing your ID - completely optional"
+      description: "Get a trust badge, since the world doesn't trust you"
     },
     {
       icon: Search,
       title: "AI-Powered Discovery",
-      description: "Smart AI helps you find exactly what you need, instantly"
+      description: "We don't have unpaid interns here"
     },
     {
       icon: Users,
       title: "Simple & Safe",
-      description: "Easy to use, safe to connect with others"
+      description: "We don't need your data; we already have a revenue model"
     }
   ];
 
@@ -1631,7 +1631,7 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <span className="text-xs sm:text-base">post a fuckin' need</span>
+              <span className="text-xs sm:text-base">post a fu**in' need</span>
               <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
           </Link>

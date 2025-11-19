@@ -44,3 +44,4 @@ export const useNetworkStatus = (): NetworkStatus => {
   return { isOnline, wasOffline };
 };
 
+

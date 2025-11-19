@@ -1007,7 +1007,7 @@ const Dashboard = () => {
           
           {/* Professional Welcome Header */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-gray-800 border border-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Title */}
               <div className="text-center mb-4 sm:mb-6">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
@@ -1092,103 +1092,61 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Professional Stats Grid - Buyer View Only */}
-          {viewMode === 'buyer' && (
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 mb-6 sm:mb-12 lg:mb-16">
-            {/* Total Enquiries */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <Card className="group border border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
-                <CardContent className="p-3 sm:p-5 lg:p-6">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Eye className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                  </div>
-                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600 opacity-60 group-hover:opacity-100 transition-opacity" />
-                </div>
-                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.length}</h3>
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Total Enquiries</p>
-              </CardContent>
-            </Card>
-            </motion.div>
-            
-            {/* Active Enquiries */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            >
-              <Card className="group border border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
-                <CardContent className="p-3 sm:p-5 lg:p-6">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <MessageSquare className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                  </div>
-                    <Activity className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-emerald-600 opacity-60 group-hover:opacity-100 transition-opacity" />
-                </div>
-                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{enquiries.filter(e => e.status === 'live').length}</h3>
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Active Enquiries</p>
-              </CardContent>
-            </Card>
-            </motion.div>
-
-            {/* Saved Enquiries */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-            >
-              <Card className="group border border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105" onClick={(e) => e.stopPropagation()}>
-                <CardContent className="p-3 sm:p-5 lg:p-6">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Bookmark className="h-4 w-4 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
-                  </div>
-                    <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-orange-600 opacity-60 group-hover:opacity-100 transition-opacity" />
-                </div>
-                  <h3 className="text-lg sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1 sm:mb-2 tracking-tight">{savedEnquiries.length}</h3>
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-bold uppercase tracking-wide">Saved Enquiries</p>
-              </CardContent>
-            </Card>
-            </motion.div>
-          </div>
-          )}
-
           {/* Quick Action Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8 mb-0">
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border border-gray-800 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl relative"
+              className="group cursor-pointer border border-gray-800 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              <CardHeader className="p-3 sm:p-8 pb-2 sm:pb-6 relative z-10">
-                <div className="flex items-center justify-between mb-3 sm:mb-8">
-                  <div className="w-10 h-10 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg sm:shadow-xl group-hover:scale-110 transition-transform duration-300">
-                    <Eye className="h-5 w-5 sm:h-10 sm:w-10 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <Badge className="bg-blue-100 text-blue-800 text-xs sm:text-sm font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                      {enquiries.length} Total
-                    </Badge>
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              
+              {/* Professional Header - Matching Dashboard Style */}
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
+                {/* Header Section with Title */}
+                <div className="text-center mb-4 sm:mb-6">
+                  <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Enquiries</h2>
+                </div>
+                
+                {/* Content Card - White Background */}
+                <div className="bg-white border border-gray-800 rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                  <div className="text-center">
+                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-gray-800 leading-snug">
+                      Track your needs to fu**in' requirements
+                    </p>
                   </div>
                 </div>
-                <div className="text-left lg:text-center">
-                  <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-1 sm:mb-4 whitespace-nowrap">Your Enquiries</h2>
-                  <p className="text-slate-600 text-xs sm:text-lg leading-relaxed">
-                    Track all your simple needs to mighty requirements
-                  </p>
-                </div>
-              </CardHeader>
+              </div>
 
-              <CardContent className="p-4 sm:p-6 lg:p-8 xl:p-10 relative z-10">
+              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
+                {/* Professional Stats Grid */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{enquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Total</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{enquiries.filter(e => e.status === 'live').length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Active</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{savedEnquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Saved</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 {/* Professional Enquiry Cards Section */}
                 <div className="mb-6 sm:mb-12 lg:mb-16">
                   {/* Empty State - Professional */}
@@ -1588,7 +1546,7 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-gray-800/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-gray-800 border border-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Responses</h2>
@@ -1606,51 +1564,33 @@ const Dashboard = () => {
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
                 {/* Professional Stats Grid with Gradients */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-2.5 xl:gap-3 mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-gray-800 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative">
-                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-emerald-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
-                    </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-emerald-800 font-bold uppercase tracking-wide">Approved</div>
-                  </div>
-                  </motion.div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
+                      </h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Approved</p>
+                    </CardContent>
+                  </Card>
                   
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-gray-800 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative">
-                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-amber-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
-                    </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-amber-800 font-bold uppercase tracking-wide">Reviewing</div>
-                  </div>
-                  </motion.div>
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
+                      </h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Pending</p>
+                    </CardContent>
+                  </Card>
                   
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-gray-800 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative">
-                      <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-red-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                      {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
-                    </div>
-                      <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-red-800 font-bold uppercase tracking-wide">Rejected</div>
-                  </div>
-                  </motion.div>
+                  <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                    <CardContent className="p-2 sm:p-3 text-center">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                        {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
+                      </h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Rejected</p>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Professional Submissions Section */}
