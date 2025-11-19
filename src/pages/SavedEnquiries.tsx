@@ -237,13 +237,13 @@ const SavedEnquiries = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!isExpired) {
-                            navigate(`/enquiry/${enquiry.id}`);
+                          navigate(`/enquiry/${enquiry.id}`);
                           }
                         }}
                         onTouchEnd={(e) => {
                           e.stopPropagation();
                           if (!isExpired) {
-                            navigate(`/enquiry/${enquiry.id}`);
+                          navigate(`/enquiry/${enquiry.id}`);
                           }
                         }}
                         className={`w-full h-10 sm:h-12 text-xs sm:text-base font-medium border-2 transition-all duration-200 ${

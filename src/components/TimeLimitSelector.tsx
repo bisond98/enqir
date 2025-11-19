@@ -392,8 +392,8 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         Apply Custom Time
                       </Button>
                     )}
+                    </div>
                   </div>
-                </div>
 
                 {!isDesktop && (
                   <Button 
@@ -419,8 +419,8 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                     <span className={`font-medium text-sm sm:text-base ${isDesktop ? 'text-base font-semibold text-slate-900' : ''}`}>
                         {format(deadline, 'MMM dd, yyyy HH:mm')}
                       </span>
+                    </div>
                   </div>
-                </div>
                 {isDesktop && (
                   <p className="text-xs text-slate-500 mt-2">
                     {formatDeadline(deadline)} from now

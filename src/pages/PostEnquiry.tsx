@@ -954,11 +954,11 @@ export default function PostEnquiry() {
     setReferenceImageFiles(newImageFiles);
     
     // Upload to Cloudinary immediately
-    try {
-      const newProgresses = [...referenceUploadProgresses];
-      newProgresses[index] = 25;
-      setReferenceUploadProgresses(newProgresses);
+    const newProgresses = [...referenceUploadProgresses];
+    newProgresses[index] = 25;
+    setReferenceUploadProgresses(newProgresses);
 
+    try {
       // Compress image for faster upload
       const compressedFile = await compressImage(file);
       newProgresses[index] = 50;
@@ -977,16 +977,26 @@ export default function PostEnquiry() {
         title: "Image uploaded",
         description: "Reference image uploaded successfully",
       });
-    } catch (error) {
-      console.error('Error uploading reference image:', error);
-      const newProgresses = [...referenceUploadProgresses];
+    } catch (uploadError: any) {
+      // Reset progress on error
       newProgresses[index] = 0;
       setReferenceUploadProgresses(newProgresses);
+      
+      const errorMessage = uploadError instanceof Error 
+        ? uploadError.message 
+        : 'Failed to upload image. Please try again.';
+      
       toast({
-        title: "Upload failed",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive"
+        title: "Upload Failed 📤",
+        description: errorMessage,
+        variant: "destructive",
       });
+      
+      // Remove the file from the input so user can try again
+      const fileInput = document.getElementById(`reference-image-${index}`) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
   };
 
@@ -1116,10 +1126,23 @@ export default function PostEnquiry() {
           
           setUploadProgress(75);
           setUploadStage('ID documents uploaded successfully!');
-        } catch (uploadError) {
+        } catch (uploadError: any) {
           console.error('Error uploading ID documents:', uploadError);
-          setUploadStage(`Upload failed: ${uploadError}`);
-          throw new Error(`Failed to upload ID documents: ${uploadError}`);
+          const errorMessage = uploadError instanceof Error 
+            ? uploadError.message 
+            : `Failed to upload ID documents: ${uploadError}`;
+          
+          setUploadStage(`Upload failed: ${errorMessage}`);
+          setIdUploadLoading(false);
+          
+          // Show user-friendly error toast
+          toast({
+            title: "Upload Failed 📤",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          
+          throw uploadError;
         }
       } else if (isProfileVerified) {
         console.log('User is verified - skipping ID upload');

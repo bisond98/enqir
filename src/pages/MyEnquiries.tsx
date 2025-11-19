@@ -398,36 +398,33 @@ const MyEnquiries = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
-          {/* Professional Header with AI-Inspired Design */}
+          {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden shadow-2xl">
-              {/* Elegant pattern overlay */}
-              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
-              
-              {/* Subtle AI-inspired gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-emerald-600/5"></div>
-              
-              {/* Animated grid pattern (futuristic effect) */}
-              <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,.05)_25%,rgba(255,255,255,.05)_26%,transparent_27%,transparent_74%,rgba(255,255,255,.05)_75%,rgba(255,255,255,.05)_76%,transparent_77%,transparent)] bg-[length:100%_50px]"></div>
-              
-              <div className="relative">
-                <div className="flex items-center justify-between mb-3 sm:mb-4 lg:mb-5">
+            <div className="relative bg-gray-800 border border-gray-800 rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              {/* Header Section with Back Button */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
                   <Button
                     variant="ghost"
                     onClick={() => navigate('/dashboard')}
-                    className="p-2 sm:p-2.5 lg:p-3 hover:bg-white/10 rounded-xl sm:rounded-2xl text-white font-bold transition-all duration-300 hover:scale-110 active:scale-95 backdrop-blur-sm border border-white/10"
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                   >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </Button>
-                  <div className="flex-1 text-center">
-                    <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight drop-shadow-lg mb-2 sm:mb-2.5 lg:mb-3">
-                      Your Enquiries
-                    </h1>
-                    <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-snug font-medium whitespace-nowrap">
-                      Track and manage your enquiries
-                    </p>
+                </div>
+              </div>
+              
+              {/* Content Card - White Background */}
+              <div className="bg-white border border-gray-800 rounded-lg p-4 sm:p-6 lg:p-8">
+                <div className="text-center">
+                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                      Enquiries
+                    </h2>
                   </div>
-                  <div className="w-10 sm:w-14 lg:w-16"></div> {/* Spacer for balance */}
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-medium">
+                    Track & manage your fuckiin' enquiries
+                  </p>
                 </div>
               </div>
             </div>
@@ -436,78 +433,100 @@ const MyEnquiries = () => {
           {/* Professional Post New Enquiry Button */}
           <div className="flex justify-center mb-6 sm:mb-10 lg:mb-12">
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-blue-500/20 flex items-center justify-center gap-2 sm:gap-3">
+                <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-gray-800 hover:border-gray-900 flex items-center justify-center gap-2 sm:gap-3">
                 <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <span>Post New Enquiry</span>
+                <span>post a fuckin' need</span>
               </Button>
             </Link>
           </div>
 
           {/* Professional Stats Summary with Animations */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-10 lg:mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                <div className="flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <TrendingUp className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-blue-600 mb-2 sm:mb-3 tracking-tight">{enquiries.length}</div>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Total Enquiries</p>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            >
-              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                <div className="flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-emerald-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'live').length}</div>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Live</p>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-            >
-              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                <div className="flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-amber-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'pending').length}</div>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Pending</p>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.4 }}
-            >
-              <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-200/80 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                <div className="flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Star className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-600 mb-2 sm:mb-3 tracking-tight">{enquiries.filter(e => e.status === 'completed').length}</div>
-                <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Completed</p>
-              </Card>
-            </motion.div>
+            {(() => {
+              const now = new Date();
+              const isExpired = (e: Enquiry) => {
+                if (!e.deadline) return false;
+                try {
+                  const d = (e.deadline as any).toDate ? (e.deadline as any).toDate() : new Date(e.deadline);
+                  return d < now;
+                } catch {
+                  return false;
+                }
+              };
+              
+              const liveCount = enquiries.filter(e => e.status === 'live' && !isExpired(e)).length;
+              const pendingCount = enquiries.filter(e => e.status === 'pending' && !isExpired(e)).length;
+              const completedCount = enquiries.filter(e => e.status === 'completed' || isExpired(e)).length;
+              const totalCount = enquiries.length;
+              
+              return (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                      <div className="flex items-center justify-center mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <TrendingUp className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-blue-600 mb-2 sm:mb-3 tracking-tight">{totalCount}</div>
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Total Enquiries</p>
+                    </Card>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                  >
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                      <div className="flex items-center justify-center mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-emerald-600 mb-2 sm:mb-3 tracking-tight">{liveCount}</div>
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Live</p>
+                    </Card>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                  >
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                      <div className="flex items-center justify-center mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-amber-600 mb-2 sm:mb-3 tracking-tight">{pendingCount}</div>
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Pending</p>
+                    </Card>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
+                  >
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                      <div className="flex items-center justify-center mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <Star className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-600 mb-2 sm:mb-3 tracking-tight">{completedCount}</div>
+                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Completed</p>
+                    </Card>
+                  </motion.div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Enquiries List */}
@@ -517,7 +536,7 @@ const MyEnquiries = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-dashed border-gray-300/60 shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
+              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-gray-800 border-dashed shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
                 <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
                   <Eye className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
                 </div>
@@ -526,7 +545,7 @@ const MyEnquiries = () => {
                   Start by posting your first enquiry to find what you're looking for in our community.
                 </p>
                 <Link to="/post-enquiry">
-                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center mx-auto">
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center mx-auto border-2 border-gray-800 hover:border-gray-900">
                     <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
                     Post Your First Enquiry
                   </Button>
@@ -550,8 +569,8 @@ const MyEnquiries = () => {
                 >
                   <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden transition-all duration-300 ${
                     isExpired
-                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 shadow-sm'
-                      : 'bg-white border border-gray-200/80 hover:border-blue-400/60 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
+                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-800 shadow-sm'
+                      : 'bg-white border-2 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                   }`}>
                     {/* Premium Header with Sophisticated Design */}
                     <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
@@ -711,7 +730,7 @@ const MyEnquiries = () => {
                         </div>
 
                         {/* Budget & Location Group */}
-                        <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4 p-3 sm:p-4 lg:p-3 xl:p-3.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-gray-200/60 shadow-md">
+                        <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4 p-3 sm:p-4 lg:p-3 xl:p-3.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-gray-800 shadow-md">
                           <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                             <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                               <span className="text-white font-black text-xs sm:text-sm lg:text-xs xl:text-sm">₹</span>
@@ -722,7 +741,7 @@ const MyEnquiries = () => {
                             </div>
                           </div>
                           {enquiry.location && (
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border-2 border-gray-800 rounded-lg lg:rounded-md xl:rounded-lg">
                               <span className="text-base sm:text-lg lg:text-base xl:text-lg">📍</span>
                               <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-semibold truncate max-w-[120px] sm:max-w-none">{enquiry.location}</span>
                             </div>
@@ -730,7 +749,7 @@ const MyEnquiries = () => {
                         </div>
 
                         {/* Plan Information Group - Premium Design */}
-                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-blue-200/60 shadow-md">
+                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-gray-800 shadow-md">
                           {/* Current Plan & Response Limit */}
                           <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
                             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
@@ -752,7 +771,7 @@ const MyEnquiries = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-blue-100/80 border border-blue-300/60 rounded-lg lg:rounded-md xl:rounded-lg flex-shrink-0">
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-blue-100/80 border-2 border-gray-800 rounded-lg lg:rounded-md xl:rounded-lg flex-shrink-0">
                               <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0"></div>
                               <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap">
                                 {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
@@ -777,7 +796,7 @@ const MyEnquiries = () => {
                             <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5 border-t-2 border-blue-200/60">
                               <Button
                                 onClick={() => handleUpgradeClick(enquiry)}
-                                className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2.5 lg:py-2 xl:py-2.5 font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2"
+                                className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2.5 lg:py-2 xl:py-2.5 font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-gray-800 hover:border-gray-900"
                                 size="sm"
                               >
                                 <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 flex-shrink-0" />
@@ -834,13 +853,13 @@ const MyEnquiries = () => {
                           }}
                         >
                           {isExpired ? (
-                            <Button variant="outline" size="sm" disabled className="w-full sm:flex-none border-2 border-gray-300/80 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                            <Button variant="outline" size="sm" disabled className="w-full sm:flex-none border-2 border-gray-800 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                               <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                               <span className="whitespace-nowrap">View Details</span>
                             </Button>
                           ) : (
                             <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-none min-w-[110px] sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]">
-                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
+                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
                                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap tracking-tight">View Details</span>
                               </Button>
@@ -851,7 +870,7 @@ const MyEnquiries = () => {
                             variant="outline" 
                             size="sm" 
                             disabled={isExpired}
-                            className="w-full sm:flex-none min-w-[110px] sm:min-w-[140px] lg:min-w-[120px] xl:min-w-[130px] border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-blue-400/60 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
+                            className="w-full sm:flex-none min-w-[110px] sm:min-w-[140px] lg:min-w-[120px] xl:min-w-[130px] border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
@@ -864,7 +883,7 @@ const MyEnquiries = () => {
                           
                           {enquiry.status === 'live' && !isExpired && (
                             <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-none min-w-[100px] sm:min-w-[120px] lg:min-w-[100px] xl:min-w-[110px]">
-                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-300/80 bg-white text-gray-700 hover:bg-gray-50 hover:border-emerald-400/60 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
+                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/chats:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap tracking-tight">View Chats</span>
                               </Button>
@@ -880,7 +899,7 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-none border-2 border-red-300/80 bg-white text-red-700 hover:bg-red-50 hover:border-red-400/80 hover:text-red-800 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
+                            className="w-full sm:flex-none border-2 border-gray-800 hover:border-gray-900 bg-white text-red-700 hover:bg-red-50 hover:text-red-800 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
                           >
                             <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight">Delete Enquiry</span>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, MicOff, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Mic, MicOff, ChevronDown, ChevronUp, Info, Sparkles, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -65,89 +65,120 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
     }
   };
 
+  // Check if it's being used in a dialog (transparent background indicates dialog usage)
+  const isInDialog = className.includes('bg-transparent');
+  
   return (
-    <Card className={`border-blue-200 bg-blue-50 shadow-md rounded-2xl ${className}`}>
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-start gap-3">
-          {/* Icon */}
-          <div className="flex-shrink-0 mt-0.5">
-            {permissionStatus === 'denied' ? (
-              <MicOff className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
-            ) : (
-              <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900">
-                Microphone Permission Required
-              </h3>
-              {permissionStatus === 'denied' && (
-                <Badge variant="destructive" className="text-xs">
-                  Denied
-                </Badge>
+    <div className={`w-full ${className}`}>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200/50 shadow-xl">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+        
+        <div className="relative p-4 sm:p-6">
+          {/* Header Section - Creative Design */}
+          <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
+            {/* Animated Icon Container */}
+            <div className={`relative mb-3 sm:mb-4 ${permissionStatus === 'denied' ? 'animate-shake' : 'animate-bounce'}`}>
+              <div className="absolute inset-0 bg-blue-400/30 rounded-full blur-xl animate-pulse"></div>
+              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center ${
+                permissionStatus === 'denied' 
+                  ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/50' 
+                  : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/50'
+              }`}>
+                {permissionStatus === 'denied' ? (
+                  <MicOff className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                ) : (
+                  <Mic className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                )}
+              </div>
+              {permissionStatus !== 'denied' && (
+                <div className="absolute -top-1 -right-1">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400 animate-pulse" />
+                </div>
               )}
             </div>
             
-            <p className="text-xs sm:text-sm text-gray-700 mb-3">
+            {/* Title and Badge */}
+            <div className="space-y-2">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                Microphone Access Needed
+              </h3>
+              {permissionStatus === 'denied' && (
+                <Badge variant="destructive" className="text-xs sm:text-sm px-3 py-1">
+                  Permission Denied
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="mb-4 sm:mb-6">
+            <p className="text-sm sm:text-base text-gray-700 text-center leading-relaxed">
               Allow microphone access to make calls and send voice messages in this chat.
             </p>
+          </div>
 
-            {/* Action Button */}
+          {/* Action Button - Creative Design */}
+          <div className="mb-3 sm:mb-4">
             <Button
               onClick={handleRequestPermission}
               disabled={isRequesting}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 sm:py-2 h-8 sm:h-9 mb-2"
+              className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-semibold text-sm sm:text-base py-3 sm:py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isRequesting ? (
-                <>
-                  <span className="animate-spin mr-2">⏳</span>
-                  Requesting...
-                </>
+                <span className="flex items-center justify-center gap-2">
+                  <span className="animate-spin">⏳</span>
+                  <span>Requesting Permission...</span>
+                </span>
               ) : (
-                <>
-                  <Mic className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
-                  Grant Permission
-                </>
+                <span className="flex items-center justify-center gap-2">
+                  <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span>Grant Permission</span>
+                </span>
               )}
             </Button>
+          </div>
 
-            {/* Instructions Toggle */}
+          {/* Instructions Toggle - Mobile Friendly */}
+          <div className="border-t border-blue-200/50 pt-3 sm:pt-4">
             <button
               onClick={() => setShowInstructions(!showInstructions)}
-              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              className="w-full flex items-center justify-center gap-2 text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors py-2 rounded-lg hover:bg-blue-50"
             >
               {showInstructions ? (
                 <>
-                  <ChevronUp className="h-3 w-3" />
-                  Hide Instructions
+                  <ChevronUp className="h-4 w-4" />
+                  <span>Hide Instructions</span>
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-3 w-3" />
-                  Need Help?
+                  <ChevronDown className="h-4 w-4" />
+                  <span>Need Help?</span>
                 </>
               )}
             </button>
 
-            {/* Instructions Panel */}
+            {/* Instructions Panel - Animated */}
             {showInstructions && (
-              <div className="mt-3 p-3 bg-white rounded-lg border border-gray-200">
-                <div className="flex items-start gap-2 mb-2">
-                  <Info className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-gray-900 mb-1">
+              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-blue-200/50 shadow-sm animate-in slide-in-from-top-2 duration-300">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <Info className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-2">
                       How to enable microphone manually:
                     </p>
-                    <p className="text-xs text-gray-700 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                       {instructions}
                     </p>
                     {permissionStatus === 'denied' && (
-                      <p className="text-xs text-red-600 mt-2 font-medium">
-                        Note: You may need to refresh the page after enabling the permission.
+                      <p className="text-xs sm:text-sm text-red-600 mt-3 font-medium bg-red-50 p-2 rounded-lg border border-red-200">
+                        ⚠️ Note: You may need to refresh the page after enabling the permission.
                       </p>
                     )}
                   </div>
@@ -156,8 +187,8 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
