@@ -26,7 +26,7 @@ const Landing = () => {
     {
       icon: Search,
       title: "AI-Powered Discovery",
-      description: "We don't have unpaid interns here"
+      description: "We do not exploit unpaid interns"
     },
     {
       icon: Users,
@@ -1631,7 +1631,7 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <span className="text-xs sm:text-base">post a fu**in' need</span>
+              <span className="text-xs sm:text-base">Post your legal needs</span>
               <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
           </Link>
@@ -1690,12 +1690,12 @@ const Landing = () => {
           {/* Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-blue-50/30 border-blue-100/50 rounded-xl sm:rounded-2xl">
+              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-blue-50/30 border border-black rounded-xl sm:rounded-2xl">
                 <div className="relative">
                   <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-pal-blue mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
-                <h3 className="text-xs sm:text-lg font-semibold text-foreground mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
                 <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">{feature.description}</p>
               </Card>
             ))}
@@ -2154,7 +2154,7 @@ const Landing = () => {
                 </h2>
                   <div className="w-full flex justify-center">
                     <p className="text-xs sm:text-base lg:text-lg text-gray-600 w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
-                      Find what you need across diverse categories
+                      sell in best quality & make money
                 </p>
                   </div>
               </div>
@@ -2263,7 +2263,7 @@ const Landing = () => {
               How It Works
             </h2>
             <p className="text-xs sm:text-sm text-gray-600">
-              3 simple steps to connect
+              This isn't rocket science.
             </p>
           </div>
 

@@ -332,43 +332,42 @@ const Profile = () => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        {/* Profile Header */}
-        <div className="mb-4 sm:mb-8">
-          <div className="bg-black rounded-lg p-4 sm:p-6">
-            <div className="text-center">
-              <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
-                <User className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
+        {/* Profile Header - Matching Dashboard Style */}
+        <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+          <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            {/* Header Section with Title */}
+            <div className="text-center mb-4 sm:mb-6">
+              <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight">
+                  {fullName || authUser.displayName || "Profile"}
+                  {isProfileVerified && (
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
+                  )}
+                </h1>
               </div>
-              <h2 className="text-lg sm:text-2xl font-bold text-white mb-2">
-                {fullName || authUser.displayName || "Profile"}
-              </h2>
-              <p className="text-sm sm:text-lg text-gray-300 mb-3">
-                {authUser.email}
-              </p>
-              <div className="rounded-lg p-3 sm:p-4 mt-2">
-                <p className="text-xs sm:text-sm text-white text-center">
-                  AI-powered profile verification for enhanced trust
+            </div>
+            
+            {/* Content Card - White Background */}
+            <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                  <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                    Profile
+                  </h2>
+                </div>
+                <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  {authUser.email}
                 </p>
               </div>
-              
-              {/* Verification Badge - Only show if verified */}
-              {isProfileVerified && (
-                <div className="mt-3 sm:mt-4">
-                  <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs sm:text-sm">
-                    <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    Verified Profile
-                  </Badge>
-                </div>
-              )}
             </div>
           </div>
         </div>
 
         {/* Profile Form */}
-        <Card className="mt-6 sm:mt-8">
+        <Card className="mt-6 sm:mt-8 border border-black">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Update your profile details</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">It's better to know you better if you're here to scam others</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
             {/* Profile Fields */}
@@ -435,11 +434,11 @@ const Profile = () => {
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6">
+        <Card className="mt-4 sm:mt-6 border border-black">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-base sm:text-lg">Trust Badge (Optional)</CardTitle>
             <CardDescription className="text-xs sm:text-sm">
-              Upload your government ID to get a trust badge and build trust
+              The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -599,9 +598,6 @@ const Profile = () => {
                   {isUploading ? "Uploading..." : "Upload ID for Trust Badge"}
                 </Button>
 
-                <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
-                  Trust badge is completely optional. Upload to get a trust badge and build trust.
-                </p>
               </>
             ) : null}
           </CardContent>

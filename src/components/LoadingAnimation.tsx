@@ -40,7 +40,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
 
       <div className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
         {/* Business Model Loading Animation */}
-        <div className="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto">
+        <div className="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto">
           <svg viewBox="0 0 500 280" className="w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6" preserveAspectRatio="xMidYMid meet">
             {/* Step 1: User Posting Enquiry */}
             <g id="step1" transform="translate(80, 80)">

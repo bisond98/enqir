@@ -81,6 +81,7 @@ const Dashboard = () => {
   });
   const navigate = useNavigate();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  const [allEnquiriesForStats, setAllEnquiriesForStats] = useState<Enquiry[]>([]);
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [enquiryResponses, setEnquiryResponses] = useState<{[key: string]: SellerSubmission[]}>({});
   const [responsesSummary, setResponsesSummary] = useState<SellerSubmission[]>([]);
@@ -569,6 +570,39 @@ const Dashboard = () => {
       
       setEnquiries(enquiriesData);
       
+      // Fetch ALL enquiries for accurate stats (without limit)
+      const allEnquiriesQuery = query(
+        collection(db, 'enquiries'),
+        where('userId', '==', user.uid)
+      );
+      
+      getDocs(allEnquiriesQuery).then((snapshot) => {
+        const allEnquiriesData: Enquiry[] = [];
+        const now = new Date();
+        
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Check if enquiry has expired
+          let isExpired = false;
+          if (data.deadline) {
+            const deadlineDate = data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline);
+            isExpired = deadlineDate < now;
+          }
+          
+          // Include all enquiries except pending payment
+          if (data.status !== 'pending_payment') {
+            allEnquiriesData.push({ id: doc.id, ...data } as Enquiry);
+          }
+        });
+        
+        setAllEnquiriesForStats(allEnquiriesData);
+      }).catch((error) => {
+        console.error('Error fetching all enquiries for stats:', error);
+        // Fallback to using the limited enquiries for stats
+        setAllEnquiriesForStats(enquiriesData);
+      });
+      
       // Only fetch responses for enquiries that have responses (optimized)
       const fetchResponsesOptimized = async () => {
         if (enquiriesData.length === 0) {
@@ -1007,7 +1041,7 @@ const Dashboard = () => {
           
           {/* Professional Welcome Header */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Title */}
               <div className="text-center mb-4 sm:mb-6">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
@@ -1032,7 +1066,7 @@ const Dashboard = () => {
               </div>
               
               {/* Content Card - White Background */}
-              <div className="bg-white border-4 border-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
                   <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
                     <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
@@ -1041,7 +1075,7 @@ const Dashboard = () => {
                   </div>
                   {/* Creative Toggle Button */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5">
-                    <div className="relative inline-flex items-center bg-white border-4 border-black rounded-full p-0.5 sm:p-1 shadow-lg">
+                    <div className="relative inline-flex items-center bg-white border border-black rounded-full p-0.5 sm:p-1 shadow-lg">
                       {/* Animated Background Slider */}
                       <div 
                         className={`absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-full bg-black transition-all duration-300 ease-in-out ${
@@ -1097,7 +1131,7 @@ const Dashboard = () => {
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border-4 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
@@ -1106,17 +1140,17 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Enquiries</h2>
                 </div>
                 
                 {/* Content Card - White Background */}
-                <div className="bg-white border-4 border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
                   <div className="text-center">
                     <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                      Track your needs to fu**in' requirements
+                      Track your needs; nobody is here to do that for you.
                     </p>
                   </div>
                 </div>
@@ -1125,21 +1159,34 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
                 {/* Professional Stats Grid */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{enquiries.length}</h3>
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{allEnquiriesForStats.length || enquiries.length}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Total</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{enquiries.filter(e => e.status === 'live').length}</h3>
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{(() => {
+                        const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
+                        const now = new Date();
+                        return allEnqs.filter(e => {
+                          // Must be live status
+                          if (e.status !== 'live') return false;
+                          // Must not be expired
+                          if (e.deadline) {
+                            const deadlineDate = e.deadline.toDate ? e.deadline.toDate() : new Date(e.deadline);
+                            if (deadlineDate < now) return false;
+                          }
+                          return true;
+                        }).length;
+                      })()}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Active</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
                       <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{savedEnquiries.length}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Saved</p>
@@ -1161,7 +1208,7 @@ const Dashboard = () => {
                       </p>
                       <Button
                         onClick={() => navigate('/post-enquiry')}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center"
+                        className="bg-gradient-to-r from-blue-950 to-blue-900 hover:from-blue-900 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center"
                       >
                         <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
                         Post Your First Enquiry
@@ -1218,8 +1265,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 lg:max-w-full ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
-                                : 'bg-white border-4 border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
+                                : 'bg-white border border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
                             onClick={() => !expiredFlag && navigate(`/enquiry/${enquiry.id}`)}
                           >
@@ -1404,7 +1451,7 @@ const Dashboard = () => {
                                     if (upgradeOptions.length === 0) return null;
                                     return (
                                       <Button
-                                        variant="default"
+                                        variant="outline"
                                         size="sm"
                                         onClick={(e) => {
                                           e.stopPropagation();
@@ -1413,7 +1460,7 @@ const Dashboard = () => {
                                           }
                                         }}
                                         disabled={expiredFlag}
-                                        className="hidden lg:flex flex-shrink-0 bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border-4 border-black hover:border-black items-center justify-center lg:min-w-[85px] xl:min-w-[90px]"
+                                        className="hidden lg:flex flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black items-center justify-center lg:min-w-[85px] xl:min-w-[90px]"
                                       >
                                         <Crown className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
                                         <span className="tracking-tight whitespace-nowrap">Upgrade</span>
@@ -1453,7 +1500,7 @@ const Dashboard = () => {
                                     }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
+                                  className="w-full sm:flex-none flex-shrink-0 border border-black bg-black hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
                                   <span className="tracking-tight whitespace-nowrap">View Responses</span>
@@ -1472,7 +1519,7 @@ const Dashboard = () => {
                                   if (upgradeOptions.length === 0) return null;
                                   return (
                                 <Button
-                                  variant="default"
+                                  variant="outline"
                                   size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1481,7 +1528,7 @@ const Dashboard = () => {
                                         }
                                       }}
                                       disabled={expiredFlag}
-                                      className="lg:hidden w-full sm:flex-none flex-shrink-0 bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border-4 border-black hover:border-black flex items-center justify-center sm:min-w-[110px]"
+                                      className="lg:hidden w-full sm:flex-none flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black flex items-center justify-center sm:min-w-[110px]"
                                     >
                                       <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
                                       <span className="tracking-tight whitespace-nowrap">Upgrade</span>
@@ -1499,7 +1546,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 bg-gradient-to-r from-red-50 to-red-100/80 hover:from-red-100 hover:to-red-200 text-red-700 border-4 border-black hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]"
+                                  className="w-full sm:flex-none flex-shrink-0 border border-black hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]"
                               >
                                   <Trash2 className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
                                   <span className="tracking-tight whitespace-nowrap">Delete</span>
@@ -1520,7 +1567,7 @@ const Dashboard = () => {
                               e.stopPropagation(); 
                               navigate('/my-enquiries'); 
                             }} 
-                            className="group/btn border-4 border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 h-auto sm:h-12 lg:h-14 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                            className="group/btn border border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 h-auto sm:h-12 lg:h-14 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
                           >
                             <span className="mr-2 tracking-tight">View All Enquiries</span>
                             <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
@@ -1537,7 +1584,7 @@ const Dashboard = () => {
             {/* Responses Card - Seller View Only */}
             {viewMode === 'seller' && (
             <Card 
-              className="group cursor-pointer border-4 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-responses');
@@ -1546,17 +1593,17 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Responses</h2>
                 </div>
                 
                 {/* Content Card - White Background */}
-                <div className="bg-white border-4 border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
                   <div className="text-center">
                     <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                      Track your seller submissions
+                      Track your sales. You need money, right?
                     </p>
                   </div>
                 </div>
@@ -1565,7 +1612,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
                 {/* Professional Stats Grid with Gradients */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
                       <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
@@ -1574,7 +1621,7 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                   
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
                       <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
@@ -1583,7 +1630,7 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                   
-                  <Card className="border-4 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
+                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
                       <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
@@ -1652,8 +1699,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isEnquiryDeleted || isEnquiryExpired
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
-                              : 'bg-white border-4 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
+                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header with Sophisticated Design */}
@@ -1668,7 +1715,7 @@ const Dashboard = () => {
                             
                             <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
-                                <h5 className="text-xs sm:text-base lg:text-xs xl:text-sm font-bold text-white truncate leading-snug tracking-tight">
+                                <h5 className="text-xs sm:text-base lg:text-xs xl:text-sm font-black text-white truncate leading-snug tracking-tight">
                                 {submission.title}
                               </h5>
                                 {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
@@ -1715,14 +1762,14 @@ const Dashboard = () => {
                                 {isEnquiryDeleted ? (
                                   <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50 border border-red-200 rounded-lg lg:rounded-md xl:rounded-lg">
                                     <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-red-600 flex-shrink-0" />
-                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-semibold text-red-700">
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-black text-red-900">
                                       Enquiry has been deleted
                                     </span>
                                   </div>
                                 ) : isEnquiryExpired ? (
                                   <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-orange-50 border border-orange-200 rounded-lg lg:rounded-md xl:rounded-lg">
                                     <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-orange-600 flex-shrink-0" />
-                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-semibold text-orange-700">
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-black text-orange-900">
                                       Enquiry expired - no longer active
                                     </span>
                                   </div>
@@ -1741,13 +1788,13 @@ const Dashboard = () => {
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
                                       )}
                                     </div>
-                                    <span className={`text-xs sm:text-sm lg:text-xs xl:text-sm ${
-                                      submission.status === 'approved' ? 'font-black text-green-900' : ''
+                                    <span className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-black ${
+                                      submission.status === 'approved' ? 'text-green-900' : 'text-amber-900'
                                     }`}>
                                 {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
                               </span>
                               {submission.status === 'approved' && (
-                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-900 font-black ml-0.5 sm:ml-1">
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-950 font-black ml-0.5 sm:ml-1">
                                   (Ready for chat)
                                 </span>
                                     )}
@@ -1759,8 +1806,8 @@ const Dashboard = () => {
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-600 font-medium">Experience: </span>
-                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 truncate">
+                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-black">Experience: </span>
+                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-bold truncate">
                                     {submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}
                                   </span>
                               </div>
@@ -1769,7 +1816,7 @@ const Dashboard = () => {
                             {/* Submission Time */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
                                 <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-400 flex-shrink-0" />
-                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500">
+                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-bold">
                                 Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
                                 </span>
                             </div>
@@ -1781,7 +1828,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="flex-1 sm:flex-none border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
+                                    className="flex-1 sm:flex-none border border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                                   Chat
@@ -1792,7 +1839,7 @@ const Dashboard = () => {
                                 variant="outline" 
                                 size="sm" 
                                 onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
-                                  className="flex-1 sm:flex-none border-4 border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="flex-1 sm:flex-none border border-black bg-white text-black hover:bg-gray-50 hover:border-black hover:text-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
@@ -1816,7 +1863,7 @@ const Dashboard = () => {
                         e.stopPropagation();
                         navigate('/my-responses');
                       }} 
-                      className="group/btn border-4 border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                      className="group/btn border border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
                     >
                       <span className="mr-2 tracking-tight">Show More</span>
                       <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
@@ -1830,17 +1877,17 @@ const Dashboard = () => {
           {/* Saved Enquiries Card - Seller View Only */}
           {viewMode === 'seller' && (
           <Card 
-            className="group cursor-pointer border-4 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
+            className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             style={{ position: 'relative', zIndex: 10 }}
           >
             {/* Professional Header - Matching Dashboard Style */}
-            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
               {/* Header Section with Title and Icon */}
               <div className="text-center mb-4 sm:mb-6">
                 <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  <div className="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex-shrink-0">
+                  <div className="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 border border-black rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex-shrink-0">
                     <Bookmark className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
                   </div>
                 </div>
@@ -1848,12 +1895,12 @@ const Dashboard = () => {
               </div>
               
               {/* Content Card - White Background */}
-              <div className="bg-white border-4 border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
-                <div className="text-center">
-                  <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                    Saved Enquiries
-                  </p>
-                </div>
+              <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                  <div className="text-center">
+                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
+                      did you find it?
+                    </p>
+                  </div>
               </div>
             </div>
             
@@ -1864,7 +1911,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-4 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
@@ -1879,7 +1926,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-4 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
@@ -1894,7 +1941,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-4 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
@@ -1936,8 +1983,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isExpired 
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
-                              : 'bg-white border-4 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
+                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header */}
@@ -1970,7 +2017,7 @@ const Dashboard = () => {
                                 {enquiry.description}
                               </p>
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-wrap">
-                                <Badge variant="secondary" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-gray-100 text-gray-900 border-4 border-black font-bold">{enquiry.category}</Badge>
+                                <Badge variant="secondary" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
                                 <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-900 font-black">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
                                 {enquiry.location && <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-bold">• {enquiry.location}</span>}
                       </div>
@@ -1983,7 +2030,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                 disabled={isExpired}
-                                className="w-full border-4 border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                className="w-full border border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
                                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                         View Details
@@ -2006,7 +2053,7 @@ const Dashboard = () => {
                       e.stopPropagation();
                       navigate('/saved-enquiries');
                     }}
-                    className="group/btn border-4 border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                    className="group/btn border border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
                   >
                     <span className="mr-2 tracking-tight">Show More</span>
                     <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
@@ -2020,28 +2067,37 @@ const Dashboard = () => {
           {/* Quick Actions Card - Always Visible */}
           <Card className="border-4 border-black shadow-xl bg-gradient-to-br from-white via-slate-50/50 to-white overflow-hidden rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 mb-4 sm:mb-6 lg:mb-8" onClick={(e) => e.stopPropagation()}>
             <CardContent className="p-5 sm:p-8 lg:p-8 xl:p-10">
-              <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-                <div className="flex items-center justify-center gap-2.5 sm:gap-3 lg:gap-3.5 mb-2 sm:mb-3 lg:mb-4">
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg sm:shadow-xl lg:shadow-2xl border-4 border-black">
-                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-white" />
+              {/* Header Section - Matching Dashboard Header */}
+              <div className="mb-6 sm:mb-8 lg:mb-10">
+                <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+                  {/* Content Card - White Background */}
+                  <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                    <div className="text-center">
+                      <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                        <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                          Quick Actions
+                        </h2>
+                      </div>
+                      <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                        in case you changed your mind
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <h3 className="text-lg sm:text-2xl lg:text-4xl xl:text-5xl font-black text-slate-900 mb-2 sm:mb-3 lg:mb-4 tracking-tight border-4 border-black rounded-lg px-4 py-2 lg:px-6 lg:py-3 inline-block">Quick Actions</h3>
-                <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed border-4 border-black rounded-lg px-4 py-2 lg:px-6 lg:py-3 mt-3 sm:mt-4 lg:mt-5 inline-block">Post your needs or help others with their requests</p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 xl:gap-10 items-stretch sm:items-center justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border-4 border-black hover:border-black">
+                  <button className="w-full bg-gradient-to-r from-blue-950 via-blue-950 to-blue-900 hover:from-blue-900 hover:via-blue-900 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black">
                     <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Post Your Need</span>
+                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Make a wish</span>
                   </button>
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border-4 border-black hover:border-black">
+                  <button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black">
                     <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Show All Enquiries</span>
+                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Be the genie</span>
                   </button>
                 </Link>
               </div>

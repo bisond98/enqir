@@ -46,7 +46,7 @@ export default function Footer() {
                 <div className="space-y-0.5 sm:space-y-1">
                   <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-foreground leading-tight">Enqir<span className="text-[10px] sm:text-xs">.in</span> Platform</h3>
                   <p className="text-[9px] sm:text-xs text-muted-foreground max-w-md leading-relaxed">
-                    they suggests we helps
+                    we curate for better deal closings
                   </p>
                 </div>
               </div>
