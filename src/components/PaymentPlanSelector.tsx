@@ -270,7 +270,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-relaxed">
           {isUpgrade 
             ? 'Unlock premium responses' 
-            : 'Select the plan that works best for you'
+            : 'Your call — upgrade enquiries anytime from the dashboard.'
           }
         </p>
       </div>

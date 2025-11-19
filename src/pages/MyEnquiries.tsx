@@ -400,7 +400,7 @@ const MyEnquiries = () => {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
           {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Back Button */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">
@@ -433,9 +433,9 @@ const MyEnquiries = () => {
           {/* Professional Post New Enquiry Button */}
           <div className="flex justify-center mb-6 sm:mb-10 lg:mb-12">
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-                <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-gray-800 hover:border-gray-900 flex items-center justify-center gap-2 sm:gap-3">
+                <Button variant="outline" className="w-full sm:w-auto !bg-black hover:!bg-gray-900 !text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black hover:border-black flex items-center justify-center gap-2 sm:gap-3">
                 <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <span>post a fu**in' need</span>
+                <span>We wish — but only legal needs.</span>
               </Button>
             </Link>
           </div>
@@ -466,7 +466,7 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
                       <div className="flex items-center justify-center mb-3 sm:mb-4">
                         <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                           <TrendingUp className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
@@ -482,7 +482,7 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.2 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
                       <div className="flex items-center justify-center mb-3 sm:mb-4">
                         <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                           <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
@@ -498,7 +498,7 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.3 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
                       <div className="flex items-center justify-center mb-3 sm:mb-4">
                         <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                           <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
@@ -514,7 +514,7 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.4 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
+                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
                       <div className="flex items-center justify-center mb-3 sm:mb-4">
                         <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                           <Star className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
@@ -536,7 +536,7 @@ const MyEnquiries = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-gray-800 border-dashed shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
+              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-black border-dashed shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
                 <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
                   <Eye className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
                 </div>

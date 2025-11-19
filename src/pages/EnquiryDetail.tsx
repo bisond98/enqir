@@ -496,25 +496,28 @@ const EnquiryDetail = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-4 lg:px-6 py-5 sm:py-6">
-          {/* Header */}
-          <div className="mb-5 sm:mb-6">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="mb-4 sm:mb-4 p-2.5 hover:bg-slate-100 rounded-xl h-11 w-11 sm:h-10 sm:w-10 min-h-[44px] min-w-[44px] transition-all duration-200"
-            >
-              <ArrowLeft className="h-5 w-5 sm:h-5 sm:w-5" />
-            </Button>
-            
-            {/* Enquiry Card - Professional Design */}
-            <Card className="border border-gray-200 shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white">
-              {/* Card Header - Enhanced Gray Background */}
-              <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
-                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-2 mb-3 sm:mb-3">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-2">
+          {/* Header - Matching Dashboard Style */}
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              {/* Back Button */}
+              <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(-1)}
+                  className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              </div>
+              
+              {/* Content Card - White Background */}
+              <div className="bg-white border-4 border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                <div className="text-center">
+                  {/* Badges Row */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     {(enquiry.userProfileVerified || enquiry.isIdentityVerified) && (
                       <div title="Verified Enquiry" className="flex-shrink-0">
-                        <CheckCircle className="h-4 w-4 sm:h-4 sm:w-4 text-blue-400" />
+                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                       </div>
                     )}
                     {user && user.uid === enquiry.userId && enquiry.isPremium && (
@@ -529,50 +532,51 @@ const EnquiryDetail = () => {
                         Urgent
                       </Badge>
                     )}
+                    {getStatusBadge(enquiry.status)}
                   </div>
-                  {/* Live badge positioned on the right */}
-                  {getStatusBadge(enquiry.status)}
-                </div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight tracking-tight">
-                  <div className="flex flex-col gap-3 sm:gap-4 md:gap-5">
-                    {/* Main Title Row */}
-                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 flex-wrap">
-                      <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-gray-300">Need</span>
-                      <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">{enquiry.title}</span>
-                    </div>
-                    
-                    {/* Deadline Row - Creative Design */}
-                    {enquiry.deadline && (
-                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-gray-300">before</span>
-                        <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-white/15 via-white/10 to-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                          {/* Countdown Timer with Icon */}
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/90" />
-                            <CountdownTimer 
-                              deadline={enquiry.deadline} 
-                              showIcon={false} 
-                              className="[&_*]:!text-white [&_*]:!border-white/40 [&_*]:!bg-white/20 [&_*]:!shadow-lg [&_*]:!font-semibold" 
-                            />
-                          </div>
-                          
-                          {/* Date Separator and Display */}
-                          {formatDeadlineReadable(enquiry.deadline) && (
-                            <>
-                              <div className="hidden sm:block w-px h-4 sm:h-5 bg-white/30"></div>
-                              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-white/95">
-                                <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white/80" />
-                                <span>{formatDeadlineReadable(enquiry.deadline)}</span>
-                              </span>
-                            </>
-                          )}
+                  
+                  {/* Main Title */}
+                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words max-w-full">
+                      {enquiry.title}
+                    </h2>
+                  </div>
+                  
+                  {/* Deadline Row - Creative Design */}
+                  {enquiry.deadline && (
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mb-2 sm:mb-3">
+                      <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-slate-600">before</span>
+                      <div className="inline-flex items-center gap-2 sm:gap-3 bg-slate-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 border-4 border-black shadow-sm">
+                        {/* Countdown Timer with Icon */}
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-700" />
+                          <CountdownTimer 
+                            deadline={enquiry.deadline} 
+                            showIcon={false} 
+                            className="[&_*]:!text-slate-800 [&_*]:!border-slate-300 [&_*]:!bg-white [&_*]:!font-semibold" 
+                          />
                         </div>
+                        
+                        {/* Date Separator and Display */}
+                        {formatDeadlineReadable(enquiry.deadline) && (
+                          <>
+                            <div className="hidden sm:block w-px h-4 sm:h-5 bg-slate-300"></div>
+                            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-slate-700">
+                              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-600" />
+                              <span>{formatDeadlineReadable(enquiry.deadline)}</span>
+                            </span>
+                          </>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </h1>
+                    </div>
+                  )}
+                </div>
               </div>
-              
+            </div>
+          </div>
+          
+          {/* Enquiry Card - Professional Design */}
+          <Card className="border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white mb-5 sm:mb-6">
               {/* Card Content - Enhanced White Background */}
               <CardContent className="p-5 sm:p-5 lg:p-6">
                 <div className="space-y-4 sm:space-y-4">
@@ -583,7 +587,7 @@ const EnquiryDetail = () => {
                   
                   {/* Reference Images Section - Only on Detailed Page */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
-                    <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-gray-200">
+                    <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t-4 border-black">
                       <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2.5">
                         <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4" />
                         Reference Images ({enquiry.referenceImages.length})
@@ -595,7 +599,7 @@ const EnquiryDetail = () => {
                         {enquiry.referenceImages.map((imageUrl, index) => (
                           <div 
                             key={index} 
-                            className="relative group cursor-pointer aspect-square rounded-xl overflow-hidden border-2 border-gray-200 hover:border-blue-400 transition-all duration-200 hover:shadow-lg"
+                            className="relative group cursor-pointer aspect-square rounded-xl overflow-hidden border-4 border-black hover:border-blue-400 transition-all duration-200 hover:shadow-lg"
                             onClick={() => window.open(imageUrl, '_blank')}
                           >
                             <img
@@ -618,15 +622,14 @@ const EnquiryDetail = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="border border-gray-200 shadow-lg rounded-3xl sm:rounded-2xl bg-white">
-                {/* Card Header - Enhanced Gray Background */}
-                <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+              <Card className="border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+                {/* Card Header - Black Background */}
+                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
                   <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
                     <Tag className="h-4 w-4 sm:h-4 sm:w-4" />
                     Enquiry Details
@@ -636,7 +639,7 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="p-4 sm:p-5 lg:p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
                       <div className="flex items-center gap-3 sm:gap-3">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-green-600" />
@@ -648,7 +651,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
                       <div className="flex items-center gap-3 sm:gap-3">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-blue-600" />
@@ -660,7 +663,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
                       <div className="flex items-center gap-3 sm:gap-3">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Tag className="h-6 w-6 sm:h-6 sm:w-6 text-gray-600" />
@@ -674,7 +677,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
                       <div className="flex items-center gap-3 sm:gap-3">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-orange-600" />
@@ -693,7 +696,7 @@ const EnquiryDetail = () => {
                     </div>
                     
                     {enquiry.createdAt && (
-                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
                         <div className="flex items-center gap-3 sm:gap-3">
                           <div className="w-12 h-12 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                             <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-purple-600" />
@@ -710,7 +713,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   {enquiry.notes && (
-                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t border-gray-200">
+                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-4 border-black">
                       <p className="text-sm sm:text-sm font-bold text-slate-800 mb-3 sm:mb-3 flex items-center gap-2.5">
                         <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
                         Additional Notes
@@ -761,9 +764,9 @@ const EnquiryDetail = () => {
             {/* Sidebar */}
             <div className="space-y-4 sm:space-y-6">
               {/* Action Buttons - Professional Design */}
-              <Card className="border border-gray-200 shadow-lg rounded-3xl sm:rounded-2xl bg-white">
-                {/* Card Header - Enhanced Gray Background */}
-                <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+              <Card className="border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+                {/* Card Header - Black Background */}
+                <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
                   <h3 className="text-sm sm:text-sm md:text-base font-bold text-white">
                     {user && enquiry.userId === user.uid ? 'Your Enquiry' : 'Ready to Respond?'}
                   </h3>
@@ -777,7 +780,7 @@ const EnquiryDetail = () => {
                         <p className="text-xs sm:text-xs text-gray-600 mb-4 leading-relaxed">View responses and manage from dashboard</p>
                         <Button
                           disabled
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm bg-gray-100 text-gray-500 cursor-not-allowed min-h-[44px] rounded-xl font-semibold"
+                          className="w-full h-12 sm:h-11 text-sm sm:text-sm bg-blue-500 text-white cursor-not-allowed min-h-[44px] rounded-xl font-semibold"
                         >
                           <MessageSquare className="h-4 w-4 mr-2" />
                           Your Enquiry
@@ -785,7 +788,7 @@ const EnquiryDetail = () => {
                         <Button
                           onClick={() => navigate('/dashboard')}
                           variant="outline"
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-2 border-gray-300 min-h-[44px] rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200"
+                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200"
                         >
                           View Dashboard
                         </Button>
@@ -811,7 +814,7 @@ const EnquiryDetail = () => {
                           })();
                           return !isExpired;
                         })() && (
-                          <div className="pt-3 border-t border-gray-200">
+                          <div className="pt-3 border-t-4 border-black">
                             <Button
                               onClick={handleUpgradeClick}
                               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-semibold shadow-md hover:shadow-lg transition-all duration-200 rounded-xl min-h-[44px]"
@@ -844,13 +847,13 @@ const EnquiryDetail = () => {
                       })()
                     )}
                     
-                    <div className="flex gap-3 sm:gap-3 pt-4 border-t border-gray-200">
+                    <div className="flex gap-3 sm:gap-3 pt-4 border-t-4 border-black">
                       <Button
                         variant="outline"
                         onClick={handleSave}
-                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-2 border-gray-300 min-h-[44px] rounded-xl font-semibold transition-all duration-200 ${
+                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold transition-all duration-200 ${
                           savedEnquiries.includes(enquiry.id) 
-                            ? 'bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-100' 
+                            ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
                             : 'hover:bg-gray-50'
                         }`}
                       >
@@ -860,7 +863,7 @@ const EnquiryDetail = () => {
                       
                       <Button 
                         variant="outline" 
-                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-2 border-gray-300 min-h-[44px] rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200"
+                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200"
                         onClick={handleShare}
                       >
                         <Share2 className="h-4 w-4 mr-1.5" />
@@ -873,7 +876,7 @@ const EnquiryDetail = () => {
 
               {/* User Profile - Professional Design */}
               {userProfile && (
-                <Card className="border border-gray-200 shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+                <Card className="border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
                   {/* Card Header - Enhanced Gray Background */}
                   <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
                     <h3 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
@@ -899,7 +902,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     {userProfile.location && (
-                      <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                      <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border-4 border-black shadow-sm">
                         <div className="flex items-center gap-2.5 text-gray-700">
                           <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
                           <span className="font-semibold text-sm sm:text-sm truncate">{userProfile.location}</span>

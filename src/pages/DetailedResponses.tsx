@@ -472,7 +472,7 @@ const DetailedResponses = () => {
                             {response.imageUrls.map((imageUrl, imgIndex) => (
                               <div
                                 key={imgIndex}
-                                className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                                className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-4 border-black cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => handleImageClick(imageUrl)}
                               >
                                 <img

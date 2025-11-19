@@ -1542,24 +1542,33 @@ export default function PostEnquiry() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-6 sm:py-8 lg:py-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header - Enhanced Professional Design */}
-          <div className="mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-gray-200/50">
-            {/* Header Section - Premium Gray Background */}
-            <div className="bg-gradient-to-r from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-7 relative">
-              <Button
-                variant="ghost"
-                onClick={() => window.history.back()}
-                className="absolute left-5 sm:left-6 lg:left-8 top-5 sm:top-6 lg:top-7 p-2.5 sm:p-3 hover:bg-gray-700/80 rounded-xl text-white transition-all duration-200 hover:scale-105 flex-shrink-0 z-10"
-              >
-                <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-              </Button>
-              <div className="text-center flex flex-col items-center justify-center gap-1.5 sm:gap-2 w-full">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                  Post Enquiry
-                </h1>
-                <p className="text-gray-300 text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                  what in the world are you looking for?
-                </p>
+          {/* Header - Matching Dashboard Style */}
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              {/* Back Button */}
+              <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              </div>
+              
+              {/* Content Card - White Background */}
+              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                <div className="text-center">
+                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                      Post Enquiry
+                    </h2>
+                  </div>
+                  <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    What in the f***n world are you looking for?
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1597,14 +1606,14 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design */}
           {!isSubmitted && (
-            <Card className="border border-gray-800 shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden" style={{ borderWidth: '1px' }}>
+            <Card className="border border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden" style={{ borderWidth: '1px' }}>
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {category === "jobs" ? "Job Title" : "What you need"}
+                      {category === "jobs" ? "Job Title" : "What do you need? From a 4 a.m. tea spot to a piece of the moon."}
                     </Label>
                     <Input
                       id="title"
@@ -1803,7 +1812,7 @@ export default function PostEnquiry() {
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="description" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
+                      {selectedCategories.includes("jobs") ? "Job Description" : "explain"}
                     </Label>
                     <Textarea
                       id="description"
@@ -1824,7 +1833,7 @@ export default function PostEnquiry() {
                       Reference Images (Optional)
                     </Label>
                     <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">
-                      Add up to 5 reference images to help sellers understand what you're looking for
+                      What if they end up misunderstanding you?
                     </p>
                     
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
