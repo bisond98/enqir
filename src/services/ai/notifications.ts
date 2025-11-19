@@ -444,10 +444,22 @@ class SmartNotificationService {
    */
   async clearAllNotifications(userId: string): Promise<void> {
     try {
+      // Clear from localStorage
       const key = `notifications_${userId}`;
       localStorage.removeItem(key);
+      
+      // Also clear any related notification keys
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(storageKey => {
+        if (storageKey.includes(`notification`) && storageKey.includes(userId)) {
+          localStorage.removeItem(storageKey);
+        }
+      });
+      
+      console.log('✅ All notifications cleared from localStorage for user:', userId);
     } catch (error) {
-      console.error('Failed to clear notifications:', error);
+      console.error('❌ Failed to clear notifications:', error);
+      throw error; // Re-throw to allow error handling in UI
     }
   }
 }

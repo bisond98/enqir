@@ -69,16 +69,28 @@ const Notifications = () => {
     }
   };
 
-  const handleClearAll = () => {
-    if (!clearAllNotifications) return;
-    setConfirmTitle('Delete All Notifications');
+  const handleClearAll = async () => {
+    if (!clearAllNotifications) {
+      console.error('clearAllNotifications function not available');
+      return;
+    }
+    
+    // Show confirmation modal
+    setConfirmTitle('Clear All Notifications');
     setConfirmMessage('Are you sure you want to delete all notifications? This action cannot be undone.');
     setConfirmAction(async () => {
       try {
+        console.log('Clearing all notifications...');
         await clearAllNotifications();
+        console.log('✅ All notifications cleared successfully');
         setShowConfirmModal(false);
+        // Force a small delay to ensure state updates
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } catch (error) {
-        console.error('Failed to clear notifications:', error);
+        console.error('❌ Failed to clear notifications:', error);
+        alert('Failed to clear notifications. Please try again.');
         setShowConfirmModal(false);
       }
     });
@@ -136,7 +148,7 @@ const Notifications = () => {
                           console.error('Failed to mark all as read:', error);
                         }
                       }}
-                      className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px]"
+                      className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800"
                     >
                       <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span className="hidden sm:inline">Mark all read</span>
@@ -145,7 +157,8 @@ const Notifications = () => {
                   )}
                   <button
                     onClick={handleClearAll}
-                    className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px]"
+                    disabled={!clearAllNotifications}
+                    className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">Clear all</span>
