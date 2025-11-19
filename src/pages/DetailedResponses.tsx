@@ -252,6 +252,15 @@ const DetailedResponses = () => {
 
   const visibleResponses = getVisibleResponses();
 
+  // Check if enquiry is expired
+  const isEnquiryExpired = enquiry && enquiry.deadline ? (() => {
+    const now = new Date();
+    const deadlineDate = typeof enquiry.deadline === 'string' 
+      ? new Date(enquiry.deadline) 
+      : (enquiry.deadline as any)?.toDate ? (enquiry.deadline as any).toDate() : new Date(enquiry.deadline);
+    return deadlineDate < now;
+  })() : false;
+
   return (
     <Layout>
       <div className="min-h-screen bg-slate-50">
@@ -269,12 +278,27 @@ const DetailedResponses = () => {
             </div>
 
             {/* Enquiry Summary Card - Matching Dashboard Style */}
-            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-3 sm:mb-6">
+            <Card className={`border-2 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-3 sm:mb-6 ${
+              isEnquiryExpired 
+                ? 'border-orange-300 opacity-75' 
+                : 'border-blue-200'
+            }`}>
               {/* Card Header - Gray Background */}
-              <div className="bg-gray-800 px-2 sm:px-4 py-2 sm:py-3">
-                <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-white mb-1 sm:mb-2">
-                  {enquiry.title}
-                </h1>
+              <div className={`px-2 sm:px-4 py-2 sm:py-3 ${
+                isEnquiryExpired 
+                  ? 'bg-orange-900' 
+                  : 'bg-gray-800'
+              }`}>
+                <div className="flex items-center justify-between gap-2 mb-1 sm:mb-2">
+                  <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-white">
+                    {enquiry.title}
+                  </h1>
+                  {isEnquiryExpired && (
+                    <Badge className="bg-orange-500/30 text-orange-100 border-orange-400/40 text-[9px] sm:text-xs px-2 py-0.5">
+                      Expired
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-300">
                   <div className="flex items-center gap-1">
                     <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -320,7 +344,17 @@ const DetailedResponses = () => {
                     )}
                   </div>
                   
-                  {user && enquiry.userId === user.uid && (() => {
+                  {isEnquiryExpired && (
+                    <div className="pt-2 sm:pt-3 border-t border-orange-200">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
+                        <Clock className="h-4 w-4 text-orange-600 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold text-orange-800">
+                          This enquiry has expired and is no longer active
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {!isEnquiryExpired && user && enquiry.userId === user.uid && (() => {
                     const enquiryPlan = enquiry.selectedPlanId || 'free';
                     // Don't show upgrade button for premium (top tier) or pro
                     if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
@@ -348,8 +382,8 @@ const DetailedResponses = () => {
               </CardContent>
             </Card>
 
-            {/* Payment Plan Selector - Only show for enquiry owner if not premium */}
-            {user && enquiry && user.uid === enquiry.userId && !enquiry.isPremium && (
+            {/* Payment Plan Selector - Only show for enquiry owner if not premium and not expired */}
+            {!isEnquiryExpired && user && enquiry && user.uid === enquiry.userId && !enquiry.isPremium && (
               <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl mb-3 sm:mb-6">
                 <CardContent className="p-3 sm:p-4 lg:p-6">
                   <div className="text-center mb-3 sm:mb-4">
@@ -389,7 +423,11 @@ const DetailedResponses = () => {
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {visibleResponses.map((response, index) => (
-                  <Card key={response.id} className="border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl sm:rounded-2xl overflow-hidden">
+                  <Card key={response.id} className={`border-2 shadow-sm transition-all duration-200 rounded-xl sm:rounded-2xl overflow-hidden ${
+                    isEnquiryExpired 
+                      ? 'border-orange-300 opacity-75 pointer-events-none' 
+                      : 'border-blue-200 hover:shadow-md'
+                  }`}>
                     {/* Header - Gray Background */}
                     <div className="bg-gray-800 px-2 sm:px-3 py-2 sm:py-2.5">
                       <div className="flex items-start justify-between gap-2">
@@ -459,6 +497,7 @@ const DetailedResponses = () => {
                         </div>
                         <Button
                           onClick={() => handleChatClick(response)}
+                          disabled={isEnquiryExpired}
                           size="sm"
                           className="h-7 sm:h-8 text-[9px] sm:text-[10px] bg-gray-800 hover:bg-gray-900 text-white px-2 sm:px-3"
                         >

@@ -276,13 +276,34 @@ const Dashboard = () => {
         return dateB.getTime() - dateA.getTime();
       });
       
+      // Fetch enquiry data for each response to check expiration
+      const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
+      const enquiryDataMap: {[key: string]: Enquiry} = {};
+      await Promise.all(
+        enquiryIds.map(async (enquiryId) => {
+          try {
+            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+            if (enquiryDoc.exists()) {
+              enquiryDataMap[enquiryId] = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
+            }
+          } catch (error) {
+            console.error('Error fetching enquiry for response:', enquiryId, error);
+          }
+        })
+      );
+      
+      // Add enquiry data to state for expiration checks
+      setEnquiries(prev => {
+        const combined = { ...prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry}), ...enquiryDataMap };
+        return Object.values(combined);
+      });
+      
       console.log('Dashboard: ✅ Seller submissions loaded from fetchDashboardData:', submissionsData.length);
       console.log('Dashboard: Setting seller submissions state NOW');
       setSellerSubmissions(submissionsData);
       setResponsesSummary(submissionsData);
       
-      // Check which enquiries are deleted
-      const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
+      // Check which enquiries are deleted (using the same enquiryIds from above)
       const deletedSet = new Set<string>();
       
       // Check each enquiry to see if it exists
@@ -429,7 +450,8 @@ const Dashboard = () => {
         const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
         const deletedSet = new Set<string>();
         
-        // Check each enquiry to see if it exists
+        // Check each enquiry to see if it exists and fetch data for expiration checks
+        const enquiryDataMap: {[key: string]: Enquiry} = {};
         Promise.all(
           enquiryIds.map(async (enquiryId) => {
             try {
@@ -437,6 +459,9 @@ const Dashboard = () => {
               if (!enquiryDoc.exists()) {
                 deletedSet.add(enquiryId);
                 console.log('🔍 Dashboard: Enquiry deleted (realtime):', enquiryId);
+              } else {
+                // Store enquiry data for expiration checks
+                enquiryDataMap[enquiryId] = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
               }
             } catch (error) {
               console.error('Error checking enquiry:', enquiryId, error);
@@ -446,6 +471,12 @@ const Dashboard = () => {
         ).then(() => {
           setDeletedEnquiries(deletedSet);
           console.log('Dashboard: Deleted enquiries (realtime):', Array.from(deletedSet));
+          
+          // Update enquiries state with fetched enquiry data
+          setEnquiries(prev => {
+            const combined = { ...prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry}), ...enquiryDataMap };
+            return Object.values(combined);
+          });
         });
         
         setResponsesReady(true);
@@ -1469,6 +1500,13 @@ const Dashboard = () => {
                     <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                       {responsesSummary.slice(0, 3).map((submission) => {
                         const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
+                        // Check if enquiry is expired
+                        const enquiry = enquiries.find(e => e.id === submission.enquiryId);
+                        const isEnquiryExpired = enquiry && enquiry.deadline ? (() => {
+                          const now = new Date();
+                          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                          return deadlineDate < now;
+                        })() : false;
                         return (
                         <motion.div
                           key={submission.id}
@@ -1476,14 +1514,14 @@ const Dashboard = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
-                            isEnquiryDeleted
+                            isEnquiryDeleted || isEnquiryExpired
                               ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-800 shadow-sm'
                               : 'bg-white border border-gray-800 hover:border-gray-900 hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
-                            isEnquiryDeleted ? 'opacity-70' : ''
+                            isEnquiryDeleted || isEnquiryExpired ? 'opacity-70' : ''
                           }`}>
                             {/* Elegant pattern overlay */}
                             <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
@@ -1507,6 +1545,12 @@ const Dashboard = () => {
                                 {isEnquiryDeleted && (
                                   <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
                                     Enquiry Deleted
+                                  </Badge>
+                                )}
+                                {/* Enquiry Expired Badge */}
+                                {!isEnquiryDeleted && isEnquiryExpired && (
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-orange-500/25 text-orange-200 border border-orange-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                    Enquiry Expired
                                   </Badge>
                                 )}
                               {/* Status Badge */}
@@ -1536,6 +1580,13 @@ const Dashboard = () => {
                                     <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-red-600 flex-shrink-0" />
                                     <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-semibold text-red-700">
                                       Enquiry has been deleted
+                                    </span>
+                                  </div>
+                                ) : isEnquiryExpired ? (
+                                  <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-orange-50 border border-orange-200 rounded-lg lg:rounded-md xl:rounded-lg">
+                                    <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-orange-600 flex-shrink-0" />
+                                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-semibold text-orange-700">
+                                      Enquiry expired - no longer active
                                     </span>
                                   </div>
                                 ) : (
@@ -1588,7 +1639,7 @@ const Dashboard = () => {
 
                             {/* Action Buttons */}
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
-                                {submission.status === 'approved' && !isEnquiryDeleted && (
+                                {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1605,7 +1656,7 @@ const Dashboard = () => {
                                 size="sm" 
                                 onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
                                   className="flex-1 sm:flex-none border border-gray-800 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-900 hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                                  disabled={isEnquiryDeleted}
+                                  disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                                 View Details
