@@ -284,7 +284,22 @@ const Dashboard = () => {
           try {
             const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
             if (enquiryDoc.exists()) {
-              enquiryDataMap[enquiryId] = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
+              const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
+              enquiryDataMap[enquiryId] = enquiryData;
+              // Log expiry check for debugging
+              if (enquiryData.deadline) {
+                const now = new Date();
+                let deadlineDate: Date;
+                if (enquiryData.deadline && typeof enquiryData.deadline === 'object' && 'toDate' in enquiryData.deadline) {
+                  deadlineDate = (enquiryData.deadline as any).toDate();
+                } else {
+                  deadlineDate = new Date(enquiryData.deadline);
+                }
+                const isExpired = deadlineDate.getTime() < now.getTime();
+                if (isExpired) {
+                  console.log('🔍 Dashboard: Found expired enquiry for response:', enquiryId, 'deadline:', deadlineDate);
+                }
+              }
             }
           } catch (error) {
             console.error('Error fetching enquiry for response:', enquiryId, error);
@@ -292,9 +307,10 @@ const Dashboard = () => {
         })
       );
       
-      // Add enquiry data to state for expiration checks
+      // Add enquiry data to state for expiration checks (merge with existing)
       setEnquiries(prev => {
-        const combined = { ...prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry}), ...enquiryDataMap };
+        const prevMap = prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry});
+        const combined = { ...prevMap, ...enquiryDataMap };
         return Object.values(combined);
       });
       
@@ -1500,13 +1516,29 @@ const Dashboard = () => {
                     <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                       {responsesSummary.slice(0, 3).map((submission) => {
                         const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
-                        // Check if enquiry is expired
+                        // Check if enquiry is expired - must fetch if not in state
                         const enquiry = enquiries.find(e => e.id === submission.enquiryId);
-                        const isEnquiryExpired = enquiry && enquiry.deadline ? (() => {
-                          const now = new Date();
-                          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                          return deadlineDate < now;
-                        })() : false;
+                        const isEnquiryExpired = (() => {
+                          if (!enquiry || !enquiry.deadline) return false;
+                          try {
+                            const now = new Date();
+                            let deadlineDate: Date;
+                            if (enquiry.deadline && typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+                              deadlineDate = (enquiry.deadline as any).toDate();
+                            } else if (typeof enquiry.deadline === 'string' || typeof enquiry.deadline === 'number') {
+                              deadlineDate = new Date(enquiry.deadline);
+                            } else if (enquiry.deadline instanceof Date) {
+                              deadlineDate = enquiry.deadline;
+                            } else {
+                              return false;
+                            }
+                            if (!deadlineDate || isNaN(deadlineDate.getTime())) return false;
+                            return deadlineDate.getTime() < now.getTime();
+                          } catch (error) {
+                            console.error('Error checking expiry for enquiry:', submission.enquiryId, error);
+                            return false;
+                          }
+                        })();
                         return (
                         <motion.div
                           key={submission.id}
