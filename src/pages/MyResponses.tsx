@@ -330,7 +330,7 @@ const MyResponses = () => {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
           {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Back Button */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">
@@ -345,7 +345,7 @@ const MyResponses = () => {
               </div>
               
               {/* Content Card - White Background */}
-              <div className="bg-white border border-gray-800 rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
                   <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
                     <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
@@ -362,25 +362,25 @@ const MyResponses = () => {
 
           {/* Stats Summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-8">
-            <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+            <Card className="border-2 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
               <CardContent className="p-2 sm:p-3 text-center">
                 <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.length}</h3>
                 <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Total</p>
               </CardContent>
             </Card>
-            <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+            <Card className="border-2 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
               <CardContent className="p-2 sm:p-3 text-center">
                 <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</h3>
                 <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Approved</p>
               </CardContent>
             </Card>
-            <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+            <Card className="border-2 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
               <CardContent className="p-2 sm:p-3 text-center">
                 <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</h3>
                 <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Pending</p>
               </CardContent>
             </Card>
-            <Card className="border border-gray-800 bg-white rounded-lg sm:rounded-xl overflow-hidden">
+            <Card className="border-2 border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
               <CardContent className="p-2 sm:p-3 text-center">
                 <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</h3>
                 <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Rejected</p>
@@ -390,8 +390,8 @@ const MyResponses = () => {
 
           {/* Responses List */}
           {sellerSubmissions.length === 0 ? (
-            <Card className="p-12 text-center border border-gray-800 shadow-lg">
-              <div className="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Card className="p-12 text-center border-2 border-black shadow-lg">
+              <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center mx-auto mb-6">
                 <Rocket className="h-10 w-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">You never responded to any enquiry</h3>
@@ -399,7 +399,7 @@ const MyResponses = () => {
                 You haven't submitted any responses to buyer enquiries yet. Start helping others by responding to their requests and needs!
               </p>
               <Link to="/enquiries">
-                <Button className="bg-gray-800 hover:bg-gray-900 text-white px-8 py-3 border border-gray-800 hover:border-gray-900">
+                <Button className="bg-black hover:bg-gray-900 text-white px-8 py-3 border-2 border-black hover:border-black">
                   <Rocket className="h-5 w-5 mr-2" />
                   Browse Enquiries
                 </Button>
@@ -412,7 +412,7 @@ const MyResponses = () => {
                 const isEnquiryDeleted = !enquiry; // Enquiry is deleted if it doesn't exist in enquiries object
                 const isExpired = isEnquiryExpired(submission.enquiryId);
                 return (
-                  <Card key={submission.id} className={`border border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-gray-900'}`}>
+                  <Card key={submission.id} className={`border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
                     {/* Card Header - Compact gray background */}
                     <div className={`bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
@@ -525,7 +525,7 @@ const MyResponses = () => {
                               variant="outline" 
                               size="sm" 
                               disabled={isExpired || isEnquiryDeleted}
-                              className="w-full border border-gray-800 hover:border-gray-900 text-blue-700 hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
+                              className="w-full border-2 border-black hover:border-black text-blue-700 hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
                               onClick={(e) => {
                                 if (isExpired || isEnquiryDeleted) {
                                   e.preventDefault();
@@ -573,7 +573,7 @@ const MyResponses = () => {
                                   variant="outline" 
                                   size="sm" 
                                   disabled={isExpired || isEnquiryDeleted}
-                                  className="w-full sm:w-auto border border-gray-800 hover:border-gray-900 bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-xs sm:text-sm h-9 sm:h-10"
+                                  className="w-full sm:w-auto border-2 border-black hover:border-black bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-xs sm:text-sm h-9 sm:h-10"
                                   onClick={(e) => {
                                     if (isExpired || isEnquiryDeleted) {
                                       e.preventDefault();
@@ -601,7 +601,7 @@ const MyResponses = () => {
                                   variant="outline" 
                                   size="sm" 
                                   disabled={isExpired}
-                                  className="w-full sm:w-auto border border-gray-800 hover:border-gray-900 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm h-9 sm:h-10"
+                                  className="w-full sm:w-auto border-2 border-black hover:border-black text-blue-700 hover:bg-blue-50 text-xs sm:text-sm h-9 sm:h-10"
                                   onClick={(e) => {
                                     if (isExpired) {
                                       e.preventDefault();
@@ -634,7 +634,7 @@ const MyResponses = () => {
                     <Button
                       onClick={() => setShowAll(true)}
                       variant="outline"
-                      className="border border-gray-800 hover:border-gray-900 text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
+                      className="border-2 border-black hover:border-black text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
                     >
                       View More ({sortedSubmissions.length - 7} more)
                     </Button>
@@ -645,7 +645,7 @@ const MyResponses = () => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       variant="outline"
-                      className="border border-gray-800 hover:border-gray-900 text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
+                      className="border-2 border-black hover:border-black text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-6 py-2.5 sm:py-3 h-10 sm:h-11"
                     >
                       View Less
                     </Button>

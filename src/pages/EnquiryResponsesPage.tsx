@@ -421,7 +421,7 @@ const EnquiryResponsesPage = () => {
         
         {/* Sorting Controls - Mobile Optimized */}
         {visibleResponses.length > 1 && (
-          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-gray-800 rounded-xl sm:rounded-2xl border border-gray-700">
+          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-black rounded-xl sm:rounded-2xl border border-gray-700">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 space-y-1.5 sm:space-y-0">
               <h3 className="text-white font-bold text-xs sm:text-base">Sort Responses</h3>
               <span className="text-gray-300 text-[10px] sm:text-sm font-medium">{visibleResponses.length} responses</span>
@@ -440,7 +440,7 @@ const EnquiryResponsesPage = () => {
                     <ChevronDown className="h-3 w-3 ml-1 sm:ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full sm:w-56 bg-gray-800 border-gray-600">
+                <DropdownMenuContent className="w-full sm:w-56 bg-black border-gray-600">
                   <DropdownMenuItem
                     onClick={() => {
                       console.log('🔍 Price high sort clicked');
@@ -477,7 +477,7 @@ const EnquiryResponsesPage = () => {
                     <ChevronDown className="h-3 w-3 ml-1 sm:ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full sm:w-56 bg-gray-800 border-gray-600">
+                <DropdownMenuContent className="w-full sm:w-56 bg-black border-gray-600">
                   <DropdownMenuItem
                     onClick={() => {
                       console.log('🔍 Newest sort clicked');

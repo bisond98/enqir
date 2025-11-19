@@ -255,7 +255,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
             
             {user ? (
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg shadow-sm">
+                <div className="flex items-center space-x-3 p-3 bg-black rounded-lg shadow-sm">
                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
                     <User className="h-5 w-5 text-white" />
                   </div>
@@ -278,7 +278,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </Badge>
                   {/* PRO BADGE - KEPT FOR FUTURE UPDATES */}
                   {/* {proRemainingCount > 0 && (
-                    <Badge className="bg-gray-800 text-white text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5">
+                    <Badge className="bg-black text-white text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5">
                       <Crown className="h-3 w-3" />
                       <span>Pro</span>
                       <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-[9px]">{proRemainingCount}</span>
@@ -293,7 +293,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </div>
                 <p className="text-gray-600 mb-3 text-sm">Not signed in</p>
                 <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-gray-800 hover:bg-gray-900 text-white font-medium text-sm h-9 rounded-lg">
+                  <Button className="w-full bg-black hover:bg-gray-900 text-white font-medium text-sm h-9 rounded-lg">
                     Sign In
                   </Button>
                 </Link>
@@ -319,7 +319,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group ${
                       isActive(item.path)
-                          ? "bg-gray-800 text-white shadow-sm"
+                          ? "bg-black text-white shadow-sm"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -404,7 +404,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 active:outline-none"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                  <div className="hidden sm:flex w-7 h-7 sm:w-10 sm:h-10 bg-gray-800 rounded-lg sm:rounded-xl items-center justify-center shadow-lg">
+                  <div className="hidden sm:flex w-7 h-7 sm:w-10 sm:h-10 bg-black rounded-lg sm:rounded-xl items-center justify-center shadow-lg">
                   </div>
                         <span className="text-lg sm:text-2xl font-bold text-foreground hidden sm:block">Enqir<span className="text-sm">.in</span></span>
                 </button>
@@ -511,7 +511,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   {/* PRO BADGE - KEPT FOR FUTURE UPDATES */}
                   {/* Pro Badge */}
                   {/* {proRemainingCount > 0 && (
-                    <Badge className="bg-gray-800 text-white px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold flex items-center gap-1 sm:gap-1.5 shadow-md">
+                    <Badge className="bg-black text-white px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold flex items-center gap-1 sm:gap-1.5 shadow-md">
                       <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="hidden sm:inline">Pro</span>
                       <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-xs">{proRemainingCount}</span>
@@ -577,7 +577,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="h-9 w-9 p-0 hover:bg-gray-800/10 rounded-lg transition-all duration-200 active:scale-95"
+                        className="h-9 w-9 p-0 hover:bg-black/10 rounded-lg transition-all duration-200 active:scale-95"
                         onClick={() => setMobileMenuOpen(true)}
                       >
                         <Menu className="h-5 w-5 text-gray-800 font-bold" strokeWidth={2.5} />

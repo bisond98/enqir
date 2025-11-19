@@ -83,7 +83,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-[10px] sm:text-xs bg-gray-800 hover:bg-gray-900 text-white font-medium px-2 py-1 rounded transition-colors"
+                    className="text-[10px] sm:text-xs bg-black hover:bg-gray-900 text-white font-medium px-2 py-1 rounded transition-colors"
                   >
                     Mark all read
                   </button>
@@ -114,7 +114,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                           key={notification.id}
                           onClick={() => handleNotificationClick(notification.id, notification.actionUrl)}
                           className={`p-3 sm:p-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors ${
-                            !notification.read ? 'bg-gray-800/10' : ''
+                            !notification.read ? 'bg-black/10' : ''
                           }`}
                         >
                           <div className="flex gap-2 sm:gap-3">
@@ -122,7 +122,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                               notification.type === 'success' ? 'bg-green-100' :
                               notification.type === 'error' ? 'bg-red-100' :
                               notification.type === 'warning' ? 'bg-yellow-100' :
-                              'bg-gray-800/20'
+                              'bg-black/20'
                             }`}>
                               <Check className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                                 notification.type === 'success' ? 'text-green-600' :
@@ -143,7 +143,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                               </p>
                             </div>
                             {!notification.read && (
-                              <div className="flex-shrink-0 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-800 rounded-full mt-1.5 sm:mt-2" />
+                              <div className="flex-shrink-0 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mt-1.5 sm:mt-2" />
                             )}
                           </div>
                         </div>
@@ -166,7 +166,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                     setIsOpen(false);
                     navigate('/notifications');
                   }}
-                  className="w-full text-center text-sm font-medium bg-gray-800 hover:bg-gray-900 text-white py-2 rounded transition-colors"
+                  className="w-full text-center text-sm font-medium bg-black hover:bg-gray-900 text-white py-2 rounded transition-colors"
                 >
                   View All Notifications
                 </button>

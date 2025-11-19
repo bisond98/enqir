@@ -41,7 +41,7 @@ export const WelcomePopup = ({ isVisible, userName, onClose }: WelcomePopupProps
       >
         <div className="p-3 sm:p-4 text-center">
           <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-black rounded-full flex items-center justify-center flex-shrink-0">
               <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             

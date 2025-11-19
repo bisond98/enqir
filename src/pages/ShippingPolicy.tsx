@@ -6,7 +6,7 @@ const ShippingPolicy = () => {
     <Layout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl">
         <Card className="shadow-xl border-2 border-gray-200 rounded-2xl sm:rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gray-800 text-white p-4 sm:p-6">
+          <CardHeader className="bg-black text-white p-4 sm:p-6">
             <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold">
               Shipping & Delivery Policy
             </CardTitle>

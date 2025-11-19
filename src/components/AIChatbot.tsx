@@ -225,7 +225,7 @@ const AIChatbot: React.FC = () => {
           <SheetTrigger asChild>
             <div className="group cursor-pointer relative">
               {/* Subtle Pulse Ring */}
-              <div className="absolute inset-0 rounded-full bg-gray-800/20 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full bg-black/20 animate-ping"></div>
               
               {/* Clean FAB Button with Creative Elements */}
               <button className="w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-active:scale-95 flex items-center justify-center relative overflow-hidden">
@@ -238,7 +238,7 @@ const AIChatbot: React.FC = () => {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
                 
                 {/* Subtle Ripple Effect */}
-                <div className="absolute inset-0 rounded-full bg-gray-800/20 scale-0 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="absolute inset-0 rounded-full bg-black/20 scale-0 group-hover:scale-110 transition-transform duration-500"></div>
               </button>
               
               {/* Clean Tooltip */}
@@ -257,7 +257,7 @@ const AIChatbot: React.FC = () => {
             {/* Clean Minimal Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white rounded-t-2xl sm:rounded-t-3xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -297,7 +297,7 @@ const AIChatbot: React.FC = () => {
                     <div
                     className={`max-w-[85%] sm:max-w-[75%] p-4 sm:p-5 rounded-2xl sm:rounded-3xl transition-all duration-200 hover:shadow-md ${
                       message.sender === 'user'
-                        ? 'bg-gray-800 text-white rounded-br-md shadow-sm'
+                        ? 'bg-black text-white rounded-br-md shadow-sm'
                         : 'bg-white text-gray-900 rounded-bl-md border border-gray-200 shadow-sm'
                     }`}
                   >
@@ -377,7 +377,7 @@ const AIChatbot: React.FC = () => {
             <div className="p-3 sm:p-4 border-t border-gray-100 bg-white rounded-b-none">
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-800 rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-black rounded-full flex items-center justify-center">
                     <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                   </div>
                   <p className="text-xs sm:text-sm font-semibold text-gray-900">Quick Help</p>
@@ -391,7 +391,7 @@ const AIChatbot: React.FC = () => {
                       disabled={isLoading}
                     >
                       <div className="flex items-center gap-1.5 sm:gap-2">
-                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-800 rounded-full group-hover:bg-gray-900 group-hover:scale-125 transition-all duration-200 flex-shrink-0"></div>
+                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full group-hover:bg-gray-900 group-hover:scale-125 transition-all duration-200 flex-shrink-0"></div>
                         <span className="text-[10px] sm:text-xs font-medium text-gray-700 group-hover:text-gray-900 break-words flex-1 text-left leading-tight">{question}</span>
                         <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
                       </div>
@@ -423,7 +423,7 @@ const AIChatbot: React.FC = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isLoading}
-                  className="px-4 py-3 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-2xl sm:rounded-3xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px]"
+                  className="px-4 py-3 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-2xl sm:rounded-3xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px]"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

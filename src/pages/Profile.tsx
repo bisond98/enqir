@@ -334,7 +334,7 @@ const Profile = () => {
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Profile Header */}
         <div className="mb-4 sm:mb-8">
-          <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
+          <div className="bg-black rounded-lg p-4 sm:p-6">
             <div className="text-center">
               <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
                 <User className="h-8 w-8 sm:h-12 sm:w-12 text-white" />

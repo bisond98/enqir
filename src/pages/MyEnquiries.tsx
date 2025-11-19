@@ -400,7 +400,7 @@ const MyEnquiries = () => {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
           {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
               {/* Header Section with Back Button */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">

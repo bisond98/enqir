@@ -704,7 +704,7 @@ export default function EnquiryWall() {
                       onClick={() => setSelectedCategory(category.value)}
                       className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                         selectedCategory === category.value
-                          ? 'bg-gray-800 text-white shadow-md hover:bg-gray-900 scale-105'
+                          ? 'bg-black text-white shadow-md hover:bg-gray-900 scale-105'
                           : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
                       }`}
                     >
@@ -761,7 +761,7 @@ export default function EnquiryWall() {
                         onClick={() => setSelectedCategory(category.value)}
                         className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                           selectedCategory === category.value
-                            ? 'bg-gray-800 text-white shadow-md hover:bg-gray-900 scale-105'
+                            ? 'bg-black text-white shadow-md hover:bg-gray-900 scale-105'
                             : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
                         }`}
                       >
@@ -919,7 +919,7 @@ export default function EnquiryWall() {
                               <Badge className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
                             )}
                             {isEnquiryOutdated(enquiry) && (
-                              <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-gray-800">Expired</Badge>
+                              <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Expired</Badge>
                             )}
                           </div>
                         </div>
@@ -1109,7 +1109,7 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="h-8 sm:h-10 px-3 sm:px-6 text-xs sm:text-sm font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
+                                    className="h-8 sm:h-10 px-3 sm:px-6 text-xs sm:text-sm font-bold bg-black hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
                                     Sell
@@ -1152,7 +1152,7 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
+                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-black hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 Sell

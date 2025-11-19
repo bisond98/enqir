@@ -1402,7 +1402,7 @@ export default function PostEnquiry() {
           <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
             {/* Header Section - Gray Background */}
             <div className="mb-4 sm:mb-6">
-              <div className="bg-gray-800 rounded-lg p-4 sm:p-6">
+              <div className="bg-black rounded-lg p-4 sm:p-6">
                 <div className="text-center">
                   <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
                     <CheckCircle className="h-8 w-8 sm:h-12 sm:w-12 text-green-400" />
@@ -1420,7 +1420,7 @@ export default function PostEnquiry() {
             {/* Main Content Card */}
             <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6">
               {/* AI Processing Status - Card Header */}
-              <div className="bg-gray-800 px-3 sm:px-4 py-3 sm:py-4">
+              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4">
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
                   <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
@@ -1995,7 +1995,7 @@ export default function PostEnquiry() {
                   <div className="space-y-4 sm:space-y-5">
                     {/* PRO PLAN ACTIVE BADGE - KEPT FOR FUTURE UPDATES */}
                     {/* {hasProRemaining ? (
-                      <div className="p-3 sm:p-4 bg-gray-800 border-2 border-gray-700 rounded-xl shadow-sm">
+                      <div className="p-3 sm:p-4 bg-black border-2 border-gray-700 rounded-xl shadow-sm">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                             <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />

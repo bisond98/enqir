@@ -2399,7 +2399,7 @@ const EnquiryResponses = () => {
             <Button 
               onClick={() => navigate('/my-enquiries')} 
               size="sm" 
-              className="h-9 sm:h-10 text-xs sm:text-sm px-4 sm:px-6 bg-gray-800 hover:bg-gray-900 text-white"
+              className="h-9 sm:h-10 text-xs sm:text-sm px-4 sm:px-6 bg-black hover:bg-gray-900 text-white"
             >
               <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
               Back to My Enquiries
@@ -2702,7 +2702,7 @@ const EnquiryResponses = () => {
                           <p className="text-xs text-slate-500 truncate">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
-                          <div className="text-xs lg:text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-xs lg:text-sm font-semibold text-white bg-black px-2 py-1 rounded">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -3478,7 +3478,7 @@ const EnquiryResponses = () => {
 
       {/* Additional Tile - Hidden */}
       {/* <div className="mt-6">
-        <div className="bg-gray-800 rounded-lg p-4 text-white">
+        <div className="bg-black rounded-lg p-4 text-white">
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">samosa maker</h3>
             <div className="flex items-center justify-center mb-2">
@@ -3620,7 +3620,7 @@ const EnquiryResponses = () => {
           <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[9999] transition-all duration-300">
             <Card className="mx-3 sm:mx-auto sm:w-[400px] bg-white shadow-2xl border border-gray-200 rounded-t-2xl sm:rounded-2xl overflow-hidden">
               {/* Header */}
-              <div className="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <div className="bg-black px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
@@ -3653,7 +3653,7 @@ const EnquiryResponses = () => {
                   </button>
                   <button
                     onClick={endChat}
-                    className="flex-1 px-4 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-black hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
                   >
                     End Chat
                   </button>
@@ -3680,7 +3680,7 @@ const EnquiryResponses = () => {
           <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[9999] transition-all duration-300">
             <Card className="mx-3 sm:mx-auto sm:w-[400px] bg-white shadow-2xl border border-gray-200 rounded-t-2xl sm:rounded-2xl overflow-hidden">
               {/* Header */}
-              <div className="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <div className="bg-black px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
@@ -3719,7 +3719,7 @@ const EnquiryResponses = () => {
                   </button>
                   <button
                     onClick={blockUser}
-                    className="flex-1 px-4 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-black hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
                   >
                     Block User
                   </button>
@@ -3743,7 +3743,7 @@ const EnquiryResponses = () => {
           <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[9999] transition-all duration-300">
             <Card className="mx-3 sm:mx-auto sm:w-[400px] bg-white shadow-2xl border border-gray-200 rounded-t-2xl sm:rounded-2xl overflow-hidden">
               {/* Header */}
-              <div className="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <div className="bg-black px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
@@ -3776,7 +3776,7 @@ const EnquiryResponses = () => {
                   </button>
                   <button
                     onClick={closeDeal}
-                    className="flex-1 px-4 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-black hover:bg-gray-900 text-white rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
                   >
                     Close Deal
                   </button>

@@ -481,7 +481,7 @@ const EnquiryDetail = () => {
             <Button 
               onClick={() => navigate('/my-enquiries')} 
               size="sm" 
-              className="h-9 sm:h-10 text-xs sm:text-sm px-4 sm:px-6 bg-gray-800 hover:bg-gray-900 text-white"
+              className="h-9 sm:h-10 text-xs sm:text-sm px-4 sm:px-6 bg-black hover:bg-gray-900 text-white"
             >
               <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
               Back to My Enquiries

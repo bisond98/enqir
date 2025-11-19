@@ -117,7 +117,7 @@ const Notifications = () => {
             <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 bg-gray-800 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm">
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 bg-black rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm">
                     <Bell className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div>
@@ -148,7 +148,7 @@ const Notifications = () => {
                           console.error('Failed to mark all as read:', error);
                         }
                       }}
-                      className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800"
+                      className="text-[11px] sm:text-sm bg-black hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800"
                     >
                       <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span className="hidden sm:inline">Mark all read</span>
@@ -158,7 +158,7 @@ const Notifications = () => {
                   <button
                     onClick={handleClearAll}
                     disabled={!clearAllNotifications}
-                    className="text-[11px] sm:text-sm bg-gray-800 hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-[11px] sm:text-sm bg-black hover:bg-gray-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px] sm:min-h-[40px] border border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     <span className="hidden sm:inline">Clear all</span>
@@ -175,7 +175,7 @@ const Notifications = () => {
                   onClick={() => setFilter('all')}
                   className={`text-[11px] sm:text-sm px-3 sm:px-5 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex-1 sm:flex-none text-center touch-manipulation min-h-[36px] sm:min-h-[40px] ${
                     filter === 'all' 
-                      ? 'bg-gray-800 text-white shadow-sm' 
+                      ? 'bg-black text-white shadow-sm' 
                       : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
@@ -185,7 +185,7 @@ const Notifications = () => {
                   onClick={() => setFilter('unread')}
                   className={`text-[11px] sm:text-sm px-3 sm:px-5 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-semibold transition-all duration-200 flex-1 sm:flex-none text-center touch-manipulation min-h-[36px] sm:min-h-[40px] ${
                     filter === 'unread' 
-                      ? 'bg-gray-800 text-white shadow-sm' 
+                      ? 'bg-black text-white shadow-sm' 
                       : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
@@ -212,7 +212,7 @@ const Notifications = () => {
               {filter === 'unread' && notifications.length > 0 && (
                 <button
                   onClick={() => setFilter('all')}
-                  className="bg-gray-800 hover:bg-gray-900 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px]"
+                  className="bg-black hover:bg-gray-900 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 touch-manipulation min-h-[36px]"
                 >
                   View all notifications
                 </button>
@@ -228,7 +228,7 @@ const Notifications = () => {
                   onClick={() => handleNotificationClick(notification.id, notification.actionUrl)}
                   className={`group p-3 sm:p-5 cursor-pointer transition-all duration-200 border touch-manipulation active:scale-[0.98] ${
                     !notification.read 
-                      ? 'bg-gray-800/5 border-gray-800/20 shadow-sm hover:shadow-md hover:border-gray-800/30' 
+                      ? 'bg-black/5 border-gray-800/20 shadow-sm hover:shadow-md hover:border-gray-800/30' 
                       : 'bg-white border-gray-200 hover:shadow-md hover:border-gray-300'
                   }`}
                 >
@@ -236,13 +236,13 @@ const Notifications = () => {
                     {/* Icon */}
                     <div className={`flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm ${
                       notification.type === 'admin_approval' ? 'bg-green-50 border-2 border-green-200' :
-                      notification.type === 'new_response' ? 'bg-gray-800/10 border-2 border-gray-800/20' :
-                      notification.type === 'new_chat' ? 'bg-gray-800/10 border-2 border-gray-800/20' :
+                      notification.type === 'new_response' ? 'bg-black/10 border-2 border-gray-800/20' :
+                      notification.type === 'new_chat' ? 'bg-black/10 border-2 border-gray-800/20' :
                       notification.type === 'enquiry_update' ? 'bg-yellow-50 border-2 border-yellow-200' :
                       notification.type === 'achievement' ? 'bg-green-50 border-2 border-green-200' :
-                      notification.type === 'system' ? 'bg-gray-800/10 border-2 border-gray-800/20' :
-                      notification.type === 'reminder' ? 'bg-gray-800/10 border-2 border-gray-800/20' :
-                      'bg-gray-800/10 border-2 border-gray-800/20'
+                      notification.type === 'system' ? 'bg-black/10 border-2 border-gray-800/20' :
+                      notification.type === 'reminder' ? 'bg-black/10 border-2 border-gray-800/20' :
+                      'bg-black/10 border-2 border-gray-800/20'
                     }`}>
                       <Check className={`w-5 h-5 sm:w-7 sm:h-7 ${
                         notification.type === 'admin_approval' ? 'text-green-600' :
@@ -264,7 +264,7 @@ const Notifications = () => {
                         </h3>
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                           {!notification.read && (
-                            <div className="flex-shrink-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-800 rounded-full mt-1 sm:mt-1.5 animate-pulse" />
+                            <div className="flex-shrink-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-black rounded-full mt-1 sm:mt-1.5 animate-pulse" />
                           )}
                           {notification.read && (
                             <button
@@ -291,7 +291,7 @@ const Notifications = () => {
                           <span 
                             className={`text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-semibold ${
                               notification.priority === 'urgent' ? 'bg-red-100 text-red-700' :
-                              notification.priority === 'high' ? 'bg-gray-800 text-white' :
+                              notification.priority === 'high' ? 'bg-black text-white' :
                               notification.priority === 'medium' ? 'bg-gray-600 text-white' :
                               'bg-gray-400 text-white'
                             }`}
@@ -329,7 +329,7 @@ const Notifications = () => {
           <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[9999] transition-all duration-300">
             <Card className="mx-3 sm:mx-auto sm:w-[400px] bg-white shadow-2xl border border-gray-200 rounded-t-2xl sm:rounded-2xl overflow-hidden">
               {/* Header */}
-              <div className="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <div className="bg-black px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
@@ -362,7 +362,7 @@ const Notifications = () => {
                   </button>
                   <button
                     onClick={handleConfirm}
-                    className="flex-1 px-4 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-semibold text-sm sm:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-black hover:bg-gray-900 text-white rounded-lg font-semibold text-sm sm:text-base transition-colors touch-manipulation min-h-[44px] active:scale-95 shadow-sm"
                   >
                     Confirm
                   </button>

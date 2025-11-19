@@ -762,7 +762,7 @@ const SellerResponse = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/dashboard" className="flex-1">
-                    <Button className="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2.5">
+                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm py-2.5">
                       Go to Dashboard
                     </Button>
                   </Link>
@@ -784,7 +784,7 @@ const SellerResponse = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Enhanced Header */}
-        <div className="bg-gray-800 text-white py-6 sm:py-12 lg:py-16">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
             <div className="mb-4 sm:mb-6 lg:mb-8">
               <button onClick={() => window.history.back()} className="inline-flex items-center text-[10px] sm:text-xs lg:text-sm text-white/80 hover:text-white transition-all">
@@ -870,7 +870,7 @@ const SellerResponse = () => {
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                     <Link to="/dashboard" className="flex-1">
-                      <Button className="w-full bg-gray-800 hover:bg-gray-900 text-white text-xs sm:text-sm py-2.5">
+                      <Button className="w-full bg-black hover:bg-gray-900 text-white text-xs sm:text-sm py-2.5">
                         View Dashboard
                       </Button>
                     </Link>
@@ -887,7 +887,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Enquiry Display */}
           <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-blue-200 rounded-2xl">
-            <CardHeader className="bg-gray-800 p-3 sm:p-4">
+            <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
                 <p className={`text-xs sm:text-sm font-semibold ${enquiry.idFrontImage || enquiry.idBackImage ? 'text-blue-300' : 'text-white'}`}>
@@ -957,7 +957,7 @@ const SellerResponse = () => {
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
             <Card className="card-premium overflow-hidden border-2 border-blue-200 rounded-2xl">
-            <CardHeader className="bg-gray-800 border-b">
+            <CardHeader className="bg-black border-b">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center">
                   <Star className="h-6 w-6 text-white" />

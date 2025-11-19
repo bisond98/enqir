@@ -290,7 +290,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             }`}
           >
             {/* Card Header */}
-            <div className="bg-gray-800 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center">
+            <div className="bg-black px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center">
               <div className="flex items-center justify-between w-full gap-1.5 sm:gap-2">
                 <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                   <div className="flex-shrink-0">

@@ -33,7 +33,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-2 border-slate-200 rounded-2xl p-6 sm:p-6 mx-auto">
         <DialogHeader className="text-center space-y-4 sm:space-y-3 items-center w-full px-0">
-          <div className="flex items-center justify-center w-16 h-16 sm:w-12 sm:h-12 mx-auto bg-gray-800 rounded-full flex-shrink-0">
+          <div className="flex items-center justify-center w-16 h-16 sm:w-12 sm:h-12 mx-auto bg-black rounded-full flex-shrink-0">
             <LogOut className="w-7 h-7 sm:w-5 sm:h-5 text-white" />
           </div>
           <DialogTitle className="text-xl sm:text-lg font-semibold text-slate-900 text-center w-full">

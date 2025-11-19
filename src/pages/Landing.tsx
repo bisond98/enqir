@@ -1630,13 +1630,13 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
+            <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
               <span className="text-xs sm:text-base">post a fu**in' need</span>
               <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
           </Link>
           <Link to="/enquiries" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-2 border-gray-800 hover:border-gray-800 flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
+            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-black font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-4 border-black hover:border-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
               <span className="text-xs sm:text-base">Show All Enquiries</span>
               <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
             </button>
@@ -1675,7 +1675,7 @@ const Landing = () => {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px]"
+                className="bg-gradient-to-r from-gray-700 to-black hover:from-black hover:to-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px]"
               >
                 {isSearching ? (
                   <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -1832,9 +1832,9 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-gray-800 hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
+              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
-              } ${isHovered ? 'shadow-2xl border-gray-800' : ''}`}
+              } ${isHovered ? 'shadow-2xl border-black' : ''}`}
               transition={{ duration: 0.3 }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
@@ -1858,7 +1858,7 @@ const Landing = () => {
                       )}
                       <div className="relative z-10">
                       {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
-                      <div className={`bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
@@ -1918,7 +1918,7 @@ const Landing = () => {
                       {/* Meta Information - Professional Grouping */}
                       <div className={`${windowWidth < 640 ? 'mb-2 space-y-2' : 'mb-3 sm:mb-4 space-y-2.5'}`}>
                         <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
-                          <Badge variant="secondary" className="text-[11px] sm:text-xs lg:text-sm px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 bg-gray-100 text-gray-800 border border-gray-300 font-semibold rounded-lg shadow-sm">
+                          <Badge variant="secondary" className="text-[11px] sm:text-xs lg:text-sm px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 bg-gray-100 text-black border border-gray-300 font-semibold rounded-lg shadow-sm">
                             {enquiry.category}
                           </Badge>
                           <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs lg:text-sm text-gray-600">
@@ -1959,7 +1959,7 @@ const Landing = () => {
                             } else {
                               return (
                                 <button 
-                                  className="w-full h-10 sm:h-10 lg:h-11 bg-gray-800 hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-heading min-h-[40px]"
+                                  className="w-full h-10 sm:h-10 lg:h-11 bg-black hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-heading min-h-[40px]"
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
                                   Sell
@@ -1969,7 +1969,7 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className="w-full h-10 sm:h-10 lg:h-11 bg-white text-gray-800 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border-2 border-gray-800 hover:bg-gray-50 hover:border-gray-900 transition-all duration-200 font-heading shadow-sm min-h-[40px]"
+                            className="w-full h-10 sm:h-10 lg:h-11 bg-white text-black text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border-4 border-black hover:bg-gray-50 hover:border-black transition-all duration-200 font-heading shadow-sm min-h-[40px]"
                             onClick={() => navigate('/signin')}
                           >
                             Sign In
@@ -2056,7 +2056,7 @@ const Landing = () => {
               <Link to="/enquiries">
                 <Button 
                   variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-medium border-2 border-gray-800 text-gray-800 hover:border-gray-800 hover:bg-gray-50 transition-all duration-200"
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-medium border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200"
                 >
                   <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4" />
                   Show All Enquiries
@@ -2117,12 +2117,12 @@ const Landing = () => {
                 
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
                   <Link to="/dashboard">
-                    <button className="bg-gray-800 text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
+                    <button className="bg-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
                       <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </Link>
                   <Link to="/post-enquiry">
-                    <button className="bg-gray-800 text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
+                    <button className="bg-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
                       <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </Link>
@@ -2197,7 +2197,7 @@ const Landing = () => {
                           
                           {/* Circle Container */}
                       <motion.div
-                            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                            className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
                             whileHover={{ 
                               scale: 1.1,
                               boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)"
@@ -2233,7 +2233,7 @@ const Landing = () => {
                 <div className="text-center">
                 <Link
                   to="/enquiries"
-                    className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-gray-400/20 hover:scale-105 active:scale-100 border border-gray-700/50"
+                    className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-gray-400/20 hover:scale-105 active:scale-100 border border-gray-700/50"
                 >
                   <span className="text-sm sm:text-base">Explore All Categories</span>
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
@@ -2268,7 +2268,7 @@ const Landing = () => {
           </div>
 
           {/* Animated SVG Flow - Compact Layout */}
-          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border border-gray-800 shadow-md sm:shadow-lg">
+          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-4 border-black shadow-md sm:shadow-lg">
             <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
               {/* Step 1: Larger Animated Human Character */}
               <g transform="translate(120, 150)">
@@ -2480,7 +2480,7 @@ const Landing = () => {
               className="w-full px-4 py-3 text-left hover:bg-blue-100 transition-colors duration-150 first:rounded-t-2xl last:rounded-b-2xl flex items-center gap-3 border-b border-gray-200 last:border-b-0"
             >
               <Search className="h-4 w-4 text-blue-500" />
-              <span className="text-sm text-gray-800 font-medium">{suggestion}</span>
+              <span className="text-sm text-black font-medium">{suggestion}</span>
             </button>
           ))}
         </div>,
