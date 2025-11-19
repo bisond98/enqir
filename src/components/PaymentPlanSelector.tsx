@@ -223,11 +223,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     setSelectedPlan(plan.id);
     setSelectedPlanData(plan);
     
-    // Always call onPlanSelect so the parent component knows which plan was selected
+    // IMPORTANT: When isUpgrade=false (new enquiry), NEVER process payment here
+    // Payment will only happen when user clicks "Post Enquiry" button in the form
     // For free plans, call immediately
-    // For paid plans in new enquiries, call so form knows to trigger payment on submit
+    // For paid plans in new enquiries, just store the selection - payment happens on form submit
     // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now" button
     if (plan.price === 0 || !isUpgrade) {
+      // Just notify parent of selection - NO payment processing
       onPlanSelect(plan.id, plan.price);
     }
   };
@@ -309,18 +311,18 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             </div>
             
             {/* Card Content */}
-            <CardContent className="p-2.5 sm:p-3 md:p-4">
+            <CardContent className="p-3 sm:p-3 md:p-4">
               {/* Description */}
-              <div className="mb-2 sm:mb-2.5 md:mb-2 text-center">
-                <p className="text-[11px] sm:text-xs md:text-sm text-gray-700 leading-relaxed">{plan.description}</p>
+              <div className="mb-3 sm:mb-2.5 md:mb-2 text-center">
+                <p className="text-xs sm:text-xs md:text-sm text-gray-700 leading-relaxed font-medium">{plan.description}</p>
               </div>
 
-              {/* Features */}
-              <div className="space-y-1.5 sm:space-y-2 md:space-y-1.5 mb-2.5 sm:mb-3 md:mb-2">
+              {/* Features - Optimized for Mobile */}
+              <div className="space-y-2 sm:space-y-1.5 md:space-y-1.5 mb-3 sm:mb-3 md:mb-2">
                 {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-start space-x-1.5 sm:space-x-2">
-                    <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-[11px] sm:text-xs md:text-sm text-gray-700 leading-relaxed flex-1">{feature}</span>
+                  <div key={index} className="flex items-start gap-2 sm:gap-1.5">
+                    <Check className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-xs md:text-sm text-gray-700 leading-relaxed flex-1 break-words">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -328,6 +330,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               {/* Select Button */}
               <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t border-gray-200">
                 <Button
+                  type="button"
                   size="sm"
                   className={`w-full h-9 sm:h-8 text-xs sm:text-sm font-medium min-h-[44px] sm:min-h-[32px] ${
                     selectedPlan === plan.id
@@ -337,7 +340,9 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
                   } px-3 sm:px-4`}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
+                    // Only select the plan - payment will happen when user clicks "Post Enquiry" button
                     handlePlanSelect(plan);
                   }}
                 >

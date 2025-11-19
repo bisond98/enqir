@@ -282,35 +282,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let errorDescription = error.message;
       
       if (error.code === 'auth/invalid-credential') {
-        errorTitle = 'Invalid Credentials';
-        errorDescription = 'The email or password you entered is incorrect. Please check your credentials and try again.';
+        errorTitle = 'Hmm, That Doesn\'t Look Right 🔐';
+        errorDescription = 'The email or password seems off. Double-check and give it another shot!';
       } else if (error.code === 'auth/user-not-found') {
-        errorTitle = 'Account Not Found';
-        errorDescription = 'No account found with this email address. Please sign up first or check your email.';
+        errorTitle = 'Whoops! Account Not Found 👤';
+        errorDescription = 'We couldn\'t find an account with this email. New here? Sign up to get started!';
       } else if (error.code === 'auth/wrong-password') {
-        errorTitle = 'Incorrect Password';
-        errorDescription = 'The password you entered is incorrect. Please try again or reset your password.';
+        errorTitle = 'Wrong Password Alert! 🚨';
+        errorDescription = 'That password doesn\'t match. Forgot it? No worries - you can reset it anytime!';
       } else if (error.code === 'auth/too-many-requests') {
-        errorTitle = 'Too Many Attempts';
-        errorDescription = 'Too many failed sign-in attempts. Please try again later.';
+        errorTitle = 'Slow Down There, Speed Racer! ⏸️';
+        errorDescription = 'Too many attempts! Take a breather and try again in a few minutes.';
       } else if (error.code === 'auth/network-request-failed') {
-        errorTitle = 'Network Connection Failed';
-        errorDescription = 'Unable to connect to Firebase servers. This could be due to:\n• Internet connection issues\n• Firebase project configuration\n• CORS settings\n• Firewall blocking the connection\n\nPlease check your internet connection and try again.';
+        errorTitle = 'Connection Troubles 🌐';
+        errorDescription = 'Looks like we\'re having trouble connecting. Check your internet and try again!';
       } else if (error.code === 'auth/user-disabled') {
-        errorTitle = 'Account Disabled';
-        errorDescription = 'This account has been disabled. Please contact support.';
+        errorTitle = 'Account Temporarily Unavailable 🚫';
+        errorDescription = 'This account is currently disabled. Please reach out to support for help.';
       } else if (error.code === 'auth/operation-not-allowed') {
-        errorTitle = 'Sign-in Method Disabled';
-        errorDescription = 'Email/password sign-in is not enabled. Please contact support.';
+        errorTitle = 'Sign-in Method Unavailable ⚙️';
+        errorDescription = 'Email/password sign-in isn\'t enabled right now. Contact support for assistance.';
       } else if (error.code === 'auth/user-already-exists') {
-        errorTitle = 'User Already Exists';
-        errorDescription = 'An account with this email already exists. Please sign in instead.';
+        errorTitle = 'Already Have an Account? 🎯';
+        errorDescription = 'An account with this email already exists! Try signing in instead.';
       } else if (error.code === 'auth/invalid-api-key') {
-        errorTitle = 'Configuration Error';
-        errorDescription = 'Firebase API key is invalid. Please contact support.';
+        errorTitle = 'Configuration Issue ⚠️';
+        errorDescription = 'There\'s a setup problem on our end. Please contact support.';
       } else if (error.code === 'auth/project-not-found') {
-        errorTitle = 'Project Not Found';
-        errorDescription = 'Firebase project not found. Please contact support.';
+        errorTitle = 'Project Configuration Error 🔧';
+        errorDescription = 'We\'re having a technical hiccup. Please contact support for help.';
       }
       
       toast({

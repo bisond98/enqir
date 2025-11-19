@@ -1882,18 +1882,18 @@ const Dashboard = () => {
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && selectedEnquiryForUpgrade && (
           <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-            <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 mx-auto">
-              <DialogHeader className="mb-4 sm:mb-6 md:mb-8">
-                <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
-                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
-                  <span className="break-words">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
+            <DialogContent className="max-w-6xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-full max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 mx-auto">
+              <DialogHeader className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
+                <DialogTitle className="text-base sm:text-lg md:text-xl font-extrabold text-center mb-2 sm:mb-2.5 md:mb-3 flex items-center justify-center gap-2 sm:gap-2.5 px-2">
+                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-yellow-400 flex-shrink-0" />
+                  <span className="break-words text-gray-900">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
                 </DialogTitle>
-                <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed">
+                <DialogDescription className="text-center text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed font-medium px-2">
                   Select a plan to unlock premium responses
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="mt-2 sm:mt-3 md:mt-4">
+              <div className="mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                 <PaymentPlanSelector
                   currentPlanId={currentPlan}
                   enquiryId={selectedEnquiryForUpgrade.id}
@@ -1901,7 +1901,7 @@ const Dashboard = () => {
                   onPlanSelect={handlePlanSelect}
                   isUpgrade={true}
                   enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
-                  className="max-w-4xl mx-auto w-full"
+                  className="max-w-6xl mx-auto w-full"
                   user={user}
                 />
               </div>

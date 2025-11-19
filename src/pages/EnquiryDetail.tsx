@@ -21,7 +21,8 @@ import {
   CheckCircle,
   AlertTriangle,
   IndianRupee,
-  Bookmark
+  Bookmark,
+  ImageIcon
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,6 +62,7 @@ interface Enquiry {
   userProfileVerified?: boolean;
   isIdentityVerified?: boolean;
   selectedPlanId?: string;
+  referenceImages?: string[];
 }
 
 interface UserProfile {
@@ -392,6 +394,36 @@ const EnquiryDetail = () => {
     });
   };
 
+  const formatDeadlineShort = (deadline: any) => {
+    if (!deadline) return null;
+    try {
+      const deadlineDate = deadline.toDate ? deadline.toDate() : new Date(deadline);
+      // Format as MM/DD/YYYY (e.g., 12/3/2024)
+      const month = deadlineDate.getMonth() + 1;
+      const day = deadlineDate.getDate();
+      const year = deadlineDate.getFullYear();
+      return `${month}/${day}/${year}`;
+    } catch (error) {
+      console.error('Error formatting deadline:', error);
+      return null;
+    }
+  };
+
+  const formatDeadlineReadable = (deadline: any) => {
+    if (!deadline) return null;
+    try {
+      const deadlineDate = deadline.toDate ? deadline.toDate() : new Date(deadline);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[deadlineDate.getMonth()];
+      const day = deadlineDate.getDate();
+      const year = deadlineDate.getFullYear();
+      return `${month} ${day}, ${year}`;
+    } catch (error) {
+      console.error('Error formatting deadline:', error);
+      return null;
+    }
+  };
+
   const formatBudget = (budget: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -402,9 +434,25 @@ const EnquiryDetail = () => {
   };
 
   const getStatusBadge = (status: string) => {
+    if (status === 'live') {
+      return (
+        <Badge className="relative text-xs sm:text-xs px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-green-400 bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 text-white font-bold shadow-lg shadow-green-500/50 overflow-hidden group">
+          {/* Animated glow effect */}
+          <span className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-300/30 to-green-400/0 animate-pulse"></span>
+          <span className="relative flex items-center gap-2 sm:gap-2.5 z-10">
+            {/* Pulsing dot indicator */}
+            <span className="relative flex items-center justify-center">
+              <span className="absolute w-2.5 h-2.5 bg-white rounded-full animate-ping opacity-75"></span>
+              <span className="relative w-2 h-2 bg-white rounded-full"></span>
+            </span>
+            <span className="font-extrabold tracking-wide drop-shadow-sm">LIVE</span>
+          </span>
+        </Badge>
+      );
+    }
+    
     const variants = {
       pending: 'bg-amber-100 text-amber-800 border-amber-200',
-      live: 'bg-green-100 text-green-800 border-green-200',
       rejected: 'bg-red-100 text-red-800 border-red-200',
       completed: 'bg-blue-100 text-blue-800 border-blue-200'
     };
@@ -462,28 +510,66 @@ const EnquiryDetail = () => {
             <Card className="border border-gray-200 shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white">
               {/* Card Header - Enhanced Gray Background */}
               <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
-                <div className="flex flex-wrap items-center gap-2 sm:gap-2 mb-3 sm:mb-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-2 mb-3 sm:mb-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-2">
+                    {(enquiry.userProfileVerified || enquiry.isIdentityVerified) && (
+                      <div title="Verified Enquiry" className="flex-shrink-0">
+                        <CheckCircle className="h-4 w-4 sm:h-4 sm:w-4 text-blue-400" />
+                      </div>
+                    )}
+                    {user && user.uid === enquiry.userId && enquiry.isPremium && (
+                      <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
+                        <Crown className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
+                        Premium
+                      </Badge>
+                    )}
+                    {enquiry.isUrgent && (
+                      <Badge className="bg-red-100 text-red-800 border-red-200 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
+                        <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
+                        Urgent
+                      </Badge>
+                    )}
+                  </div>
+                  {/* Live badge positioned on the right */}
                   {getStatusBadge(enquiry.status)}
-                  {(enquiry.userProfileVerified || enquiry.isIdentityVerified) && (
-                    <div title="Verified Enquiry" className="flex-shrink-0">
-                      <CheckCircle className="h-4 w-4 sm:h-4 sm:w-4 text-blue-400" />
-                    </div>
-                  )}
-                  {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
-                      <Crown className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
-                      Premium
-                    </Badge>
-                  )}
-                  {enquiry.isUrgent && (
-                    <Badge className="bg-red-100 text-red-800 border-red-200 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
-                      <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
-                      Urgent
-                    </Badge>
-                  )}
                 </div>
-                <h1 className="text-lg sm:text-lg md:text-xl lg:text-2xl font-bold text-white leading-tight tracking-tight">
-                  {enquiry.title}
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight tracking-tight">
+                  <div className="flex flex-col gap-3 sm:gap-4 md:gap-5">
+                    {/* Main Title Row */}
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 flex-wrap">
+                      <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-gray-300">Need</span>
+                      <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">{enquiry.title}</span>
+                    </div>
+                    
+                    {/* Deadline Row - Creative Design */}
+                    {enquiry.deadline && (
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-gray-300">before</span>
+                        <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-white/15 via-white/10 to-white/15 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                          {/* Countdown Timer with Icon */}
+                          <div className="flex items-center gap-1.5 sm:gap-2">
+                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/90" />
+                            <CountdownTimer 
+                              deadline={enquiry.deadline} 
+                              showIcon={false} 
+                              className="[&_*]:!text-white [&_*]:!border-white/40 [&_*]:!bg-white/20 [&_*]:!shadow-lg [&_*]:!font-semibold" 
+                            />
+                          </div>
+                          
+                          {/* Date Separator and Display */}
+                          {formatDeadlineReadable(enquiry.deadline) && (
+                            <>
+                              <div className="hidden sm:block w-px h-4 sm:h-5 bg-white/30"></div>
+                              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-white/95">
+                                <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white/80" />
+                                <span>{formatDeadlineReadable(enquiry.deadline)}</span>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </h1>
               </div>
               
@@ -494,6 +580,41 @@ const EnquiryDetail = () => {
                     <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-3">Description</h3>
                     <p className="text-sm sm:text-sm md:text-base text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
                   </div>
+                  
+                  {/* Reference Images Section - Only on Detailed Page */}
+                  {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
+                    <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-gray-200">
+                      <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2.5">
+                        <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4" />
+                        Reference Images ({enquiry.referenceImages.length})
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-slate-500 mb-4 leading-relaxed">
+                        Images provided by the buyer to help sellers understand their requirements
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                        {enquiry.referenceImages.map((imageUrl, index) => (
+                          <div 
+                            key={index} 
+                            className="relative group cursor-pointer aspect-square rounded-xl overflow-hidden border-2 border-gray-200 hover:border-blue-400 transition-all duration-200 hover:shadow-lg"
+                            onClick={() => window.open(imageUrl, '_blank')}
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={`Reference image ${index + 1}`}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <div className="bg-white rounded-full p-2 shadow-lg">
+                                  <Eye className="h-4 w-4 text-gray-700" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -795,18 +916,18 @@ const EnquiryDetail = () => {
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && enquiry && (
           <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-            <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 mx-auto">
-              <DialogHeader className="mb-4 sm:mb-6 md:mb-8">
-                <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
-                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
-                  <span className="break-words">Upgrade Plan for "{enquiry.title}"</span>
+            <DialogContent className="max-w-6xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-full max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 mx-auto">
+              <DialogHeader className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
+                <DialogTitle className="text-base sm:text-lg md:text-xl font-extrabold text-center mb-2 sm:mb-2.5 md:mb-3 flex items-center justify-center gap-2 sm:gap-2.5 px-2">
+                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-yellow-400 flex-shrink-0" />
+                  <span className="break-words text-gray-900">Upgrade Plan for "{enquiry.title}"</span>
                 </DialogTitle>
-                <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed">
+                <DialogDescription className="text-center text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed font-medium px-2">
                   Select a plan to unlock premium responses
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="mt-2 sm:mt-3 md:mt-4">
+              <div className="mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                 <PaymentPlanSelector
                   currentPlanId={currentPlan}
                   enquiryId={enquiry.id}
@@ -814,7 +935,7 @@ const EnquiryDetail = () => {
                   onPlanSelect={handlePlanSelect}
                   isUpgrade={true}
                   enquiryCreatedAt={enquiry.createdAt}
-                  className="max-w-4xl mx-auto w-full"
+                  className="max-w-6xl mx-auto w-full"
                   user={user}
                 />
               </div>

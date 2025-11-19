@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
-import { uploadToCloudinary } from "@/integrations/cloudinary";
+import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
@@ -128,6 +128,11 @@ export default function PostEnquiry() {
   const [isEnquiryApproved, setIsEnquiryApproved] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   
+  // Reference images (optional for buyers)
+  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
+  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>(Array(5).fill(""));
+  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(5).fill(0));
+  
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
@@ -204,6 +209,12 @@ export default function PostEnquiry() {
             profileVerificationStatus: profileVerificationStatus
           };
 
+          // Add reference images if any exist
+          const validReferenceImages1 = referenceImageUrls.filter(url => url.trim() !== "");
+          if (validReferenceImages1.length > 0) {
+            enquiryData.referenceImages = validReferenceImages1;
+          }
+
           // Add enquiry to database
           const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
           const enquiryId = docRef.id;
@@ -240,10 +251,11 @@ export default function PostEnquiry() {
           setIsSubmitted(true);
           setIsPaymentSuccessful(true);
           
-          toast({
-            title: "Payment Successful! 🎉",
-            description: "Your premium enquiry is now live!",
-          });
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Awesome! Your premium enquiry is now live and ready to get responses!",
+          variant: "success",
+        });
           
         } catch (error) {
           console.error('Error creating premium enquiry:', error);
@@ -302,10 +314,15 @@ export default function PostEnquiry() {
     
     setPaymentLoading(true);
     
+    // Store timeout ID to clear it if payment completes/errors before timeout
+    let loadingTimeout: NodeJS.Timeout | null = null;
+    
     try {
       // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
       console.log('💳 Calling processPayment...');
-      const paymentResult = await processPayment(
+      
+      // Start payment process - Razorpay will open in a popup
+      const paymentPromise = processPayment(
         'temp-enquiry-id', // Will be updated after enquiry is created
         user.uid,
         selectedPlan,
@@ -316,6 +333,21 @@ export default function PostEnquiry() {
           contact: '', // Optional
         }
       );
+      
+      // Stop showing loading once Razorpay popup opens (give it a moment to open)
+      loadingTimeout = setTimeout(() => {
+        setPaymentLoading(false);
+        loadingTimeout = null;
+      }, 1000); // 1 second should be enough for Razorpay to open
+      
+      // Wait for payment to complete
+      const paymentResult = await paymentPromise;
+      
+      // Clear timeout since payment completed
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
       
       console.log('📊 Payment result received:', paymentResult);
       
@@ -368,6 +400,12 @@ export default function PostEnquiry() {
           profileVerificationStatus: profileVerificationStatus
         };
 
+        // Add reference images if any exist
+        const validReferenceImages2 = referenceImageUrls.filter(url => url.trim() !== "");
+        if (validReferenceImages2.length > 0) {
+          enquiryData.referenceImages = validReferenceImages2;
+        }
+
         // Add enquiry to database
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         const enquiryId = docRef.id;
@@ -395,7 +433,8 @@ export default function PostEnquiry() {
         
         toast({
           title: "Payment Successful! 🎉",
-          description: "Your premium enquiry is now live!",
+          description: "Awesome! Your premium enquiry is now live and ready to get responses!",
+          variant: "success",
         });
         
       } catch (error) {
@@ -411,6 +450,12 @@ export default function PostEnquiry() {
       }
       
     } catch (error) {
+      // Clear timeout if error occurs
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
+      
       console.error('❌ Payment failed:', error);
       console.error('❌ Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -418,10 +463,17 @@ export default function PostEnquiry() {
         selectedPlan,
         userId: user?.uid
       });
+      const errorMsg = error instanceof Error ? error.message.toLowerCase() : '';
+      const isCancelled = errorMsg.includes('cancel') || errorMsg.includes('user closed');
+      
       toast({
-        title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Please try again. Check console for details.",
-        variant: "destructive",
+        title: isCancelled 
+          ? "Payment Cancelled 🚫" 
+          : "Oops! Payment Didn't Go Through 💳",
+        description: isCancelled
+          ? "No worries! You cancelled it - your money stays safe. Come back when ready!"
+          : "Something went wrong with the payment. Don't worry, your money is safe! Give it another shot?",
+        variant: isCancelled ? "cancelled" : "destructive",
       });
       setPaymentLoading(false);
     }
@@ -467,6 +519,12 @@ export default function PostEnquiry() {
         profileVerificationStatus: profileVerificationStatus
       };
 
+      // Add reference images if any exist
+      const validReferenceImages3 = referenceImageUrls.filter(url => url.trim() !== "");
+      if (validReferenceImages3.length > 0) {
+        enquiryData.referenceImages = validReferenceImages3;
+      }
+
       // Add enquiry to database
       const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
       console.log('Premium enquiry saved successfully with ID:', docRef.id);
@@ -480,10 +538,11 @@ export default function PostEnquiry() {
       setIsSubmitted(true);
       setIsPaymentSuccessful(true);
       
-      toast({
-        title: "Payment Successful! 🎉",
-        description: "Your premium enquiry is being processed...",
-      });
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Awesome! Your premium enquiry is being processed and will be live soon!",
+          variant: "success",
+        });
       
       // Process through AI approval system (same as free submission)
       console.log('🤖 Processing premium enquiry through AI approval system...');
@@ -800,6 +859,157 @@ export default function PostEnquiry() {
     setLocationSuggestions([]);
   };
 
+  // Compress image for faster upload
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      if (!ctx) {
+        console.warn('Canvas context not available, using original file');
+        resolve(file);
+        return;
+      }
+      
+      img.onload = () => {
+        try {
+          // Calculate new dimensions (max 1920px width/height)
+          const maxWidth = 1920;
+          const maxHeight = 1920;
+          let { width, height } = img;
+          
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            } else {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Compression failed'));
+              }
+            },
+            'image/jpeg',
+            0.85 // Quality: 85%
+          );
+        } catch (error) {
+          console.error('Error compressing image:', error);
+          resolve(file); // Fallback to original file
+        }
+      };
+      
+      img.onerror = () => {
+        console.warn('Image load error, using original file');
+        resolve(file);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  // Handle reference image upload
+  const handleReferenceImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Image too large",
+        description: "Image must be less than 5MB. Please choose a smaller image.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a valid image file (JPG, PNG, etc.)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Update the specific image file
+    const newImageFiles = [...referenceImageFiles];
+    newImageFiles[index] = file;
+    setReferenceImageFiles(newImageFiles);
+    
+    // Upload to Cloudinary immediately
+    try {
+      const newProgresses = [...referenceUploadProgresses];
+      newProgresses[index] = 25;
+      setReferenceUploadProgresses(newProgresses);
+
+      // Compress image for faster upload
+      const compressedFile = await compressImage(file);
+      newProgresses[index] = 50;
+      setReferenceUploadProgresses(newProgresses);
+      
+      const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
+      
+      newProgresses[index] = 100;
+      setReferenceUploadProgresses(newProgresses);
+      
+      const newImageUrls = [...referenceImageUrls];
+      newImageUrls[index] = uploadedUrl;
+      setReferenceImageUrls(newImageUrls);
+      
+      toast({
+        title: "Image uploaded",
+        description: "Reference image uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading reference image:', error);
+      const newProgresses = [...referenceUploadProgresses];
+      newProgresses[index] = 0;
+      setReferenceUploadProgresses(newProgresses);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Remove reference image
+  const removeReferenceImage = (index: number) => {
+    const newImageFiles = [...referenceImageFiles];
+    const newImageUrls = [...referenceImageUrls];
+    const newProgresses = [...referenceUploadProgresses];
+    
+    newImageFiles[index] = null;
+    newImageUrls[index] = "";
+    newProgresses[index] = 0;
+    
+    setReferenceImageFiles(newImageFiles);
+    setReferenceImageUrls(newImageUrls);
+    setReferenceUploadProgresses(newProgresses);
+    
+    toast({
+      title: "Image removed",
+      description: "Reference image has been removed",
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -980,6 +1190,12 @@ export default function PostEnquiry() {
       }
       if (idBackUrl) {
         enquiryData.idBackImage = idBackUrl;
+      }
+      
+      // Add reference images if any exist
+      const validReferenceImages = referenceImageUrls.filter(url => url.trim() !== "");
+      if (validReferenceImages.length > 0) {
+        enquiryData.referenceImages = validReferenceImages;
       }
       
       console.log('Saving enquiry data:', enquiryData);
@@ -1578,6 +1794,82 @@ export default function PostEnquiry() {
                     />
                   </div>
 
+                  {/* Reference Images (Optional) - Professional Design */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <Upload className="h-4 w-4 text-slate-500" />
+                      Reference Images (Optional)
+                    </Label>
+                    <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">
+                      Add up to 5 reference images to help sellers understand what you're looking for
+                    </p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <div key={index} className="relative">
+                          <label
+                            htmlFor={`reference-image-${index}`}
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+                              referenceImageUrls[index]
+                                ? 'border-green-300 bg-green-50 hover:border-green-400'
+                                : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'
+                            } ${loading || idUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <input
+                              id={`reference-image-${index}`}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleReferenceImageUpload(e, index)}
+                              disabled={loading || idUploadLoading}
+                            />
+                            
+                            {referenceImageUrls[index] ? (
+                              <div className="relative w-full h-full rounded-lg overflow-hidden group">
+                                <img
+                                  src={referenceImageUrls[index]}
+                                  alt={`Reference ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    removeReferenceImage(index);
+                                  }}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg"
+                                  disabled={loading || idUploadLoading}
+                                >
+                                  <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                </button>
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 && (
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
+                                    {referenceUploadProgresses[index]}%
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center p-3 sm:p-4">
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
+                                    <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500 mb-1.5 sm:mb-2" />
+                                    <p className="text-[10px] sm:text-xs text-slate-700 font-semibold text-center">Add Image</p>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Budget & Location - Enhanced Side by Side Layout */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
                     <div className="space-y-2.5 sm:space-y-3">
@@ -1711,27 +2003,6 @@ export default function PostEnquiry() {
                         className="max-w-4xl mx-auto"
                       />
                     </div>
-
-                    {selectedPlan && selectedPlan.price > 0 && (
-                      <div className="p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/50 border-2 border-blue-200 rounded-xl shadow-sm">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                            <span className="text-blue-700 text-base sm:text-lg">💎</span>
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-bold text-blue-900 mb-2 text-sm sm:text-base">{selectedPlan.name} Plan Benefits:</p>
-                            <ul className="text-xs sm:text-sm space-y-1.5 text-blue-800">
-                              {selectedPlan.features.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <span className="text-blue-600 mt-0.5">✓</span>
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
@@ -1746,7 +2017,7 @@ export default function PostEnquiry() {
                       </Label>
                     </div>
                     <div className="p-3 sm:p-4 bg-white border-2 border-slate-200 rounded-lg">
-                      <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
+                      <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2 mb-2">
                         {idFrontImage || idBackImage ? (
                           <>
                             <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
@@ -1758,6 +2029,9 @@ export default function PostEnquiry() {
                             <span>Upload ID to build trust</span>
                           </>
                         )}
+                      </p>
+                      <p className="text-xs sm:text-sm text-blue-600 font-medium">
+                        Trust badge is earned with ID verification
                       </p>
                     </div>
                     
@@ -1886,10 +2160,15 @@ export default function PostEnquiry() {
                   <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
                     <Button
                       type="submit"
-                      disabled={loading || idUploadLoading}
+                      disabled={loading || idUploadLoading || paymentLoading}
                       className="w-full h-14 sm:h-16 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      {loading ? (
+                      {paymentLoading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span>Opening Razorpay...</span>
+                        </span>
+                      ) : loading ? (
                         <div className="flex items-center justify-center space-x-3">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span>Submitting...</span>
@@ -2042,6 +2321,10 @@ export default function PostEnquiry() {
                       setNotes("");
                       setIdFrontImage(null);
                       setIdBackImage(null);
+                      // Clear reference images
+                      setReferenceImageFiles(Array(5).fill(null));
+                      setReferenceImageUrls(Array(5).fill(""));
+                      setReferenceUploadProgresses(Array(5).fill(0));
                     }}
                     className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200"
                   >
