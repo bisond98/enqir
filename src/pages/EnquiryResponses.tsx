@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -20,6 +20,7 @@ import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
 import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 
 interface Enquiry {
@@ -133,6 +134,7 @@ const EnquiryResponses = () => {
   
   // Microphone permission state
   const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
+  const [showMicrophonePrompt, setShowMicrophonePrompt] = useState<boolean>(false);
   
   // Update ref whenever callStatus changes
   useEffect(() => {
@@ -297,6 +299,7 @@ const EnquiryResponses = () => {
     // Re-check permission status
     const status = await checkMicrophonePermission();
     setMicrophonePermission(status);
+    setShowMicrophonePrompt(false); // Hide prompt when permission is granted
   };
 
   // Simple real-time chat with onSnapshot
@@ -1148,11 +1151,7 @@ const EnquiryResponses = () => {
       const permissionStatus = await checkMicrophonePermission();
       if (permissionStatus !== 'granted') {
         setMicrophonePermission(permissionStatus);
-        toast({
-          title: 'Microphone Permission Required',
-          description: 'Please grant microphone access to make calls. Click the permission button above.',
-          variant: 'default'
-        });
+        setShowMicrophonePrompt(true);
         return;
       }
 
@@ -1403,11 +1402,7 @@ const EnquiryResponses = () => {
       const permissionStatus = await checkMicrophonePermission();
       if (permissionStatus !== 'granted') {
         setMicrophonePermission(permissionStatus);
-        toast({
-          title: 'Microphone Permission Required',
-          description: 'Please grant microphone access to answer calls. Click the permission button above.',
-          variant: 'default'
-        });
+        setShowMicrophonePrompt(true);
         endCall();
         return;
       }
@@ -1886,11 +1881,7 @@ const EnquiryResponses = () => {
       const permissionStatus = await checkMicrophonePermission();
       if (permissionStatus !== 'granted') {
         setMicrophonePermission(permissionStatus);
-        toast({
-          title: 'Microphone Permission Required',
-          description: 'Please grant microphone access to record voice messages. Click the permission button above.',
-          variant: 'default'
-        });
+        setShowMicrophonePrompt(true);
         return;
       }
 
@@ -2423,44 +2414,68 @@ const EnquiryResponses = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          {/* Header - Mobile Responsive */}
-          <div className="mb-4 sm:mb-6 lg:mb-8 rounded-lg overflow-hidden shadow-lg">
-            <div className="bg-gray-800 px-4 sm:px-6 py-4 sm:py-6">
-              <div className="flex items-center justify-between mb-4">
+          {/* Header - Mobile Responsive - Creative Design */}
+          <div className="mb-4 sm:mb-6 lg:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-700/50">
+            <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 sm:px-5 py-3 sm:py-5">
+              {/* Top Bar with Back Button and Chat Title */}
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <Button
                   variant="ghost"
                   onClick={() => navigate('/my-enquiries')}
-                  className="p-2 hover:bg-gray-700 rounded-lg min-touch text-white"
+                  className="p-2 hover:bg-gray-700/50 rounded-lg min-touch text-white transition-all"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
-                <div className="absolute left-1/2 transform -translate-x-1/2">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">Chat</h1>
+                <div className="flex-1 text-center">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">Chat</h1>
                 </div>
                 <div className="w-10"></div> {/* Spacer for balance */}
               </div>
               
-              {/* Enquiry Details Card */}
-              <div className="bg-gray-800 rounded-lg p-2 sm:p-3">
-                <div className="text-white">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm sm:text-base font-bold">
+              {/* Enquiry Details Card - Single Color Design */}
+              <div className="bg-white border border-gray-800 rounded-lg p-4 sm:p-5">
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Title Row with Response Count Badge */}
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-base sm:text-lg font-bold text-gray-800 leading-tight truncate flex-1 min-w-0">
                       {enquiry.title}
+                    </h2>
+                    <div className="flex items-center justify-center border border-gray-800 rounded-md px-2.5 py-1.5 flex-shrink-0">
+                      <span className="text-base sm:text-lg font-black text-gray-800">1</span>
                     </div>
-                    <div className="text-lg sm:text-xl font-bold">
-                      1
+                  </div>
+                  
+                  {/* Category and Type Row - Single Color Badges */}
+                  <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                    <div className="inline-flex items-center gap-1.5 border border-gray-800 rounded-md px-2.5 py-1.5">
+                      <Briefcase className="h-3.5 w-3.5 text-gray-800 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-gray-800 font-medium">fulltime</span>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 border border-gray-800 rounded-md px-2.5 py-1.5">
+                      <Tag className="h-3.5 w-3.5 text-gray-800 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-gray-800 font-medium capitalize">{enquiry.category}</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                    <span>fulltime</span>
-                    <span>{enquiry.category}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                    <span>Budget: {formatBudget(enquiry.budget)}</span>
-                    <span>📍 {enquiry.location}</span>
-                  </div>
-                  <div className="text-center text-xs text-gray-300">
-                    Approved Responses
+                  
+                  {/* Budget and Location Row - Single Color Layout */}
+                  <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t border-gray-800">
+                    {/* Budget Section */}
+                    <div className="flex items-start gap-2 flex-1 min-w-0">
+                      <span className="text-sm sm:text-base text-gray-800 flex-shrink-0 mt-0.5">₹</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[10px] sm:text-xs text-gray-800 font-medium mb-1">Budget</div>
+                        <div className="text-sm sm:text-base font-bold text-gray-800 truncate">{formatBudget(enquiry.budget)}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Location Section */}
+                    <div className="flex items-start gap-2 flex-shrink-0">
+                      <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-gray-800 flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <div className="text-[10px] sm:text-xs text-gray-800 font-medium mb-1">Location</div>
+                        <div className="text-sm sm:text-base font-bold text-gray-800 truncate max-w-[120px] sm:max-w-none">{enquiry.location}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2514,7 +2529,7 @@ const EnquiryResponses = () => {
                         </div>
                         <p className="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500">
-                          <span className="font-semibold text-emerald-600">₹{response.price}</span>
+                          <span className="font-semibold text-emerald-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
                         </div>
                       </div>
@@ -2549,8 +2564,8 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border border-slate-200 shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
-                  <CardHeader className="pb-2 sm:pb-3 border-b border-slate-200 bg-slate-50/50 p-3 sm:p-4">
+                <Card className="border border-gray-800 shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
+                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-gray-800 bg-slate-50/50 p-3 sm:p-4">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                       {/* Left: Chat Info */}
@@ -2593,7 +2608,7 @@ const EnquiryResponses = () => {
                             onClick={toggleCallsEnabled}
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border border-gray-200 hover:border-gray-300"
+                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border border-gray-800 hover:border-gray-900"
                             title={callsEnabled ? 'Click to disable calls' : 'Click to enable calls'}
                           >
                             {callsEnabled ? '🔊 Calls On' : '🔇 Calls Off'}
@@ -2612,10 +2627,10 @@ const EnquiryResponses = () => {
                             }}
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 ${
+                            className={`h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border border-gray-800 ${
                               isCalling || isInCall
-                                ? 'text-red-600 hover:text-red-700 hover:bg-red-50'
-                                : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+                                ? 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-gray-900'
+                                : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:border-gray-900'
                             }`}
                             disabled={callStatus === 'ringing'}
                             title={isCalling || isInCall ? 'End Call' : 'Start Call'}
@@ -2645,7 +2660,7 @@ const EnquiryResponses = () => {
                           onClick={handleEndChatClick}
                           variant="outline"
                           size="sm"
-                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-slate-200 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
                         >
                           End Chat
                         </Button>
@@ -2655,7 +2670,7 @@ const EnquiryResponses = () => {
                           onClick={handleBlockUserClick}
                           variant="outline"
                           size="sm"
-                          className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-slate-200 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
                         >
                           Block User
                         </Button>
@@ -2673,7 +2688,7 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="pt-2 border-t border-slate-200">
+                    <div className="pt-2 border-t-2 border-gray-800">
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-xs lg:text-sm font-medium text-slate-900 truncate">
@@ -2687,7 +2702,7 @@ const EnquiryResponses = () => {
                           <p className="text-xs text-slate-500 truncate">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
-                          <div className="text-xs lg:text-sm font-semibold text-emerald-600">₹{selectedResponse.price}</div>
+                          <div className="text-xs lg:text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -2695,7 +2710,7 @@ const EnquiryResponses = () => {
 
 
 
-                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-slate-50/30">
+                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40">
                     {chatMessages.length === 0 ? (
                       <div className="text-center py-8 sm:py-12 lg:py-16">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4">
@@ -2942,7 +2957,6 @@ const EnquiryResponses = () => {
                           <div className="flex justify-center py-2">
                             <div className="flex items-center space-x-2 text-xs px-3 py-1 rounded-full bg-green-100 text-green-700">
                               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                              <span>Live Chat - Real-time</span>
                             </div>
                           </div>
                         )}
@@ -2950,18 +2964,21 @@ const EnquiryResponses = () => {
                     )}
                   </div>
 
-                  <div className="border-t border-slate-200 bg-white">
+                  <div className="border-t-2 border-gray-800 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
                     <div className="p-3 sm:p-4">
-                      {/* Microphone Permission Prompt */}
-                      {selectedResponse && (
-                        <div className="mb-3 sm:mb-4">
-                          <MicrophonePermissionPrompt
-                            permissionStatus={microphonePermission}
-                            onPermissionGranted={handlePermissionGranted}
-                          />
-                        </div>
-                      )}
+                      {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
+                      <Dialog open={showMicrophonePrompt && microphonePermission !== 'granted'} onOpenChange={setShowMicrophonePrompt}>
+                        <DialogContent className="sm:max-w-lg max-w-[95vw] p-0 gap-0 border-0 bg-transparent shadow-2xl">
+                          <div className="p-4 sm:p-6">
+                            <MicrophonePermissionPrompt
+                              permissionStatus={microphonePermission}
+                              onPermissionGranted={handlePermissionGranted}
+                              className="border-0 shadow-none bg-transparent"
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       {/* Smart Suggestions - Mobile Responsive */}
                       <div className="flex items-center space-x-2 sm:space-x-2 mb-3 sm:mb-4 overflow-x-auto pb-3">
                         {user?.uid === selectedResponse?.sellerId ? (
@@ -2969,37 +2986,37 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Payment: 50% advance, 50% on delivery")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 border border-blue-200 rounded-md hover:bg-blue-100 hover:border-blue-300 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium min-touch"
                             >
                               💳 Payment
                             </button>
                             <button
                               onClick={() => setNewMessage("Delivery: 3-5 days")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-green-50 text-green-700 border border-green-200 rounded-md hover:bg-green-100 hover:border-green-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               ⏰ Delivery
                             </button>
                             <button
                               onClick={() => setNewMessage("Bulk discounts available")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-gray-50 text-gray-700 border border-gray-200 rounded-md hover:bg-gray-100 hover:border-gray-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               📦 Bulk
                             </button>
                             <button
                               onClick={() => setNewMessage("Quality guarantee included")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md hover:bg-emerald-100 hover:border-emerald-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               ✅ Quality
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 border border-orange-200 rounded-md hover:bg-orange-100 hover:border-orange-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               🤝 Meetup
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-pink-50 text-pink-700 border border-pink-200 rounded-md hover:bg-pink-100 hover:border-pink-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               🧪 Samples
                             </button>
@@ -3234,7 +3251,7 @@ const EnquiryResponses = () => {
                       )}
 
                       {/* Simple Chat Input */}
-                      <div className="flex items-end space-x-2">
+                      <div className="flex items-end space-x-2 border border-gray-800 rounded-lg p-2">
                         {/* Voice Recording Button */}
                         {!isRecording && !audioBlob && (
                           <Button
@@ -3774,3 +3791,4 @@ const EnquiryResponses = () => {
 };
 
 export default EnquiryResponses;
+
