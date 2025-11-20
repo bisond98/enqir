@@ -40,7 +40,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
 
       <div className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
         {/* Business Model Loading Animation */}
-        <div className="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto">
+        <div className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl border-4 border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto">
           <svg viewBox="0 0 500 280" className="w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6" preserveAspectRatio="xMidYMid meet">
             {/* Step 1: User Posting Enquiry */}
             <g id="step1" transform="translate(80, 80)">
@@ -190,7 +190,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               </rect>
             </g>
           </svg>
-          <p className="text-base sm:text-xl text-slate-700 font-semibold text-center tracking-tight">
+          <p className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center">
             {message}
             <span className="inline-block animate-pulse">...</span>
           </p>

@@ -1624,14 +1624,14 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design */}
           {!isSubmitted && (
-            <Card className="border border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden" style={{ borderWidth: '1px' }}>
+            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {category === "jobs" ? "Job Title" : "What do you need? From a 4 a.m. tea spot to a piece of the moon."}
+                      {category === "jobs" ? "Job Title" : "From a 4 a.m. tea spot to a piece of the moon."}
                     </Label>
                     <Input
                       id="title"
@@ -1651,10 +1651,6 @@ export default function PostEnquiry() {
                         <span className="text-blue-600">*</span>
                         Choose Categories
                       </Label>
-                      <p className="text-[10px] sm:text-xs text-slate-600 flex items-center gap-1.5">
-                        <span className="text-blue-500">💡</span>
-                        Select up to 3 categories for better reach
-                      </p>
                     </div>
                     
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
@@ -1827,8 +1823,7 @@ export default function PostEnquiry() {
                       </div>
                       
                       {selectedCategories.length === 0 && (
-                        <p className="text-[10px] sm:text-xs text-amber-600 flex items-center gap-1.5 font-medium">
-                          <span>⚠️</span>
+                        <p className="text-[10px] sm:text-xs text-red-600 font-medium">
                           Select at least one category
                         </p>
                       )}
@@ -2078,7 +2073,7 @@ export default function PostEnquiry() {
                         </p>
                       ) : (
                         <p className="text-xs sm:text-sm text-slate-700 font-medium">
-                          The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
+                          The internet is becoming untrustful without a blue tick.
                         </p>
                       )}
                     </div>

@@ -433,6 +433,17 @@ const EnquiryDetail = () => {
     }).format(budget);
   };
 
+  // Helper function to filter admin notes - hide technical details
+  const formatAdminNotes = (notes: string | undefined): string | null => {
+    if (!notes) return null;
+    // If it contains auto-approval info, show only "Auto-approved by AI"
+    if (notes.toLowerCase().includes('auto-approved') || notes.toLowerCase().includes('ai approved')) {
+      return 'Auto-approved by AI';
+    }
+    // Otherwise, show the original note
+    return notes;
+  };
+
   const getStatusBadge = (status: string) => {
     if (status === 'live') {
       return (
@@ -737,13 +748,13 @@ const EnquiryDetail = () => {
                     </h2>
                   </CardHeader>
                   <CardContent className="p-8 space-y-6">
-                    {enquiry.adminNotes && (
+                    {formatAdminNotes(enquiry.adminNotes) && (
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200/50">
                         <p className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
                           <Shield className="h-4 w-4" />
                           Admin Notes
                         </p>
-                        <p className="text-blue-800 leading-relaxed">{enquiry.adminNotes}</p>
+                        <p className="text-blue-800 leading-relaxed">{formatAdminNotes(enquiry.adminNotes)}</p>
                       </div>
                     )}
                     {enquiry.aiNotes && (

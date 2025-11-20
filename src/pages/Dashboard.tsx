@@ -1131,7 +1131,7 @@ const Dashboard = () => {
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
@@ -1584,7 +1584,7 @@ const Dashboard = () => {
             {/* Responses Card - Seller View Only */}
             {viewMode === 'seller' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-responses');
@@ -1643,9 +1643,9 @@ const Dashboard = () => {
                 {/* Professional Submissions Section */}
                 <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
                   {/* Section Header */}
-                  <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4 pb-2.5 sm:pb-3 lg:pb-2.5 xl:pb-3 border-b-2 border-black">
-                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-md flex-shrink-0">
-                      <Rocket className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                  <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4">
+                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-white border-2 border-black rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-md flex-shrink-0">
+                      <Rocket className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-black" />
                     </div>
                     <h4 className="text-sm sm:text-xl lg:text-base xl:text-lg font-bold text-gray-900 tracking-tight">Your Submissions</h4>
                   </div>
@@ -1699,8 +1699,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isEnquiryDeleted || isEnquiryExpired
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
-                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
+                              : 'bg-white border-4 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header with Sophisticated Design */}
@@ -1776,25 +1776,25 @@ const Dashboard = () => {
                                 ) : (
                                   <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold ${
                                     submission.status === 'approved'
-                                      ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
+                                      ? 'bg-white text-black border-black'
                                       : 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-300/60'
                                   }`}>
                                     <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-full flex-shrink-0 ${
-                                      submission.status === 'approved' ? 'bg-green-500/20' : 'bg-amber-500/20'
+                                      submission.status === 'approved' ? 'bg-black/20' : 'bg-amber-500/20'
                                     }`}>
                                       {submission.status === 'approved' ? (
-                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-green-600" />
+                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-black" />
                                       ) : (
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
                                       )}
                                     </div>
                                     <span className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-black ${
-                                      submission.status === 'approved' ? 'text-green-900' : 'text-amber-900'
+                                      submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
                               </span>
                               {submission.status === 'approved' && (
-                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-950 font-black ml-0.5 sm:ml-1">
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-black ml-0.5 sm:ml-1">
                                   (Ready for chat)
                                 </span>
                                     )}
@@ -1804,7 +1804,7 @@ const Dashboard = () => {
 
                             {/* Experience/Details */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
-                                <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
+                                <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-black">Experience: </span>
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-bold truncate">
@@ -1856,7 +1856,7 @@ const Dashboard = () => {
                 </div>
 
                 {responsesSummary.length > 3 && (
-                  <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4 border-t-2 border-black">
+                  <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4">
                     <Button 
                       variant="outline" 
                       onClick={(e) => {
@@ -1877,30 +1877,25 @@ const Dashboard = () => {
           {/* Saved Enquiries Card - Seller View Only */}
           {viewMode === 'seller' && (
           <Card 
-            className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
+            className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             style={{ position: 'relative', zIndex: 10 }}
           >
             {/* Professional Header - Matching Dashboard Style */}
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
-              {/* Header Section with Title and Icon */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  <div className="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 lg:w-12 lg:h-12 xl:w-14 xl:h-14 border border-black rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl flex-shrink-0">
-                    <Bookmark className="h-5 w-5 sm:h-8 sm:w-8 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-white" />
-                  </div>
-                </div>
-                <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Saved Enquiries</h2>
-              </div>
-              
               {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
-                  <div className="text-center">
-                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                      did you find it?
-                    </p>
+              <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4 xl:p-6">
+                <div className="text-center">
+                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
+                      saved enquiries
+                    </h2>
                   </div>
+                  <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
+                    did you find it?
+                  </p>
+                </div>
               </div>
             </div>
             
@@ -1915,10 +1910,10 @@ const Dashboard = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-orange-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
                     {savedEnquiries.length}
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-orange-800 font-bold uppercase tracking-wide">Total</div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Total</div>
                 </div>
                 </motion.div>
                 
@@ -1930,10 +1925,10 @@ const Dashboard = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-blue-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
                     {savedEnquiries.filter(e => e.status === 'live').length}
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-blue-800 font-bold uppercase tracking-wide">Live</div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Live</div>
                 </div>
                 </motion.div>
                 
@@ -1945,10 +1940,10 @@ const Dashboard = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-purple-700 mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
+                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
                     {savedEnquiries.filter(e => e.status === 'completed').length}
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-purple-800 font-bold uppercase tracking-wide">Completed</div>
+                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Completed</div>
                 </div>
                 </motion.div>
               </div>
@@ -1956,7 +1951,7 @@ const Dashboard = () => {
               {/* Professional Saved Enquiries List */}
               <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
                 {/* Section Header */}
-                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4 pb-2.5 sm:pb-3 lg:pb-2.5 xl:pb-3 border-b-2 border-black">
+                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4">
                 </div>
                 
                 {savedEnquiries.length === 0 ? (
@@ -2045,7 +2040,7 @@ const Dashboard = () => {
               </div>
               
               {savedEnquiries.length > 3 && (
-                <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4 border-t-2 border-black" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4" onClick={(e) => e.stopPropagation()}>
                   <Button 
                     variant="outline"
                     onClick={(e) => {
@@ -2065,16 +2060,16 @@ const Dashboard = () => {
           )}
 
           {/* Quick Actions Card - Always Visible */}
-          <Card className="border-4 border-black shadow-xl bg-gradient-to-br from-white via-slate-50/50 to-white overflow-hidden rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 mb-4 sm:mb-6 lg:mb-8" onClick={(e) => e.stopPropagation()}>
+          <Card className="border-8 border-black shadow-xl bg-gradient-to-br from-white via-slate-50/50 to-white overflow-hidden rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 mb-4 sm:mb-6 lg:mb-8" onClick={(e) => e.stopPropagation()}>
             <CardContent className="p-5 sm:p-8 lg:p-8 xl:p-10">
               {/* Header Section - Matching Dashboard Header */}
               <div className="mb-6 sm:mb-8 lg:mb-10">
                 <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
                   {/* Content Card - White Background */}
-                  <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4 xl:p-6">
                     <div className="text-center">
                       <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                        <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                        <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
                           Quick Actions
                         </h2>
                       </div>

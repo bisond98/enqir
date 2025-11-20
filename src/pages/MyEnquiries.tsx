@@ -377,6 +377,17 @@ const MyEnquiries = () => {
     }).format(budget);
   };
 
+  // Helper function to filter admin notes - hide technical details
+  const formatAdminNotes = (notes: string | undefined): string | null => {
+    if (!notes) return null;
+    // If it contains auto-approval info, show only "Auto-approved by AI"
+    if (notes.toLowerCase().includes('auto-approved') || notes.toLowerCase().includes('ai approved')) {
+      return 'Auto-approved by AI';
+    }
+    // Otherwise, show the original note
+    return notes;
+  };
+
   // Helper to get visible responses for premium logic
   function getVisibleResponses(enquiry: Enquiry, user: any, responses: any[]) {
     if (!enquiry || !user) return [];
@@ -573,7 +584,7 @@ const MyEnquiries = () => {
                       : 'bg-white border-2 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                   }`}>
                     {/* Premium Header with Sophisticated Design */}
-                    <div className={`relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
+                    <div className={`relative bg-black px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
                       isExpired ? 'opacity-70' : ''
                     }`}>
                       {/* Elegant pattern overlay */}
@@ -809,7 +820,7 @@ const MyEnquiries = () => {
                         {/* Timestamps & Admin Notes Group */}
                         <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 pt-2.5 sm:pt-3 lg:pt-2.5 xl:pt-3 border-t-2 border-gray-200/60">
                           {/* Admin Notes */}
-                          {enquiry.adminNotes && (
+                          {formatAdminNotes(enquiry.adminNotes) && (
                             <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
                               <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                                 <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6 lg:h-6 xl:w-7 xl:h-7 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
@@ -817,7 +828,7 @@ const MyEnquiries = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-gray-900 mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
-                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{enquiry.adminNotes}</p>
+                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{formatAdminNotes(enquiry.adminNotes)}</p>
                                 </div>
                               </div>
                             </div>

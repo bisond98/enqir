@@ -339,13 +339,16 @@ const Landing = () => {
   // Get search suggestions based on current input
   const getSearchSuggestions = () => {
     if (!searchTerm.trim()) {
-      return [...recentSearches, ...popularSearches].slice(0, 6);
+      // Remove duplicates by converting to Set and back to array
+      const uniqueSuggestions = Array.from(new Set([...recentSearches, ...popularSearches]));
+      return uniqueSuggestions.slice(0, 6);
     }
     
     const allSuggestions = [...recentSearches, ...popularSearches];
-    return allSuggestions
-      .filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
-      .slice(0, 6);
+    // Remove duplicates and filter
+    const uniqueFiltered = Array.from(new Set(allSuggestions))
+      .filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+    return uniqueFiltered.slice(0, 6);
   };
 
   // Update search position for portal
@@ -1631,7 +1634,7 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <span className="text-xs sm:text-base">Post your legal needs</span>
+              <span className="text-xs sm:text-base">Post all needs</span>
               <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
           </Link>
@@ -1644,7 +1647,7 @@ const Landing = () => {
             <div className="w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
               <div className="flex gap-2 sm:gap-2">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
-                  <Search className="absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none" />
+                  <Search className="absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -1661,9 +1664,9 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-2xl focus:border-blue-500 focus:ring-2 sm:focus:ring-4 focus:ring-blue-100 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-[10px] sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
                     style={{ 
-                      fontSize: '16px',
+                      fontSize: '12px',
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
                       paddingBottom: '0.75rem',
@@ -1675,7 +1678,7 @@ const Landing = () => {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-gradient-to-r from-gray-700 to-black hover:from-black hover:to-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px]"
+                className="bg-black hover:bg-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px] border-4 border-black"
               >
                 {isSearching ? (
                   <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -1692,7 +1695,7 @@ const Landing = () => {
             {features.map((feature, index) => (
               <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-blue-50/30 border border-black rounded-xl sm:rounded-2xl">
                 <div className="relative">
-                  <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-pal-blue mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                  <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
                 <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
@@ -1713,9 +1716,9 @@ const Landing = () => {
               <h3 className="text-sm sm:text-2xl md:text-3xl font-bold text-foreground mb-1 sm:mb-4">
                 Live Needs
               </h3>
-              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-full shadow-sm">
+              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-black border border-black rounded-full" style={{ backgroundColor: '#000000' }}>
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm sm:text-sm font-medium text-slate-700">
+                <span className="text-xs sm:text-xs font-medium text-white">
                   {allLiveEnquiries.length} enquir{allLiveEnquiries.length !== 1 ? 'ys' : 'y'} available
                 </span>
               </div>
@@ -1856,9 +1859,9 @@ const Landing = () => {
                           }}
                         />
                       )}
-                      <div className="relative z-10">
+                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''}`}>
                       {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
-                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5'}`}>
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''}`}>
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
@@ -1891,75 +1894,75 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className={`${windowWidth < 640 ? 'p-3' : 'p-4 sm:p-5 lg:p-6'} flex-1 flex flex-col overflow-y-auto space-y-3 sm:space-y-4`}>
+                      <div className={`${windowWidth < 640 ? 'p-2.5' : 'p-3 sm:p-4 lg:p-4'} flex-1 flex flex-col ${windowWidth < 640 ? 'overflow-y-auto' : 'overflow-visible'} ${windowWidth < 640 ? 'space-y-2' : 'space-y-2 sm:space-y-2.5'} ${windowWidth < 640 ? 'min-h-0' : 'min-h-0'} ${windowWidth >= 640 ? 'flex-grow' : ''}`}>
                       {/* Title - Professional Typography */}
-                      <h3 className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-3 sm:mb-4'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${
+                      <h3 className={`${windowWidth < 640 ? 'text-xs leading-tight' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-2 sm:mb-2.5'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${windowWidth < 640 ? 'border-b border-black pb-1.5' : 'border-b-2 border-black pb-1.5 sm:pb-2'} ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       }`}>
                         {enquiry.title}
                       </h3>
                       
-                      {/* Budget and Location - Professional Layout */}
-                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-2' : 'mb-3 sm:mb-4 space-y-2.5'} flex flex-col`}>
+                      {/* Budget and Location - Horizontal Layout on Desktop, Stacked on Mobile */}
+                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-1.5' : 'mb-2 sm:mb-2.5'} flex ${windowWidth < 640 ? 'flex-col' : 'flex-row items-center flex-nowrap'} ${windowWidth < 640 ? 'gap-1.5' : 'gap-2 sm:gap-2.5'} ${windowWidth >= 640 ? 'w-full' : ''}`}>
                         {enquiry.budget && (
-                          <div className={`inline-flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg ${windowWidth < 640 ? 'px-2.5 py-1.5' : 'px-3 py-2 sm:px-4 sm:py-2.5 lg:px-4 lg:py-3'} border border-gray-200 w-fit`}>
-                            <span className={`${windowWidth < 640 ? 'text-base' : 'text-lg sm:text-xl lg:text-2xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-1' : 'mr-1.5 sm:mr-2'}`}>₹</span>
-                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900`}>{formatIndianCurrency(enquiry.budget)}</span>
+                          <div className={`inline-flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg ${windowWidth < 640 ? 'px-2 py-1' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} ${windowWidth < 640 ? 'border-2' : 'border-2'} border-black ${windowWidth >= 640 ? 'flex-shrink-0' : 'w-fit'} flex-shrink-0`}>
+                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
+                            <span className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold text-gray-900 whitespace-nowrap`}>{formatIndianCurrency(enquiry.budget)}</span>
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1.5' : 'gap-2 sm:gap-2.5'} ${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-base'} text-gray-700`}>
-                            <MapPin className={`${windowWidth < 640 ? 'h-3.5 w-3.5' : 'h-4 w-4 sm:h-4 sm:w-4 lg:h-5 lg:w-5'} text-gray-600 flex-shrink-0`} />
-                            <span className={`font-semibold ${isAnyCardHovered ? '' : 'line-clamp-1'}`}>{enquiry.location}</span>
+                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 px-2 py-1' : 'gap-1.5 sm:gap-2 px-2 py-1.5'} ${windowWidth < 640 ? 'text-[10px]' : 'text-xs sm:text-sm lg:text-base'} text-gray-700 ${windowWidth < 640 ? 'border border-black rounded' : 'border-2 border-black rounded-lg'} ${windowWidth >= 640 ? 'flex-shrink-0 min-w-0' : 'w-fit'} flex-shrink-0`}>
+                            <MapPin className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4'} text-gray-600 flex-shrink-0`} />
+                            <span className={`font-semibold ${isAnyCardHovered ? '' : 'line-clamp-1 truncate'} ${windowWidth >= 640 ? 'max-w-[200px]' : ''}`}>{enquiry.location}</span>
                           </div>
                         )}
                       </div>
                       
                       {/* Meta Information - Professional Grouping */}
-                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-2' : 'mb-3 sm:mb-4 space-y-2.5'}`}>
-                        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
-                          <Badge variant="secondary" className="text-[11px] sm:text-xs lg:text-sm px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 bg-gray-100 text-black border border-gray-300 font-semibold rounded-lg shadow-sm">
+                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-1.5' : 'mb-2 sm:mb-2.5 space-y-1.5 sm:space-y-2'} flex flex-col ${windowWidth >= 640 ? 'w-full' : ''}`}>
+                        <div className={`flex items-center ${windowWidth < 640 ? 'flex-col items-stretch gap-1.5' : 'flex-row justify-between flex-nowrap gap-2 sm:gap-2.5'} ${windowWidth >= 640 ? 'w-full' : ''}`}>
+                          <Badge variant="secondary" className={`${windowWidth < 640 ? 'text-[9px] px-1.5 py-0.5' : 'text-[10px] sm:text-xs lg:text-sm px-2 sm:px-2.5 lg:px-3 py-0.5 sm:py-1 lg:py-1.5'} bg-gray-100 text-black ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} font-semibold rounded-lg shadow-sm ${windowWidth < 640 ? 'w-full text-center' : 'flex-shrink-0'}`}>
                             {enquiry.category}
                           </Badge>
-                          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs lg:text-sm text-gray-600">
-                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-gray-500 flex-shrink-0" />
-                            <span className="whitespace-nowrap font-semibold">
+                          <div className={`flex items-center ${windowWidth < 640 ? 'gap-1 px-1.5 py-0.5 justify-center' : 'gap-1 sm:gap-1.5 px-1.5 py-1'} ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} text-gray-600 ${windowWidth < 640 ? 'border border-black rounded w-full' : 'border-2 border-black rounded-lg flex-shrink-0'}`}>
+                            <Clock className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} text-gray-500 flex-shrink-0`} />
+                            <span className="whitespace-nowrap font-semibold truncate">
                               {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
                             </span>
                           </div>
                         </div>
                         {/* Deadline Timer */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                          <div className="pt-2 sm:pt-2.5 border-t border-gray-200">
+                          <div className={`${windowWidth < 640 ? 'pt-1.5 px-1.5 py-1' : 'pt-1.5 px-1.5 py-1 sm:pt-2 sm:px-2 sm:py-1.5'} ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} rounded-lg w-full`}>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className="text-[11px] sm:text-xs lg:text-sm"
+                              className={`${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'}`}
                             />
                           </div>
                         )}
                       </div>
                       
                       {/* Primary Action Button - Professional Styling */}
-                      <div className="mt-auto pt-3 sm:pt-4 border-t border-gray-200">
+                      <div className={`mt-auto ${windowWidth < 640 ? 'pt-2' : 'pt-2 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''}`}>
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className="w-full h-10 sm:h-10 lg:h-11 bg-gray-100 text-gray-500 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border border-gray-200 cursor-not-allowed min-h-[40px]" disabled>
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`} disabled>
                                   ✅ Your Enquiry
                                 </button>
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className="w-full h-10 sm:h-10 lg:h-11 bg-gray-100 text-gray-500 text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border border-gray-200 cursor-not-allowed min-h-[40px]" disabled>
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`} disabled>
                                   Expired
                                 </button>
                               );
                             } else {
                               return (
                                 <button 
-                                  className="w-full h-10 sm:h-10 lg:h-11 bg-black hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 font-heading min-h-[40px]"
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-black hover:bg-gray-900 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-bold rounded-lg ${windowWidth < 640 ? 'border-2 border-black' : 'border-2 border-black'} shadow-md hover:shadow-lg transition-all duration-200 font-heading ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
                                   Sell
@@ -1969,7 +1972,7 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className="w-full h-10 sm:h-10 lg:h-11 bg-white text-black text-xs sm:text-sm lg:text-sm font-semibold rounded-lg border-4 border-black hover:bg-gray-50 hover:border-black transition-all duration-200 font-heading shadow-sm min-h-[40px]"
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-white text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} hover:bg-gray-50 hover:border-black transition-all duration-200 font-heading shadow-sm ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                             onClick={() => navigate('/signin')}
                           >
                             Sign In
@@ -1978,8 +1981,8 @@ const Landing = () => {
                       </div>
                       
                       {/* Footer - Save and Share - Professional Layout */}
-                      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
+                      <div className={`${windowWidth < 640 ? 'mt-2 pt-2' : 'mt-2 pt-2 sm:mt-2.5 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0 pb-0' : ''}`}>
+                        <div className={`flex items-center ${windowWidth < 640 ? 'gap-1.5' : 'justify-between gap-2 sm:gap-3'}`}>
                           <button 
                             onClick={(e) => {
                               e.preventDefault();
@@ -1989,13 +1992,13 @@ const Landing = () => {
                               }
                             }}
                             disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2 lg:py-2.5 rounded-lg transition-all duration-200 font-semibold text-[11px] sm:text-xs lg:text-sm min-h-[40px] sm:min-h-[44px] ${
+                            className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 flex-1 justify-center' : 'gap-1 sm:gap-1.5'} ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} rounded-lg transition-all duration-200 font-semibold ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} ${windowWidth < 640 ? 'min-h-[32px]' : 'min-h-[32px] sm:min-h-[36px]'} ${
                               savedEnquiries.includes(enquiry.id) 
-                                ? 'text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200' 
-                                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 border border-transparent hover:border-gray-200'
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100 ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'}` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900 ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'}`
                             } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Bookmark className={`h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <Bookmark className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
                             <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                           </button>
                           <button 
@@ -2007,9 +2010,9 @@ const Landing = () => {
                               }
                             }}
                             disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2 lg:py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[11px] sm:text-xs lg:text-sm min-h-[40px] sm:min-h-[44px] border border-transparent hover:border-gray-200 ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 flex-1 justify-center' : 'gap-1 sm:gap-1.5'} ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} ${windowWidth < 640 ? 'min-h-[32px]' : 'min-h-[32px] sm:min-h-[36px]'} ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4 transition-transform duration-200 hover:scale-110" />
+                            <Share2 className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} transition-transform duration-200 hover:scale-110`} />
                             <span className="font-semibold">Share</span>
                           </button>
                         </div>
@@ -2051,18 +2054,6 @@ const Landing = () => {
               </div>
             )}
 
-            {/* Show All Enquiries Button */}
-            <div className="text-center mt-4">
-              <Link to="/enquiries">
-                <Button 
-                  variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-medium border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200"
-                >
-                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                  Show All Enquiries
-                </Button>
-              </Link>
-            </div>
               </>
             ) : (
               <div className="text-center py-16">
@@ -2105,6 +2096,19 @@ const Landing = () => {
                 )}
               </div>
             )}
+
+            {/* Show All Enquiries Button */}
+            <div className="text-center mt-4">
+              <Link to="/enquiries">
+                <Button 
+                  variant="outline" 
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-medium border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200"
+                >
+                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4" />
+                  Show All Enquiries
+                </Button>
+              </Link>
+            </div>
           </section>
 
           {/* Compact Dashboard Section for Signed-in Users */}
@@ -2112,7 +2116,7 @@ const Landing = () => {
             <div className="mb-6 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
               <div className="max-w-4xl mx-auto text-center">
                 <p className="text-slate-600 font-medium text-[10px] sm:text-xs md:text-base mb-3 sm:mb-4 leading-tight">
-                  Stay anonymous until closing the deal
+                  Stay anonymous — let them be surprised!
                 </p>
                 
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
@@ -2144,17 +2148,12 @@ const Landing = () => {
               <div className="max-w-7xl mx-auto relative">
               {/* Section Header */}
                 <div className="mb-8 sm:mb-14 lg:mb-16">
-                  <div className="text-center mb-2 sm:mb-4">
-                    <span className="inline-block text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider px-4 py-1.5 bg-gray-100 rounded-full">
-                      Explore
-                    </span>
-                  </div>
-                  <h2 className="text-center text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-4">
+                  <h2 className="text-center text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-2 sm:mb-4">
                   Popular Categories
                 </h2>
                   <div className="w-full flex justify-center">
-                    <p className="text-xs sm:text-base lg:text-lg text-gray-600 w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
-                      sell in best quality & make money
+                    <p className="text-xs sm:text-base lg:text-lg font-black text-black w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
+                      "They not like us"
                 </p>
                   </div>
               </div>
@@ -2259,10 +2258,10 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-4 sm:mb-12">
-            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-1">
               How It Works
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm font-black text-black">
               This isn't rocket science.
             </p>
           </div>
@@ -2461,7 +2460,7 @@ const Landing = () => {
       {/* Portal-based Search Suggestions - Renders outside normal DOM hierarchy */}
       {showSearchSuggestions && getSearchSuggestions().length > 0 && createPortal(
         <div 
-          className="fixed bg-white border-2 border-blue-400 rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
+          className="fixed bg-white border-4 border-black rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
           style={{
             top: searchPosition.top,
             left: searchPosition.left,
@@ -2477,9 +2476,9 @@ const Landing = () => {
                 setShowSearchSuggestions(false);
                 handleSearch();
               }}
-              className="w-full px-4 py-3 text-left hover:bg-blue-100 transition-colors duration-150 first:rounded-t-2xl last:rounded-b-2xl flex items-center gap-3 border-b border-gray-200 last:border-b-0"
+              className="w-full px-4 py-3 text-left hover:bg-gray-100 transition-colors duration-150 first:rounded-t-2xl last:rounded-b-2xl flex items-center gap-3 border-b border-black last:border-b-0"
             >
-              <Search className="h-4 w-4 text-blue-500" />
+              <Search className="h-4 w-4 text-black" />
               <span className="text-sm text-black font-medium">{suggestion}</span>
             </button>
           ))}
