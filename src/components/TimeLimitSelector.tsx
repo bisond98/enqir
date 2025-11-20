@@ -456,7 +456,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs border-4 border-black">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
@@ -474,7 +474,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm hover:bg-slate-50 transition-colors">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm hover:bg-slate-50 transition-colors border-4 border-black">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>

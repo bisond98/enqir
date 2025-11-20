@@ -16,7 +16,7 @@ export const PAYMENT_PLANS: PaymentPlan[] = [
     price: 0,
     responses: 2,
     description: 'AI-powered smart matching with verified sellers',
-    features: ['🔓 Unlock 2 AI-ranked seller responses', '🤖 Smart seller matching', '📱 Mobile-optimized experience']
+    features: ['Unlock 2 AI-ranked seller responses', 'Smart seller matching', 'Mobile-optimized experience']
   },
   {
     id: 'basic',
@@ -24,7 +24,7 @@ export const PAYMENT_PLANS: PaymentPlan[] = [
     price: 99,
     responses: 5,
     description: 'Unlock more AI-curated quality responses',
-    features: ['🔓 Unlock 5 AI-ranked seller responses', '⚡ Priority AI matching', '🎯 Smart response filtering']
+    features: ['Unlock 5 AI-ranked seller responses', 'Priority AI matching', 'Smart response filtering']
   },
   {
     id: 'standard',
@@ -32,7 +32,7 @@ export const PAYMENT_PLANS: PaymentPlan[] = [
     price: 199,
     responses: 10,
     description: 'AI-powered premium access to top sellers',
-    features: ['🔓 Unlock 10 AI-ranked seller responses', '🧠 Advanced AI recommendations', '🔍 AI-powered search filters']
+    features: ['Unlock 10 AI-ranked seller responses', 'Advanced AI recommendations', 'AI-powered search filters']
   },
   {
     id: 'premium',
@@ -40,7 +40,7 @@ export const PAYMENT_PLANS: PaymentPlan[] = [
     price: 499,
     responses: -1, // unlimited
     description: 'Unlimited AI-matched seller connections',
-    features: ['🔓 Unlock ALL AI-ranked seller responses', '✨ Exclusive premium sellers', '🚀 Priority AI processing'],
+    features: ['Unlock ALL AI-ranked seller responses', 'Exclusive premium sellers', 'Priority AI processing'],
     isPopular: true
   }
   // PRO PLAN - KEPT FOR FUTURE UPDATES

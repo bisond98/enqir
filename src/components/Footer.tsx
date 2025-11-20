@@ -40,9 +40,6 @@ export default function Footer() {
             <div className="lg:col-span-2 space-y-2 sm:space-y-6">
               {/* Logo and Company Name */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-pal-blue to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-sm sm:text-lg">E</span>
-                </div>
                 <div className="space-y-0.5 sm:space-y-1">
                   <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-foreground leading-tight">Enqir<span className="text-[10px] sm:text-xs">.in</span></h3>
                   <p className="text-[9px] sm:text-xs text-muted-foreground max-w-md leading-relaxed">

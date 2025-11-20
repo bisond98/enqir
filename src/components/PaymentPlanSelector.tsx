@@ -281,12 +281,12 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             key={plan.id}
             className={`relative transition-all duration-200 overflow-hidden ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-blue-500 shadow-lg border-2 border-blue-400'
+                ? 'ring-2 ring-black shadow-lg border-2 border-black'
                 : 'hover:shadow-md'
             } ${
               plan.isPopular 
-                ? 'border border-blue-200 bg-blue-50/30' 
-                : 'border border-gray-200'
+                ? 'border border-black bg-blue-50/30' 
+                : 'border border-black'
             }`}
           >
             {/* Card Header */}
@@ -318,7 +318,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             <CardContent className="p-3 sm:p-3 md:p-4">
               {/* Description */}
               <div className="mb-3 sm:mb-2.5 md:mb-2 text-center">
-                <p className="text-xs sm:text-xs md:text-sm text-gray-700 leading-relaxed font-medium">{plan.description}</p>
+                <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed font-black">{plan.description}</p>
               </div>
 
               {/* Features - Optimized for Mobile */}
@@ -332,7 +332,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               </div>
 
               {/* Select Button */}
-              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t border-gray-200">
+              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t border-black">
                 <Button
                   type="button"
                   size="sm"
@@ -341,7 +341,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                       ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
                       : plan.isPopular
                       ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-black'
                   } px-3 sm:px-4`}
                   onClick={(e) => {
                     e.preventDefault();

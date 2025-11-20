@@ -1621,7 +1621,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
+                      className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1648,10 +1648,10 @@ export default function PostEnquiry() {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-2 rounded-xl transition-all duration-200 text-base font-medium ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-4 rounded-xl transition-all duration-200 text-base font-medium ${
                                 selectedCategories.length === 0 
-                                  ? 'border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200' 
-                                  : 'border-slate-200 bg-white hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
                               }`}
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
@@ -1678,7 +1678,7 @@ export default function PostEnquiry() {
                           <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
                             <SheetHeader className="px-4 pt-4 pb-3 flex-shrink-0">
                               <SheetTitle className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Categories</SheetTitle>
-                              <p className="text-xs text-slate-500 text-left">Choose up to 3 categories</p>
+                              <p className="text-xs text-slate-500 text-left mt-1 sm:ml-0 ml-[0.15em]">upto 3.</p>
                             </SheetHeader>
                             <div className="flex-1 overflow-y-auto overscroll-contain">
                               <div className="px-2 py-2 pb-20">
@@ -1731,10 +1731,10 @@ export default function PostEnquiry() {
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-2 rounded-xl transition-all duration-200 font-medium ${
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-4 rounded-xl transition-all duration-200 font-medium ${
                                 selectedCategories.length === 0 
-                                  ? 'border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200' 
-                                  : 'border-slate-200 bg-white hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
                               }`}
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
@@ -1830,7 +1830,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-gray-700"
+                      className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1936,7 +1936,7 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
+                        className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -1955,7 +1955,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-gray-700"
+                          className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2004,7 +2004,7 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className="border border-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-gray-700"
+                        className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                       />
                     </div>
@@ -2029,10 +2029,6 @@ export default function PostEnquiry() {
                       </div>
                     ) : ( */}
                     <div className="space-y-3">
-                      <Label className="text-xs sm:text-sm font-semibold text-slate-800">
-                        Choose Your Plan
-                      </Label>
-                      
                       <PaymentPlanSelector
                         currentPlanId={selectedPlan?.id || 'free'}
                         enquiryId="new-enquiry"
@@ -2049,32 +2045,25 @@ export default function PostEnquiry() {
 
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
                   {!authLoading && !isUserVerified && (
-                  <div className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
-                    <div className="flex items-center space-x-2.5">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-slate-700" />
-                      </div>
-                      <Label className="text-sm sm:text-base font-semibold text-slate-800">
-                        ID Verification <span className="text-slate-500 font-normal">(Optional)</span>
-                      </Label>
+                  <div className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
+                    <div className="space-y-1">
+                      <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">
+                        <span className="block">ID</span>
+                        <span className="block">Verification</span>
+                      </h3>
+                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">(Optional)</p>
                     </div>
-                    <div className="p-3 sm:p-4 bg-white border-2 border-slate-200 rounded-lg">
-                      <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2 mb-2">
-                        {idFrontImage || idBackImage ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                            <span>✓ ID uploaded - pending verification</span>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
-                            <span>Upload ID to build trust</span>
-                          </>
-                        )}
-                      </p>
-                      <p className="text-xs sm:text-sm text-blue-600 font-medium">
-                        Trust badge is earned with ID verification
-                      </p>
+                    <div className="p-3 sm:p-4 bg-white border-2 border-black rounded-lg">
+                      {idFrontImage || idBackImage ? (
+                        <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                          <span>✓ ID uploaded - pending verification</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs sm:text-sm text-slate-700 font-medium">
+                          The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
+                        </p>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -2203,7 +2192,7 @@ export default function PostEnquiry() {
                     <Button
                       type="submit"
                       disabled={loading || idUploadLoading || paymentLoading}
-                      className="w-full h-14 sm:h-16 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border-2 border-black"
                     >
                       {paymentLoading ? (
                         <span className="flex items-center justify-center gap-2">
