@@ -506,7 +506,7 @@ const EnquiryDetail = () => {
                   onClick={() => navigate(-1)}
                   className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
                 >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </Button>
               </div>
               
