@@ -279,14 +279,14 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative transition-all duration-200 overflow-hidden ${
+            className={`relative transition-all duration-200 overflow-hidden rounded-none ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-black shadow-lg border-2 border-black'
+                ? 'ring-2 ring-black shadow-lg border-4 border-black'
                 : 'hover:shadow-md'
             } ${
               plan.isPopular 
-                ? 'border border-black bg-blue-50/30' 
-                : 'border border-black'
+                ? 'border-4 border-black bg-blue-50/30' 
+                : 'border-4 border-black'
             }`}
           >
             {/* Card Header */}
