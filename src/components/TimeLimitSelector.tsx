@@ -41,18 +41,18 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   }, []);
 
   const quickOptions = [
-    { value: '5min', label: '5 minutes', icon: '⚡', color: 'text-red-600' },
-    { value: '15min', label: '15 minutes', icon: '🔥', color: 'text-orange-600' },
-    { value: '30min', label: '30 minutes', icon: '⏰', color: 'text-yellow-600' },
-    { value: '1hour', label: '1 hour', icon: '⏱️', color: 'text-blue-600' },
-    { value: '2hours', label: '2 hours', icon: '🕐', color: 'text-indigo-600' },
-    { value: '6hours', label: '6 hours', icon: '🕕', color: 'text-purple-600' },
-    { value: '12hours', label: '12 hours', icon: '🕛', color: 'text-pink-600' },
-    { value: '1day', label: '1 day', icon: '📅', color: 'text-green-600' },
-    { value: '3days', label: '3 days', icon: '📆', color: 'text-emerald-600' },
-    { value: '1week', label: '1 week', icon: '🗓️', color: 'text-teal-600' },
-    { value: '2weeks', label: '2 weeks', icon: '📊', color: 'text-cyan-600' },
-    { value: '1month', label: '1 month', icon: '🗓️', color: 'text-sky-600' },
+    { value: '5min', label: '5 minutes', icon: '', color: 'text-red-600' },
+    { value: '15min', label: '15 minutes', icon: '', color: 'text-orange-600' },
+    { value: '30min', label: '30 minutes', icon: '', color: 'text-yellow-600' },
+    { value: '1hour', label: '1 hour', icon: '', color: 'text-blue-600' },
+    { value: '2hours', label: '2 hours', icon: '', color: 'text-indigo-600' },
+    { value: '6hours', label: '6 hours', icon: '', color: 'text-purple-600' },
+    { value: '12hours', label: '12 hours', icon: '', color: 'text-pink-600' },
+    { value: '1day', label: '1 day', icon: '', color: 'text-green-600' },
+    { value: '3days', label: '3 days', icon: '', color: 'text-emerald-600' },
+    { value: '1week', label: '1 week', icon: '', color: 'text-teal-600' },
+    { value: '2weeks', label: '2 weeks', icon: '', color: 'text-cyan-600' },
+    { value: '1month', label: '1 month', icon: '', color: 'text-sky-600' },
   ];
 
   const durationTypes = [
@@ -273,31 +273,31 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   return (
       <>
         <Card className="border-0 shadow-none">
-          <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
-            <CardTitle className={`text-base sm:text-lg font-medium ${isDesktop ? 'text-xl font-semibold' : ''}`}>
-              Set Response Deadline
-            </CardTitle>
-            {isDesktop && (
-              <p className="text-sm text-slate-500 mt-1">Choose when you need responses by</p>
-            )}
+          {isDesktop && (
+            <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
+              <CardTitle className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                Deadline
+              </CardTitle>
+              <p className="text-xs text-slate-500 mt-1">There's no such thing as forever.</p>
             </CardHeader>
-          <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop ? 'px-8 pb-8 space-y-6' : ''}`}>
+          )}
+          <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop ? 'px-8 pb-8 space-y-6' : 'px-2 py-2'}`}>
               {/* Time Type Toggle */}
             <div className={`flex space-x-2 sm:space-x-3 ${isDesktop ? 'space-x-4 mb-2' : ''}`}>
                 <Button
-                  variant={timeType === 'quick' ? 'default' : 'outline'}
+                  variant="outline"
                   size="sm"
                   onClick={() => setTimeType('quick')}
-                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base transition-colors' : ''} ${timeType === 'quick' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : 'hover:bg-red-50'}`}
                 >
                 <Zap className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
                   Quick Select
                 </Button>
                 <Button
-                  variant={timeType === 'custom' ? 'default' : 'outline'}
+                  variant="outline"
                   size="sm"
                   onClick={() => setTimeType('custom')}
-                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base hover:bg-blue-50 transition-colors' : ''}`}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base transition-colors' : ''} ${timeType === 'custom' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : 'hover:bg-red-50'}`}
                 >
                 <CalendarIcon className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
                   Custom
@@ -309,7 +309,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   {quickOptions.map((option) => (
                     <Button
                       key={option.value}
-                      variant={quickTime === option.value ? 'default' : 'outline'}
+                      variant="outline"
                       size="sm"
                       onClick={() => handleQuickSelect(option.value)}
                     className={`justify-start text-xs sm:text-sm h-12 sm:h-9 px-3 sm:px-4 font-medium transition-all ${
@@ -318,13 +318,19 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         : ''
                     } ${
                       quickTime === option.value && isDesktop
-                        ? 'bg-blue-600 text-white shadow-lg scale-105'
+                        ? '!bg-black !text-white shadow-lg scale-105 border-black'
+                        : ''
+                    } ${
+                      quickTime === option.value && !isDesktop
+                        ? '!bg-black !text-white !border-black'
                         : ''
                     }`}
                     >
-                    <span className={`${isDesktop ? 'text-2xl mb-0.5' : 'mr-1.5 sm:mr-1 text-base sm:text-sm'}`}>
-                      {option.icon}
-                    </span>
+                    {option.icon && (
+                      <span className={`${isDesktop ? 'text-2xl mb-0.5' : 'mr-1.5 sm:mr-1 text-base sm:text-sm'}`}>
+                        {option.icon}
+                      </span>
+                    )}
                     <span className={`truncate ${isDesktop ? 'text-xs font-medium' : ''}`}>
                       {option.label}
                     </span>
@@ -332,30 +338,30 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   ))}
                 </div>
               ) : (
-              <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : ''}`}>
+              <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : 'space-y-3'}`}>
                 {/* Custom Date - Desktop: Side by side layout */}
-                <div className={isDesktop ? 'grid grid-cols-2 gap-6 items-start' : ''}>
-                  <div className={isDesktop ? '' : ''}>
-                    <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : ''}`}>
+                <div className={isDesktop ? 'grid grid-cols-2 gap-6 items-start' : 'space-y-3'}>
+                  <div className={isDesktop ? '' : 'w-full'}>
+                    <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
                       Start Date & Time
                     </Label>
-                    <div className={isDesktop ? 'flex justify-start' : 'flex justify-center sm:block'}>
+                    <div className={isDesktop ? 'flex justify-start' : 'flex justify-center w-full'}>
                     <Calendar
                       mode="single"
                       selected={customDate}
                       onSelect={setCustomDate}
-                        className={`rounded-md border w-full ${isDesktop ? 'w-auto' : ''}`}
+                        className={`rounded-md border w-full ${isDesktop ? 'w-auto' : 'max-w-full'}`}
                     />
                     </div>
                   </div>
 
                   {/* Custom Duration - Desktop: Show next to calendar */}
-                  <div className={isDesktop ? 'space-y-4' : ''}>
+                  <div className={isDesktop ? 'space-y-4' : 'w-full'}>
                     <div>
-                      <Label className={`text-sm sm:text-xs text-slate-600 mb-2 block ${isDesktop ? 'text-sm font-medium mb-3' : ''}`}>
+                      <Label className={`text-sm sm:text-xs text-slate-600 mb-2 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
                         Add Duration
                       </Label>
-                      <div className={`grid grid-cols-2 gap-3 sm:gap-2 ${isDesktop ? 'gap-4' : ''}`}>
+                      <div className={`grid grid-cols-2 gap-2 sm:gap-2 ${isDesktop ? 'gap-4' : 'gap-2'}`}>
                         <div>
                       <Input
                         type="number"
@@ -408,10 +414,10 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
 
             {/* Preview - Enhanced for desktop */}
               {value && (
-              <div className={`pt-3 sm:pt-4 border-t ${isDesktop ? 'pt-6 border-t-2' : ''}`}>
-                <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm ${isDesktop ? 'gap-3' : ''}`}>
-                  <span className={`text-slate-600 font-medium ${isDesktop ? 'text-base' : ''}`}>Selected Deadline:</span>
-                  <div className={`flex flex-col sm:flex-row sm:items-center gap-2 ${isDesktop ? 'gap-3 items-center' : ''}`}>
+              <div className={`pt-3 sm:pt-4 border-t ${isDesktop ? 'pt-6 border-t-2' : 'pt-3 border-t'}`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm ${isDesktop ? 'gap-3' : 'gap-2'}`}>
+                  <span className={`text-slate-600 font-medium ${isDesktop ? 'text-base' : 'text-xs'}`}>Selected Deadline:</span>
+                  <div className={`flex flex-row items-center gap-2 ${isDesktop ? 'gap-3' : 'gap-2 flex-wrap'}`}>
                     <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5 w-fit ${isDesktop ? 'text-sm px-4 py-1.5' : ''}`}>
                         <span className="mr-1">{urgency.icon}</span>
                         {urgency.level.toUpperCase()}
@@ -455,11 +461,12 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle className="text-left text-lg sm:text-xl">Set Response Deadline</SheetTitle>
+          <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto border-2 border-black p-0 flex flex-col">
+            <SheetHeader className="px-4 pt-4 pb-3 flex-shrink-0">
+              <SheetTitle className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Deadline</SheetTitle>
+              <p className="text-xs text-slate-500 text-left mt-1">There's no such thing as forever.</p>
             </SheetHeader>
-            <div className="mt-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain">
               <DeadlineContent />
             </div>
           </SheetContent>
@@ -472,7 +479,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto" align="start">
+          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto border-2 border-black" align="start">
             <DeadlineContent />
         </PopoverContent>
       </Popover>

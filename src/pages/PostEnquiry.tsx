@@ -1676,8 +1676,8 @@ export default function PostEnquiry() {
                             </Button>
                           </SheetTrigger>
                           <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
-                            <SheetHeader className="px-4 pt-4 pb-3 border-b-8 border-black flex-shrink-0">
-                              <SheetTitle className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left">Select Categories</SheetTitle>
+                            <SheetHeader className="px-4 pt-4 pb-3 flex-shrink-0">
+                              <SheetTitle className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Categories</SheetTitle>
                               <p className="text-xs text-slate-500 text-left">Choose up to 3 categories</p>
                             </SheetHeader>
                             <div className="flex-1 overflow-y-auto overscroll-contain">
@@ -1715,9 +1715,9 @@ export default function PostEnquiry() {
                               </div>
                             </div>
                             {selectedCategories.length >= 3 && (
-                              <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 flex-shrink-0">
-                                <p className="text-sm text-blue-600 font-medium text-center">
-                                  ✅ Max 3 categories selected
+                              <div className="px-4 py-3 bg-black border-t border-black flex-shrink-0">
+                                <p className="text-xs text-white font-semibold text-center">
+                                  Nothing can be more categorised.
                                 </p>
                               </div>
                             )}
@@ -1799,9 +1799,9 @@ export default function PostEnquiry() {
                               })}
                             </div>
                             {selectedCategories.length >= 3 && (
-                              <div className="p-3 bg-blue-50 border-t border-blue-200">
-                                <p className="text-xs text-blue-600 whitespace-nowrap">
-                                  ✅ Max 3 categories selected
+                              <div className="p-3 bg-black border-t border-black">
+                                <p className="text-xs text-white font-semibold whitespace-nowrap">
+                                  Nothing can be more categorised.
                                 </p>
                               </div>
                             )}
