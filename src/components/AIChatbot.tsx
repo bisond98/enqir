@@ -255,14 +255,14 @@ const AIChatbot: React.FC = () => {
             style={{ height: 'calc(100dvh - 2rem)' }}
           >
             {/* Clean Minimal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white rounded-t-2xl sm:rounded-t-3xl">
+            <div className="flex items-center justify-between p-4 border-b border-black bg-black rounded-t-2xl sm:rounded-t-3xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-black" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">Enqir Assistant</h3>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <h3 className="font-semibold text-white text-sm">Enqir Assistant</h3>
+                  <p className="text-xs text-gray-300 flex items-center gap-1">
                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                     {hasError ? 'Limited mode' : 'Online'}
                   </p>
@@ -271,17 +271,17 @@ const AIChatbot: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={clearChat}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                   title="Clear chat"
                 >
-                  <Settings className="h-4 w-4 text-gray-500" />
+                  <Settings className="h-4 w-4 text-white" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                   title="Close chat"
                 >
-                  <X className="h-4 w-4 text-gray-500" />
+                  <X className="h-4 w-4 text-white" />
                 </button>
               </div>
             </div>

@@ -2415,8 +2415,8 @@ const EnquiryResponses = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
           {/* Header - Mobile Responsive - Creative Design */}
-          <div className="mb-4 sm:mb-6 lg:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-700/50">
-            <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 sm:px-5 py-3 sm:py-5">
+          <div className="mb-4 sm:mb-6 lg:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-black">
+            <div className="bg-black px-3 sm:px-5 py-3 sm:py-5">
               {/* Top Bar with Back Button and Chat Title */}
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <Button
@@ -2427,53 +2427,53 @@ const EnquiryResponses = () => {
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
                 <div className="flex-1 text-center">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">Chat</h1>
+                  <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Chat</h1>
                 </div>
                 <div className="w-10"></div> {/* Spacer for balance */}
               </div>
               
               {/* Enquiry Details Card - Single Color Design */}
-              <div className="bg-white border border-gray-800 rounded-lg p-4 sm:p-5">
+              <div className="bg-white border-4 border-black rounded-lg p-4 sm:p-5">
                 <div className="space-y-3 sm:space-y-4">
                   {/* Title Row with Response Count Badge */}
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-base sm:text-lg font-bold text-gray-800 leading-tight truncate flex-1 min-w-0">
+                    <h2 className="text-base sm:text-lg font-bold text-black leading-tight truncate flex-1 min-w-0">
                       {enquiry.title}
                     </h2>
-                    <div className="flex items-center justify-center border border-gray-800 rounded-md px-2.5 py-1.5 flex-shrink-0">
-                      <span className="text-base sm:text-lg font-black text-gray-800">1</span>
+                    <div className="flex items-center justify-center border-4 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
+                      <span className="text-base sm:text-lg font-black text-black">1</span>
                     </div>
                   </div>
                   
                   {/* Category and Type Row - Single Color Badges */}
                   <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-                    <div className="inline-flex items-center gap-1.5 border border-gray-800 rounded-md px-2.5 py-1.5">
-                      <Briefcase className="h-3.5 w-3.5 text-gray-800 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-gray-800 font-medium">fulltime</span>
+                    <div className="inline-flex items-center gap-1.5 border-4 border-black rounded-md px-2.5 py-1.5">
+                      <Briefcase className="h-3.5 w-3.5 text-black flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-black font-medium">fulltime</span>
                     </div>
-                    <div className="inline-flex items-center gap-1.5 border border-gray-800 rounded-md px-2.5 py-1.5">
-                      <Tag className="h-3.5 w-3.5 text-gray-800 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-gray-800 font-medium capitalize">{enquiry.category}</span>
+                    <div className="inline-flex items-center gap-1.5 border-4 border-black rounded-md px-2.5 py-1.5">
+                      <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
                     </div>
                   </div>
                   
                   {/* Budget and Location Row - Single Color Layout */}
-                  <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t border-gray-800">
+                  <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-4 border-black">
                     {/* Budget Section */}
                     <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <span className="text-sm sm:text-base text-gray-800 flex-shrink-0 mt-0.5">₹</span>
+                      <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[10px] sm:text-xs text-gray-800 font-medium mb-1">Budget</div>
-                        <div className="text-sm sm:text-base font-bold text-gray-800 truncate">{formatBudget(enquiry.budget)}</div>
+                        <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
+                        <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
                       </div>
                     </div>
                     
                     {/* Location Section */}
                     <div className="flex items-start gap-2 flex-shrink-0">
-                      <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-gray-800 flex-shrink-0 mt-0.5" />
+                      <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <div className="text-[10px] sm:text-xs text-gray-800 font-medium mb-1">Location</div>
-                        <div className="text-sm sm:text-base font-bold text-gray-800 truncate max-w-[120px] sm:max-w-none">{enquiry.location}</div>
+                        <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
+                        <div className="text-sm sm:text-base font-bold text-black truncate max-w-[120px] sm:max-w-none">{enquiry.location}</div>
                       </div>
                     </div>
                   </div>
@@ -2501,9 +2501,9 @@ const EnquiryResponses = () => {
                   {getVisibleResponses().map((response, index) => (
                     <div
                       key={response.id}
-                      className={`cursor-pointer border-0 shadow-lg transition-all duration-300 min-touch rounded-lg border bg-card text-card-foreground ${
+                      className={`cursor-pointer border-0 shadow-lg transition-all duration-300 min-touch rounded-lg border-4 border-black bg-card text-card-foreground ${
                         selectedResponse?.id === response.id
-                          ? 'ring-2 ring-blue-500 bg-blue-50'
+                          ? 'ring-4 ring-black bg-gray-50'
                           : 'hover:shadow-xl'
                       }`}
                       onClick={() => handleResponseClick(response)}
@@ -2516,7 +2516,7 @@ const EnquiryResponses = () => {
                                 Response #{index + 1}
                               </Badge>
                             )}
-                            <h4 className="font-semibold text-slate-900 line-clamp-2 text-sm sm:text-base">{response.title}</h4>
+                            <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base">{response.title}</h4>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             {response.isIdentityVerified && (
@@ -2527,8 +2527,8 @@ const EnquiryResponses = () => {
                             )}
                           </div>
                         </div>
-                        <p className="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{response.message}</p>
-                        <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500">
+                        <p className="text-black font-medium text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{response.message}</p>
+                        <div className="flex items-center justify-between text-xs sm:text-sm text-black font-medium">
                           <span className="font-semibold text-emerald-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
                         </div>
@@ -2564,7 +2564,7 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border border-gray-800 shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
+                <Card className="border-2 border-gray-800 shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
                   <CardHeader className="pb-2 sm:pb-3 border-b-2 border-gray-800 bg-slate-50/50 p-3 sm:p-4">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
@@ -2575,8 +2575,8 @@ const EnquiryResponses = () => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-xs sm:text-sm lg:text-base font-medium text-slate-900">Chat</h2>
-                            <span className="text-xs text-slate-500">with</span>
+                            <h2 className="text-xs sm:text-sm lg:text-base font-bold text-black">Chat</h2>
+                            <span className="text-xs text-black font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2608,7 +2608,7 @@ const EnquiryResponses = () => {
                             onClick={toggleCallsEnabled}
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border border-gray-800 hover:border-gray-900"
+                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border-2 border-gray-800 hover:border-gray-900"
                             title={callsEnabled ? 'Click to disable calls' : 'Click to enable calls'}
                           >
                             {callsEnabled ? '🔊 Calls On' : '🔇 Calls Off'}
@@ -2627,7 +2627,7 @@ const EnquiryResponses = () => {
                             }}
                             variant="ghost"
                             size="sm"
-                            className={`h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border border-gray-800 ${
+                            className={`h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-800 ${
                               isCalling || isInCall
                                 ? 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-gray-900'
                                 : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:border-gray-900'
@@ -2649,7 +2649,7 @@ const EnquiryResponses = () => {
                             onClick={handleCloseDealClick}
                             variant="outline"
                             size="sm"
-                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-slate-200 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
                           >
                             Deal Closed
                           </Button>
@@ -2660,7 +2660,7 @@ const EnquiryResponses = () => {
                           onClick={handleEndChatClick}
                           variant="outline"
                           size="sm"
-                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
                         >
                           End Chat
                         </Button>
@@ -2670,7 +2670,7 @@ const EnquiryResponses = () => {
                           onClick={handleBlockUserClick}
                           variant="outline"
                           size="sm"
-                          className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
                         >
                           Block User
                         </Button>
@@ -2691,7 +2691,7 @@ const EnquiryResponses = () => {
                     <div className="pt-2 border-t-2 border-gray-800">
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-xs lg:text-sm font-medium text-slate-900 truncate">
+                          <h3 className="text-xs lg:text-sm font-bold text-black truncate">
                             {enquiry.title}
                             {enquiry.isUrgent && (
                               <Badge variant="destructive" className="ml-1 lg:ml-2 text-xs h-3 lg:h-4 px-1">
@@ -2699,10 +2699,10 @@ const EnquiryResponses = () => {
                               </Badge>
                             )}
                           </h3>
-                          <p className="text-xs text-slate-500 truncate">{enquiry.description}</p>
+                          <p className="text-xs text-black font-medium truncate">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
-                          <div className="text-xs lg:text-sm font-semibold text-white bg-black px-2 py-1 rounded">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-xs lg:text-sm font-semibold text-black">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -2716,9 +2716,9 @@ const EnquiryResponses = () => {
                         <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4">
                           <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-slate-500" />
                         </div>
-                        <h4 className="text-xs sm:text-sm lg:text-base font-medium text-slate-700 mb-1 lg:mb-2">Start chatting</h4>
+                        <h4 className="text-xs sm:text-sm lg:text-base font-bold text-black mb-1 lg:mb-2">Start chatting</h4>
                         {user?.uid !== selectedResponse?.sellerId && (
-                          <p className="text-slate-500 text-xs sm:text-sm max-w-sm mx-auto px-3 sm:px-4">
+                          <p className="text-black font-medium text-xs sm:text-sm max-w-sm mx-auto px-3 sm:px-4">
                             Begin discussing details and negotiating with this seller
                           </p>
                         )}
@@ -2734,12 +2734,12 @@ const EnquiryResponses = () => {
                               className={`max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-lg relative ${
                                 message.senderId === user?.uid
                                   ? 'bg-blue-600 text-white'
-                                  : 'bg-white border border-slate-200 text-slate-900'
+                                  : 'bg-black border border-black text-white'
                               }`}
                             >
                               {/* Message Content */}
                               {message.message && (
-                                <p className="text-xs lg:text-sm leading-relaxed break-words">{message.message}</p>
+                                <p className="text-xs lg:text-sm leading-relaxed break-words text-white font-medium">{message.message}</p>
                               )}
                               
                               {/* Attachments */}
@@ -2846,8 +2846,8 @@ const EnquiryResponses = () => {
                                             <Mic className="h-6 w-6 text-gray-800" />
                                           </div>
                                           <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-700">Voice Message</p>
-                                            <p className="text-xs text-gray-600">{formatFileSize(attachment.size)}</p>
+                                            <p className="text-sm font-bold text-black">Voice Message</p>
+                                            <p className="text-xs text-black font-medium">{formatFileSize(attachment.size)}</p>
                                           </div>
                                           <div className="flex items-center space-x-2">
                                             <audio
@@ -2878,8 +2878,8 @@ const EnquiryResponses = () => {
                                             <File className="h-6 w-6 text-slate-600" />
                                           </div>
                                           <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-slate-700 truncate">{attachment.name}</p>
-                                            <p className="text-xs text-slate-500">{formatFileSize(attachment.size)}</p>
+                                            <p className="text-sm font-bold text-black truncate">{attachment.name}</p>
+                                            <p className="text-xs text-black font-medium">{formatFileSize(attachment.size)}</p>
                                           </div>
                                           <Button
                                             variant="ghost"
@@ -2913,12 +2913,12 @@ const EnquiryResponses = () => {
                               
                               {/* Message Meta - Mobile Responsive */}
                               <div className="flex items-center justify-end space-x-1 mt-1">
-                                <span className={`text-xs ${message.senderId === user?.uid ? 'text-blue-100' : 'text-slate-400'}`}>
+                                <span className={`text-[7px] sm:text-[8px] font-medium text-black`}>
                                   {formatDate(message.timestamp)}
                                 </span>
                                 {message.senderId === user?.uid && (
                                   <div className="ml-1">
-                                    <CheckCircle className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-blue-100" />
+                                    <CheckCircle className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-white" />
                                   </div>
                                 )}
                               </div>
@@ -3080,7 +3080,7 @@ const EnquiryResponses = () => {
                       {attachments.length > 0 && (
                         <div className="mb-3 p-2 bg-slate-50 rounded-lg border">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-medium text-slate-600">Attachments ({attachments.length})</span>
+                            <span className="text-xs font-bold text-black">Attachments ({attachments.length})</span>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -3373,7 +3373,7 @@ const EnquiryResponses = () => {
                               }
                             }}
                             disabled={!canUserChat(selectedResponse)}
-                            className={`resize-none border-slate-200 focus:border-slate-400 focus:ring-slate-400 rounded-lg px-3 py-2 pr-12 text-sm min-touch ${
+                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg px-3 py-2 pr-12 text-sm min-touch placeholder:text-xs placeholder:text-gray-500 ${
                               !canUserChat(selectedResponse) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}
@@ -3417,7 +3417,7 @@ const EnquiryResponses = () => {
                             }
                           }}
                           disabled={!canUserChat(selectedResponse) || ((!newMessage.trim() && attachments.length === 0) || Object.values(uploadingFiles).some(uploading => uploading))}
-                          className={`h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 p-0 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed min-touch ${
+                          className={`h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 p-0 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed min-touch border-2 border-gray-800 ${
                             canUserChat(selectedResponse) 
                               ? 'bg-slate-600 hover:bg-slate-700 text-white' 
                               : 'md:bg-slate-600 md:hover:bg-slate-700 md:text-white bg-slate-300 text-slate-500'

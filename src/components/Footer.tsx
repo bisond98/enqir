@@ -44,7 +44,7 @@ export default function Footer() {
                   <span className="text-white font-bold text-sm sm:text-lg">E</span>
                 </div>
                 <div className="space-y-0.5 sm:space-y-1">
-                  <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-foreground leading-tight">Enqir<span className="text-[10px] sm:text-xs">.in</span> Platform</h3>
+                  <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-foreground leading-tight">Enqir<span className="text-[10px] sm:text-xs">.in</span></h3>
                   <p className="text-[9px] sm:text-xs text-muted-foreground max-w-md leading-relaxed">
                     we curate for better deal closings
                   </p>
@@ -54,8 +54,8 @@ export default function Footer() {
               {/* Trust Indicators */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <div className="flex flex-col items-center text-center p-2 sm:p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-200 group">
-                  <div className="w-8 h-8 bg-pal-blue/10 rounded-lg flex items-center justify-center group-hover:bg-pal-blue/20 transition-colors mb-1">
-                    <Shield className="h-4 w-4 text-pal-blue" />
+                  <div className="w-8 h-8 flex items-center justify-center mb-1">
+                    <Shield className="h-4 w-4 text-black" />
                   </div>
                   <div>
                     <p className="text-[10px] sm:text-xs font-medium text-foreground">ID Verified</p>
@@ -64,8 +64,8 @@ export default function Footer() {
                 </div>
                 
                 <div className="flex flex-col items-center text-center p-2 sm:p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-200 group">
-                  <div className="w-8 h-8 bg-pal-blue/10 rounded-lg flex items-center justify-center group-hover:bg-pal-blue/20 transition-colors mb-1">
-                    <Lock className="h-4 w-4 text-pal-blue" />
+                  <div className="w-8 h-8 flex items-center justify-center mb-1">
+                    <Lock className="h-4 w-4 text-black" />
                   </div>
                   <div>
                     <p className="text-[10px] sm:text-xs font-medium text-foreground">Secure</p>
@@ -74,8 +74,8 @@ export default function Footer() {
                 </div>
                 
                 <div className="flex flex-col items-center text-center p-2 sm:p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-200 group">
-                  <div className="w-8 h-8 bg-pal-blue/10 rounded-lg flex items-center justify-center group-hover:bg-pal-blue/20 transition-colors mb-1">
-                    <Users className="h-4 w-4 text-pal-blue" />
+                  <div className="w-8 h-8 flex items-center justify-center mb-1">
+                    <Users className="h-4 w-4 text-black" />
                   </div>
                   <div>
                     <p className="text-[10px] sm:text-xs font-medium text-foreground">Admin</p>

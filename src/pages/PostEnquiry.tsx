@@ -750,6 +750,7 @@ export default function PostEnquiry() {
     // Professional & Business
     { value: "jobs", label: "Jobs & Employment", group: "Professional" },
     { value: "professional-services", label: "Professional Services", group: "Professional" },
+    { value: "business", label: "Business", group: "Professional" },
     { value: "real-estate", label: "Real Estate", group: "Professional" },
     { value: "real-estate-services", label: "Real Estate Services", group: "Professional" },
     { value: "legal-financial", label: "Legal & Financial", group: "Professional" },
@@ -1674,13 +1675,13 @@ export default function PostEnquiry() {
                               <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0" />
                             </Button>
                           </SheetTrigger>
-                          <SheetContent side="bottom" className="h-[80vh] max-h-[600px] p-0">
-                            <SheetHeader className="px-4 pt-4 pb-2 border-b">
-                              <SheetTitle className="text-lg font-semibold text-left">Select Categories</SheetTitle>
-                              <p className="text-sm text-slate-500 text-left">Choose up to 3 categories</p>
+                          <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
+                            <SheetHeader className="px-4 pt-4 pb-3 border-b-8 border-black flex-shrink-0">
+                              <SheetTitle className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left">Select Categories</SheetTitle>
+                              <p className="text-xs text-slate-500 text-left">Choose up to 3 categories</p>
                             </SheetHeader>
-                            <div className="overflow-y-auto h-full pb-4">
-                              <div className="px-2 py-2">
+                            <div className="flex-1 overflow-y-auto overscroll-contain">
+                              <div className="px-2 py-2 pb-20">
                                 {categories.map((cat) => {
                                   const isSelected = selectedCategories.includes(cat.value);
                                   const isDisabled = !isSelected && selectedCategories.length >= 3;
@@ -1698,7 +1699,7 @@ export default function PostEnquiry() {
                                         checked={isSelected}
                                         disabled={isDisabled}
                                         onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                        className="h-5 w-5"
+                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
                                       />
                                       <Label
                                         htmlFor={`mobile-${cat.value}`}
@@ -1712,14 +1713,14 @@ export default function PostEnquiry() {
                                   );
                                 })}
                               </div>
-                              {selectedCategories.length >= 3 && (
-                                <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 sticky bottom-0">
-                                  <p className="text-sm text-blue-600 font-medium text-center">
-                                    ✅ Max 3 categories selected
-                                  </p>
-                                </div>
-                              )}
                             </div>
+                            {selectedCategories.length >= 3 && (
+                              <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 flex-shrink-0">
+                                <p className="text-sm text-blue-600 font-medium text-center">
+                                  ✅ Max 3 categories selected
+                                </p>
+                              </div>
+                            )}
                           </SheetContent>
                         </Sheet>
                       </div>
@@ -1757,8 +1758,16 @@ export default function PostEnquiry() {
                               <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0" align="start">
-                            <div className="max-h-60 overflow-y-auto">
+                          <PopoverContent 
+                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm" 
+                            align="start"
+                            side="bottom"
+                            sideOffset={4}
+                            alignOffset={0}
+                            avoidCollisions={true}
+                            collisionPadding={8}
+                          >
+                            <div className="max-h-[calc(100vh-120px)] sm:max-h-60 overflow-y-auto overscroll-contain pb-4">
                               {categories.map((cat) => {
                                 const isSelected = selectedCategories.includes(cat.value);
                                 const isDisabled = !isSelected && selectedCategories.length >= 3;
@@ -1766,7 +1775,7 @@ export default function PostEnquiry() {
                                 return (
                                   <div 
                                     key={cat.value} 
-                                    className={`flex items-center space-x-2 p-3 hover:bg-slate-50 ${
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
@@ -1775,11 +1784,12 @@ export default function PostEnquiry() {
                                       checked={isSelected}
                                       disabled={isDisabled}
                                       onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
                                     />
                                     <Label
                                       htmlFor={cat.value}
-                                      className={`text-sm flex-1 ${
-                                        isDisabled ? 'cursor-not-allowed text-slate-400' : 'cursor-pointer text-slate-700'
+                                      className={`text-sm sm:text-sm flex-1 cursor-pointer ${
+                                        isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
                                       }`}
                                     >
                                       {cat.label}
