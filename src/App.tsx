@@ -90,19 +90,19 @@ const App = () => {
                 <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/" element={<Landing />} />
+                  <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
-                  <Route path="/enquiries" element={<EnquiryWall />} />
-                  <Route path="/browse" element={<EnquiryWall />} />
-                  <Route path="/post-enquiry" element={<AuthGuard><PostEnquiry /></AuthGuard>} />
-                  <Route path="/respond/:enquiryId" element={<AuthGuard><SellerResponse /></AuthGuard>} />
-                         <Route path="/my-enquiries" element={<AuthGuard><MyEnquiries /></AuthGuard>} />
-                         <Route path="/my-responses" element={<AuthGuard><MyResponses /></AuthGuard>} />
-                         <Route path="/saved-enquiries" element={<AuthGuard><SavedEnquiries /></AuthGuard>} />
-                         <Route path="/enquiry/:enquiryId/responses" element={<AuthGuard><EnquiryResponses /></AuthGuard>} />
-                         <Route path="/enquiry/:enquiryId/responses-page" element={<AuthGuard><EnquiryResponsesPage /></AuthGuard>} />
-                         <Route path="/enquiry/:enquiryId/detailed-responses" element={<AuthGuard><DetailedResponses /></AuthGuard>} />
-                  <Route path="/enquiry/:id" element={<EnquiryDetail />} />
+                  <Route path="/enquiries" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
+                  <Route path="/browse" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
+                  <Route path="/post-enquiry" element={<ErrorBoundary><AuthGuard><PostEnquiry /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/respond/:enquiryId" element={<ErrorBoundary><AuthGuard><SellerResponse /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/my-enquiries" element={<ErrorBoundary><AuthGuard><MyEnquiries /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/my-responses" element={<ErrorBoundary><AuthGuard><MyResponses /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/saved-enquiries" element={<ErrorBoundary><AuthGuard><SavedEnquiries /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/enquiry/:enquiryId/responses" element={<ErrorBoundary><AuthGuard><EnquiryResponses /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/enquiry/:enquiryId/responses-page" element={<ErrorBoundary><AuthGuard><EnquiryResponsesPage /></AuthGuard></ErrorBoundary>} />
+                         <Route path="/enquiry/:enquiryId/detailed-responses" element={<ErrorBoundary><AuthGuard><DetailedResponses /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/enquiry/:id" element={<ErrorBoundary><EnquiryDetail /></ErrorBoundary>} />
                   <Route path="/data-clear" element={<DataClear />} />
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />

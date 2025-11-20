@@ -1376,11 +1376,28 @@ export default function PostEnquiry() {
         // setIdBackImage(null);
       } catch (dbError) {
         console.error('Error saving to Firestore:', dbError);
-        throw new Error(`Failed to save enquiry to database: ${dbError}`);
+        const errorMessage = dbError instanceof Error ? dbError.message : String(dbError);
+        
+        // Check for specific Firebase errors
+        if (errorMessage.includes('permission-denied')) {
+          throw new Error('You don\'t have permission to create enquiries. Please check your account.');
+        } else if (errorMessage.includes('network') || errorMessage.includes('unavailable')) {
+          throw new Error('Network connection issue. Please check your internet and try again.');
+        } else {
+          throw new Error(`Failed to save enquiry: ${errorMessage}. Please try again.`);
+        }
       }
     } catch (err: any) {
       console.error('Error submitting enquiry:', err);
-      alert(`Failed to submit enquiry: ${err?.message || 'Unknown error occurred'}. Please try again.`);
+      const errorMessage = err?.message || 'Unknown error occurred';
+      
+      // Use toast instead of alert for better UX
+      toast({
+        title: "Failed to Submit Enquiry",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 5000
+      });
     } finally {
       setLoading(false);
       setIdUploadLoading(false);

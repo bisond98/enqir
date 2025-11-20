@@ -23,7 +23,22 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   componentDidCatch(error: Error, errorInfo: any) {
     // eslint-disable-next-line no-console
     console.error("ErrorBoundary caught:", error, errorInfo);
+    
+    // Log error details for debugging
+    console.error("Error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    });
+    
     this.setState({ errorInfo });
+    
+    // In production, you could send error to error tracking service
+    if (process.env.NODE_ENV === 'production') {
+      // Example: Send to error tracking service
+      // errorTrackingService.logError(error, errorInfo);
+    }
   }
 
   handleReset = () => {

@@ -137,6 +137,12 @@ export default function EnquiryWall() {
               message: error?.message,
               stack: error?.stack
             });
+            
+            // Only show error toast for non-CORS errors
+            if (!error?.message?.includes('CORS') && !error?.message?.includes('Access-Control-Allow-Origin')) {
+              // Error will be handled by fallback, don't show toast here to avoid spam
+            }
+            
             // Try fallback even on other errors
             tryWithoutOrder();
           }
