@@ -392,11 +392,37 @@ const MyEnquiries = () => {
   function getVisibleResponses(enquiry: Enquiry, user: any, responses: any[]) {
     if (!enquiry || !user) return [];
     if (user.uid === enquiry.userId) {
-      if (enquiry.isPremium === true) {
-        return responses;
-      } else {
-        return responses.slice(0, 2);
+      // Get the selected plan for this enquiry
+      const selectedPlanId = enquiry.selectedPlanId || 'free';
+      
+      // Determine response limit based on plan
+      let responseLimit = 2; // Default free plan
+      
+      switch (selectedPlanId) {
+        case 'free':
+          responseLimit = 2;
+          break;
+        case 'basic':
+          responseLimit = 5;
+          break;
+        case 'standard':
+          responseLimit = 10;
+          break;
+        case 'premium':
+        case 'pro':
+          responseLimit = -1; // Unlimited
+          break;
+        default:
+          responseLimit = 2; // Default to free
       }
+      
+      // If unlimited, return all responses
+      if (responseLimit === -1) {
+        return responses;
+      }
+      
+      // Return limited responses based on plan
+      return responses.slice(0, responseLimit);
     }
     return responses.filter(r => r.sellerId === user.uid);
   }
