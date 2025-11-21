@@ -434,14 +434,19 @@ const Profile = () => {
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border border-black">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg">Trust Badge (Optional)</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
+        <Card className="mt-4 sm:mt-6 border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+          {/* Card Header - Black Background */}
+          <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+            <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
+              <Shield className="h-4 w-4 sm:h-4 sm:w-4" />
+              Trust Badge (Optional)
+            </h2>
+            <p className="text-xs sm:text-xs text-gray-300 mt-1.5">
               The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+            </p>
+          </div>
+          {/* Card Content - Enhanced White Background */}
+          <CardContent className="p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-6">
             
             {/* VERIFIED PROFILE - Show only success message */}
             {verificationStatus === 'approved' && (

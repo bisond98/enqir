@@ -187,9 +187,7 @@ const SignIn = () => {
           </div>
 
           {/* Clean Card */}
-          <Card className="shadow-2xl border border-gray-200/80 bg-white/95 backdrop-blur-sm relative overflow-hidden">
-            {/* Subtle top border accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"></div>
+          <Card className="shadow-2xl border-4 border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
             <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11">
               {/* Error Display */}
               {error && (
@@ -281,7 +279,7 @@ const SignIn = () => {
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
                           required
@@ -299,7 +297,7 @@ const SignIn = () => {
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
@@ -345,7 +343,7 @@ const SignIn = () => {
                                 id="firstName"
                           type="text"
                                 placeholder="First name"
-                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                           required
@@ -362,7 +360,7 @@ const SignIn = () => {
                           id="lastName"
                           type="text"
                                 placeholder="Last name"
-                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                           value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 required
@@ -381,7 +379,7 @@ const SignIn = () => {
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
                           required
@@ -399,7 +397,7 @@ const SignIn = () => {
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-gray-300"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           required

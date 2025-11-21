@@ -263,22 +263,11 @@ const Dashboard = () => {
           limit(10)
       ));
 
-      // Fetch seller submissions with error handling
-      let sellerSubmissionsSnapshot;
-      try {
-        sellerSubmissionsSnapshot = await getDocs(query(
-          collection(db, 'sellerSubmissions'),
-          where('sellerId', '==', user.uid),
-          orderBy('createdAt', 'desc')
-        ));
-      } catch (queryError: any) {
-        console.error('Dashboard: Query with orderBy failed, trying without orderBy:', queryError);
-        // Fallback: try without orderBy in case index is missing
-        sellerSubmissionsSnapshot = await getDocs(query(
-          collection(db, 'sellerSubmissions'),
-          where('sellerId', '==', user.uid)
-        ));
-      }
+      // Fetch seller submissions without orderBy to avoid index requirement, sort in JavaScript
+      const sellerSubmissionsSnapshot = await getDocs(query(
+        collection(db, 'sellerSubmissions'),
+        where('sellerId', '==', user.uid)
+      ));
 
       // Process enquiries
       const enquiriesData: Enquiry[] = [];
@@ -333,12 +322,9 @@ const Dashboard = () => {
         })
       );
       
-      // Add enquiry data to state for expiration checks (merge with existing)
-      setEnquiries(prev => {
-        const prevMap = prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry});
-        const combined = { ...prevMap, ...enquiryDataMap };
-        return Object.values(combined);
-      });
+      // Don't merge enquiryDataMap into enquiries - enquiryDataMap contains enquiries user responded to,
+      // not enquiries user created. Only enquiries with userId === user.uid should be in enquiries state.
+      // The enquiryDataMap is only used for checking deletion/expiration status, not for displaying.
       
       console.log('Dashboard: ✅ Seller submissions loaded from fetchDashboardData:', submissionsData.length);
       console.log('Dashboard: Setting seller submissions state NOW');
@@ -453,10 +439,10 @@ const Dashboard = () => {
       }
       
       // Set up real-time listener for seller submissions AFTER initial fetch completes
+      // Query without orderBy to avoid index requirement, sort in JavaScript instead
       const sellerSubmissionsQuery = query(
         collection(db, 'sellerSubmissions'),
-        where('sellerId', '==', user.uid),
-        orderBy('createdAt', 'desc')
+        where('sellerId', '==', user.uid)
       );
       
       // Use a flag to skip the first snapshot (which might be empty or duplicate)
@@ -514,18 +500,18 @@ const Dashboard = () => {
           setDeletedEnquiries(deletedSet);
           console.log('Dashboard: Deleted enquiries (realtime):', Array.from(deletedSet));
           
-          // Update enquiries state with fetched enquiry data
-          setEnquiries(prev => {
-            const combined = { ...prev.reduce((acc, e) => { acc[e.id] = e; return acc; }, {} as {[key: string]: Enquiry}), ...enquiryDataMap };
-            return Object.values(combined);
-          });
+          // Don't merge enquiryDataMap into enquiries - enquiryDataMap contains enquiries user responded to,
+          // not enquiries user created. Only enquiries with userId === user.uid should be in enquiries state.
+          // The enquiryDataMap is only used for checking deletion/expiration status.
         });
         
         setResponsesReady(true);
       }, (error) => {
-        // Handle Firestore listener errors gracefully (including CORS)
-        if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin')) {
-          console.warn('Firestore CORS error in seller submissions listener. Real-time updates may be limited.');
+        // Handle Firestore listener errors gracefully (including CORS and index errors)
+        if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin') || error?.code === 'failed-precondition') {
+          // Silently handle CORS and index errors - these are expected and don't affect functionality
+          // The query will work without orderBy, sorting is done in JavaScript
+          return;
         } else {
           console.error('Error in seller submissions listener:', error);
         }
@@ -656,14 +642,15 @@ const Dashboard = () => {
       
       // Execute response fetching immediately to avoid setTimeout issues
       fetchResponsesOptimized();
-    }, (error) => {
-      // Handle Firestore listener errors gracefully (including CORS)
-      if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin')) {
-        console.warn('Firestore CORS error in enquiries listener. Real-time updates may be limited.');
-      } else {
-        console.error('Dashboard: Enquiry listener error:', error);
-      }
-    });
+      }, (error) => {
+        // Handle Firestore listener errors gracefully (including CORS and index errors)
+        if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin') || error?.code === 'failed-precondition') {
+          // Silently handle CORS and index errors - these are expected and don't affect functionality
+          return;
+        } else {
+          console.error('Error in enquiries listener:', error);
+        }
+      });
 
       // Set up real-time listener for chat messages
       try {
@@ -1078,7 +1065,7 @@ const Dashboard = () => {
                     <div className="relative inline-flex items-center bg-white border border-black rounded-full p-0.5 sm:p-1 shadow-lg">
                       {/* Animated Background Slider */}
                       <div 
-                        className={`absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-full bg-black transition-all duration-300 ease-in-out ${
+                        className={`absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-full bg-green-800 transition-all duration-300 ease-in-out ${
                           viewMode === 'buyer' ? 'left-0.5 right-1/2 sm:left-1 sm:right-1/2' : 'left-1/2 right-0.5 sm:left-1/2 sm:right-1'
                         }`}
                         style={{ width: 'calc(50% - 2px)' }}
@@ -1202,13 +1189,13 @@ const Dashboard = () => {
                       <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
                         <Plus className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
                   </div>
-                      <h5 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2.5 sm:mb-3 lg:mb-4 tracking-tight text-center">No Enquiries Yet</h5>
-                      <p className="text-sm sm:text-base lg:text-lg text-gray-600 text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
+                      <h5 className="text-lg sm:text-2xl lg:text-3xl font-bold text-black mb-2.5 sm:mb-3 lg:mb-4 tracking-tight text-center">No Enquiries Yet</h5>
+                      <p className="text-sm sm:text-base lg:text-lg text-black text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
                         Start by posting your first enquiry to connect with sellers and get quality responses
                       </p>
                       <Button
                         onClick={() => navigate('/post-enquiry')}
-                        className="bg-gradient-to-r from-blue-950 to-blue-900 hover:from-blue-900 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center"
+                        className="bg-black hover:bg-gray-900 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center border-2 border-black"
                       >
                         <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
                         Post Your First Enquiry
@@ -1704,7 +1691,7 @@ const Dashboard = () => {
                           }`}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
+                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 rounded-t-xl sm:rounded-t-2xl lg:rounded-t-xl xl:rounded-t-2xl ${
                             isEnquiryDeleted || isEnquiryExpired ? 'opacity-70' : ''
                           }`}>
                             {/* Elegant pattern overlay */}

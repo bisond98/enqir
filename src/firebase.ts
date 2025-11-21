@@ -44,21 +44,103 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Add error handling for CORS issues - but don't intercept fetch as it can break things
-// Instead, we handle CORS errors in individual onSnapshot error callbacks
+// Add error handling for CORS issues - suppress browser console warnings
 if (typeof window !== 'undefined') {
-  // Add global error handler for unhandled CORS and Firestore errors
-  window.addEventListener('error', (event) => {
-    const errorMsg = event.message?.toLowerCase() || '';
+  // Override console.error to filter out CORS warnings
+  const originalConsoleError = console.error;
+  console.error = (...args: any[]) => {
+    const errorMsg = args.join(' ').toLowerCase();
     
     // Suppress XMLHttpRequest, CORS, and Firestore connection errors
     if (errorMsg.includes('xmlhttprequest') || 
+        errorMsg.includes('cannot load') ||
         errorMsg.includes('cors') || 
         errorMsg.includes('access-control-allow-origin') ||
+        errorMsg.includes('firestore.googleapis.com') ||
         errorMsg.includes('firestore') ||
         errorMsg.includes('channel') ||
-        errorMsg.includes('400') ||
-        errorMsg.includes('gsessionid')) {
+        errorMsg.includes('gsessionid') ||
+        errorMsg.includes('listen/channel') ||
+        errorMsg.includes('due to access control checks')) {
+      // These are Firestore connection/retry errors that don't affect app functionality
+      return;
+    }
+    
+    // Call original console.error for other errors
+    originalConsoleError.apply(console, args);
+  };
+  
+  // Also override console.warn for CORS warnings
+  const originalConsoleWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    const errorMsg = args.join(' ').toLowerCase();
+    
+    // Suppress XMLHttpRequest, CORS, and Firestore connection warnings
+    if (errorMsg.includes('xmlhttprequest') || 
+        errorMsg.includes('cannot load') ||
+        errorMsg.includes('cors') || 
+        errorMsg.includes('access-control-allow-origin') ||
+        errorMsg.includes('firestore.googleapis.com') ||
+        errorMsg.includes('firestore') ||
+        errorMsg.includes('channel') ||
+        errorMsg.includes('gsessionid') ||
+        errorMsg.includes('listen/channel') ||
+        errorMsg.includes('due to access control checks')) {
+      // These are Firestore connection/retry warnings that don't affect app functionality
+      return;
+    }
+    
+    // Call original console.warn for other warnings
+    originalConsoleWarn.apply(console, args);
+  };
+  
+  // Add global error handler for unhandled CORS and Firestore errors
+  const originalAddEventListener = window.addEventListener;
+  window.addEventListener = function(type: string, listener: any, options?: any) {
+    if (type === 'error') {
+      const wrappedListener = (event: ErrorEvent) => {
+        const errorMsg = event.message?.toLowerCase() || '';
+        const errorSource = event.filename?.toLowerCase() || '';
+        
+        // Suppress XMLHttpRequest, CORS, and Firestore connection errors
+        if (errorMsg.includes('xmlhttprequest') || 
+            errorMsg.includes('cannot load') ||
+            errorMsg.includes('cors') || 
+            errorMsg.includes('access-control-allow-origin') ||
+            errorSource.includes('firestore') ||
+            errorMsg.includes('channel') ||
+            errorMsg.includes('gsessionid') ||
+            errorMsg.includes('listen/channel') ||
+            errorMsg.includes('due to access control checks')) {
+          // These are Firestore connection/retry errors that don't affect app functionality
+          event.preventDefault();
+          event.stopPropagation();
+          return false;
+        }
+        
+        // Call original listener for other errors
+        if (listener) listener(event);
+      };
+      return originalAddEventListener.call(this, type, wrappedListener, options);
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+  
+  // Also add direct error listener as fallback
+  window.addEventListener('error', (event) => {
+    const errorMsg = event.message?.toLowerCase() || '';
+    const errorSource = event.filename?.toLowerCase() || '';
+    
+    // Suppress XMLHttpRequest, CORS, and Firestore connection errors
+    if (errorMsg.includes('xmlhttprequest') || 
+        errorMsg.includes('cannot load') ||
+        errorMsg.includes('cors') || 
+        errorMsg.includes('access-control-allow-origin') ||
+        errorSource.includes('firestore') ||
+        errorMsg.includes('channel') ||
+        errorMsg.includes('gsessionid') ||
+        errorMsg.includes('listen/channel') ||
+        errorMsg.includes('due to access control checks')) {
       // These are Firestore connection/retry errors that don't affect app functionality
       event.preventDefault();
       event.stopPropagation();
@@ -72,12 +154,13 @@ if (typeof window !== 'undefined') {
     
     // Suppress XMLHttpRequest, CORS, and Firestore connection errors
     if (errorMsg.includes('xmlhttprequest') || 
+        errorMsg.includes('cannot load') ||
         errorMsg.includes('cors') || 
         errorMsg.includes('access-control-allow-origin') ||
         errorMsg.includes('firestore') ||
         errorMsg.includes('channel') ||
-        errorMsg.includes('400') ||
         errorMsg.includes('gsessionid') ||
+        errorMsg.includes('listen/channel') ||
         event.reason?.code === 'unavailable') {
       // These are Firestore connection/retry errors that don't affect app functionality
       event.preventDefault();

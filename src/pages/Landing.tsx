@@ -1664,9 +1664,9 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-[10px] sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
                     style={{ 
-                      fontSize: '12px',
+                      fontSize: '16px',
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
                       paddingBottom: '0.75rem',

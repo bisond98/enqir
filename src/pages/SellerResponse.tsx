@@ -721,7 +721,7 @@ const SellerResponse = () => {
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-8 sm:py-12 px-4">
           <div className="max-w-md w-full">
-            <Card className="border-2 border-gray-200 shadow-xl">
+            <Card className="border-4 border-black shadow-xl">
               <CardContent className="p-6 sm:p-8 text-center">
                 {/* Success Icon */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -729,25 +729,25 @@ const SellerResponse = () => {
                 </div>
                 
                 {/* Main Content */}
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-4">
                   Offer Submitted
                 </h1>
                 
-                <p className="text-sm sm:text-base text-gray-600 mb-6">
+                <p className="text-sm sm:text-base text-black mb-6">
                   {isUserVerified ? 'Your offer is now live and visible to buyers' : 'Your offer is under review'}
                 </p>
                 
                 {/* Status Badge */}
                 {isUserVerified && (
-                  <div className="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-6">
+                  <div className="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-6 border-2 border-green-200">
                     <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
                     Verified User
                   </div>
                 )}
                 
                 {/* Next Steps - Simplified */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left border-2 border-black">
+                  <p className="text-xs sm:text-sm text-black leading-relaxed">
                     {isUserVerified 
                       ? 'Your offer is immediately visible to buyers. They can contact you directly through the platform.'
                       : 'Our admin team will review your offer. You\'ll be notified once it\'s approved.'}
@@ -755,19 +755,19 @@ const SellerResponse = () => {
                 </div>
                 
                 {/* Redirect Info - Minimal */}
-                <p className="text-xs text-gray-500 mb-6">
+                <p className="text-xs text-black mb-6">
                   Redirecting in {redirectCountdown} seconds...
                 </p>
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/dashboard" className="flex-1">
-                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm py-2.5">
+                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm py-2.5 border-2 border-black">
                       Go to Dashboard
                     </Button>
                   </Link>
                   <Link to="/enquiries" className="flex-1">
-                    <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 text-sm py-2.5">
+                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm py-2.5">
                       Browse Enquiries
                     </Button>
                   </Link>
@@ -797,8 +797,8 @@ const SellerResponse = () => {
               <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6">
                 <FileText className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black mb-2 sm:mb-3 lg:mb-4 text-white px-2">
-                sell
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white mb-2 sm:mb-3 lg:mb-4 px-2">
+                SELL
               </h1>
               <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2 mb-3 sm:mb-4 lg:mb-6">
                 Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
@@ -825,7 +825,7 @@ const SellerResponse = () => {
           
           {/* Already Submitted Message */}
           {hasAlreadySubmitted && existingSubmission && (
-            <Card className="mb-6 sm:mb-8 border-2 border-gray-200 bg-white rounded-2xl shadow-sm">
+            <Card className="mb-6 sm:mb-8 border-4 border-black bg-white rounded-2xl shadow-sm">
               <CardContent className="p-4 sm:p-6">
                 <div className="text-center">
                   {/* Icon */}
@@ -886,7 +886,7 @@ const SellerResponse = () => {
           )}
 
           {/* Enhanced Enquiry Display */}
-          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-blue-200 rounded-2xl">
+          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-4 border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -956,7 +956,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="card-premium overflow-hidden border-2 border-blue-200 rounded-2xl">
+            <Card className="card-premium overflow-hidden border-4 border-black rounded-2xl">
             <CardHeader className="bg-black border-b">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center">
@@ -965,7 +965,7 @@ const SellerResponse = () => {
                 <div>
                   <h2 className="text-lg sm:text-2xl font-bold text-white">Your Offer</h2>
               <p className="text-[10px] sm:text-base text-gray-300">
-                    AI will instantly verify and approve your offer
+                    Your product, your rules, you're the king.
               </p>
             </div>
               </div>
@@ -984,9 +984,9 @@ const SellerResponse = () => {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Response Title */}
               <div className="space-y-3">
-                <Label htmlFor="title" className="text-sm sm:text-lg font-black text-foreground flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-pal-blue" />
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <Label htmlFor="title" className="text-sm sm:text-lg font-black text-black flex items-center">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
+                  <span className="text-black">
                     <span className="hidden sm:inline">Response Title *</span>
                     <span className="sm:hidden">Title *</span>
                   </span>
@@ -996,28 +996,28 @@ const SellerResponse = () => {
                   value={title}
                   readOnly
                   disabled
-                  className="h-12 input-touch font-bold text-lg bg-gray-100 cursor-not-allowed"
+                  className="h-12 input-touch font-bold text-lg bg-gray-100 cursor-not-allowed border-4 border-black"
                   required
                 />
               </div>
 
               {/* Enhanced Product Description */}
               <div className="space-y-3">
-                <Label htmlFor="description" className="text-base sm:text-lg font-black text-foreground flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-pal-blue" />
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <Label htmlFor="description" className="text-base sm:text-lg font-black text-black flex items-center">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
+                  <span className="text-black">
                     Detailed Description *
                   </span>
                 </Label>
-                <p className="text-[10px] sm:text-sm text-muted-foreground">
-                  Describe your offering in detail. Include any relevant information that would help the buyer make a decision.
+                <p className="text-[10px] sm:text-sm text-black">
+                  Explain it like to a 5 year-old.
                 </p>
                 <Textarea
                   id="description"
                   placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className={`min-h-[140px] input-touch placeholder:text-[8px] sm:placeholder:text-sm ${errors.description ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-pal-blue'}`}
+                  className={`min-h-[140px] input-touch placeholder:text-[8px] sm:placeholder:text-sm border-4 ${errors.description ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
                 />
                 <div className="flex justify-between items-center">
                   {errors.description && (
@@ -1026,7 +1026,7 @@ const SellerResponse = () => {
                       {errors.description}
                     </span>
                   )}
-                  <span className="text-xs text-muted-foreground ml-auto">
+                  <span className="text-xs text-black ml-auto">
                     {description.length}/500
                   </span>
                 </div>
@@ -1034,29 +1034,26 @@ const SellerResponse = () => {
 
               {/* Enhanced Price Field */}
               <div className="space-y-3">
-                <Label htmlFor="price" className="text-sm sm:text-lg font-black text-foreground flex items-center">
-                  <span className="text-lg sm:text-2xl mr-2 sm:mr-3">₹</span>
-                  <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <Label htmlFor="price" className="text-sm sm:text-lg font-black text-black flex items-center">
+                  <span className="text-lg sm:text-2xl mr-2 sm:mr-3 text-black">₹</span>
+                  <span className="text-black">
                     Your Price *
                   </span>
                 </Label>
                 
                 {/* Enquiry Budget Display */}
                 {enquiry && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3 mb-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs sm:text-sm text-blue-700 font-medium">Buyer's Budget:</span>
-                      <span className="text-sm sm:text-lg font-bold text-blue-800">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                  <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#ef4444', borderColor: '#dc2626' }}>
+                    <div className="flex flex-row items-center justify-between gap-2">
+                      <span className="text-[10px] sm:text-xs text-white font-semibold">Buyer's Budget:</span>
+                      <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                     </div>
-                    <p className="text-[9px] sm:text-xs text-blue-600 mt-1 whitespace-nowrap">
-                      💡 Consider pricing within or near this budget for better chances
+                    <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
+                      Remember, you're here to close a deal.
                     </p>
                   </div>
                 )}
                 
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Enter your competitive price for this offering
-                </p>
                 <div className="relative">
                 <Input
                   id="price"
@@ -1078,11 +1075,11 @@ const SellerResponse = () => {
                       setPrice('₹' + e.target.value);
                     }
                   }}
-                    className={`h-12 text-lg font-semibold input-touch ${errors.price ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-pal-blue'}`}
+                    className={`h-12 text-lg font-semibold input-touch border-4 ${errors.price ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
                   required
                 />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <span className="text-sm text-muted-foreground">INR</span>
+                    <span className="text-sm text-black">INR</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
@@ -1092,8 +1089,8 @@ const SellerResponse = () => {
                       {errors.price}
                     </span>
                   )}
-                  <span className="text-xs text-green-600 ml-auto">
-                    ✓ Competitive pricing attracts buyers
+                  <span className="text-[8px] sm:text-sm text-black ml-auto">
+                    Attracts buyers. Ahhh… whatever -your product, your price - you're the king.
                   </span>
                 </div>
               </div>
@@ -1103,13 +1100,13 @@ const SellerResponse = () => {
 
               {/* Enhanced Additional Notes */}
               <div className="space-y-3">
-                <Label htmlFor="notes" className="text-sm sm:text-lg font-black text-foreground flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-gray-500" />
-                  <span className="bg-gradient-to-r from-gray-600 to-slate-600 bg-clip-text text-transparent">
+                <Label htmlFor="notes" className="text-sm sm:text-lg font-black text-black flex items-center">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
+                  <span className="text-black">
                     Additional Information (Optional)
                   </span>
                 </Label>
-                <p className="text-[8px] sm:text-sm text-muted-foreground">
+                <p className="text-[8px] sm:text-sm text-black">
                   Include payment terms, delivery details, warranties, or any special conditions
                 </p>
                 <Textarea
@@ -1117,9 +1114,9 @@ const SellerResponse = () => {
                   placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="min-h-[120px] input-touch placeholder:text-[8px] sm:placeholder:text-sm"
+                  className="min-h-[120px] input-touch placeholder:text-[8px] sm:placeholder:text-sm border-4 border-black focus:border-black"
                 />
-                <span className="text-[10px] sm:text-xs text-muted-foreground">
+                <span className="text-[10px] sm:text-xs text-black">
                   {notes.length}/300 characters
                 </span>
               </div>
@@ -1129,15 +1126,17 @@ const SellerResponse = () => {
 
               {/* Enhanced 5-Slot Image Upload */}
               <div className="space-y-6">
-                <div className="text-center">
-                  <Label className="text-sm sm:text-base font-semibold text-foreground flex items-center justify-center mb-2">
-                    <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-pal-blue" />
-                    Product Images Gallery (Optional)
-                </Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Upload up to 5 high-quality images to showcase your product (Optional, Max 5MB each)
+                <div className="text-center flex flex-col items-center justify-center">
+                  <div className="flex items-center justify-center gap-2 mb-6 sm:mb-8">
+                    <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                      Product Images
+                    </h3>
+                    <span className="text-xs sm:text-sm text-black font-medium">(optional)</span>
+                  </div>
+                  <p className="text-[10px] sm:text-xs text-black">
+                    Show them who you are and what you've got.
                   </p>
-                  <div className="mt-2 text-[10px] sm:text-xs text-pal-blue font-medium">
+                  <div className="mt-2 text-[10px] sm:text-xs text-black font-medium">
                     {imageUrls.filter(url => url.trim() !== "").length}/5 images uploaded
                   </div>
                 </div>
@@ -1297,12 +1296,15 @@ const SellerResponse = () => {
               {/* Profile Verification Status */}
               <div className="space-y-6">
                 <div className="text-center">
-                  <Label className="text-sm sm:text-lg font-black text-foreground flex items-center justify-center mb-2">
-                    <Shield className="h-4 w-4 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-pal-blue" />
-                    <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent">
+                  <div className="flex items-center justify-center gap-1 mb-2">
+                    <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
                       Trust Badge
-                    </span>
-                  </Label>
+                    </h3>
+                    <span className="text-xs sm:text-sm text-black font-medium">(optional)</span>
+                  </div>
+                  <p className="text-[10px] sm:text-xs text-black">
+                    Blue tick that increases trust, but not fame. Simple.
+                  </p>
                   
                   {/* Show Verified Profile Badge */}
                   {!authLoading && isUserVerified ? (
@@ -1324,21 +1326,19 @@ const SellerResponse = () => {
                   ) : (
                     /* Show ID Upload for Unverified Users */
                     <>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        {govIdType && govIdNumber && govIdUrl ? 
-                          "✓ Trust Badge Pending: Your ID will be verified when admin approves • You'll get trust badge benefits!" :
-                          "Completely optional - submit without ID anytime • Upload ID for trust badge benefits"
-                        }
-                      </p>
-                      <div className="mt-1 flex items-center justify-center space-x-1">
-                        <Verified className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-                        <span className="text-xs sm:text-xs text-green-600 font-medium">
-                          {govIdType && govIdNumber && govIdUrl ? 
-                            "Trust badge pending" : 
-                            "Upload ID for trust badge benefits"
-                          }
-                        </span>
-                      </div>
+                      {govIdType && govIdNumber && govIdUrl && (
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          ✓ Trust Badge Pending: Your ID will be verified when admin approves • You'll get trust badge benefits!
+                        </p>
+                      )}
+                      {govIdType && govIdNumber && govIdUrl && (
+                        <div className="mt-1 flex items-center justify-center space-x-1">
+                          <Verified className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+                          <span className="text-xs sm:text-xs text-green-600 font-medium">
+                            Trust badge pending
+                          </span>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -1357,7 +1357,7 @@ const SellerResponse = () => {
                       id="govIdType"
                       value={govIdType}
                       onChange={(e) => setGovIdType(e.target.value)}
-                      className={`w-full h-8 sm:h-12 px-2 sm:px-3 border rounded-lg input-touch text-xs sm:text-sm ${errors.govIdType ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-pal-blue'} bg-background`}
+                      className={`w-full h-8 sm:h-12 px-2 sm:px-3 border-4 rounded-lg input-touch text-xs sm:text-sm ${errors.govIdType ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'} bg-background`}
                     >
                       <option value="">Select ID Type</option>
                       <option value="aadhaar">Aadhaar Card</option>
@@ -1385,7 +1385,7 @@ const SellerResponse = () => {
                       placeholder="Enter ID number"
                       value={govIdNumber}
                       onChange={(e) => setGovIdNumber(e.target.value.toUpperCase())}
-                      className={`h-8 sm:h-12 input-touch text-xs sm:text-sm ${errors.govIdNumber ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-pal-blue'}`}
+                      className={`h-8 sm:h-12 input-touch text-xs sm:text-sm border-4 ${errors.govIdNumber ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
                     />
                     {errors.govIdNumber && (
                       <span className="text-xs text-red-500 flex items-center">
@@ -1393,8 +1393,8 @@ const SellerResponse = () => {
                         {errors.govIdNumber}
                       </span>
                     )}
-                    <p className="text-xs sm:text-xs text-muted-foreground">
-                      This information is encrypted and securely stored
+                    <p className="text-[10px] sm:text-[10px] font-bold text-black mb-4 sm:mb-6">
+                      This information is encrypted and securely stored. The whole world isn't as bad as you think.
                     </p>
                   </div>
                 </div>
@@ -1409,14 +1409,14 @@ const SellerResponse = () => {
                     Upload a clear photo or scan of your government ID (Front side only, Max 10MB)
                   </p>
 
-                  <div className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${govIdUrl ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-pal-blue hover:bg-pal-blue/5'}`}>
+                  <div className={`border-2 border-dashed rounded-xl p-3 sm:p-6 text-center transition-all ${govIdUrl ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-pal-blue hover:bg-pal-blue/5'}`}>
                     {govIdUrl ? (
-                      <div className="space-y-4">
-                        <div className="relative inline-block">
+                      <div className="space-y-3 sm:space-y-4">
+                        <div className="relative inline-block w-full">
                           <img 
                             src={govIdUrl} 
                             alt="Government ID" 
-                            className="max-w-xs max-h-48 mx-auto rounded-lg shadow-md"
+                            className="w-full max-w-xs max-h-48 mx-auto rounded-lg shadow-md object-contain"
                           />
                           <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                             ✓ Verified
@@ -1482,40 +1482,15 @@ const SellerResponse = () => {
                   )}
                 </div>
 
-                {/* Auto-Verification Notice */}
-                <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full flex-shrink-0">
-                      <Verified className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-blue-700">
-                      <p className="font-semibold mb-1">Automatic Trust Badge Process:</p>
-                      <ul className="space-y-0.5">
-                        <li>• Upload ID → Admin approves response → Your profile gets trust badge automatically</li>
-                        <li>• Verified profiles appear with a badge on all enquiries and responses</li>
-                        <li>• ID information is encrypted and never shared with buyers</li>
-                        <li>• Skip this section if you prefer to remain unverified</li>
-                      </ul>
-                    </div>
+                {/* Combined Trust Badge & Security Notice */}
+                <div className="bg-blue-50 border-2 border-black rounded-lg p-3 sm:p-4">
+                  <div className="text-[10px] sm:text-xs text-blue-700 space-y-1.5">
+                    <p>Trust Badge: Upload ID → Get verified → Badge appears automatically. ID encrypted, never shared.</p>
+                    <p>Security: Response reviewed securely. Details confidential. Communications monitored.</p>
                   </div>
                 </div>
                   </>
                 )}
-              </div>
-
-              {/* Security Notice */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <Shield className="h-5 w-5 text-blue-500 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-semibold text-blue-900 mb-1">Security & Privacy</h4>
-                    <ul className="text-[10px] sm:text-xs text-blue-700 space-y-1">
-                      <li>• Your response is submitted securely and reviewed by our admin team</li>
-                      <li>• Personal contact details are kept confidential until approval</li>
-                      <li>• All communications are monitored for safety and quality</li>
-                    </ul>
-                  </div>
-                </div>
               </div>
 
               {/* Form Progress Indicator */}

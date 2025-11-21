@@ -794,7 +794,7 @@ export default function EnquiryWall() {
               <div className="text-center sm:hidden pt-2">
                 <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-red-600 border-8 border-red-600 rounded-xl hover:border-red-600 hover:bg-red-700 hover:shadow-sm transition-all duration-200 min-touch"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-black border-8 border-black rounded-xl hover:border-black hover:bg-gray-900 hover:shadow-sm transition-all duration-200 min-touch"
                 >
                   {showAllCategories ? (
                     <>
@@ -823,7 +823,7 @@ export default function EnquiryWall() {
                 size="sm"
                 onClick={() => setViewMode('grid')}
                 className={`h-5 sm:h-8 px-1.5 sm:px-3 text-[9px] sm:text-sm ${
-                  viewMode === 'grid' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : ''
+                  viewMode === 'grid' ? '!bg-black !text-white !border-black hover:!bg-gray-900' : ''
                 }`}
               >
                 <Grid3X3 className="h-2.5 w-2.5 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
@@ -834,7 +834,7 @@ export default function EnquiryWall() {
                 size="sm"
                 onClick={() => setViewMode('list')}
                 className={`h-5 sm:h-8 px-1.5 sm:px-3 text-[9px] sm:text-sm ${
-                  viewMode === 'list' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : ''
+                  viewMode === 'list' ? '!bg-black !text-white !border-black hover:!bg-gray-900' : ''
                 }`}
               >
                 <List className="h-2.5 w-2.5 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
