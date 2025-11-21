@@ -134,6 +134,78 @@ const EnquiryDetail = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Update meta tags for social sharing when enquiry loads
+  useEffect(() => {
+    if (!enquiry) return;
+
+    const url = `${window.location.origin}/enquiry/${enquiry.id}`;
+    const title = `${enquiry.title} | Enqir.in`;
+    const description = enquiry.description || 'View this enquiry on Enqir.in - Trust-Based Marketplace';
+    
+    // Use enquiry's first reference image if available, otherwise use enqir.in default og-image
+    // ALWAYS use enqir.in domain for og-image to ensure correct branding (never lovable)
+    let image = '';
+    if (enquiry.referenceImages && enquiry.referenceImages.length > 0) {
+      image = enquiry.referenceImages[0];
+    } else {
+      // Always use enqir.in domain for default og-image (black and white branding)
+      // This ensures no lovable branding appears, even on localhost
+      image = 'https://enqir.in/og-image.png';
+    }
+
+    // Update or create meta tags
+    const updateMetaTag = (property: string, content: string, isProperty = true) => {
+      const selector = isProperty ? `meta[property="${property}"]` : `meta[name="${property}"]`;
+      let meta = document.querySelector(selector) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (isProperty) {
+          meta.setAttribute('property', property);
+        } else {
+          meta.setAttribute('name', property);
+        }
+        document.head.appendChild(meta);
+      }
+      if (content) {
+        meta.setAttribute('content', content);
+      } else {
+        // Remove meta tag if content is empty
+        meta.remove();
+      }
+    };
+
+    // Update Open Graph tags
+    updateMetaTag('og:title', title);
+    updateMetaTag('og:description', description);
+    updateMetaTag('og:url', url);
+    updateMetaTag('og:type', 'website');
+    updateMetaTag('og:site_name', 'Enqir.in');
+    // Always set og:image - use enquiry image if available, otherwise use enqir.in default
+    updateMetaTag('og:image', image);
+    updateMetaTag('og:image:width', '1200');
+    updateMetaTag('og:image:height', '630');
+    updateMetaTag('og:image:alt', enquiry.referenceImages && enquiry.referenceImages.length > 0 ? enquiry.title : 'Enqir.in - Trust-Based Marketplace');
+
+    // Update Twitter tags
+    updateMetaTag('twitter:card', 'summary_large_image', false);
+    updateMetaTag('twitter:title', title, false);
+    updateMetaTag('twitter:description', description, false);
+    updateMetaTag('twitter:image', image, false);
+
+    // Update page title
+    document.title = title;
+
+    // Cleanup function to restore default meta tags
+    return () => {
+      updateMetaTag('og:title', 'Enqir.in - Trust-Based Marketplace');
+      updateMetaTag('og:description', 'A trust-based platform connecting verified buyers and sellers for rare items, antiques, services, and more.');
+      updateMetaTag('og:url', window.location.origin);
+      // Always use enqir.in domain for default og-image (never lovable)
+      updateMetaTag('og:image', 'https://enqir.in/og-image.png');
+      document.title = 'Enqir.in';
+    };
+  }, [enquiry]);
+
   // Load saved enquiries
   useEffect(() => {
     if (!user?.uid) return;
@@ -312,20 +384,90 @@ const EnquiryDetail = () => {
     if (!enquiry) return;
     
     try {
+      // Update share count
       await updateDoc(doc(db, 'enquiries', enquiry.id), {
         shares: increment(1)
       });
       
       setEnquiry(prev => prev ? { ...prev, shares: (prev.shares || 0) + 1 } : null);
       
-      // Copy link to clipboard
       const url = `${window.location.origin}/enquiry/${enquiry.id}`;
-      await navigator.clipboard.writeText(url);
+      const shareData = {
+        title: enquiry.title,
+        text: enquiry.description || enquiry.title,
+        url: url
+      };
       
-      toast({
-        title: "Link Copied!",
-        description: "Enquiry link has been copied to your clipboard.",
-      });
+      // Try Web Share API first (works on mobile and modern browsers)
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+          toast({
+            title: "Shared!",
+            description: "Enquiry shared successfully.",
+          });
+          return;
+        } catch (shareError: any) {
+          // User cancelled or share failed, fall through to clipboard
+          if (shareError.name !== 'AbortError') {
+            console.log('Web Share API failed, trying clipboard:', shareError);
+          } else {
+            // User cancelled, don't show error
+            return;
+          }
+        }
+      }
+      
+      // Fallback to clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(url);
+          toast({
+            title: "Link Copied!",
+            description: "Enquiry link has been copied to your clipboard.",
+          });
+          return;
+        } catch (clipboardError) {
+          console.log('Clipboard API failed, using fallback:', clipboardError);
+        }
+      }
+      
+      // Final fallback: Show URL in a prompt or create a temporary input
+      const input = document.createElement('input');
+      input.value = url;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      input.style.pointerEvents = 'none';
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, 99999); // For mobile devices
+      
+      try {
+        const successful = document.execCommand('copy');
+        document.body.removeChild(input);
+        
+        if (successful) {
+          toast({
+            title: "Link Copied!",
+            description: "Enquiry link has been copied to your clipboard.",
+          });
+        } else {
+          // Show URL in toast for manual copying
+          toast({
+            title: "Copy Link",
+            description: url,
+            duration: 10000,
+          });
+        }
+      } catch (fallbackError) {
+        document.body.removeChild(input);
+        // Show URL in toast for manual copying
+        toast({
+          title: "Copy Link",
+          description: url,
+          duration: 10000,
+        });
+      }
     } catch (err) {
       console.error('Error sharing enquiry:', err);
       toast({
@@ -447,14 +589,14 @@ const EnquiryDetail = () => {
   const getStatusBadge = (status: string) => {
     if (status === 'live') {
       return (
-        <Badge className="relative text-xs sm:text-xs px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-black bg-black text-white font-bold shadow-lg overflow-hidden group">
+        <Badge className="relative text-[8px] sm:text-[9px] px-2 sm:px-2.5 py-1 sm:py-1 rounded-full border-2 border-green-900 bg-green-800 text-white font-bold shadow-lg overflow-hidden group">
           {/* Animated glow effect */}
-          <span className="absolute inset-0 bg-gradient-to-r from-black/0 via-white/10 to-black/0 animate-pulse"></span>
-          <span className="relative flex items-center gap-2 sm:gap-2.5 z-10">
+          <span className="absolute inset-0 bg-gradient-to-r from-green-800/0 via-white/10 to-green-800/0 animate-pulse"></span>
+          <span className="relative flex items-center gap-1 sm:gap-1.5 z-10">
             {/* Pulsing dot indicator */}
             <span className="relative flex items-center justify-center">
-              <span className="absolute w-2.5 h-2.5 bg-white rounded-full animate-ping opacity-75"></span>
-              <span className="relative w-2 h-2 bg-white rounded-full"></span>
+              <span className="absolute w-1.5 h-1.5 bg-white rounded-full animate-ping opacity-75"></span>
+              <span className="relative w-1 h-1 bg-white rounded-full"></span>
             </span>
             <span className="font-extrabold tracking-wide drop-shadow-sm">LIVE</span>
           </span>
@@ -469,7 +611,7 @@ const EnquiryDetail = () => {
     };
     
     return (
-      <Badge className={`text-xs rounded-full border-2 ${variants[status as keyof typeof variants] || 'bg-white text-black border-black'}`}>
+      <Badge className={`text-[8px] sm:text-[9px] rounded-full border-2 ${variants[status as keyof typeof variants] || 'bg-white text-black border-black'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -532,8 +674,8 @@ const EnquiryDetail = () => {
                       </div>
                     )}
                     {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                      <Badge className="bg-white text-black border-black border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
-                        <Crown className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
+                      <Badge className="bg-white text-black border-black border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
+                        <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                         Premium
                       </Badge>
                     )}
@@ -548,7 +690,7 @@ const EnquiryDetail = () => {
                   
                   {/* Main Title */}
                   <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words max-w-full">
+                    <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words max-w-full">
                       {enquiry.title}
                     </h2>
                   </div>
@@ -557,7 +699,7 @@ const EnquiryDetail = () => {
                   {enquiry.deadline && (
                     <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mb-2 sm:mb-3">
                       <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-slate-600">before</span>
-                      <div className="inline-flex items-center gap-2 sm:gap-3 bg-slate-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 border-4 border-black shadow-sm">
+                      <div className="inline-flex items-center gap-2 sm:gap-3 bg-slate-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 shadow-sm">
                         {/* Countdown Timer with Icon */}
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-700" />
@@ -825,7 +967,7 @@ const EnquiryDetail = () => {
                           })();
                           return !isExpired;
                         })() && (
-                          <div className="pt-3 border-t-4 border-black">
+                          <div className="pt-3">
                             <Button
                               onClick={handleUpgradeClick}
                               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-semibold shadow-md hover:shadow-lg transition-all duration-200 rounded-xl min-h-[44px]"
@@ -888,8 +1030,8 @@ const EnquiryDetail = () => {
               {/* User Profile - Professional Design */}
               {userProfile && (
                 <Card className="border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
-                  {/* Card Header - Enhanced Gray Background */}
-                  <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+                  {/* Card Header - Black Background */}
+                  <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
                     <h3 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
                       <User className="h-4 w-4 sm:h-4 sm:w-4" />
                       Posted by

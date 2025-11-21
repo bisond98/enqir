@@ -149,12 +149,14 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
+  const toastDuration = props.duration !== undefined && props.duration !== null ? props.duration : 5000;
   dispatch({
     type: "ADD_TOAST",
     toast: {
       ...props,
       id,
       open: true,
+      duration: toastDuration,
       onOpenChange: (open) => {
         if (!open) dismiss()
       },

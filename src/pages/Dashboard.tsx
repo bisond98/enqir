@@ -1118,7 +1118,7 @@ const Dashboard = () => {
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
@@ -1137,7 +1137,7 @@ const Dashboard = () => {
                 <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
                   <div className="text-center">
                     <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                      Track your needs; nobody is here to do that for you.
+                      Track your needs; nobody is here to do that.
                     </p>
                   </div>
                 </div>
@@ -1571,7 +1571,7 @@ const Dashboard = () => {
             {/* Responses Card - Seller View Only */}
             {viewMode === 'seller' && (
             <Card 
-              className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-responses');

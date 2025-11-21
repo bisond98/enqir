@@ -294,13 +294,13 @@ const MyEnquiries = () => {
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'bg-amber-100 text-amber-800 border-amber-200',
-      live: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      live: 'bg-green-800 text-white border-green-900',
       rejected: 'bg-red-100 text-red-800 border-red-200',
       completed: 'bg-slate-100 text-slate-800 border-slate-200'
     };
     
     return (
-      <Badge className={`text-[10px] sm:text-xs rounded-full border ${variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}`}>
+      <Badge className={`text-[8px] sm:text-[9px] rounded-full border ${variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -309,7 +309,7 @@ const MyEnquiries = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'live':
-        return <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />;
+        return <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-800" />;
       case 'pending':
         return <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />;
       case 'rejected':
@@ -344,7 +344,7 @@ const MyEnquiries = () => {
   const getStatusMessage = (enquiry: Enquiry) => {
     switch (enquiry.status) {
       case 'live':
-        return 'Your enquiry is live and receiving responses from sellers';
+        return 'Your enquiry is live.';
       case 'pending':
         return 'Your enquiry is under admin review';
       case 'rejected':
@@ -377,52 +377,15 @@ const MyEnquiries = () => {
     }).format(budget);
   };
 
-  // Helper function to filter admin notes - hide technical details
-  const formatAdminNotes = (notes: string | undefined): string | null => {
-    if (!notes) return null;
-    // If it contains auto-approval info, show only "Auto-approved by AI"
-    if (notes.toLowerCase().includes('auto-approved') || notes.toLowerCase().includes('ai approved')) {
-      return 'Auto-approved by AI';
-    }
-    // Otherwise, show the original note
-    return notes;
-  };
-
   // Helper to get visible responses for premium logic
   function getVisibleResponses(enquiry: Enquiry, user: any, responses: any[]) {
     if (!enquiry || !user) return [];
     if (user.uid === enquiry.userId) {
-      // Get the selected plan for this enquiry
-      const selectedPlanId = enquiry.selectedPlanId || 'free';
-      
-      // Determine response limit based on plan
-      let responseLimit = 2; // Default free plan
-      
-      switch (selectedPlanId) {
-        case 'free':
-          responseLimit = 2;
-          break;
-        case 'basic':
-          responseLimit = 5;
-          break;
-        case 'standard':
-          responseLimit = 10;
-          break;
-        case 'premium':
-        case 'pro':
-          responseLimit = -1; // Unlimited
-          break;
-        default:
-          responseLimit = 2; // Default to free
-      }
-      
-      // If unlimited, return all responses
-      if (responseLimit === -1) {
+      if (enquiry.isPremium === true) {
         return responses;
+      } else {
+        return responses.slice(0, 2);
       }
-      
-      // Return limited responses based on plan
-      return responses.slice(0, responseLimit);
     }
     return responses.filter(r => r.sellerId === user.uid);
   }
@@ -478,7 +441,7 @@ const MyEnquiries = () => {
           </div>
 
           {/* Professional Stats Summary with Animations */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-10 lg:mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6 lg:mb-8">
             {(() => {
               const now = new Date();
               const isExpired = (e: Enquiry) => {
@@ -503,14 +466,14 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                      <div className="flex items-center justify-center mb-3 sm:mb-4">
-                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <TrendingUp className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
+                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                          <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-blue-600 mb-2 sm:mb-3 tracking-tight">{totalCount}</div>
-                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Total Enquiries</p>
+                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-blue-600 mb-1 sm:mb-1.5 tracking-tight">{totalCount}</div>
+                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Total Enquiries</p>
                     </Card>
                   </motion.div>
                   
@@ -519,14 +482,14 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.2 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                      <div className="flex items-center justify-center mb-3 sm:mb-4">
-                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
+                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                          <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-emerald-600 mb-2 sm:mb-3 tracking-tight">{liveCount}</div>
-                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Live</p>
+                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-emerald-600 mb-1 sm:mb-1.5 tracking-tight">{liveCount}</div>
+                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Live</p>
                     </Card>
                   </motion.div>
                   
@@ -535,14 +498,14 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.3 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                      <div className="flex items-center justify-center mb-3 sm:mb-4">
-                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
+                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-amber-600 to-amber-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                          <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-amber-600 mb-2 sm:mb-3 tracking-tight">{pendingCount}</div>
-                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Pending</p>
+                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-amber-600 mb-1 sm:mb-1.5 tracking-tight">{pendingCount}</div>
+                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Pending</p>
                     </Card>
                   </motion.div>
                   
@@ -551,14 +514,14 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.4 }}
                   >
-                    <Card className="group p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-xl sm:rounded-2xl overflow-hidden cursor-default hover:scale-105">
-                      <div className="flex items-center justify-center mb-3 sm:mb-4">
-                        <div className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Star className="h-5 w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
+                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                          <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-600 mb-2 sm:mb-3 tracking-tight">{completedCount}</div>
-                      <p className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-bold uppercase tracking-wider">Completed</p>
+                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-gray-600 mb-1 sm:mb-1.5 tracking-tight">{completedCount}</div>
+                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Completed</p>
                     </Card>
                   </motion.div>
                 </>
@@ -610,7 +573,7 @@ const MyEnquiries = () => {
                       : 'bg-white border-2 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                   }`}>
                     {/* Premium Header with Sophisticated Design */}
-                    <div className={`relative bg-black px-5 sm:px-6 lg:px-4 xl:px-4 py-4 sm:py-5 lg:py-3 xl:py-3.5 ${
+                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
                       isExpired ? 'opacity-70' : ''
                     }`}>
                       {/* Elegant pattern overlay */}
@@ -619,64 +582,68 @@ const MyEnquiries = () => {
                       {/* Shine effect on hover */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                       
-                      <div className="relative flex items-start justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5">
+                      <div className="relative flex items-start justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                         {/* Title Section with Better Typography */}
-                        <div className="flex-1 min-w-0 pr-2 sm:pr-3 lg:pr-2 xl:pr-2.5">
-                          <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 mb-2.5 lg:mb-1.5 xl:mb-2">
-                            {getStatusIcon(enquiry.status)}
-                            <h3 className={`text-sm sm:text-lg lg:text-sm xl:text-base font-bold truncate leading-snug tracking-tight ${
-                              isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
-                            }`}>
-                              {enquiry.title}
-                            </h3>
+                        <div className="flex-1 min-w-0 pr-1.5 sm:pr-2 lg:pr-1.5 xl:pr-2">
+                          <div className="flex items-start gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-bold leading-tight tracking-tight ${
+                                isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
+                              }`}>
+                                {enquiry.title}
+                              </h3>
+                              {/* Status Message as Subheading - Aligned with title */}
+                              <div className="mt-0.5 sm:mt-0.5 lg:mt-0.5 xl:mt-0.5">
+                                <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-300 font-medium opacity-95">{getStatusMessage(enquiry)}</span>
+                              </div>
+                            </div>
                             {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
-                              <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
+                              <div className={`flex items-center justify-center w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 rounded-full flex-shrink-0 shadow-lg ring-1 ring-white/20 ${
                                 isExpired ? 'bg-gray-500' : 'bg-blue-500'
                               }`}>
-                                <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                                <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
                               </div>
                             )}
                           </div>
                           
                           {/* Status Badge - More Refined */}
                           {isExpired && (
-                            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-0.5 xl:py-1 bg-red-500/25 border border-red-400/40 rounded-md lg:rounded-md xl:rounded-md backdrop-blur-sm shadow-sm mt-0.5 lg:mt-0.5 xl:mt-0.5">
-                              <span className="w-1.5 h-1.5 lg:w-1.5 lg:h-1.5 xl:w-1.5 xl:h-1.5 bg-red-400 rounded-full animate-pulse"></span>
-                              <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-red-200 font-semibold tracking-wide">Expired</span>
+                            <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-0.5 lg:py-0.5 xl:py-0.5 bg-red-500/25 border border-red-400/40 rounded-md backdrop-blur-sm shadow-sm mt-0.5">
+                              <span className="w-1 h-1 bg-red-400 rounded-full animate-pulse"></span>
+                              <span className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] text-red-200 font-semibold tracking-wide">Expired</span>
                             </div>
                           )}
-                          
-                          {/* Status Message */}
-                          <div className="mt-2 sm:mt-2.5 lg:mt-1.5 xl:mt-2">
-                            <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-300 font-semibold opacity-95">{getStatusMessage(enquiry)}</span>
-                          </div>
                         </div>
                         
-                        {/* Premium Plan Badge */}
-                        <Badge className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1 xl:gap-1.5 px-3 sm:px-4 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-xl lg:rounded-md xl:rounded-lg shadow-lg border backdrop-blur-md ${
-                          enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                            ? 'bg-white/15 text-gray-100 border-white/20' 
-                            : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
-                        } flex-shrink-0`}>
-                          {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-yellow-300 drop-shadow-sm" />
-                          ) : null}
-                          <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold whitespace-nowrap tracking-wide">
-                            {enquiry.selectedPlanId ? (
-                              enquiry.selectedPlanId === 'free' ? 'Free Plan' :
-                              enquiry.selectedPlanId === 'basic' ? 'Basic Plan' :
-                              enquiry.selectedPlanId === 'standard' ? 'Standard Plan' :
-                              enquiry.selectedPlanId === 'premium' ? 'Premium Plan' :
-                              enquiry.selectedPlanId === 'pro' ? 'Pro Plan' : 'Paid Plan'
-                            ) : (
-                              enquiry.isPremium ? 'Premium Plan' : 'Free Plan'
-                            )}
-                          </span>
-                        </Badge>
-                        
-                        {/* Status Badge */}
-                        <div className="flex-shrink-0">
-                          {getStatusBadge(enquiry.status)}
+                        {/* Right Side Badges - Properly Aligned */}
+                        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
+                          {/* Premium Plan Badge */}
+                          <Badge className={`flex items-center gap-0.5 sm:gap-1 lg:gap-0.5 xl:gap-1 px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-0.5 lg:py-0.5 xl:py-0.5 rounded-md lg:rounded-sm xl:rounded-md shadow-sm border backdrop-blur-md ${
+                            enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
+                              ? 'bg-white/15 text-gray-100 border-white/20' 
+                              : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                          }`}>
+                            {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                              <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-yellow-300 drop-shadow-sm" />
+                            ) : null}
+                            <span className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-bold whitespace-nowrap tracking-wide">
+                              {enquiry.selectedPlanId ? (
+                                enquiry.selectedPlanId === 'free' ? 'Free Plan' :
+                                enquiry.selectedPlanId === 'basic' ? 'Basic Plan' :
+                                enquiry.selectedPlanId === 'standard' ? 'Standard Plan' :
+                                enquiry.selectedPlanId === 'premium' ? 'Premium Plan' :
+                                enquiry.selectedPlanId === 'pro' ? 'Pro Plan' : 'Paid Plan'
+                              ) : (
+                                enquiry.isPremium ? 'Premium Plan' : 'Free Plan'
+                              )}
+                            </span>
+                          </Badge>
+                          
+                          {/* Status Badge with Icon */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                            {getStatusIcon(enquiry.status)}
+                            {getStatusBadge(enquiry.status)}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -846,7 +813,7 @@ const MyEnquiries = () => {
                         {/* Timestamps & Admin Notes Group */}
                         <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 pt-2.5 sm:pt-3 lg:pt-2.5 xl:pt-3 border-t-2 border-gray-200/60">
                           {/* Admin Notes */}
-                          {formatAdminNotes(enquiry.adminNotes) && (
+                          {enquiry.adminNotes && (
                             <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
                               <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                                 <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6 lg:h-6 xl:w-7 xl:h-7 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
@@ -854,7 +821,7 @@ const MyEnquiries = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-gray-900 mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
-                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{formatAdminNotes(enquiry.adminNotes)}</p>
+                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{enquiry.adminNotes}</p>
                                 </div>
                               </div>
                             </div>

@@ -379,7 +379,7 @@ const Profile = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="h-8 sm:h-10 text-xs sm:text-sm"
+                  className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
                   required
                 />
               </div>
@@ -387,7 +387,7 @@ const Profile = () => {
                 <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700">Phone Number *</Label>
                 <div className="flex gap-1 sm:gap-2">
                   <Select value={countryCode} onValueChange={setCountryCode}>
-                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border-slate-200 focus:border-slate-400 focus:ring-slate-400">
+                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus:border-black focus:ring-black">
                       <SelectValue placeholder="Code">
                         {countryCode && (
                           <span className="flex items-center gap-0.5 sm:gap-1">
@@ -414,7 +414,7 @@ const Profile = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter phone number"
-                    className="flex-1 h-8 sm:h-10 border-slate-200 focus:border-slate-400 focus:ring-slate-400 text-xs sm:text-sm"
+                    className="flex-1 h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
                     required
                   />
                 </div>
@@ -500,7 +500,7 @@ const Profile = () => {
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label>
                     <Select value={idType} onValueChange={setIdType}>
-                      <SelectTrigger className="h-8 sm:h-10">
+                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black">
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -518,7 +518,7 @@ const Profile = () => {
                       value={idNumber}
                       onChange={(e) => setIdNumber(e.target.value)}
                       placeholder="Enter ID number"
-                      className="h-8 sm:h-10 text-xs sm:text-sm"
+                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
                     />
                   </div>
                 </div>

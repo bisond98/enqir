@@ -411,96 +411,120 @@ const EnquiryResponsesPage = () => {
           </Button>
         </div>
 
-        {/* Header with gray background */}
-        <div className="mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 border-gray-700">
-          <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 py-3 sm:px-6 sm:py-6">
+        {/* Header with black background */}
+        <div className="mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 border-black">
+          <div className="bg-black px-3 py-3 sm:px-6 sm:py-6">
             <h2 className="text-lg sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">Responses to "{enquiry.title}"</h2>
             <p className="text-gray-200 mb-0 sm:mb-6 text-[10px] sm:text-base font-medium">View and manage responses from sellers for this enquiry</p>
           </div>
         </div>
         
-        {/* Sorting Controls - Mobile Optimized */}
+        {/* Sorting Controls - Simple Design */}
         {visibleResponses.length > 1 && (
-          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-black rounded-xl sm:rounded-2xl border border-gray-700">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 space-y-1.5 sm:space-y-0">
-              <h3 className="text-white font-bold text-xs sm:text-base">Sort Responses</h3>
-              <span className="text-gray-300 text-[10px] sm:text-sm font-medium">{visibleResponses.length} responses</span>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full sm:w-auto text-[10px] sm:text-xs bg-gray-700 border-gray-600 text-white hover:bg-gray-600 h-7 sm:h-9"
-                  >
-                    <ArrowUpDown className="h-3 w-3 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Sort by Amount</span>
-                    <span className="sm:hidden">Amount</span>
-                    <ChevronDown className="h-3 w-3 ml-1 sm:ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full sm:w-56 bg-black border-gray-600">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      console.log('🔍 Price high sort clicked');
-                      setSortBy('price-high');
-                    }}
-                    className="text-white hover:bg-gray-700 cursor-pointer text-xs sm:text-sm"
-                  >
-                    <ArrowDown className="h-3 w-3 mr-2" />
-                    Highest to Lowest
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      console.log('🔍 Price low sort clicked');
-                      setSortBy('price-low');
-                    }}
-                    className="text-white hover:bg-gray-700 cursor-pointer text-xs sm:text-sm"
-                  >
-                    <ArrowUp className="h-3 w-3 mr-2" />
-                    Lowest to Highest
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full sm:w-auto text-[10px] sm:text-xs bg-gray-700 border-gray-600 text-white hover:bg-gray-600 h-7 sm:h-9"
-                  >
-                    <Clock className="h-3 w-3 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Sort by Date</span>
-                    <span className="sm:hidden">Date</span>
-                    <ChevronDown className="h-3 w-3 ml-1 sm:ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full sm:w-56 bg-black border-gray-600">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      console.log('🔍 Newest sort clicked');
-                      setSortBy('newest');
-                    }}
-                    className="text-white hover:bg-gray-700 cursor-pointer text-xs sm:text-sm"
-                  >
-                    <Clock className="h-3 w-3 mr-2" />
-                    Newest First
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      console.log('🔍 Oldest sort clicked');
-                      setSortBy('oldest');
-                    }}
-                    className="text-white hover:bg-gray-700 cursor-pointer text-xs sm:text-sm"
-                  >
-                    <Clock className="h-3 w-3 mr-2" />
-                    Oldest First
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          <div className="mb-3 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            {/* Amount Sort */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-white hover:bg-gray-50 transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <div className="flex items-center gap-2">
+                      <ArrowUpDown className="h-4 w-4 text-black" />
+                      <span className="font-black text-xs sm:text-sm text-black">Amount</span>
+                    </div>
+                    <ChevronDown className="h-3.5 w-3.5 text-black" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-56 bg-white border-4 border-black rounded-lg shadow-xl">
+                <DropdownMenuItem
+                  onClick={() => {
+                    console.log('🔍 Price high sort clicked');
+                    setSortBy('price-high');
+                  }}
+                  className={`cursor-pointer px-4 py-2.5 ${
+                    sortBy === 'price-high' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowDown className={`h-4 w-4 ${sortBy === 'price-high' ? 'text-white' : 'text-black'}`} />
+                    <span className={`font-bold text-sm ${sortBy === 'price-high' ? 'text-white' : 'text-black'}`}>
+                      Highest to Lowest
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    console.log('🔍 Price low sort clicked');
+                    setSortBy('price-low');
+                  }}
+                  className={`cursor-pointer px-4 py-2.5 ${
+                    sortBy === 'price-low' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ArrowUp className={`h-4 w-4 ${sortBy === 'price-low' ? 'text-white' : 'text-black'}`} />
+                    <span className={`font-bold text-sm ${sortBy === 'price-low' ? 'text-white' : 'text-black'}`}>
+                      Lowest to Highest
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Date Sort */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-white hover:bg-gray-50 transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-black" />
+                      <span className="font-black text-xs sm:text-sm text-black">Date</span>
+                    </div>
+                    <ChevronDown className="h-3.5 w-3.5 text-black" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-56 bg-white border-4 border-black rounded-lg shadow-xl">
+                <DropdownMenuItem
+                  onClick={() => {
+                    console.log('🔍 Newest sort clicked');
+                    setSortBy('newest');
+                  }}
+                  className={`cursor-pointer px-4 py-2.5 ${
+                    sortBy === 'newest' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className={`h-4 w-4 ${sortBy === 'newest' ? 'text-white' : 'text-black'}`} />
+                    <span className={`font-bold text-sm ${sortBy === 'newest' ? 'text-white' : 'text-black'}`}>
+                      Newest First
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    console.log('🔍 Oldest sort clicked');
+                    setSortBy('oldest');
+                  }}
+                  className={`cursor-pointer px-4 py-2.5 ${
+                    sortBy === 'oldest' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className={`h-4 w-4 ${sortBy === 'oldest' ? 'text-white' : 'text-black'}`} />
+                    <span className={`font-bold text-sm ${sortBy === 'oldest' ? 'text-white' : 'text-black'}`}>
+                      Oldest First
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
 

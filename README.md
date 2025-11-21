@@ -1,22 +1,14 @@
-# Welcome to your Lovable project
+# Enqir.in - Trust-Based Marketplace
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/787ca884-3bd1-40ce-88a0-76e3bfe6db0b
+Enqir.in is a trust-based platform connecting verified buyers and sellers for rare items, antiques, services, and more.
 
 ## How can I edit this code?
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/787ca884-3bd1-40ce-88a0-76e3bfe6db0b) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +54,14 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/787ca884-3bd1-40ce-88a0-76e3bfe6db0b) and click on Share -> Publish.
+The project can be deployed to any hosting platform that supports Node.js applications, such as Vercel, Netlify, or Firebase Hosting.
 
-## Can I connect a custom domain to my Lovable project?
+## Deployment
 
-Yes, you can!
+For production deployment, build the project and deploy the dist folder:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sh
+npm run build
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+The built files will be in the `dist` directory, ready for deployment.

@@ -46,8 +46,8 @@ export function Toaster() {
   const { toasts } = useToast()
 
   return (
-    <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+    <ToastProvider swipeDirection="right">
+      {toasts.map(function ({ id, title, description, action, variant, duration, ...props }) {
         const icon = getToastIcon(variant, title)
         const titleStr = typeof title === 'string' ? title.toLowerCase() : ''
         const isPaymentCancelled = titleStr.includes('payment cancelled') || titleStr.includes('cancelled 🚫')
@@ -55,11 +55,13 @@ export function Toaster() {
         // Use cancelled variant for payment cancelled toasts
         const toastVariant = isPaymentCancelled ? 'cancelled' : variant
         
+        const toastDuration = duration !== undefined && duration !== null ? duration : 5000;
         return (
           <Toast 
             key={id} 
             variant={toastVariant as any} 
             className={isPaymentCancelled ? 'payment-cancelled-toast' : ''}
+            duration={toastDuration}
             {...props}
           >
             {/* Futuristic AI Cloud Animation Background - Red Theme */}
