@@ -21,6 +21,93 @@
     -webkit-tap-highlight-color: transparent;
   }
   
+  /* Performance: Optimize animations with GPU acceleration */
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Performance: Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  
+  /* Performance: Optimize font loading */
+  @font-face {
+    font-display: swap;
+  }
+  
+  /* Performance: Optimize rendering */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Performance: Optimize scroll containers */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+  
+  /* Optimize all transitions and animations */
+  * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Optimize scroll performance */
+  .overflow-y-auto,
+  .overflow-x-auto,
+  [class*="overflow"] {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+  
+  /* Optimize images */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: auto;
+    /* Lazy loading optimization */
+    loading: lazy;
+    /* GPU acceleration for image transforms */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Optimize image loading performance */
+  img[loading="lazy"] {
+    content-visibility: auto;
+  }
+  
+  /* Optimize cards and containers */
+  [class*="Card"],
+  [class*="card"],
+  .card {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
   /* Fix for mobile Safari */
   @supports (-webkit-touch-callout: none) {
     .mobile-safe-area {
@@ -55,6 +142,10 @@
       min-height: 44px;
       min-width: 44px;
       touch-action: manipulation;
+      /* Performance: GPU acceleration for touch interactions */
+      will-change: transform;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
     
     /* Better spacing for mobile */
@@ -880,22 +971,35 @@
   /* Mobile-First Animations */
   .animate-slide-up {
     animation: slideUp 0.6s ease-out forwards;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .animate-slide-down {
     animation: slideDown 0.6s ease-out forwards;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
+    will-change: opacity;
   }
 
   .animate-scale-in {
     animation: scaleIn 0.3s ease-out forwards;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .animate-float {
     animation: float 3s ease-in-out infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .animate-shimmer {
@@ -1080,11 +1184,11 @@
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translate3d(0, -30px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -1100,20 +1204,20 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale3d(0.9, 0.9, 1);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translate3d(0, -10px, 0);
   }
 }
 
