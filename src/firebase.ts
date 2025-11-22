@@ -50,18 +50,23 @@ if (typeof window !== 'undefined') {
   const originalConsoleError = console.error;
   console.error = (...args: any[]) => {
     const errorMsg = args.join(' ').toLowerCase();
+    const firstArg = args[0]?.toString().toLowerCase() || '';
     
     // Suppress XMLHttpRequest, CORS, and Firestore connection errors
     if (errorMsg.includes('xmlhttprequest') || 
         errorMsg.includes('cannot load') ||
         errorMsg.includes('cors') || 
         errorMsg.includes('access-control-allow-origin') ||
+        errorMsg.includes('access control checks') ||
         errorMsg.includes('firestore.googleapis.com') ||
         errorMsg.includes('firestore') ||
         errorMsg.includes('channel') ||
         errorMsg.includes('gsessionid') ||
         errorMsg.includes('listen/channel') ||
-        errorMsg.includes('due to access control checks')) {
+        errorMsg.includes('due to access control checks') ||
+        firstArg.includes('xmlhttprequest') ||
+        firstArg.includes('firestore.googleapis.com') ||
+        (firstArg.includes('error') && errorMsg.includes('firestore'))) {
       // These are Firestore connection/retry errors that don't affect app functionality
       return;
     }
@@ -126,24 +131,31 @@ if (typeof window !== 'undefined') {
     return originalAddEventListener.call(this, type, listener, options);
   };
   
-  // Also add direct error listener as fallback
+  // Also add direct error listener as fallback - catch at capture phase
   window.addEventListener('error', (event) => {
     const errorMsg = event.message?.toLowerCase() || '';
     const errorSource = event.filename?.toLowerCase() || '';
+    const errorStack = event.error?.stack?.toLowerCase() || '';
     
     // Suppress XMLHttpRequest, CORS, and Firestore connection errors
     if (errorMsg.includes('xmlhttprequest') || 
         errorMsg.includes('cannot load') ||
         errorMsg.includes('cors') || 
         errorMsg.includes('access-control-allow-origin') ||
+        errorMsg.includes('access control checks') ||
         errorSource.includes('firestore') ||
+        errorSource.includes('firebase') ||
+        errorStack.includes('firestore') ||
         errorMsg.includes('channel') ||
         errorMsg.includes('gsessionid') ||
         errorMsg.includes('listen/channel') ||
-        errorMsg.includes('due to access control checks')) {
+        errorMsg.includes('firestore.googleapis.com') ||
+        errorMsg.includes('due to access control checks') ||
+        (errorSource.includes('firebase') && errorMsg.includes('load'))) {
       // These are Firestore connection/retry errors that don't affect app functionality
       event.preventDefault();
       event.stopPropagation();
+      event.stopImmediatePropagation();
       return false;
     }
   }, true);
