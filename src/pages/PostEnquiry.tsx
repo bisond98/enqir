@@ -763,6 +763,10 @@ export default function PostEnquiry() {
     { value: "art", label: "Art & Artifacts", group: "Products" },
     { value: "automobile", label: "Automobile", group: "Products" },
     { value: "books-publications", label: "Books & Publications", group: "Products" },
+    { value: "baby-kids", label: "Baby & Kids", group: "Products" },
+    { value: "bags-luggage", label: "Bags & Luggage", group: "Products" },
+    { value: "beauty-products", label: "Beauty", group: "Products" },
+    { value: "bicycles", label: "Bicycles", group: "Products" },
     { value: "collectibles", label: "Collectibles", group: "Products" },
     { value: "electronics-gadgets", label: "Electronics & Gadgets", group: "Products" },
     { value: "fashion-apparel", label: "Fashion & Apparel", group: "Products" },
@@ -773,6 +777,16 @@ export default function PostEnquiry() {
     { value: "souvenir", label: "Souvenir", group: "Products" },
     { value: "thrift", label: "Thrift", group: "Products" },
     { value: "vintage", label: "Vintage Items", group: "Products" },
+    { value: "musical-instruments", label: "Musical Instruments", group: "Products" },
+    { value: "tools-equipment", label: "Tools & Equipment", group: "Products" },
+    { value: "appliances", label: "Appliances", group: "Products" },
+    { value: "photography-cameras", label: "Photography & Cameras", group: "Products" },
+    { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment", group: "Products" },
+    { value: "kitchen-dining", label: "Kitchen & Dining", group: "Products" },
+    { value: "garden-outdoor", label: "Garden & Outdoor", group: "Products" },
+    { value: "office-supplies", label: "Office Supplies", group: "Products" },
+    { value: "medical-equipment", label: "Medical Equipment", group: "Products" },
+    { value: "musical-accessories", label: "Musical Accessories", group: "Products" },
     // Lifestyle & Services
     { value: "agriculture-farming", label: "Agriculture & Farming", group: "Lifestyle" },
     { value: "childcare-family", label: "Childcare & Family", group: "Lifestyle" },
@@ -786,6 +800,10 @@ export default function PostEnquiry() {
     { value: "sports-outdoor", label: "Sports & Outdoor", group: "Lifestyle" },
     { value: "travel-tourism", label: "Travel & Tourism", group: "Lifestyle" },
     { value: "wedding-events", label: "Wedding & Events", group: "Lifestyle" },
+    { value: "repair-services", label: "Repair Services", group: "Lifestyle" },
+    { value: "cleaning-services", label: "Cleaning Services", group: "Lifestyle" },
+    { value: "musical-services", label: "Musical Services", group: "Lifestyle" },
+    { value: "tutoring-lessons", label: "Tutoring & Lessons", group: "Lifestyle" },
     // Technology & Innovation
     { value: "technology", label: "Technology", group: "Technology" },
     { value: "renewable-energy", label: "Renewable Energy", group: "Technology" },
@@ -1436,9 +1454,9 @@ export default function PostEnquiry() {
             </div>
 
             {/* Main Content Card */}
-            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6">
+            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6 lg:min-h-[150px]">
               {/* AI Processing Status - Card Header */}
-              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4">
+              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4 lg:px-4 lg:py-3">
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
                   <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
@@ -1450,7 +1468,7 @@ export default function PostEnquiry() {
               </div>
               
               {/* Card Content */}
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-4 sm:p-6 lg:p-5 lg:pt-4">
                 <div className="space-y-3 sm:space-y-4 text-center">
                   <div className="space-y-1.5 sm:space-y-2">
                     <p className="text-xs sm:text-sm font-medium text-green-700">
@@ -1559,7 +1577,7 @@ export default function PostEnquiry() {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-6 sm:py-8 lg:py-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
@@ -1583,8 +1601,8 @@ export default function PostEnquiry() {
                       Post Enquiry
                     </h2>
                   </div>
-                  <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    What in the f***n world are you looking for?
+                  <p className="text-[10px] sm:text-base lg:text-sm xl:text-base text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    From hobbies to necessities, from needs to requirements.
                   </p>
                 </div>
               </div>
@@ -1593,8 +1611,8 @@ export default function PostEnquiry() {
 
           {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
-            <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
-              <CardContent className="p-6 sm:p-8 text-center">
+            <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden lg:min-h-[200px]">
+              <CardContent className="p-6 sm:p-8 lg:p-6 lg:pt-5 text-center">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg">
                   <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 </div>
@@ -1624,9 +1642,9 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design */}
           {!isSubmitted && (
-            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
-              <CardContent className="p-5 sm:p-6 lg:p-8">
-                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
+            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden lg:min-h-[300px]">
+              <CardContent className="p-5 sm:p-6 lg:p-6 lg:pt-5">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-6">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
@@ -1638,7 +1656,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1661,7 +1679,7 @@ export default function PostEnquiry() {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-4 rounded-xl transition-all duration-200 text-base font-medium ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -1707,13 +1725,31 @@ export default function PostEnquiry() {
                                       }`}
                                       onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
                                     >
-                                      <Checkbox
-                                        id={`mobile-${cat.value}`}
-                                        checked={isSelected}
-                                        disabled={isDisabled}
-                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
-                                      />
+                                      <div 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          e.preventDefault();
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                        onTouchStart={(e) => {
+                                          e.stopPropagation();
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                        className="cursor-pointer touch-manipulation flex items-center justify-center min-w-[24px] min-h-[24px] -ml-1"
+                                        style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
+                                      >
+                                        <Checkbox
+                                          id={`mobile-${cat.value}`}
+                                          checked={isSelected}
+                                          disabled={isDisabled}
+                                          onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                          className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
+                                        />
+                                      </div>
                                       <Label
                                         htmlFor={`mobile-${cat.value}`}
                                         className={`text-base flex-1 cursor-pointer ${
@@ -1744,7 +1780,7 @@ export default function PostEnquiry() {
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-4 rounded-xl transition-all duration-200 font-medium ${
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -1792,13 +1828,31 @@ export default function PostEnquiry() {
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
-                                    <Checkbox
-                                      id={cat.value}
-                                      checked={isSelected}
-                                      disabled={isDisabled}
-                                      onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
-                                    />
+                                    <div 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        if (!isDisabled) {
+                                          handleCategoryToggle(cat.value);
+                                        }
+                                      }}
+                                      onTouchStart={(e) => {
+                                        e.stopPropagation();
+                                        if (!isDisabled) {
+                                          handleCategoryToggle(cat.value);
+                                        }
+                                      }}
+                                      className="cursor-pointer touch-manipulation flex items-center justify-center min-w-[24px] min-h-[24px] -ml-1"
+                                      style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
+                                    >
+                                      <Checkbox
+                                        id={cat.value}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
+                                      />
+                                    </div>
                                     <Label
                                       htmlFor={cat.value}
                                       className={`text-sm sm:text-sm flex-1 cursor-pointer ${
@@ -1842,7 +1896,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
+                      className="border border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1948,7 +2002,7 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                        className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -1967,7 +2021,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2016,7 +2070,7 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
+                        className="border border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                       />
                     </div>
@@ -2249,8 +2303,8 @@ export default function PostEnquiry() {
 
           {/* Real-time Verification Status - Enhanced Professional Design */}
           {submittedEnquiryId && (
-            <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
-              <CardContent className="p-6 sm:p-8">
+            <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden lg:min-h-[200px]">
+              <CardContent className="p-6 sm:p-8 lg:p-6 lg:pt-5">
                 <div className="text-center mb-5 sm:mb-6">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <span className="text-2xl sm:text-3xl">🎉</span>

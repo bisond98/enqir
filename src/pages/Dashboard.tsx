@@ -1114,11 +1114,11 @@ const Dashboard = () => {
           </div>
 
           {/* Quick Action Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 lg:gap-8 mb-0">
+          <div className="flex flex-col gap-3 sm:gap-6 lg:gap-8 mb-0">
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
@@ -1143,9 +1143,9 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
+              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Professional Stats Grid */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-4">
                   <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
                     <CardContent className="p-2 sm:p-3 text-center">
                       <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{allEnquiriesForStats.length || enquiries.length}</h3>
@@ -1182,7 +1182,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Professional Enquiry Cards Section */}
-                <div className="mb-6 sm:mb-12 lg:mb-16">
+                <div className="mb-6 sm:mb-12 lg:mb-8">
                   {/* Empty State - Professional */}
                   {enquiries.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 sm:py-20 lg:py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem] border-2 border-dashed border-gray-300/60">
@@ -1314,7 +1314,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-3.5 xl:p-4 overflow-visible">
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-5 overflow-visible lg:min-h-[280px] xl:min-h-[300px]">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
@@ -1429,34 +1429,54 @@ const Dashboard = () => {
                               </div>
                                   
                                   {/* Premium Upgrade Button - Desktop Only, Next to Responses */}
-                                  {(() => {
-                                    const enquiryPlan = enquiry.selectedPlanId || 'free';
-                                    if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
-                                    const upgradeOptions = getUpgradeOptions(
-                                      enquiryPlan,
-                                      'free',
-                                      enquiry.createdAt,
-                                      null
-                                    );
-                                    if (upgradeOptions.length === 0) return null;
-                                    return (
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (!expiredFlag) {
-                                            handleUpgradeClick(enquiry, e);
-                                          }
-                                        }}
-                                        disabled={expiredFlag}
-                                        className="hidden lg:flex flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black items-center justify-center lg:min-w-[85px] xl:min-w-[90px]"
-                                      >
-                                        <Crown className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
-                                        <span className="tracking-tight whitespace-nowrap">Upgrade</span>
-                                      </Button>
-                                    );
-                                  })()}
+                                  <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
+                                    {(() => {
+                                      const enquiryPlan = enquiry.selectedPlanId || 'free';
+                                      if (enquiryPlan !== 'premium' && enquiryPlan !== 'pro') {
+                                        const upgradeOptions = getUpgradeOptions(
+                                          enquiryPlan,
+                                          'free',
+                                          enquiry.createdAt,
+                                          null
+                                        );
+                                        if (upgradeOptions.length > 0) {
+                                          return (
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!expiredFlag) {
+                                                  handleUpgradeClick(enquiry, e);
+                                                }
+                                              }}
+                                              disabled={expiredFlag}
+                                              className="flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black items-center justify-center lg:min-w-[85px] xl:min-w-[90px]"
+                                            >
+                                              <Crown className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
+                                              <span className="tracking-tight whitespace-nowrap">Upgrade</span>
+                                            </Button>
+                                          );
+                                        }
+                                      }
+                                      return null;
+                                    })()}
+                                    <Button 
+                                      variant="destructive" 
+                                      size="sm" 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                          handleDeleteEnquiry(enquiry.id);
+                                        }
+                                      }}
+                                      disabled={expiredFlag}
+                                      className="flex-shrink-0 border border-black hover:border-black text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center lg:min-w-[75px] xl:min-w-[85px]"
+                                    >
+                                      <Trash2 className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
+                                      <span className="tracking-tight whitespace-nowrap">Delete</span>
+                                    </Button>
+                                  </div>
                                   
                                   {remainingCount > 0 && (
                                     <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-md">
@@ -1497,50 +1517,54 @@ const Dashboard = () => {
                               </Button>
                               
                                 {/* Premium Upgrade Button - Mobile/Tablet Only (Desktop version is in Response Metrics) */}
-                                {(() => {
-                                  const enquiryPlan = enquiry.selectedPlanId || 'free';
-                                  if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
-                                  const upgradeOptions = getUpgradeOptions(
-                                    enquiryPlan,
-                                    'free',
-                                    enquiry.createdAt,
-                                    null
-                                  );
-                                  if (upgradeOptions.length === 0) return null;
-                                  return (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (!expiredFlag) {
-                                          handleUpgradeClick(enquiry, e);
-                                        }
-                                      }}
-                                      disabled={expiredFlag}
-                                      className="lg:hidden w-full sm:flex-none flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black flex items-center justify-center sm:min-w-[110px]"
-                                    >
-                                      <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
-                                      <span className="tracking-tight whitespace-nowrap">Upgrade</span>
-                                </Button>
-                                  );
-                                })()}
-                              
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                    if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
-                                    handleDeleteEnquiry(enquiry.id);
-                                  }
-                                }}
-                                  disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border border-black hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] lg:min-w-[75px] xl:min-w-[85px]"
-                              >
-                                  <Trash2 className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
-                                  <span className="tracking-tight whitespace-nowrap">Delete</span>
-                              </Button>
+                                <div className="lg:hidden flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+                                  {(() => {
+                                    const enquiryPlan = enquiry.selectedPlanId || 'free';
+                                    if (enquiryPlan !== 'premium' && enquiryPlan !== 'pro') {
+                                      const upgradeOptions = getUpgradeOptions(
+                                        enquiryPlan,
+                                        'free',
+                                        enquiry.createdAt,
+                                        null
+                                      );
+                                      if (upgradeOptions.length > 0) {
+                                        return (
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              if (!expiredFlag) {
+                                                handleUpgradeClick(enquiry, e);
+                                              }
+                                            }}
+                                            disabled={expiredFlag}
+                                            className="flex-1 sm:flex-none flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black flex items-center justify-center sm:min-w-[110px]"
+                                          >
+                                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
+                                            <span className="tracking-tight whitespace-nowrap">Upgrade</span>
+                                          </Button>
+                                        );
+                                      }
+                                    }
+                                    return null;
+                                  })()}
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                        handleDeleteEnquiry(enquiry.id);
+                                      }
+                                    }}
+                                    disabled={expiredFlag}
+                                    className="flex-1 sm:flex-none flex-shrink-0 border border-black hover:border-black text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px]"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
+                                    <span className="tracking-tight whitespace-nowrap">Delete</span>
+                                  </Button>
+                                </div>
                             </div>
                             </div>
                           </motion.div>
@@ -2050,20 +2074,20 @@ const Dashboard = () => {
           )}
 
           {/* Quick Actions Card - Always Visible */}
-          <Card className="border-8 border-black shadow-xl bg-gradient-to-br from-white via-slate-50/50 to-white overflow-hidden rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 mb-4 sm:mb-6 lg:mb-8" onClick={(e) => e.stopPropagation()}>
-            <CardContent className="p-5 sm:p-8 lg:p-8 xl:p-10">
+          <Card className="border-4 border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
+            <CardContent className="p-6 sm:p-8 lg:p-6">
               {/* Header Section - Matching Dashboard Header */}
-              <div className="mb-6 sm:mb-8 lg:mb-10">
-                <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              <div className="mb-6 sm:mb-8 lg:mb-6">
+                <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-xl p-5 sm:p-8 lg:p-6 overflow-hidden">
                   {/* Content Card - White Background */}
-                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4 xl:p-6">
+                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4">
                     <div className="text-center">
-                      <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                        <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
+                      <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-3">
+                        <h2 className="text-4xl sm:text-6xl lg:text-4xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
                           Quick Actions
                         </h2>
                       </div>
-                      <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                      <p className="text-xs sm:text-base lg:text-sm text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
                         in case you changed your mind
                       </p>
                     </div>
@@ -2071,18 +2095,18 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 xl:gap-10 items-stretch sm:items-center justify-center max-w-4xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full bg-gradient-to-r from-blue-950 via-blue-950 to-blue-900 hover:from-blue-900 hover:via-blue-900 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black">
-                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Make a wish</span>
+                  <button className="w-full h-full bg-gradient-to-r from-blue-950 via-blue-950 to-blue-900 hover:from-blue-900 hover:via-blue-900 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black min-h-[48px] lg:min-h-[52px]">
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm sm:text-base lg:text-sm font-bold tracking-tight whitespace-nowrap">Make a wish</span>
                   </button>
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-5 px-4 sm:px-5 lg:px-6 rounded-xl sm:rounded-2xl lg:rounded-3xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black">
-                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-lg font-bold tracking-tight">Be the genie</span>
+                  <button className="w-full h-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black min-h-[48px] lg:min-h-[52px]">
+                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm sm:text-base lg:text-sm font-bold tracking-tight whitespace-nowrap">Be the genie</span>
                   </button>
                 </Link>
               </div>

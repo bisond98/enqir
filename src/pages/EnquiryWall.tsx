@@ -418,6 +418,10 @@ export default function EnquiryWall() {
       { value: 'art', label: 'Art' },
       { value: 'automobile', label: 'Automobile' },
       { value: 'books', label: 'Books' },
+      { value: 'baby-kids', label: 'Baby & Kids' },
+      { value: 'bags-luggage', label: 'Bags & Luggage' },
+      { value: 'beauty-products', label: 'Beauty' },
+      { value: 'bicycles', label: 'Bicycles' },
       { value: 'childcare', label: 'Childcare' },
       { value: 'collectibles', label: 'Collectibles' },
       { value: 'construction', label: 'Construction' },
@@ -453,6 +457,20 @@ export default function EnquiryWall() {
       { value: 'vintage', label: 'Vintage' },
       { value: 'waste-management', label: 'Waste Management' },
       { value: 'wedding', label: 'Wedding' },
+      { value: 'musical-instruments', label: 'Musical Instruments' },
+      { value: 'tools-equipment', label: 'Tools & Equipment' },
+      { value: 'appliances', label: 'Appliances' },
+      { value: 'photography-cameras', label: 'Photography & Cameras' },
+      { value: 'fitness-gym-equipment', label: 'Fitness & Gym Equipment' },
+      { value: 'kitchen-dining', label: 'Kitchen & Dining' },
+      { value: 'garden-outdoor', label: 'Garden & Outdoor' },
+      { value: 'office-supplies', label: 'Office Supplies' },
+      { value: 'repair-services', label: 'Repair Services' },
+      { value: 'cleaning-services', label: 'Cleaning Services' },
+      { value: 'musical-services', label: 'Musical Services' },
+      { value: 'tutoring-lessons', label: 'Tutoring & Lessons' },
+      { value: 'medical-equipment', label: 'Medical Equipment' },
+      { value: 'musical-accessories', label: 'Musical Accessories' },
       { value: 'other', label: 'Other' }
     ];
     
@@ -738,7 +756,7 @@ export default function EnquiryWall() {
               {/* Categories Grid - Professional Mobile Layout */}
               <div className="w-full">
                 {/* Mobile: First Row - Always Visible */}
-                <div className="flex flex-wrap gap-2 sm:gap-2.5 justify-center sm:justify-start mb-2 sm:mb-0">
+                <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start mb-2 sm:mb-0 lg:mb-3">
                   {[
                     { value: "all", label: "All" },
                     { value: "agriculture-farming", label: "Agriculture" },
@@ -750,10 +768,10 @@ export default function EnquiryWall() {
                     <button
                       key={category.value}
                       onClick={() => handleCategorySelect(category.value)}
-                      className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
+                      className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                         selectedCategory === category.value
-                          ? 'bg-red-600 text-white shadow-md hover:bg-red-700 scale-105 border-2 border-red-600'
-                          : 'bg-white text-gray-700 border-4 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
+                          ? 'bg-black text-white border-2 border-black shadow-md hover:bg-gray-900 scale-105'
+                          : 'bg-white text-gray-700 border-2 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
                       }`}
                     >
                       {category.label}
@@ -763,8 +781,12 @@ export default function EnquiryWall() {
 
                 {/* Mobile: Additional Categories - Expandable */}
                 <div className={`${showAllCategories ? 'block' : 'hidden sm:block'} transition-all duration-300`}>
-                  <div className="flex flex-wrap gap-2 sm:gap-2.5 justify-center sm:justify-start">
+                  <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start lg:mt-0">
                     {[
+                      { value: "baby-kids", label: "Baby & Kids" },
+                      { value: "bags-luggage", label: "Bags & Luggage" },
+                      { value: "beauty-products", label: "Beauty" },
+                      { value: "bicycles", label: "Bicycles" },
                       { value: "childcare-family", label: "Childcare" },
                       { value: "collectibles", label: "Collectibles" },
                       { value: "construction-renovation", label: "Construction" },
@@ -802,15 +824,37 @@ export default function EnquiryWall() {
                       { value: "vintage", label: "Vintage" },
                       { value: "waste-management", label: "Waste Management" },
                       { value: "wedding-events", label: "Wedding" },
+                      { value: "musical-instruments", label: "Musical Instruments" },
+                      { value: "tools-equipment", label: "Tools & Equipment" },
+                      { value: "appliances", label: "Appliances" },
+                      { value: "photography-cameras", label: "Photography & Cameras" },
+                      { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment" },
+                      { value: "kitchen-dining", label: "Kitchen & Dining" },
+                      { value: "garden-outdoor", label: "Garden & Outdoor" },
+                      { value: "office-supplies", label: "Office Supplies" },
+                      { value: "repair-services", label: "Repair Services" },
+                      { value: "cleaning-services", label: "Cleaning Services" },
+                      { value: "musical-services", label: "Musical Services" },
+                      { value: "tutoring-lessons", label: "Tutoring & Lessons" },
+                      { value: "medical-equipment", label: "Medical Equipment" },
+                      { value: "musical-accessories", label: "Musical Accessories" },
                       { value: "other", label: "Other" }
                     ].map((category) => (
                       <button
                         key={category.value}
-                        onClick={() => handleCategorySelect(category.value)}
+                        onClick={() => {
+                          setSelectedCategory(category.value);
+                          if (category.value === "all") {
+                            setSearchTerm("");
+                            setAiSearchResults(null);
+                            setSearchSuggestions([]);
+                            setShowSuggestions(false);
+                          }
+                        }}
                         className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                           selectedCategory === category.value
-                            ? 'bg-red-600 text-white shadow-md hover:bg-red-700 scale-105 border-2 border-red-600'
-                            : 'bg-white text-gray-700 border-4 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
+                            ? 'bg-black text-white border-2 border-black shadow-md hover:bg-gray-900 scale-105'
+                            : 'bg-white text-gray-700 border-2 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
                         }`}
                       >
                         {category.label}
@@ -824,7 +868,7 @@ export default function EnquiryWall() {
               <div className="text-center sm:hidden pt-2">
                 <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-black border-8 border-black rounded-xl hover:border-black hover:bg-gray-900 hover:shadow-sm transition-all duration-200 min-touch"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium bg-black text-white border-2 border-black rounded-xl hover:bg-gray-900 hover:border-black hover:shadow-sm transition-all duration-200 min-touch"
                 >
                   {showAllCategories ? (
                     <>
@@ -945,7 +989,7 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full border-4 border-black bg-white shadow-md hover:shadow-xl hover:border-black sm:hover:border-black flex flex-col rounded-none overflow-hidden' : 'border-4 border-black bg-white shadow-sm hover:shadow-md hover:border-black rounded-none flex flex-col h-auto'
+                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border-4 border-black bg-white shadow-md hover:shadow-xl hover:border-black sm:hover:border-black flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden' : 'border-4 border-black bg-white shadow-sm hover:shadow-md hover:border-black rounded-2xl sm:rounded-3xl flex flex-col h-auto lg:min-h-[400px] xl:min-h-[450px]'
                     } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer ${
                       isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale' : viewMode === 'list' ? '' : 'border-l-4 border-l-green-500'
                     }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
@@ -1015,8 +1059,8 @@ export default function EnquiryWall() {
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className="p-2.5 sm:p-5">
-                          <div className="space-y-2 sm:space-y-3">
+                        <CardHeader className="p-2.5 sm:p-5 lg:p-6 xl:p-7">
+                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                             {/* Title with Verification Badge - Mobile Optimized */}
                             <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                               <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
@@ -1050,8 +1094,8 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-2 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="flex items-center gap-2 sm:gap-2.5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border-4 border-black shadow-sm">
-                                  <span className="font-black text-blue-600 text-base sm:text-xl">₹</span>
+                                <div className="flex items-center gap-2 sm:gap-2.5 bg-gray-50 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border border-black shadow-sm">
+                                  <span className="font-black text-black text-base sm:text-xl">₹</span>
                                   <span className="truncate font-black text-gray-900 text-sm sm:text-lg">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
@@ -1085,15 +1129,15 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-2.5 sm:p-5 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2.5 sm:p-5 justify-between'}`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'p-2.5 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2.5 sm:p-5 lg:p-6 xl:p-7 justify-between'}`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
                           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
                             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 flex-1 min-w-0">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 bg-blue-50 rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-4 border-black">
-                                  <span className="font-black text-blue-600 text-sm sm:text-base md:text-xl">₹</span>
+                                <div className="flex items-center gap-1 sm:gap-1.5 bg-gray-50 rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border border-black">
+                                  <span className="font-black text-black text-sm sm:text-base md:text-xl">₹</span>
                                   <span className="font-black text-gray-900 text-[10px] sm:text-xs md:text-base">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}

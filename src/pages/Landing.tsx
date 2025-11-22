@@ -1633,13 +1633,13 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <span className="text-xs sm:text-base">Post all needs</span>
+            <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:min-w-[220px] lg:border-4 lg:border-black">
+              <span className="text-xs sm:text-base">Post Your Need</span>
               <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
           </Link>
           <Link to="/enquiries" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-black font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-4 border-black hover:border-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
+            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-black font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-4 border-black hover:border-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:min-w-[220px]">
               <span className="text-xs sm:text-base">Show All Enquiries</span>
               <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
             </button>
@@ -2215,7 +2215,7 @@ const Landing = () => {
                           
                               {/* Category Name - Well Arranged */}
                               <div className="w-full flex flex-row sm:flex-col items-center justify-center gap-0.5 sm:gap-0.5">
-                                <h4 className="text-[9px] sm:text-xs md:text-sm lg:text-base font-semibold text-white/95 group-hover:text-white leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
+                                <h4 className="text-[9px] sm:text-xs md:text-sm lg:text-xs font-semibold text-white/95 group-hover:text-white leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
                                 {category.name}
                               </h4>
                               </div>
@@ -2268,6 +2268,9 @@ const Landing = () => {
 
           {/* Animated SVG Flow - Compact Layout */}
           <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-4 border-black shadow-md sm:shadow-lg">
+            <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+              <p className="text-xs sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
+            </div>
             <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
               {/* Step 1: Larger Animated Human Character */}
               <g transform="translate(120, 150)">
@@ -2395,7 +2398,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
                 <g transform="translate(0, 0)">
@@ -2404,7 +2409,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
                 <g transform="translate(70, 0)">
@@ -2413,7 +2420,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
               </g>
@@ -2438,19 +2447,19 @@ const Landing = () => {
               </g>
               
               {/* Horizontal Step Labels at Bottom - Compact for Mobile */}
-              <g transform="translate(140, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">1. Post Need</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Share what you need</text>
+              <g transform="translate(140, 380)">
+                <text x="0" y="0" textAnchor="start" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold">1. Post Whatever You Need At The Moment.</text>
+                <text x="0" y="25" textAnchor="start" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Share your enquiry.</text>
               </g>
               
-              <g transform="translate(470, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">2. AI Matches</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Finds verified sellers</text>
+              <g transform="translate(600, 480)">
+                <text x="0" y="0" textAnchor="middle" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold" style={{ wordSpacing: '0.05em', letterSpacing: '0.01em' }}>2. Connect Only With The Right Providers.</text>
+                <text x="0" y="25" textAnchor="middle" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Discover verified, curated sellers easily</text>
               </g>
               
-              <g transform="translate(800, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">3. Connect &amp; Complete</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Chat &amp; close deal</text>
+              <g transform="translate(1150, 580)">
+                <text x="0" y="0" textAnchor="end" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold">3. Close The Deal, Stay Anonymous, Stay Secure.</text>
+                <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
           </div>

@@ -240,23 +240,23 @@ export default function Layout({ children, showNavigation = true }: { children: 
       <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-4 sm:p-5 border-b border-gray-200 bg-white">
+          <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Menu</h2>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Menu</h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-8 w-8 p-0 rounded-lg hover:bg-gray-100 transition-colors"
+                className="h-8 w-8 p-0 rounded-lg hover:bg-gray-100 transition-colors bg-white"
               >
-                <X className="h-4 w-4 text-gray-600" />
+                <X className="h-4 w-4 text-black" />
               </Button>
             </div>
             
             {user ? (
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-black rounded-lg shadow-sm">
-                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+                <div className="flex items-center space-x-3 p-3 bg-black rounded-lg shadow-sm border-2 border-black">
+                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20">
                     <User className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -269,7 +269,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <Badge variant="outline" className={`text-[10px] font-medium px-1.5 py-0.5 ${
+                  <Badge variant="outline" className={`text-[10px] font-medium px-1.5 py-0.5 border-2 ${
                     user.emailVerified 
                       ? "border-green-300 bg-green-50 text-green-700" 
                       : "border-gray-300"
@@ -287,13 +287,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </div>
               </div>
             ) : (
-              <div className="text-center py-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="text-center py-4 border-2 border-black rounded-lg">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-black">
                   <User className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-gray-600 mb-3 text-sm">Not signed in</p>
                 <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-black hover:bg-gray-900 text-white font-medium text-sm h-9 rounded-lg">
+                  <Button className="w-full bg-black hover:bg-gray-900 text-white font-medium text-sm h-9 rounded-lg border-2 border-black">
                     Sign In
                   </Button>
                 </Link>
@@ -317,10 +317,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <Link
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group ${
+                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group border-2 ${
                       isActive(item.path)
-                          ? "bg-black text-white shadow-sm"
-                          : "hover:bg-gray-50 text-gray-700"
+                          ? "bg-black text-white shadow-sm border-black"
+                          : "hover:bg-gray-50 text-gray-700 border-black"
                       }`}
                     >
                       <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${
@@ -343,9 +343,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
           {/* Footer Actions */}
           {user && (
-            <div className="p-4 sm:p-5 border-t border-gray-200 bg-white space-y-2">
+            <div className="p-4 sm:p-5 border-t-4 border-black bg-white space-y-2">
               {/* Mobile Notifications */}
-              <div className="flex items-center justify-center pb-1">
+              <div className="flex items-center justify-center pb-1 border-2 border-black rounded-lg p-2">
                 <SmartNotifications />
               </div>
               
@@ -353,7 +353,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               {mounted && (
                 <Button
                   variant="outline"
-                  className="w-full justify-start h-10 rounded-lg border-gray-300 hover:bg-gray-50 font-medium text-sm text-gray-700"
+                  className="w-full justify-start h-10 rounded-lg border-2 border-black hover:bg-gray-50 font-medium text-sm text-gray-700"
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 >
                   {theme === "dark" ? (
@@ -371,7 +371,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               )}
               
               <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full justify-start h-10 rounded-lg border-gray-300 hover:bg-gray-50 font-medium text-sm text-gray-700">
+                <Button variant="outline" className="w-full justify-start h-10 rounded-lg border-2 border-black hover:bg-gray-50 font-medium text-sm text-gray-700">
                   <Settings className="h-4 w-4 mr-2.5 text-gray-600" />
                   Settings
                 </Button>
@@ -379,7 +379,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               <Button 
                 variant="outline" 
                 onClick={handleSignOutClick} 
-                className="w-full justify-start h-10 rounded-lg border-red-200 hover:bg-red-50 text-red-600 hover:text-red-700 font-medium text-sm"
+                className="w-full justify-start h-10 rounded-lg border-2 border-red-600 hover:bg-red-50 text-red-600 hover:text-red-700 font-medium text-sm"
               >
                 <LogOut className="h-4 w-4 mr-2.5" />
                 Sign Out
@@ -396,7 +396,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
-          <div className="flex h-14 sm:h-20 items-center justify-between min-w-0">
+          <div className="flex h-14 sm:h-20 items-center justify-between gap-4 min-w-0">
             {/* Logo with Dropdown Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -468,7 +468,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
             {/* Desktop Navigation */}
             {showNavigation && !isMobile && (
-              <nav className="hidden md:flex items-center gap-2">
+              <nav className="hidden md:flex items-center gap-2 md:gap-3">
                 {navigationItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -479,10 +479,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     >
                       <Link
                         to={item.path}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 min-h-[44px] ${
+                        className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 min-h-[44px] whitespace-nowrap border border-black ${
                           isActive(item.path)
-                            ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md"
-                            : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 hover:shadow-sm"
+                            ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md border-black"
+                            : "text-black hover:text-black hover:bg-gray-100 hover:shadow-sm"
                         }`}
                       >
                         <Icon className="h-4 w-4" />
@@ -495,13 +495,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
             )}
 
             {/* User Actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
+            <div className="flex items-center justify-end gap-2 md:gap-3 flex-shrink-0">
               {user ? (
-                <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="flex items-center gap-2 md:gap-3">
                   {/* Home Icon - Only show when not on home page */}
                   {location.pathname !== "/" && (
                     <Link to="/">
-                      <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
                         <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                         <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
                       </Button>
@@ -522,18 +522,24 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <SmartNotifications />
                   
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
                       <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                       <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
                     </Button>
                   </Link>
                   <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
                       <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                       <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
                     </Button>
                   </Link>
-                  <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex h-7 sm:h-9 px-2 sm:px-3">
+                  <Link to="/settings">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                      <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
                     <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                     <span className="hidden sm:inline text-xs sm:text-sm">Sign Out</span>
                   </Button>

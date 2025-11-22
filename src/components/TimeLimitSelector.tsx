@@ -369,13 +369,13 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         onChange={(e) => setCustomDuration(e.target.value)}
                         min="1"
                         max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
-                            className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}
+                            className={`text-base sm:text-sm h-11 sm:h-9 border border-black ${isDesktop ? 'h-10 text-base' : ''}`}
                             placeholder="1"
                       />
                     </div>
                     <div>
                       <Select value={customDurationType} onValueChange={setCustomDurationType}>
-                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 ${isDesktop ? 'h-10 text-base' : ''}`}>
+                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 border border-black ${isDesktop ? 'h-10 text-base' : ''}`}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -456,7 +456,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs border-4 border-black">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs border border-black">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
@@ -474,12 +474,12 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm hover:bg-slate-50 transition-colors border-4 border-black">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm hover:bg-slate-50 transition-colors border border-black">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto border-2 border-black" align="start">
+          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black" align="start">
             <DeadlineContent />
         </PopoverContent>
       </Popover>

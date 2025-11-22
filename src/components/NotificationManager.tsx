@@ -3,6 +3,8 @@ import { NotificationContext } from '@/contexts/NotificationContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileNotificationPopup } from './MobileNotificationPopup';
 import { NotificationData } from '@/services/ai/notifications';
+import { useNotificationPreference } from '@/hooks/use-notification-preference';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ActivePopup {
   notification: NotificationData;
@@ -13,6 +15,8 @@ export const NotificationManager: React.FC = () => {
   try {
     const context = useContext(NotificationContext);
     const isMobile = useIsMobile();
+    const { user } = useAuth();
+    const notificationsEnabled = useNotificationPreference();
     const [activePopups, setActivePopups] = useState<ActivePopup[]>([]);
     const shownNotificationIdsRef = useRef<Set<string>>(new Set());
     const lastNotificationCountRef = useRef(0);
@@ -27,6 +31,12 @@ export const NotificationManager: React.FC = () => {
 
     useEffect(() => {
       try {
+        // Don't show popups if notifications are disabled
+        if (!notificationsEnabled) {
+          setActivePopups([]);
+          return;
+        }
+
         // Only show popups on mobile
         if (!isMobile) {
           // Clear all popups if not mobile
@@ -108,7 +118,7 @@ export const NotificationManager: React.FC = () => {
       } catch (error) {
         console.error('Error in notification popup effect:', error);
       }
-    }, [notifications, isMobile]);
+    }, [notifications, isMobile, notificationsEnabled]);
 
     const handleDismiss = useCallback((notificationId: string) => {
       if (!notificationId || !markAsRead) return;

@@ -387,7 +387,7 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Profile Header - Matching Dashboard Style */}
         <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
           <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
@@ -420,14 +420,14 @@ const Profile = () => {
         </div>
 
         {/* Profile Form */}
-        <Card className="mt-6 sm:mt-8 border-4 border-black">
-          <CardHeader className="p-4 sm:p-6">
+        <Card className="mt-6 sm:mt-8 border-4 border-black lg:min-h-[200px]">
+          <CardHeader className="p-4 sm:p-6 lg:p-5 lg:pb-4">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
             <CardDescription className="text-[10px] sm:text-xs">It's better to know you better if you're here to scam others</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+          <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 lg:p-5 lg:pt-4">
             {/* Profile Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
               <div className="space-y-1 sm:space-y-2">
                 <Label htmlFor="fullName" className="text-xs sm:text-sm">Full Name *</Label>
                 <Input
@@ -506,9 +506,9 @@ const Profile = () => {
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+        <Card className="mt-4 sm:mt-6 border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]">
           {/* Card Header - Black Background */}
-          <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+          <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 lg:px-5 lg:py-4 rounded-t-3xl sm:rounded-t-2xl">
             <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
               <Shield className="h-4 w-4 sm:h-4 sm:w-4" />
               Trust Badge (Optional)
@@ -518,7 +518,7 @@ const Profile = () => {
             </p>
           </div>
           {/* Card Content - Enhanced White Background */}
-          <CardContent className="p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-6">
+          <CardContent className="p-4 sm:p-5 lg:p-5 lg:pt-4 space-y-4 sm:space-y-6 lg:space-y-4">
             
             {/* VERIFIED PROFILE - Show only success message */}
             {verificationStatus === 'approved' && (
@@ -590,7 +590,7 @@ const Profile = () => {
             {/* UPLOAD FORM - Only show for unverified users */}
             {!verificationStatus || verificationStatus === 'rejected' ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label>
                     <Select value={idType} onValueChange={setIdType}>
@@ -617,7 +617,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="idFront" className="text-xs sm:text-sm">Front Side *</Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-pal-blue transition-colors">

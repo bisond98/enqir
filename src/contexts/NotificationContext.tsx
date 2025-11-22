@@ -226,6 +226,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!user?.uid) return;
     
     try {
+      // IMPORTANT: Always save notifications to database regardless of user's notification preference
+      // The preference only controls DISPLAY (toasts, popups), not STORAGE
+      // This ensures notifications are visible on the notification page even when popups are disabled
       const notification = await smartNotificationService.createNotification(user.uid, type, data);
       
       // Update local state
@@ -242,6 +245,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!targetUserId) return;
     
     try {
+      // IMPORTANT: Always save notifications to database regardless of user's notification preference
+      // The preference only controls DISPLAY (toasts, popups), not STORAGE
+      // This ensures notifications are visible on the notification page even when popups are disabled
       await smartNotificationService.createNotification(targetUserId, type, data);
       
       // If it's for current user, refresh (this is needed for notifications created from external sources)
