@@ -130,7 +130,7 @@ const EnquiryResponses = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
-  const [callsEnabled, setCallsEnabled] = useState(true); // Call toggle state
+  const [callsEnabled, setCallsEnabled] = useState(false); // Call feature disabled - Coming Soon
   
   // Microphone permission state
   const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
@@ -264,13 +264,13 @@ const EnquiryResponses = () => {
         
         if (chatSettingsDoc.exists()) {
           const data = chatSettingsDoc.data();
-          setCallsEnabled(data.callsEnabled !== undefined ? data.callsEnabled : true);
+          setCallsEnabled(data.callsEnabled !== undefined ? data.callsEnabled : false);
         } else {
-          setCallsEnabled(true); // Default to enabled
+          setCallsEnabled(false); // Default to disabled - Coming Soon
         }
       } catch (error) {
         console.log('Error loading calls enabled state:', error);
-        setCallsEnabled(true); // Default to enabled on error
+        setCallsEnabled(false); // Default to disabled on error - Coming Soon
       }
     };
 
@@ -1082,8 +1082,18 @@ const EnquiryResponses = () => {
     return peerConnection;
   };
 
-  // Toggle calls for this chat
+  // Toggle calls for this chat - Disabled (Coming Soon)
   const toggleCallsEnabled = async () => {
+    // Feature disabled - show coming soon message
+    toast({
+      title: "Call Feature Coming Soon",
+      description: "Voice calling will be available in a future update. Stay tuned!",
+      duration: 4000,
+    });
+    return;
+
+    // Commented out for future implementation
+    /*
     if (!selectedResponse || !enquiryId) return;
 
     try {
@@ -1131,11 +1141,22 @@ const EnquiryResponses = () => {
         variant: 'destructive'
       });
     }
+    */
   };
 
   const initiateCall = async () => {
     if (!selectedResponse || !enquiry || !user) return;
     
+    // Feature disabled - show coming soon message
+    toast({
+      title: "Call Feature Coming Soon",
+      description: "Voice calling will be available in a future update. Stay tuned!",
+      duration: 4000,
+    });
+    return;
+
+    // Commented out for future implementation
+    /*
     // Check if calls are enabled
     if (!callsEnabled) {
       toast({
@@ -1145,6 +1166,7 @@ const EnquiryResponses = () => {
       });
       return;
     }
+    */
 
     try {
       // Check microphone permission first
@@ -2602,45 +2624,44 @@ const EnquiryResponses = () => {
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
-                        {/* Call Toggle - Simple text button */}
+                        {/* Call Feature - Coming Soon Badge */}
                         {canUserChat(selectedResponse) && (
-                          <Button
-                            onClick={toggleCallsEnabled}
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-medium rounded-md transition-colors duration-200 flex-shrink-0 whitespace-nowrap border-2 border-gray-800 hover:border-gray-900"
-                            title={callsEnabled ? 'Click to disable calls' : 'Click to enable calls'}
-                          >
-                            {callsEnabled ? '🔊 Calls On' : '🔇 Calls Off'}
-                          </Button>
-                        )}
-                        
-                        {/* Call Button - First on mobile, only shown if calls enabled */}
-                        {canUserChat(selectedResponse) && callsEnabled && (
-                          <Button
-                            onClick={() => {
-                              if (isCalling || isInCall) {
-                                endCall();
-                              } else {
-                                initiateCall();
-                              }
-                            }}
-                            variant="ghost"
-                            size="sm"
-                            className={`h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-800 ${
-                              isCalling || isInCall
-                                ? 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-gray-900'
-                                : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:border-gray-900'
-                            }`}
-                            disabled={callStatus === 'ringing'}
-                            title={isCalling || isInCall ? 'End Call' : 'Start Call'}
-                          >
-                            {isCalling || isInCall ? (
-                              <PhoneOff className="h-4 w-4" />
-                            ) : (
+                          <div className="relative group">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled
+                              onClick={toggleCallsEnabled}
+                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                              title="Call feature coming soon"
+                            >
                               <Phone className="h-4 w-4" />
-                            )}
-                          </Button>
+                            </Button>
+                            
+                            {/* Coming Soon Tooltip/Badge - Desktop */}
+                            <div className="hidden sm:block absolute -top-12 left-1/2 -translate-x-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative">
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-black rotate-45"></div>
+                                <div className="flex items-center gap-2">
+                                  <Phone className="h-3.5 w-3.5 animate-pulse" />
+                                  <span>Call Feature</span>
+                                  <span className="text-yellow-300">Coming Soon</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Coming Soon Tooltip/Badge - Mobile */}
+                            <div className="sm:hidden absolute top-full right-0 mt-2 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
+                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 2rem)' }}>
+                                <div className="absolute -top-1 right-4 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                  <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
+                                  <span>Call Feature</span>
+                                  <span className="text-yellow-300">Coming Soon</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         )}
                         
                         {/* Deal Closed - Only for buyers */}
@@ -3495,8 +3516,8 @@ const EnquiryResponses = () => {
       <audio ref={localAudioRef} autoPlay muted playsInline style={{ display: 'none' }} />
       <audio ref={remoteAudioRef} autoPlay playsInline style={{ display: 'none' }} />
 
-      {/* Call Overlay */}
-      {(isCalling || isInCall || callStatus === 'ringing') && (
+      {/* Call Overlay - Only show if calls are enabled */}
+      {(isCalling || isInCall || callStatus === 'ringing') && callsEnabled && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-sm w-[90%] mx-auto">
             {/* Call Status */}

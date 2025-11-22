@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, MicOff, ChevronDown, ChevronUp, Info, Sparkles, Shield } from 'lucide-react';
+import { Mic, MicOff, ChevronDown, ChevronUp, Info, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -70,23 +70,16 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
   
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200/50 shadow-xl">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        </div>
-        
+      <div className="relative overflow-hidden rounded-2xl bg-white border-4 border-black shadow-xl">
         <div className="relative p-4 sm:p-6">
-          {/* Header Section - Creative Design */}
+          {/* Header Section - Black and White Design */}
           <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
-            {/* Animated Icon Container */}
-            <div className={`relative mb-3 sm:mb-4 ${permissionStatus === 'denied' ? 'animate-shake' : 'animate-bounce'}`}>
-              <div className="absolute inset-0 bg-blue-400/30 rounded-full blur-xl animate-pulse"></div>
-              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center ${
+            {/* Icon Container */}
+            <div className={`relative mb-3 sm:mb-4 ${permissionStatus === 'denied' ? 'animate-shake' : ''}`}>
+              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-4 border-black ${
                 permissionStatus === 'denied' 
-                  ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/50' 
-                  : 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/50'
+                  ? 'bg-black' 
+                  : 'bg-black'
               }`}>
                 {permissionStatus === 'denied' ? (
                   <MicOff className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
@@ -94,21 +87,16 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
                   <Mic className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 )}
               </div>
-              {permissionStatus !== 'denied' && (
-                <div className="absolute -top-1 -right-1">
-                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400 animate-pulse" />
-                </div>
-              )}
             </div>
             
             {/* Title and Badge */}
             <div className="space-y-2">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
-                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+              <h3 className="text-lg sm:text-xl font-black text-black flex items-center justify-center gap-2">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
                 Microphone Access Needed
               </h3>
               {permissionStatus === 'denied' && (
-                <Badge variant="destructive" className="text-xs sm:text-sm px-3 py-1">
+                <Badge className="text-xs sm:text-sm px-3 py-1 bg-black text-white border-2 border-black">
                   Permission Denied
                 </Badge>
               )}
@@ -117,17 +105,17 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
 
           {/* Description */}
           <div className="mb-4 sm:mb-6">
-            <p className="text-sm sm:text-base text-gray-700 text-center leading-relaxed">
+            <p className="text-sm sm:text-base text-black text-center leading-relaxed">
               Allow microphone access to make calls and send voice messages in this chat.
             </p>
           </div>
 
-          {/* Action Button - Creative Design */}
+          {/* Action Button - Black and White Design */}
           <div className="mb-3 sm:mb-4">
             <Button
               onClick={handleRequestPermission}
               disabled={isRequesting}
-              className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-semibold text-sm sm:text-base py-3 sm:py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-black hover:bg-gray-900 text-white font-bold text-sm sm:text-base py-3 sm:py-4 h-auto rounded-xl border-4 border-black shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isRequesting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -144,10 +132,10 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
           </div>
 
           {/* Instructions Toggle - Mobile Friendly */}
-          <div className="border-t border-blue-200/50 pt-3 sm:pt-4">
+          <div className="border-t-4 border-black pt-3 sm:pt-4">
             <button
               onClick={() => setShowInstructions(!showInstructions)}
-              className="w-full flex items-center justify-center gap-2 text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors py-2 rounded-lg hover:bg-blue-50"
+              className="w-full flex items-center justify-center gap-2 text-xs sm:text-sm text-black hover:text-gray-700 font-bold transition-colors py-2 rounded-lg hover:bg-gray-50 border-2 border-black"
             >
               {showInstructions ? (
                 <>
@@ -162,22 +150,22 @@ const MicrophonePermissionPrompt: React.FC<MicrophonePermissionPromptProps> = ({
               )}
             </button>
 
-            {/* Instructions Panel - Animated */}
+            {/* Instructions Panel - Black and White Design */}
             {showInstructions && (
-              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-blue-200/50 shadow-sm animate-in slide-in-from-top-2 duration-300">
+              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white rounded-xl border-4 border-black shadow-sm animate-in slide-in-from-top-2 duration-300">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 mt-0.5">
-                    <Info className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                    <Info className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-2">
+                    <p className="text-xs sm:text-sm font-bold text-black mb-2">
                       How to enable microphone manually:
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-black leading-relaxed">
                       {instructions}
                     </p>
                     {permissionStatus === 'denied' && (
-                      <p className="text-xs sm:text-sm text-red-600 mt-3 font-medium bg-red-50 p-2 rounded-lg border border-red-200">
+                      <p className="text-xs sm:text-sm text-black mt-3 font-bold bg-gray-100 p-2 rounded-lg border-2 border-black">
                         ⚠️ Note: You may need to refresh the page after enabling the permission.
                       </p>
                     )}
