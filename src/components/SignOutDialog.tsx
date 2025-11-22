@@ -31,7 +31,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-2 border-slate-200 rounded-2xl p-4 sm:p-6 mx-auto">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-4 border-black rounded-2xl p-4 sm:p-6 mx-auto">
         <DialogHeader className="text-center space-y-2 sm:space-y-3 items-center w-full px-0">
           <div className="flex items-center justify-center w-12 h-12 sm:w-12 sm:h-12 mx-auto bg-black rounded-full flex-shrink-0">
             <LogOut className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
@@ -56,7 +56,21 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
           <Button
             onClick={handleSignOut}
             disabled={isLoading}
-            className="w-full sm:flex-1 h-10 sm:h-10 !bg-gradient-to-r !from-gray-800 !to-gray-800 hover:!from-gray-700 hover:!to-gray-700 text-white text-sm sm:text-sm font-medium min-h-[40px] sm:min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center"
+            variant="outline"
+            className="w-full sm:flex-1 h-10 sm:h-10 text-sm sm:text-sm font-medium min-h-[40px] sm:min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center"
+            style={{ 
+              backgroundColor: '#000000', 
+              color: '#ffffff', 
+              borderColor: '#000000',
+              borderWidth: '2px',
+              backgroundImage: 'none'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1f2937';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#000000';
+            }}
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

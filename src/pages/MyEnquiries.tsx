@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
@@ -55,6 +55,7 @@ const MyEnquiries = () => {
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [userPaymentPlan, setUserPaymentPlan] = useState<any>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,6 +76,20 @@ const MyEnquiries = () => {
     };
     
     fetchUserPaymentPlan();
+
+    // Fetch user profile for verification status
+    const fetchUserProfile = async () => {
+      try {
+        const profileDoc = await getDoc(doc(db, 'userProfiles', user.uid));
+        if (profileDoc.exists()) {
+          setUserProfile(profileDoc.data());
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    
+    fetchUserProfile();
 
     const enquiriesQuery = query(
       collection(db, 'enquiries'),
@@ -597,7 +612,10 @@ const MyEnquiries = () => {
                                 <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-300 font-medium opacity-95">{getStatusMessage(enquiry)}</span>
                               </div>
                             </div>
-                            {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                            {/* Show verified badge if: 
+                                1. User has profile-level verification (applies to all enquiries), OR
+                                2. This specific enquiry has ID images (enquiry-specific verification) */}
+                            {(userProfile?.isProfileVerified || (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
                               <div className={`flex items-center justify-center w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 rounded-full flex-shrink-0 shadow-lg ring-1 ring-white/20 ${
                                 isExpired ? 'bg-gray-500' : 'bg-blue-500'
                               }`}>

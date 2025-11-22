@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
-import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, orderBy, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, orderBy, onSnapshot, updateDoc, deleteField } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { uploadToCloudinary } from "@/integrations/cloudinary";
 import { realtimeAI } from "@/services/ai/realtimeAI";
@@ -30,6 +31,7 @@ const Profile = () => {
   const [countryCode, setCountryCode] = useState("+91");
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   
   // ID upload states
   const [idType, setIdType] = useState("");
@@ -39,6 +41,8 @@ const Profile = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [submittedProfileId, setSubmittedProfileId] = useState<string | null>(null);
+  const [showRemoveConfirmDialog, setShowRemoveConfirmDialog] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   // SecurityDashboard data states
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -165,6 +169,9 @@ const Profile = () => {
         updatedAt: serverTimestamp()
       }, { merge: true });
       
+      // Exit edit mode after successful save
+      setIsEditingProfile(false);
+      
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated successfully.",
@@ -174,6 +181,55 @@ const Profile = () => {
       toast({
         title: "Update Failed",
         description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle edit button click
+  const handleEditProfile = () => {
+    setIsEditingProfile(true);
+  };
+
+  // Handle trust badge removal click - opens confirmation dialog
+  const handleRemoveTrustBadgeClick = () => {
+    setShowRemoveConfirmDialog(true);
+  };
+
+  // Handle trust badge removal confirmation
+  const handleRemoveTrustBadge = async () => {
+    if (!authUser) return;
+
+    setIsRemoving(true);
+    try {
+      const profileRef = doc(db, 'userProfiles', authUser.uid);
+      // Use updateDoc with deleteField to properly remove fields
+      await updateDoc(profileRef, {
+        isProfileVerified: false,
+        verificationStatus: deleteField(),
+        idType: deleteField(),
+        idNumber: deleteField(),
+        frontImageUrl: deleteField(),
+        backImageUrl: deleteField(),
+        verificationRequestedAt: deleteField(),
+        verificationDate: deleteField(),
+        updatedAt: serverTimestamp()
+      });
+
+      // Close dialog
+      setShowRemoveConfirmDialog(false);
+      setIsRemoving(false);
+
+      toast({
+        title: "Trust Badge Removed",
+        description: "Your trust badge has been removed. You'll need to re-upload your ID to get the trust badge again.",
+      });
+    } catch (error) {
+      console.error('Error removing trust badge:', error);
+      setIsRemoving(false);
+      toast({
+        title: "Removal Failed",
+        description: "Failed to remove trust badge. Please try again.",
         variant: "destructive",
       });
     }
@@ -322,8 +378,8 @@ const Profile = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pal-blue mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-[20px] border-pal-blue mx-auto mb-4"></div>
+          <p className="text-muted-foreground font-bold">Loading profile...</p>
         </div>
       </Layout>
     );
@@ -364,10 +420,10 @@ const Profile = () => {
         </div>
 
         {/* Profile Form */}
-        <Card className="mt-6 sm:mt-8 border border-black">
+        <Card className="mt-6 sm:mt-8 border-4 border-black">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">It's better to know you better if you're here to scam others</CardDescription>
+            <CardDescription className="text-[10px] sm:text-xs">It's better to know you better if you're here to scam others</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
             {/* Profile Fields */}
@@ -379,15 +435,16 @@ const Profile = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                  className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                  disabled={!isEditingProfile}
                   required
                 />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700">Phone Number *</Label>
                 <div className="flex gap-1 sm:gap-2">
-                  <Select value={countryCode} onValueChange={setCountryCode}>
-                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus:border-black focus:ring-black">
+                  <Select value={countryCode} onValueChange={setCountryCode} disabled={!isEditingProfile}>
+                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black" disabled={!isEditingProfile}>
                       <SelectValue placeholder="Code">
                         {countryCode && (
                           <span className="flex items-center gap-0.5 sm:gap-1">
@@ -414,7 +471,8 @@ const Profile = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter phone number"
-                    className="flex-1 h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                    className="flex-1 h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                    disabled={!isEditingProfile}
                     required
                   />
                 </div>
@@ -422,27 +480,41 @@ const Profile = () => {
             </div>
 
             <div className="flex justify-end space-x-1 sm:space-x-2">
-              <Button 
-                onClick={handleProfileSave}
-                disabled={!fullName.trim() || !phone.trim()}
-                className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4"
-              >
-                Save Changes
-              </Button>
+              {isEditingProfile ? (
+                <Button 
+                  onClick={handleProfileSave}
+                  disabled={!fullName.trim() || !phone.trim()}
+                  variant="outline"
+                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 !bg-white !text-black !border-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black active:!bg-white disabled:!bg-gray-100 disabled:!text-gray-400"
+                >
+                  <Save className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black" />
+                  Save Changes
+                </Button>
+              ) : null}
+              {!isEditingProfile ? (
+                <Button 
+                  onClick={handleEditProfile}
+                  variant="outline"
+                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 !bg-white !text-black !border-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black active:!bg-white"
+                >
+                  <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black" />
+                  Edit
+                </Button>
+              ) : null}
             </div>
           </CardContent>
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+        <Card className="mt-4 sm:mt-6 border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
           {/* Card Header - Black Background */}
           <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
             <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
               <Shield className="h-4 w-4 sm:h-4 sm:w-4" />
               Trust Badge (Optional)
             </h2>
-            <p className="text-xs sm:text-xs text-gray-300 mt-1.5">
-              The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
+            <p className="text-[10px] sm:text-xs text-gray-300 mt-1.5">
+              They made everything feel untrustful without a blue tick.
             </p>
           </div>
           {/* Card Content - Enhanced White Background */}
@@ -454,8 +526,8 @@ const Profile = () => {
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
                   <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
                 </div>
-                <h3 className="text-base sm:text-xl font-semibold text-green-800 mb-2">Profile Verified!</h3>
-                <p className="text-green-700 text-xs sm:text-sm">
+                <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-2">Profile Verified!</h3>
+                <p className="text-green-700 text-[10px] sm:text-xs">
                   Congratulations! Your profile has been verified and you now have a verified badge.
                 </p>
                 <div className="mt-3 sm:mt-4">
@@ -464,6 +536,17 @@ const Profile = () => {
                     Verified Profile
                   </Badge>
                 </div>
+                <div className="mt-4 sm:mt-5">
+                  <Button
+                    onClick={handleRemoveTrustBadgeClick}
+                    variant="outline"
+                    className="h-7 sm:h-9 text-[10px] sm:text-xs px-2 sm:px-3 !bg-red-600 !text-white !border-red-800 hover:!bg-red-700"
+                    style={{ backgroundColor: '#dc2626' }}
+                  >
+                    <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 text-white" />
+                    Remove Trust Badge
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -471,12 +554,23 @@ const Profile = () => {
             {verificationStatus === 'pending' && (
               <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4 sm:p-6 text-center">
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 border-yellow-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-[20px] border-yellow-500 border-t-transparent"></div>
                 </div>
                 <h3 className="text-base sm:text-xl font-semibold text-yellow-800 mb-2">Verification Pending</h3>
                 <p className="text-yellow-700 text-xs sm:text-sm">
                   Your ID has been uploaded and is under admin review.
                 </p>
+                <div className="mt-4 sm:mt-5">
+                  <Button
+                    onClick={handleRemoveTrustBadgeClick}
+                    variant="outline"
+                    className="h-7 sm:h-9 text-[10px] sm:text-xs px-2 sm:px-3 !bg-red-600 !text-white !border-red-800 hover:!bg-red-700"
+                    style={{ backgroundColor: '#dc2626' }}
+                  >
+                    <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 text-white" />
+                    Remove Trust Badge
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -518,7 +612,7 @@ const Profile = () => {
                       value={idNumber}
                       onChange={(e) => setIdNumber(e.target.value)}
                       placeholder="Enter ID number"
-                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                      className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
                     />
                   </div>
                 </div>
@@ -571,8 +665,8 @@ const Profile = () => {
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
                     <div className="mb-2">
                       <div className="flex justify-between text-xs sm:text-sm text-blue-700 mb-1">
-                        <span>Uploading ID...</span>
-                        <span>{uploadProgress}%</span>
+                        <span className="font-bold">Uploading ID...</span>
+                        <span className="font-bold">{uploadProgress}%</span>
                       </div>
                       <div className="w-full bg-blue-200 rounded-full h-2 sm:h-3">
                         <div 
@@ -582,8 +676,8 @@ const Profile = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-blue-600">
-                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-500 border-t-transparent"></div>
-                      <span>
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-[20px] border-blue-500 border-t-transparent"></div>
+                      <span className="font-bold">
                         {uploadProgress < 25 && "Preparing upload..."}
                         {uploadProgress >= 25 && uploadProgress < 50 && "Uploading front ID..."}
                         {uploadProgress >= 50 && uploadProgress < 75 && "Uploading back ID..."}
@@ -616,6 +710,56 @@ const Profile = () => {
         />
 
       </div>
+
+      {/* Remove Trust Badge Confirmation Dialog */}
+      <Dialog open={showRemoveConfirmDialog} onOpenChange={setShowRemoveConfirmDialog}>
+        <DialogContent className="w-[90%] max-w-[90%] sm:max-w-md sm:w-auto p-3 sm:p-6 border-8 border-black !mx-0">
+          <DialogHeader className="space-y-1.5 sm:space-y-3">
+            <div className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 mx-auto bg-red-100 rounded-full">
+              <Trash2 className="h-5 w-5 sm:h-7 sm:w-7 text-red-600" />
+            </div>
+            <DialogTitle className="text-sm sm:text-lg font-bold text-center">
+              Remove Trust Badge?
+            </DialogTitle>
+            <DialogDescription className="text-[10px] sm:text-sm text-center text-gray-600 leading-relaxed">
+              Are you sure you want to remove your trust badge? This will:
+              <ul className="mt-1.5 sm:mt-3 space-y-0.5 sm:space-y-1.5 text-left list-disc list-inside text-[10px] sm:text-sm">
+                <li>Delete your ID information</li>
+                <li>Remove the blue verified icon from all your enquiries</li>
+                <li>Require you to re-upload your ID to get the trust badge again</li>
+              </ul>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-3 mt-3 sm:mt-6">
+            <Button
+              onClick={() => setShowRemoveConfirmDialog(false)}
+              variant="outline"
+              className="w-full sm:w-auto h-8 sm:h-10 text-[10px] sm:text-sm px-3 sm:px-6 !bg-white !text-black !border-black hover:!bg-gray-50"
+              disabled={isRemoving}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRemoveTrustBadge}
+              variant="destructive"
+              className="w-full sm:w-auto h-8 sm:h-10 text-[10px] sm:text-sm px-3 sm:px-6 !bg-red-600 !text-white hover:!bg-red-700 !border-2 !border-red-800"
+              style={{ backgroundColor: '#dc2626', borderColor: '#991b1b' }}
+              disabled={isRemoving}
+            >
+              {isRemoving ? (
+                <>
+                  <span className="mr-2">Removing...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Remove Trust Badge
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

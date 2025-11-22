@@ -495,6 +495,19 @@ export default function EnquiryWall() {
     handleSearchChange(suggestion);
   };
 
+  // Handle category selection - clear search when "all" is selected
+  const handleCategorySelect = (categoryValue: string) => {
+    setSelectedCategory(categoryValue);
+    
+    // If "all" is selected, clear search and AI results
+    if (categoryValue === "all") {
+      setSearchTerm("");
+      setAiSearchResults(null);
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
   // Get final results - AI search completely overrides original search
   const finalResults = (() => {
     let results: Enquiry[] = [];
@@ -617,30 +630,47 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-10" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-10 pointer-events-none" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder="Search enquiries..."
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSearchChange(searchTerm);
+                    }
+                  }}
                   onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="w-full pl-12 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-3.5 text-sm sm:text-base border-2 border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200 bg-white shadow-sm placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-right sm:text-left leading-tight sm:leading-normal"
+                  className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border-2 border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200 bg-white shadow-sm placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
                     paddingTop: '0.75rem',
                     paddingBottom: '0.75rem',
+                    paddingLeft: '2.75rem', // More space for icon on mobile
                     WebkitAppearance: 'none',
-                    WebkitTapHighlightColor: 'transparent'
+                    WebkitTapHighlightColor: 'transparent',
+                    direction: 'ltr'
                   }}
                   disabled={isAISearching}
                 />
-                {isAISearching && (
-                  <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 z-10">
+                {isAISearching ? (
+                  <div className="absolute right-10 sm:right-12 top-1/2 transform -translate-y-1/2 z-10">
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchChange(searchTerm)}
+                    className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 z-10 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation"
+                    aria-label="Search"
+                  >
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
+                  </button>
                 )}
                 
                 {/* AI Search Suggestions Dropdown - Absolute with Layout Isolation */}
@@ -719,7 +749,7 @@ export default function EnquiryWall() {
                   ].map((category) => (
                     <button
                       key={category.value}
-                      onClick={() => setSelectedCategory(category.value)}
+                      onClick={() => handleCategorySelect(category.value)}
                       className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                         selectedCategory === category.value
                           ? 'bg-red-600 text-white shadow-md hover:bg-red-700 scale-105 border-2 border-red-600'
@@ -776,7 +806,7 @@ export default function EnquiryWall() {
                     ].map((category) => (
                       <button
                         key={category.value}
-                        onClick={() => setSelectedCategory(category.value)}
+                        onClick={() => handleCategorySelect(category.value)}
                         className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
                           selectedCategory === category.value
                             ? 'bg-red-600 text-white shadow-md hover:bg-red-700 scale-105 border-2 border-red-600'
@@ -850,10 +880,10 @@ export default function EnquiryWall() {
             {showCategoryFallback && (
               <div className="mb-4 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg sm:rounded-xl">
                 <div className="text-center">
-                  <p className="text-amber-800 font-semibold text-sm sm:text-base">
+                  <p className="text-amber-800 font-semibold text-xs sm:text-base">
                     No enquiries found in "{selectedCategory.replace('-', ' ')}" category
                   </p>
-                  <p className="text-amber-600 text-xs sm:text-sm mt-1">
+                  <p className="text-amber-600 text-[10px] sm:text-sm mt-1">
                     Showing all enquiries below
                   </p>
                 </div>
@@ -861,35 +891,35 @@ export default function EnquiryWall() {
             )}
             
             {/* AI Search Results Messages */}
-            {aiSearchResults && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            {aiSearchResults && filteredEnquiries.length === 0 && (
+              <div className="mb-4 p-2.5 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 {aiSearchResults.noResultsInCategory ? (
                   <div className="text-center">
-                    <p className="text-blue-800 font-medium text-sm">
+                    <p className="text-blue-800 font-medium text-xs sm:text-sm px-1">
                       No enquiries found in {aiSearchResults.searchedCategory?.replace('-', ' ')} category
                     </p>
-                    <p className="text-blue-600 text-xs mt-1">
+                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1 break-words leading-relaxed">
                       AI Analysis: {aiSearchResults.aiAnalysis?.reasoning}
                     </p>
-                    <p className="text-blue-600 text-xs mt-1">
+                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1">
                       Showing all enquiries below
                     </p>
                   </div>
                 ) : aiSearchResults.showAllFallback ? (
                   <div className="text-center">
-                    <p className="text-blue-800 font-medium text-sm">
+                    <p className="text-blue-800 font-medium text-xs sm:text-sm px-1">
                       AI couldn't determine category for "{searchTerm}"
                     </p>
-                    <p className="text-blue-600 text-xs mt-1">
+                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1">
                       Showing all enquiries
                     </p>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <p className="text-blue-800 font-medium text-sm">
+                    <p className="text-blue-800 font-medium text-xs sm:text-sm px-1">
                       AI found {aiSearchResults.results.length} enquiry{aiSearchResults.results.length !== 1 ? 'ies' : ''} in {aiSearchResults.searchedCategory?.replace('-', ' ')} category
                     </p>
-                    <p className="text-blue-600 text-xs mt-1">
+                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1 break-words leading-relaxed">
                       Confidence: {Math.round((aiSearchResults.aiAnalysis?.confidence || 0) * 100)}% | {aiSearchResults.aiAnalysis?.reasoning}
                     </p>
                   </div>
@@ -923,7 +953,10 @@ export default function EnquiryWall() {
                       <div className="bg-black px-2.5 sm:px-4 py-1.5 sm:py-2.5 border-b border-black">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-1 sm:gap-2">
-                            {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                            {/* Show verified badge if: 
+                                1. User has profile-level verification (applies to all enquiries), OR
+                                2. This specific enquiry has ID images (enquiry-specific verification) */}
+                            {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
@@ -992,7 +1025,10 @@ export default function EnquiryWall() {
                                 }`}>
                                   {enquiry.title}
                                 </h3>
-                                {(userProfiles[enquiry.userId]?.isProfileVerified || (enquiry as any).isUserVerified || enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                {/* Show verified badge if: 
+                                    1. User has profile-level verification (applies to all enquiries), OR
+                                    2. This specific enquiry has ID images (enquiry-specific verification) */}
+                                {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                                   <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>

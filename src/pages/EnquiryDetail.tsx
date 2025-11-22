@@ -668,7 +668,10 @@ const EnquiryDetail = () => {
                 <div className="text-center">
                   {/* Badges Row */}
                   <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    {(enquiry.userProfileVerified || enquiry.isIdentityVerified) && (
+                    {/* Show verified badge if: 
+                        1. User has profile-level verification (applies to all enquiries), OR
+                        2. This specific enquiry has ID images (enquiry-specific verification) */}
+                    {(userProfile?.isVerified || userProfile?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                       <div title="Verified Enquiry" className="flex-shrink-0">
                         <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
                       </div>

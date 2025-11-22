@@ -1276,7 +1276,10 @@ const Dashboard = () => {
                                     }`}>
                                   {enquiry.title}
                                 </h5>
-                                    {((enquiry as any).isUserVerified || (enquiry as any).userProfileVerified) && (
+                                    {/* Show verified badge if: 
+                                        1. User has profile-level verification (applies to all enquiries), OR
+                                        2. This specific enquiry has ID images (enquiry-specific verification) */}
+                                    {(userProfile?.isProfileVerified || (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
                                       <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
                                         expiredFlag ? 'bg-gray-500' : 'bg-blue-500'
                                 }`}>
