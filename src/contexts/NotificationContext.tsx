@@ -264,11 +264,27 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!user?.uid) return;
     
     try {
-      await smartNotificationService.clearAllNotifications(user.uid);
+      // First, immediately clear state to give instant feedback
       setNotifications([]);
       setUnreadCount(0);
+      
+      // Then clear from storage
+      await smartNotificationService.clearAllNotifications(user.uid);
+      
+      // Also run the aggressive cleanup to ensure everything is cleared
+      await clearAllOldNotifications();
+      
+      // Force state update again to ensure UI reflects the change
+      setNotifications([]);
+      setUnreadCount(0);
+      
+      console.log('✅ All notifications cleared from state and storage');
     } catch (error) {
       console.error('Failed to clear notifications:', error);
+      // Even on error, ensure state is cleared
+      setNotifications([]);
+      setUnreadCount(0);
+      throw error; // Re-throw so UI can handle it
     }
   };
 

@@ -2332,70 +2332,111 @@ const EnquiryResponses = () => {
     return (
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/my-enquiries')}
-                  className="p-2 hover:bg-slate-100 rounded-lg"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                  <h1 className="text-3xl font-bold text-slate-900">Enquiry Responses</h1>
-                  <p className="text-slate-600">View and chat with approved sellers</p>
+          <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-0 sm:pt-2 pb-2 sm:pb-8">
+            {/* Back Button */}
+            <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/my-enquiries'); }}
+                className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </div>
+            
+            {/* Professional Welcome Header - Matching Dashboard Style */}
+            <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+                {/* Header Section with Title */}
+                <div className="text-center mb-4 sm:mb-6">
+                  <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight">
+                      Responses
+                    </h1>
+                  </div>
+                </div>
+                
+                {/* Content Card - White Background */}
+                <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                  <div className="text-center">
+                    <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                      <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                        Chat
+                      </h2>
+                    </div>
+                    <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                      {/* Title Row */}
+                      <div className="flex items-center justify-center gap-3">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight">
+                          {enquiry.title}
+                        </h3>
+                        {enquiry.isUrgent && (
+                          <Badge variant="destructive" className="border-2 border-red-600">
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            Urgent
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {/* Category Badge */}
+                      <div className="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap">
+                        <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5">
+                          <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
+                          <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Budget and Location Row */}
+                      <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-2 border-black justify-center">
+                        {/* Budget Section */}
+                        <div className="flex items-start gap-2 flex-1 min-w-0 max-w-[200px]">
+                          <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
+                            <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Location Section */}
+                        {enquiry.location && (
+                          <div className="flex items-start gap-2 flex-shrink-0 max-w-[200px]">
+                            <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
+                            <div className="min-w-0">
+                              <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
+                              <div className="text-sm sm:text-base font-bold text-black truncate">{enquiry.location}</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Enquiry Summary */}
-            <Card className="mb-8 border-0 shadow-lg rounded-2xl">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                      {enquiry.title}
-                      {enquiry.isUrgent && (
-                        <Badge variant="destructive" className="ml-2 text-xs">
-                          Urgent
-                        </Badge>
-                      )}
-                    </h2>
-                    <p className="text-slate-600 mb-3">{enquiry.description}</p>
-                    <div className="flex items-center space-x-4 text-sm text-slate-500">
-                      <Badge variant="outline">{enquiry.category}</Badge>
-                      <span>Budget: {formatBudget(enquiry.budget)}</span>
-                      {enquiry.location && <span>📍 {enquiry.location}</span>}
-                    </div>
-                  </div>
+            {/* No Responses Message Card */}
+            <Card className="border-2 border-black shadow-lg rounded-2xl">
+              <CardContent className="p-8 sm:p-12 lg:p-16 text-center">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
+                  <MessageSquare className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-slate-600" />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* No Responses Message */}
-            <Card className="border-0 shadow-lg rounded-2xl">
-              <CardContent className="p-16 text-center">
-                <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MessageSquare className="h-12 w-12 text-slate-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">No Responses Yet</h3>
-                <p className="text-slate-600 text-lg mb-6 max-w-md mx-auto">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-3 sm:mb-4">No Responses Yet</h3>
+                <p className="text-sm sm:text-base lg:text-lg text-slate-600 mb-6 sm:mb-8 max-w-md mx-auto leading-relaxed">
                   Your enquiry hasn't received any approved responses yet. Sellers are reviewing your request and will respond soon.
                 </p>
-                <div className="flex items-center justify-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                   <Button
                     onClick={() => window.history.back()}
                     variant="outline"
-                    className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                    className="border-2 border-black text-black hover:bg-gray-50 w-full sm:w-auto"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to My Enquiries
                   </Button>
                   <Button
                     onClick={() => navigate('/')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-black hover:bg-gray-900 text-white w-full sm:w-auto"
                   >
                     Browse More Enquiries
                   </Button>
@@ -2436,67 +2477,76 @@ const EnquiryResponses = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          {/* Header - Mobile Responsive - Creative Design */}
-          <div className="mb-4 sm:mb-6 lg:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-black">
-            <div className="bg-black px-3 sm:px-5 py-3 sm:py-5">
-              {/* Top Bar with Back Button and Chat Title */}
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/my-enquiries')}
-                  className="p-2 hover:bg-gray-700/50 rounded-lg min-touch text-white transition-all"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-                <div className="flex-1 text-center">
-                  <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Chat</h1>
+          {/* Professional Header - Matching Dashboard Style */}
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              {/* Header Section with Back Button */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate('/my-enquiries')}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
                 </div>
-                <div className="w-10"></div> {/* Spacer for balance */}
               </div>
               
-              {/* Enquiry Details Card - Single Color Design */}
-              <div className="bg-white border-4 border-black rounded-lg p-4 sm:p-5">
-                <div className="space-y-3 sm:space-y-4">
-                  {/* Title Row with Response Count Badge */}
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-base sm:text-lg font-bold text-black leading-tight truncate flex-1 min-w-0">
-                      {enquiry.title}
+              {/* Content Card - White Background */}
+              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+                <div className="text-center">
+                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+                      Chat
                     </h2>
-                    <div className="flex items-center justify-center border-4 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
-                      <span className="text-base sm:text-lg font-black text-black">1</span>
-                    </div>
                   </div>
-                  
-                  {/* Category and Type Row - Single Color Badges */}
-                  <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-                    <div className="inline-flex items-center gap-1.5 border-4 border-black rounded-md px-2.5 py-1.5">
-                      <Briefcase className="h-3.5 w-3.5 text-black flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-black font-medium">fulltime</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 border-4 border-black rounded-md px-2.5 py-1.5">
-                      <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Budget and Location Row - Single Color Layout */}
-                  <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-4 border-black">
-                    {/* Budget Section */}
-                    <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
-                        <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
+                  <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                    {/* Title Row with Response Count Badge */}
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight truncate flex-1 min-w-0">
+                        {enquiry.title}
+                      </h3>
+                      <div className="flex items-center justify-center border-2 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
+                        <span className="text-base sm:text-lg font-black text-black">{approvedResponses.length}</span>
                       </div>
                     </div>
                     
-                    {/* Location Section */}
-                    <div className="flex items-start gap-2 flex-shrink-0">
-                      <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
-                      <div className="min-w-0">
-                        <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
-                        <div className="text-sm sm:text-base font-bold text-black truncate max-w-[120px] sm:max-w-none">{enquiry.location}</div>
+                    {/* Category and Type Row - Single Color Badges */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center">
+                      <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5">
+                        <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
                       </div>
+                      {enquiry.isUrgent && (
+                        <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5 bg-red-50">
+                          <Sparkles className="h-3.5 w-3.5 text-red-600 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm text-red-600 font-medium">Urgent</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Budget and Location Row - Single Color Layout */}
+                    <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-2 border-black justify-center">
+                      {/* Budget Section */}
+                      <div className="flex items-start gap-2 flex-1 min-w-0 max-w-[200px]">
+                        <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
+                          <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Location Section */}
+                      {enquiry.location && (
+                        <div className="flex items-start gap-2 flex-shrink-0 max-w-[200px]">
+                          <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
+                            <div className="text-sm sm:text-base font-bold text-black truncate">{enquiry.location}</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -2510,7 +2560,7 @@ const EnquiryResponses = () => {
             <div className="lg:col-span-1 order-2 lg:order-1">
               <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 mb-2 sm:mb-3 lg:mb-4">Approved Responses</h3>
               {approvedResponses.length === 0 ? (
-                <Card className="p-4 sm:p-6 lg:p-8 text-center border-0 shadow-lg rounded-2xl">
+                <Card className="p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg rounded-2xl">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-slate-600" />
                   </div>
@@ -2521,20 +2571,20 @@ const EnquiryResponses = () => {
                 <div className="space-y-3 sm:space-y-4">
                   {/* Visible Responses */}
                   {getVisibleResponses().map((response, index) => (
-                    <div
+                    <Card
                       key={response.id}
-                      className={`cursor-pointer border-0 shadow-lg transition-all duration-300 min-touch rounded-lg border-4 border-black bg-card text-card-foreground ${
+                      className={`cursor-pointer border-2 border-black shadow-lg transition-all duration-300 min-touch rounded-lg bg-white hover:shadow-xl ${
                         selectedResponse?.id === response.id
                           ? 'ring-4 ring-black bg-gray-50'
-                          : 'hover:shadow-xl'
+                          : ''
                       }`}
                       onClick={() => handleResponseClick(response)}
                     >
-                      <div className="p-3 sm:p-4 pointer-events-none">
+                      <CardContent className="p-3 sm:p-4 pointer-events-none">
                         <div className="flex items-start justify-between mb-2 sm:mb-3">
                           <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
                             {user?.uid === enquiry?.userId && (
-                              <Badge variant="outline" className="text-xs font-medium">
+                              <Badge variant="outline" className="text-xs font-medium border-2 border-black">
                                 Response #{index + 1}
                               </Badge>
                             )}
@@ -2542,7 +2592,7 @@ const EnquiryResponses = () => {
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             {response.isIdentityVerified && (
-                              <Badge className="bg-emerald-100 text-emerald-800 text-xs">
+                              <Badge className="bg-emerald-100 text-emerald-800 text-xs border-2 border-emerald-300">
                                 <Shield className="h-3 w-3 mr-1" />
                                 Verified
                               </Badge>
@@ -2554,8 +2604,8 @@ const EnquiryResponses = () => {
                           <span className="font-semibold text-emerald-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
                         </div>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
@@ -2563,7 +2613,7 @@ const EnquiryResponses = () => {
 
               {/* Success Message for 3rd+ Sellers (Non-Premium) - Mobile Only */}
               {isUserInQueue() && (
-                <Card className="border-0 shadow-lg bg-green-50 border-green-200 md:hidden mt-6 relative z-0 rounded-2xl">
+                <Card className="border-2 border-black shadow-lg bg-green-50 md:hidden mt-6 relative z-0 rounded-2xl">
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -2586,8 +2636,8 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-2 border-gray-800 shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
-                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-gray-800 bg-slate-50/50 p-3 sm:p-4">
+                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
+                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                       {/* Left: Chat Info */}

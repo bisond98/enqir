@@ -444,19 +444,59 @@ class SmartNotificationService {
    */
   async clearAllNotifications(userId: string): Promise<void> {
     try {
-      // Clear from localStorage
+      // Clear primary notification key
       const key = `notifications_${userId}`;
       localStorage.removeItem(key);
       
-      // Also clear any related notification keys
+      // Aggressively clear ALL notification-related keys for this user
       const allKeys = Object.keys(localStorage);
+      let clearedCount = 0;
+      
       allKeys.forEach(storageKey => {
-        if (storageKey.includes(`notification`) && storageKey.includes(userId)) {
+        // Clear if it contains notification AND userId, OR if it's a general notification key
+        if (
+          (storageKey.includes('notification') && storageKey.includes(userId)) ||
+          (storageKey.includes('notif') && storageKey.includes(userId)) ||
+          storageKey === `notifications_${userId}` ||
+          storageKey.startsWith(`notification_${userId}`) ||
+          storageKey.startsWith(`notif_${userId}`)
+        ) {
           localStorage.removeItem(storageKey);
+          clearedCount++;
         }
       });
       
-      console.log('✅ All notifications cleared from localStorage for user:', userId);
+      // Also clear any notification keys that might not have userId but are related
+      // This is a safety measure for edge cases
+      allKeys.forEach(storageKey => {
+        if (
+          (storageKey.startsWith('notifications_') || 
+           storageKey.startsWith('notification_') ||
+           storageKey.includes('notif')) &&
+          !storageKey.includes('prefs') // Don't clear preferences
+        ) {
+          // Double-check by trying to parse and see if it contains user's notifications
+          try {
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                // If this array has notifications, clear it if it might be for this user
+                // Since we can't be 100% sure, we'll be conservative and only clear
+                // keys that definitely match the user pattern
+                if (storageKey.includes(userId)) {
+                  localStorage.removeItem(storageKey);
+                  clearedCount++;
+                }
+              }
+            }
+          } catch (e) {
+            // If parsing fails, skip
+          }
+        }
+      });
+      
+      console.log(`✅ Cleared ${clearedCount} notification storage keys for user:`, userId);
     } catch (error) {
       console.error('❌ Failed to clear notifications:', error);
       throw error; // Re-throw to allow error handling in UI

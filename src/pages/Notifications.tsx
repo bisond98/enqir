@@ -84,10 +84,7 @@ const Notifications = () => {
         await clearAllNotifications();
         console.log('✅ All notifications cleared successfully');
         setShowConfirmModal(false);
-        // Force a small delay to ensure state updates
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        // State is already updated, no need to reload
       } catch (error) {
         console.error('❌ Failed to clear notifications:', error);
         alert('Failed to clear notifications. Please try again.');

@@ -582,7 +582,7 @@ const MyEnquiries = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden transition-all duration-300 ${
+                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-visible transition-all duration-300 ${
                     isExpired
                       ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-800 shadow-sm'
                       : 'bg-white border-2 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
@@ -667,7 +667,7 @@ const MyEnquiries = () => {
                     </div>
                   
                     {/* Premium Content Area with Better Structure */}
-                    <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-4">
+                    <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-5 overflow-visible">
                       {/* Subtle background texture */}
                       <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                       
@@ -868,20 +868,20 @@ const MyEnquiries = () => {
 
                         {/* Premium Action Buttons - Perfectly Aligned */}
                         <div 
-                          className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
+                          className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                           }}
                         >
                           {isExpired ? (
-                            <Button variant="outline" size="sm" disabled className="w-full sm:flex-none border-2 border-gray-800 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                            <Button variant="outline" size="sm" disabled className="flex-shrink-0 border-2 border-gray-800 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                               <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                               <span className="whitespace-nowrap">View Details</span>
                             </Button>
                           ) : (
-                            <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-none min-w-[110px] sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]">
-                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
+                            <Link to={`/enquiry/${enquiry.id}`} className="flex-shrink-0">
+                              <Button variant="outline" size="sm" className="border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
                                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap tracking-tight">View Details</span>
                               </Button>
@@ -892,7 +892,7 @@ const MyEnquiries = () => {
                             variant="outline" 
                             size="sm" 
                             disabled={isExpired}
-                            className="w-full sm:flex-none min-w-[110px] sm:min-w-[140px] lg:min-w-[120px] xl:min-w-[130px] border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
+                            className="flex-shrink-0 border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
@@ -904,8 +904,8 @@ const MyEnquiries = () => {
                           </Button>
                           
                           {enquiry.status === 'live' && !isExpired && (
-                            <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-none min-w-[100px] sm:min-w-[120px] lg:min-w-[100px] xl:min-w-[110px]">
-                              <Button variant="outline" size="sm" className="w-full sm:w-auto border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
+                            <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-shrink-0">
+                              <Button variant="outline" size="sm" className="border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/chats:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap tracking-tight">View Chats</span>
                               </Button>
