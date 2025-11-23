@@ -2501,7 +2501,14 @@ const EnquiryResponses = () => {
                 <div className="flex items-center justify-between">
                   <Button
                     variant="ghost"
-                    onClick={() => navigate('/my-enquiries')}
+                    onClick={() => {
+                      // Navigate back to responses-page if enquiryId exists, otherwise go to my-enquiries
+                      if (enquiryId) {
+                        navigate(`/enquiry/${enquiryId}/responses-page`);
+                      } else {
+                        navigate('/my-enquiries');
+                      }
+                    }}
                     className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                   >
                     <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
