@@ -2701,9 +2701,9 @@ const EnquiryResponses = () => {
                             </div>
                             
                             {/* Coming Soon Tooltip/Badge - Mobile */}
-                            <div className="sm:hidden absolute top-full right-0 mt-2 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
-                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 2rem)' }}>
-                                <div className="absolute -top-1 right-4 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                            <div className="sm:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 4rem)' }}>
+                                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
                                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                                   <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
                                   <span>Call Feature</span>
