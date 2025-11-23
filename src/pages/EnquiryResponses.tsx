@@ -131,6 +131,17 @@ const EnquiryResponses = () => {
   const [isInCall, setIsInCall] = useState(false);
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
   const [callsEnabled, setCallsEnabled] = useState(false); // Call feature disabled - Coming Soon
+  const [showMobileCallPopup, setShowMobileCallPopup] = useState(false); // Mobile call popup visibility
+  
+  // Auto-hide mobile call popup after 3 seconds
+  useEffect(() => {
+    if (showMobileCallPopup) {
+      const timer = setTimeout(() => {
+        setShowMobileCallPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showMobileCallPopup]);
   
   // Microphone permission state
   const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
@@ -1084,12 +1095,17 @@ const EnquiryResponses = () => {
 
   // Toggle calls for this chat - Disabled (Coming Soon)
   const toggleCallsEnabled = async () => {
-    // Feature disabled - show coming soon message
-    toast({
-      title: "Call Feature Coming Soon",
-      description: "Voice calling will be available in a future update. Stay tuned!",
-      duration: 4000,
-    });
+    // Show mobile popup on mobile devices
+    if (window.innerWidth < 640) {
+      setShowMobileCallPopup(true);
+    } else {
+      // Feature disabled - show coming soon message for desktop
+      toast({
+        title: "Call Feature Coming Soon",
+        description: "Voice calling will be available in a future update. Stay tuned!",
+        duration: 4000,
+      });
+    }
     return;
 
     // Commented out for future implementation
@@ -2637,9 +2653,9 @@ const EnquiryResponses = () => {
                 // Always show chat box for sellers, but with different behavior
                 <>
                 <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white overflow-visible">
-                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4 overflow-visible">
+                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4 overflow-visible relative">
                     {/* Minimal Header - Mobile Responsive */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                         <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -2673,16 +2689,15 @@ const EnquiryResponses = () => {
                       </div>
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
-                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap relative overflow-visible">
                         {/* Call Feature - Coming Soon Badge */}
                         {canUserChat(selectedResponse) && (
                           <div className="relative group">
                             <Button
                               variant="ghost"
                               size="sm"
-                              disabled
                               onClick={toggleCallsEnabled}
-                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-300 text-gray-400 cursor-pointer opacity-60"
                               title="Call feature coming soon"
                             >
                               <Phone className="h-4 w-4" />
@@ -2701,11 +2716,11 @@ const EnquiryResponses = () => {
                             </div>
                             
                             {/* Coming Soon Tooltip/Badge - Mobile */}
-                            <div className="sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none">
-                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 6rem)' }}>
+                            <div className={`sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 transition-opacity duration-200 pointer-events-none ${showMobileCallPopup ? 'opacity-100' : 'opacity-0'}`} style={{ left: '50%', transform: 'translateX(-50%)', maxWidth: 'calc(100% - 0.5rem)' }}>
+                              <div className="bg-black text-white text-[10px] font-bold px-4 py-2.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: '180px' }}>
                                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-black rotate-45"></div>
-                                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                  <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
+                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                  <Phone className="h-3.5 w-3.5 animate-pulse flex-shrink-0" />
                                   <span>Call Feature</span>
                                   <span className="text-yellow-300">Coming Soon</span>
                                 </div>
