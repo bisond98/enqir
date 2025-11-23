@@ -1405,30 +1405,34 @@ const Dashboard = () => {
                                 }
                               })()}
 
-                              {/* Response Metrics - Premium Card Design with Perfect Alignment */}
-                              <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative">
-                                {/* Desktop: Add padding-right only if deadline exists */}
-                                <div className={`flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-2 xl:gap-2.5 ${
-                                  enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-0 xl:pr-0' : ''
-                                }`}>
-                                  <div className={`flex items-center gap-2 sm:gap-2.5 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg font-bold shadow-md border-2 transition-all duration-200 ${
-                                    allResponses.length === 0 
-                                      ? 'bg-gradient-to-r from-black to-gray-900 text-white border-gray-700' 
-                                      : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
+                              {/* Response Metrics - Premium Card Design with Perfect Alignment - Only show to enquiry owner */}
+                              {user && user.uid === enquiry.userId && (
+                                <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative">
+                                  {/* Desktop: Add padding-right only if deadline exists */}
+                                  <div className={`flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-2 xl:gap-2.5 ${
+                                    enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-0 xl:pr-0' : ''
                                   }`}>
-                                    <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-lg flex-shrink-0 ${
-                                      allResponses.length === 0 ? 'bg-white/20' : 'bg-green-500/20'
+                                    <div className={`flex items-center gap-2 sm:gap-2.5 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg font-bold shadow-md border-2 transition-all duration-200 ${
+                                      allResponses.length === 0 
+                                        ? 'bg-gradient-to-r from-black to-gray-900 text-white border-gray-700' 
+                                        : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
                                     }`}>
-                                      <MessageSquare className={`h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 ${
-                                        allResponses.length === 0 ? 'text-white' : 'text-green-600'
-                                      }`} />
+                                      <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-lg flex-shrink-0 ${
+                                        allResponses.length === 0 ? 'bg-white/20' : 'bg-green-500/20'
+                                      }`}>
+                                        <MessageSquare className={`h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 ${
+                                          allResponses.length === 0 ? 'text-white' : 'text-green-600'
+                                        }`} />
+                                      </div>
+                                      <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold tracking-tight whitespace-nowrap">
+                                        {allResponses.length} {allResponses.length === 1 ? 'Response' : 'Responses'}
+                                      </span>
                                     </div>
-                                    <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold tracking-tight whitespace-nowrap">
-                                      {allResponses.length} {allResponses.length === 1 ? 'Response' : 'Responses'}
-                                  </span>
-                              </div>
+                                  </div>
+                                </div>
+                              )}
                                   
-                                  {/* Premium Upgrade Button - Desktop Only, Next to Responses */}
+                              {/* Premium Upgrade Button - Desktop Only, Next to Responses */}
                                   <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
                                     {(() => {
                                       const enquiryPlan = enquiry.selectedPlanId || 'free';
@@ -1482,14 +1486,12 @@ const Dashboard = () => {
                                     <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-md">
                                       <div className="flex items-center justify-center w-3.5 h-3.5 xl:w-4 xl:h-4 bg-amber-500/20 rounded-md flex-shrink-0">
                                         <Lock className="h-2.5 w-2.5 xl:h-3 xl:w-3 text-amber-700" />
-                            </div>
+                                      </div>
                                       <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-amber-800 font-bold tracking-tight whitespace-nowrap">
                                         {remainingCount} Locked
                                       </span>
-                              </div>
-                            )}
-                                </div>
-                              </div>
+                                    </div>
+                                  )}
 
                               {/* Premium Action Buttons - Perfectly Aligned */}
                               <div 

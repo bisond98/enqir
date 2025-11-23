@@ -2523,9 +2523,12 @@ const EnquiryResponses = () => {
                       <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight truncate flex-1 min-w-0">
                         {enquiry.title}
                       </h3>
-                      <div className="flex items-center justify-center border-2 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
-                        <span className="text-base sm:text-lg font-black text-black">{approvedResponses.length}</span>
-                      </div>
+                      {/* Only show response count to enquiry owner */}
+                      {user && user.uid === enquiry.userId && (
+                        <div className="flex items-center justify-center border-2 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
+                          <span className="text-base sm:text-lg font-black text-black">{approvedResponses.length}</span>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Category and Type Row - Single Color Badges */}
