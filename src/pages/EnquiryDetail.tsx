@@ -69,6 +69,9 @@ interface UserProfile {
   displayName: string;
   email: string;
   isVerified: boolean;
+  isProfileVerified?: boolean;
+  trustBadge?: boolean;
+  isIdentityVerified?: boolean;
   profilePicture?: string;
   location?: string;
   joinedAt: any;
@@ -255,9 +258,14 @@ const EnquiryDetail = () => {
         // Don't show error to user for view count increment failure
       }
 
-      // Fetch user profile
+      // Fetch user profile - check both 'userProfiles' and 'profiles' collections
       if (enquiryData.userId) {
-        const userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
+        // Try 'userProfiles' first (same as EnquiryWall)
+        let userDoc = await getDoc(doc(db, 'userProfiles', enquiryData.userId));
+        if (!userDoc.exists()) {
+          // Fallback to 'profiles' collection
+          userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
+        }
         if (userDoc.exists()) {
           setUserProfile({ ...userDoc.data() } as UserProfile);
         }
@@ -1049,10 +1057,13 @@ const EnquiryDetail = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-base sm:text-base text-gray-900 truncate mb-1.5">{userProfile.displayName || 'User'}</p>
-                        {userProfile.isVerified && (
+                        {/* Show trust badge if: 
+                            1. User has profile-level verification (same logic as dashboard/enquiry wall), OR
+                            2. This specific enquiry has ID images (enquiry-specific verification) */}
+                        {(userProfile.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage || userProfile.isVerified || userProfile.trustBadge || userProfile.isIdentityVerified) && (
                           <div className="flex items-center gap-2 text-black text-xs sm:text-xs font-semibold">
-                            <CheckCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-                            Trust Badge
+                            <CheckCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 text-blue-600" />
+                            <span className="text-blue-600 font-bold">Trust Badge</span>
                           </div>
                         )}
                       </div>
