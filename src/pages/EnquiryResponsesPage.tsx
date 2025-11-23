@@ -405,7 +405,7 @@ const EnquiryResponsesPage = () => {
     <Layout>
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
         <div className="flex items-center mb-3 sm:mb-6">
-          <Button variant="ghost" onClick={() => window.history.back()} className="text-gray-700 hover:bg-gray-100 p-1.5 sm:p-2">
+          <Button variant="ghost" onClick={() => navigate('/my-enquiries')} className="text-gray-700 hover:bg-gray-100 p-1.5 sm:p-2">
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
             <span className="text-xs sm:text-base">Back</span>
           </Button>
