@@ -2798,7 +2798,7 @@ const EnquiryResponses = () => {
                           <p className="text-xs text-black font-medium truncate">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
-                          <div className="text-xs lg:text-sm font-semibold text-black">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-xs lg:text-sm font-semibold text-emerald-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
