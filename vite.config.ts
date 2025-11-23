@@ -8,6 +8,15 @@ export default defineConfig(({ mode }) => ({
     host: "localhost",
     port: 8083,
     open: true,
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: true,
+    },
+  },
+  optimizeDeps: {
+    force: true, // Force dependency pre-bundling
   },
   
   plugins: [
