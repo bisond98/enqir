@@ -720,34 +720,34 @@ const SellerResponse = () => {
     return (
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-8 sm:py-12 px-4">
-          <div className="max-w-md w-full">
+          <div className="max-w-md lg:max-w-2xl xl:max-w-3xl w-full">
             <Card className="border-4 border-black shadow-xl">
-              <CardContent className="p-6 sm:p-8 text-center">
+              <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 text-center">
                 {/* Success Icon */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 lg:mb-8 xl:mb-10">
+                  <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 xl:h-14 xl:w-14 text-green-600" />
                 </div>
                 
                 {/* Main Content */}
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-4">
+                <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-4 lg:mb-6 xl:mb-8">
                   Offer Submitted
                 </h1>
                 
-                <p className="text-sm sm:text-base text-black mb-6">
+                <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-black mb-6 lg:mb-8 xl:mb-10">
                   {isUserVerified ? 'Your offer is now live and visible to buyers' : 'Your offer is under review'}
                 </p>
                 
                 {/* Status Badge */}
                 {isUserVerified && (
-                  <div className="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-6 border-2 border-green-200">
-                    <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+                  <div className="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 xl:px-5 xl:py-2.5 bg-green-50 text-green-700 rounded-full text-xs sm:text-sm lg:text-base xl:text-lg font-medium mb-6 lg:mb-8 xl:mb-10 border-2 border-green-200">
+                    <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4 xl:h-5 xl:w-5 mr-1.5" />
                     Verified User
                   </div>
                 )}
                 
                 {/* Next Steps - Simplified */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left border-2 border-black">
-                  <p className="text-xs sm:text-sm text-black leading-relaxed">
+                <div className="bg-gray-50 rounded-lg p-4 sm:p-5 lg:p-8 xl:p-10 mb-6 lg:mb-8 xl:mb-10 text-left border-2 border-black">
+                  <p className="text-xs sm:text-sm lg:text-base xl:text-lg text-black leading-relaxed">
                     {isUserVerified 
                       ? 'Your offer is immediately visible to buyers. They can contact you directly through the platform.'
                       : 'Our admin team will review your offer. You\'ll be notified once it\'s approved.'}
@@ -755,19 +755,19 @@ const SellerResponse = () => {
                 </div>
                 
                 {/* Redirect Info - Minimal */}
-                <p className="text-xs text-black mb-6">
+                <p className="text-xs sm:text-sm lg:text-base text-black mb-6 lg:mb-8 xl:mb-10">
                   Redirecting in {redirectCountdown} seconds...
                 </p>
-
+                
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 xl:gap-5">
                   <Link to="/dashboard" className="flex-1">
-                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm py-2.5 border-2 border-black">
+                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 border-2 border-black">
                       Go to Dashboard
                     </Button>
                   </Link>
                   <Link to="/enquiries" className="flex-1">
-                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm py-2.5">
+                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4">
                       Browse Enquiries
                     </Button>
                   </Link>
