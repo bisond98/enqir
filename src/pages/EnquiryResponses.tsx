@@ -178,28 +178,22 @@ const EnquiryResponses = () => {
     setLoading(true);
     console.log('EnquiryResponses: Starting to fetch data for enquiry:', enquiryId);
 
-    // Fetch enquiry details
-    const fetchEnquiry = async () => {
+    // Fetch both enquiry and responses together, then set loading to false only after both complete
+    const loadData = async () => {
       try {
+        // Fetch enquiry details
         const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);
           console.log('EnquiryResponses: Fetched enquiry:', enquiryData);
+        } else {
+          // Enquiry doesn't exist - set loading to false so error message can show
+          setLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error('Error fetching enquiry:', error);
-        toast({ title: 'Error', description: 'Failed to fetch enquiry details', variant: 'destructive' });
-      }
-    };
 
-    fetchEnquiry();
-
-    // Simple function to load responses
-    const loadResponses = async () => {
-      try {
-        // Always show all responses for the enquiry
-        // Access control is handled in the UI based on user role
+        // Fetch responses
         const responsesQuery = query(
           collection(db, 'sellerSubmissions'),
           where('enquiryId', '==', enquiryId)
@@ -238,12 +232,13 @@ const EnquiryResponses = () => {
         
         setLoading(false);
       } catch (error) {
-        console.log('Error loading responses:', error);
+        console.error('Error loading data:', error);
+        toast({ title: 'Error', description: 'Failed to load enquiry data', variant: 'destructive' });
         setLoading(false);
       }
     };
 
-    loadResponses();
+    loadData();
   }, [enquiryId, user]);
 
   // Handle URL parameter changes for sellerId
