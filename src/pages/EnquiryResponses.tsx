@@ -2636,8 +2636,8 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white">
-                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4">
+                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white overflow-visible">
+                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4 overflow-visible">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                       {/* Left: Chat Info */}
@@ -2701,9 +2701,9 @@ const EnquiryResponses = () => {
                             </div>
                             
                             {/* Coming Soon Tooltip/Badge - Mobile */}
-                            <div className="sm:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none">
-                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 4rem)' }}>
-                                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                            <div className="sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              <div className="bg-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 6rem)' }}>
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-black rotate-45"></div>
                                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                                   <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
                                   <span>Call Feature</span>
