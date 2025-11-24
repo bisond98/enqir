@@ -252,16 +252,47 @@ const Dashboard = () => {
     
     console.log('Dashboard: Starting to fetch data for user:', user.uid);
 
+    // Initialize variables outside try block so they're accessible in catch
+    let enquiriesData: Enquiry[] = [];
+    let submissionsData: SellerSubmission[] = [];
+    
     try {
       console.log('Dashboard: Fetching initial data with getDocs (simplified)');
 
       // Fetch enquiries and seller submissions - enquiries first, then submissions with error handling
-      const enquiriesSnapshot = await getDocs(query(
-          collection(db, 'enquiries'),
-          where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc'),
-          limit(10)
-      ));
+      try {
+        // Try with orderBy first
+        const enquiriesSnapshot = await getDocs(query(
+            collection(db, 'enquiries'),
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc'),
+            limit(10)
+        ));
+        enquiriesSnapshot.forEach((doc) => {
+          enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);
+        });
+      } catch (orderByError: any) {
+        // If index error, fallback to query without orderBy
+        if (orderByError?.code === 'failed-precondition' || orderByError?.message?.includes('index')) {
+          console.warn('Dashboard: Index missing, using fallback query without orderBy');
+          const allEnquiriesSnapshot = await getDocs(query(
+              collection(db, 'enquiries'),
+              where('userId', '==', user.uid)
+          ));
+          // Sort in JavaScript and limit
+          allEnquiriesSnapshot.forEach((doc) => {
+            enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);
+          });
+          enquiriesData.sort((a, b) => {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+          enquiriesData = enquiriesData.slice(0, 10);
+        } else {
+          throw orderByError;
+        }
+      }
 
       // Fetch seller submissions without orderBy to avoid index requirement, sort in JavaScript
       const sellerSubmissionsSnapshot = await getDocs(query(
@@ -269,29 +300,31 @@ const Dashboard = () => {
         where('sellerId', '==', user.uid)
       ));
 
-      // Process enquiries
-      const enquiriesData: Enquiry[] = [];
-      enquiriesSnapshot.forEach((doc) => {
-        enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);
-      });
+      // Process enquiries (already processed above if fallback was used)
       setEnquiries(enquiriesData);
 
       // Process seller submissions immediately
-      const submissionsData: SellerSubmission[] = [];
+      submissionsData = [];
       sellerSubmissionsSnapshot.forEach((doc) => {
         const submission = { id: doc.id, ...doc.data() } as SellerSubmission;
         submission.userProfileVerified = isProfileVerified;
         submissionsData.push(submission);
       });
       
-      // Fetch enquiry data for each response to check expiration
+      // Fetch enquiry data for each response to check expiration and deletion (combined for efficiency)
       const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
       const enquiryDataMap: {[key: string]: Enquiry} = {};
+      const deletedSet = new Set<string>();
+      
+      // Combined fetch: check both existence and get data in one call per enquiry
       await Promise.all(
         enquiryIds.map(async (enquiryId) => {
           try {
             const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
-            if (enquiryDoc.exists()) {
+            if (!enquiryDoc.exists()) {
+              deletedSet.add(enquiryId);
+              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
+            } else {
               const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
               enquiryDataMap[enquiryId] = enquiryData;
               // Log expiry check for debugging
@@ -310,25 +343,7 @@ const Dashboard = () => {
               }
             }
           } catch (error) {
-            console.error('Error fetching enquiry for response:', enquiryId, error);
-          }
-        })
-      );
-      
-      // Check which enquiries are deleted (using the same enquiryIds from above)
-      const deletedSet = new Set<string>();
-      
-      // Check each enquiry to see if it exists
-      await Promise.all(
-        enquiryIds.map(async (enquiryId) => {
-          try {
-            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
-            if (!enquiryDoc.exists()) {
-              deletedSet.add(enquiryId);
-              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
-            }
-          } catch (error) {
-            console.error('Error checking enquiry:', enquiryId, error);
+            console.error('Error fetching/checking enquiry:', enquiryId, error);
             // If there's an error checking, assume it might be deleted
             deletedSet.add(enquiryId);
           }
@@ -429,23 +444,32 @@ const Dashboard = () => {
       setRefreshing(false);
       // responsesReady already set above when data was loaded
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Dashboard: Error fetching initial data:', error);
       setRefreshing(false);
       setLoading(false);
-      // Keep responsesReady as false on error so UI shows loading state
-      // This prevents showing "0 responses" when there's actually data but fetch failed
-      setResponsesReady(false);
-      setResponsesSummary([]);
       
-      // Show error notification
-      createNotification('system', {
-        title: 'Failed to Load Dashboard Data',
-        message: 'There was an issue loading your data. Please try refreshing the page.',
-        priority: 'high',
-        actionUrl: '/dashboard',
-        actionText: 'Refresh Page'
-      });
+      // Even on error, try to show what we have
+      // This prevents infinite loading if there's a partial failure
+      if (enquiriesData.length > 0 || submissionsData.length > 0) {
+        setResponsesReady(true);
+        console.log('Dashboard: Partial data loaded, showing what we have');
+      } else {
+        // Keep responsesReady as false on complete failure
+        setResponsesReady(false);
+        setResponsesSummary([]);
+      }
+      
+      // Show error notification only for critical errors
+      if (!error?.message?.includes('index') && !error?.message?.includes('CORS')) {
+        createNotification('system', {
+          title: 'Failed to Load Dashboard Data',
+          message: 'There was an issue loading your data. Please try refreshing the page.',
+          priority: 'high',
+          actionUrl: '/dashboard',
+          actionText: 'Refresh Page'
+        });
+      }
     }
   };
 
@@ -468,13 +492,27 @@ const Dashboard = () => {
       setResponsesReady(false); // Ensure it starts as false
       setResponsesSummary([]); // Clear any stale data
       
+      // Add timeout to ensure loading doesn't hang forever
+      const loadingTimeout = setTimeout(() => {
+        console.warn('Dashboard: Loading timeout - setting loading to false');
+        setLoading(false);
+      }, 10000); // 10 second timeout
+      
       try {
         // Fetch initial data including seller submissions IMMEDIATELY
-      await fetchDashboardData();
-      
+        await fetchDashboardData();
+        
+        // Clear timeout since we completed successfully
+        clearTimeout(loadingTimeout);
+        
         // Verify data was loaded
         console.log('Dashboard: setupDashboard complete, responsesReady should be true now');
+        
+        // Set loading to false immediately after data is fetched (before setting up listeners)
+        setLoading(false);
       } catch (error) {
+        // Clear timeout on error
+        clearTimeout(loadingTimeout);
         console.error('Dashboard: Error in setupDashboard:', error);
         setLoading(false);
         setResponsesReady(false);
@@ -603,7 +641,7 @@ const Dashboard = () => {
         }
       });
       
-      setLoading(false);
+      // Loading already set to false after initial fetch above
       
       // Now set up real-time listener for user's enquiries
       const enquiriesQuery = query(

@@ -13,7 +13,7 @@ import { NotificationContext } from "@/contexts/NotificationContext";
 import { useUsage } from "@/contexts/UsageContext";
 import PremiumUpgradeModal from "@/components/PremiumUpgradeModal";
 import { db } from "@/firebase";
-import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, getDocs, limit, updateDoc, onSnapshot, deleteDoc, setDoc, arrayUnion } from "firebase/firestore";
+import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, getDocs, limit, updateDoc, onSnapshot, deleteDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { getPrivacyProtectedName, isUserVerified, getSafeLogData } from "@/utils/privacy";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -125,6 +125,8 @@ const EnquiryResponses = () => {
   const [showBlockUserConfirm, setShowBlockUserConfirm] = useState(false);
   const [showCloseDealConfirm, setShowCloseDealConfirm] = useState(false);
   const [userToBlock, setUserToBlock] = useState<{id: string, name: string} | null>(null);
+  const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   // Call-related state
   const [isCalling, setIsCalling] = useState(false);
@@ -333,7 +335,11 @@ const EnquiryResponses = () => {
         
         snapshot.forEach((doc) => {
           const messageData = { id: doc.id, ...doc.data() } as ChatMessage;
-          messagesData.push(messageData);
+          
+          // Filter out messages from blocked users (except system messages)
+          if (messageData.isSystemMessage || !messageData.senderId || !blockedUsers.includes(messageData.senderId)) {
+            messagesData.push(messageData);
+          }
         });
         
         // Sort by timestamp
@@ -366,7 +372,7 @@ const EnquiryResponses = () => {
       setChatMessages([]);
       setChatConnected(false);
     };
-  }, [selectedResponse, enquiryId]);
+  }, [selectedResponse, enquiryId, blockedUsers]);
 
   // Fetch user profiles for verification status
   useEffect(() => {
@@ -391,6 +397,35 @@ const EnquiryResponses = () => {
 
     fetchProfiles();
   }, [chatMessages]);
+
+  // Check if users are blocked
+  useEffect(() => {
+    if (!user || !selectedResponse || !enquiry) return;
+
+    const checkBlockedStatus = async () => {
+      try {
+        const otherUserId = user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry.userId;
+        
+        // Check if current user has blocked the other user
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        const currentUserBlocked = userDoc.exists() ? (userDoc.data().blockedUsers || []) : [];
+        setBlockedUsers(currentUserBlocked);
+        
+        // Check if other user has blocked current user
+        const otherUserRef = doc(db, 'users', otherUserId);
+        const otherUserDoc = await getDoc(otherUserRef);
+        const otherUserBlocked = otherUserDoc.exists() ? (otherUserDoc.data().blockedUsers || []) : [];
+        
+        // Set blocked status if either user has blocked the other
+        setIsBlocked(currentUserBlocked.includes(otherUserId) || otherUserBlocked.includes(user.uid));
+      } catch (error) {
+        console.error('Error checking blocked status:', error);
+      }
+    };
+
+    checkBlockedStatus();
+  }, [user, selectedResponse, enquiry]);
 
   // Also fetch profile for selected response seller and current user
   useEffect(() => {
@@ -431,6 +466,16 @@ const EnquiryResponses = () => {
 
   const sendMessage = async () => {
     if ((!newMessage.trim() && attachments.length === 0) || !selectedResponse || !enquiryId || !user) return;
+
+    // Check if user is blocked
+    if (isBlocked) {
+      toast({
+        title: 'Cannot Send Message',
+        description: 'User is blocked. Unblock to send messages.',
+        variant: 'destructive'
+      });
+      return;
+    }
 
     const messageText = newMessage.trim();
     const isSeller = user.uid === selectedResponse.sellerId;
@@ -549,6 +594,16 @@ const EnquiryResponses = () => {
 
   const sendSellerMessage = async () => {
     if ((!newMessage.trim() && attachments.length === 0) || !selectedResponse || !enquiryId || !user) return;
+
+    // Check if user is blocked
+    if (isBlocked) {
+      toast({
+        title: 'Cannot Send Message',
+        description: 'User is blocked. Unblock to send messages.',
+        variant: 'destructive'
+      });
+      return;
+    }
 
     const messageText = newMessage.trim();
     
@@ -717,7 +772,7 @@ const EnquiryResponses = () => {
 
   // Function to block user
   const blockUser = async () => {
-    if (!userToBlock || !user) return;
+    if (!userToBlock || !user || !selectedResponse || !enquiryId) return;
 
     setShowBlockUserConfirm(false);
 
@@ -727,8 +782,8 @@ const EnquiryResponses = () => {
       const userDoc = await getDoc(userRef);
 
       if (userDoc.exists()) {
-        const blockedUsers = userDoc.data().blockedUsers || [];
-        if (!blockedUsers.includes(userToBlock.id)) {
+        const currentBlocked = userDoc.data().blockedUsers || [];
+        if (!currentBlocked.includes(userToBlock.id)) {
           await updateDoc(userRef, {
             blockedUsers: arrayUnion(userToBlock.id)
           });
@@ -739,18 +794,83 @@ const EnquiryResponses = () => {
         }, { merge: true });
       }
 
+      // Add "User blocked" system message to chat for both users
+      try {
+        await addDoc(collection(db, 'chatMessages'), {
+          enquiryId: enquiryId,
+          sellerId: selectedResponse.sellerId,
+          senderId: 'system',
+          senderName: 'System',
+          senderType: 'system',
+          message: 'User blocked',
+          isSystemMessage: true,
+          blockedBy: user.uid,
+          blockedUser: userToBlock.id,
+          timestamp: serverTimestamp()
+        });
+      } catch (msgError) {
+        console.error('Error adding block message:', msgError);
+      }
+
+      // Update local state
+      setBlockedUsers(prev => [...prev, userToBlock.id]);
+      setIsBlocked(true);
+
       toast({ 
         title: 'User Blocked', 
-        description: `${userToBlock.name} has been blocked. You will no longer receive messages from this user.` 
+        description: `${userToBlock.name} has been blocked. Both users cannot send or receive messages.` 
       });
       
-      // End the chat and close
-      closeChat();
       setUserToBlock(null);
     } catch (error) {
       console.error('Error blocking user:', error);
       toast({ title: 'Error', description: 'Failed to block user', variant: 'destructive' });
       setUserToBlock(null);
+    }
+  };
+
+  // Function to unblock user
+  const unblockUser = async () => {
+    if (!user || !selectedResponse || !enquiry) return;
+
+    const otherUserId = user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry.userId;
+    const otherUserName = user.uid === enquiry.userId ? selectedResponse.sellerName : userProfiles[enquiry.userId]?.fullName || 'User';
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        blockedUsers: arrayRemove(otherUserId)
+      });
+
+      // Add "User unblocked" system message
+      try {
+        await addDoc(collection(db, 'chatMessages'), {
+          enquiryId: enquiryId,
+          sellerId: selectedResponse.sellerId,
+          senderId: 'system',
+          senderName: 'System',
+          senderType: 'system',
+          message: 'User unblocked',
+          isSystemMessage: true,
+          unblockedBy: user.uid,
+          unblockedUser: otherUserId,
+          timestamp: serverTimestamp()
+        });
+      } catch (msgError) {
+        console.error('Error adding unblock message:', msgError);
+      }
+
+      // Update local state
+      setBlockedUsers(prev => prev.filter(id => id !== otherUserId));
+      setIsBlocked(false);
+
+      toast({ 
+        title: 'User Unblocked', 
+        description: `${otherUserName} has been unblocked. You can now send and receive messages.` 
+      });
+    } catch (error) {
+      console.error('Error unblocking user:', error);
+      toast({ title: 'Error', description: 'Failed to unblock user', variant: 'destructive' });
     }
   };
 
@@ -2756,15 +2876,26 @@ const EnquiryResponses = () => {
                           End Chat
                         </Button>
                         
-                        {/* Block User - For both buyers and sellers */}
-                        <Button
-                          onClick={handleBlockUserClick}
-                          variant="outline"
-                          size="sm"
-                          className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
-                        >
-                          Block User
-                        </Button>
+                        {/* Block/Unblock User - For both buyers and sellers */}
+                        {isBlocked ? (
+                          <Button
+                            onClick={unblockUser}
+                            variant="outline"
+                            size="sm"
+                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          >
+                            Unblock User
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleBlockUserClick}
+                            variant="outline"
+                            size="sm"
+                            className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          >
+                            Block User
+                          </Button>
+                        )}
                         
                         {/* Close Chat Window - For both */}
                         <Button
@@ -2816,22 +2947,37 @@ const EnquiryResponses = () => {
                       </div>
                     ) : (
                       <div className="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 lg:py-4 space-y-1 sm:space-y-1.5 lg:space-y-2">
-                        {chatMessages.map((message, index) => (
-                          <div
-                            key={message.id || `message-${index}`}
-                            className={`flex ${message.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
-                          >
+                        {chatMessages.map((message, index) => {
+                          // System messages (like "User blocked" / "User unblocked")
+                          if (message.isSystemMessage || message.senderId === 'system') {
+                            return (
+                              <div
+                                key={message.id || `message-${index}`}
+                                className="flex justify-center my-2 sm:my-3"
+                              >
+                                <div className="bg-red-500 border-2 border-red-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg shadow-md">
+                                  <p className="text-xs sm:text-sm font-bold text-center">{message.message || 'User blocked'}</p>
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          return (
                             <div
-                              className={`max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-lg relative ${
-                                message.senderId === user?.uid
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-black border border-black text-white'
-                              }`}
+                              key={message.id || `message-${index}`}
+                              className={`flex ${message.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
                             >
-                              {/* Message Content */}
-                              {message.message && (
-                                <p className="text-xs lg:text-sm leading-relaxed break-words text-white font-medium">{message.message}</p>
-                              )}
+                              <div
+                                className={`max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-lg relative ${
+                                  message.senderId === user?.uid
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-black border border-black text-white'
+                                }`}
+                              >
+                                {/* Message Content */}
+                                {message.message && (
+                                  <p className="text-xs lg:text-sm leading-relaxed break-words text-white font-medium">{message.message}</p>
+                                )}
                               
                               {/* Attachments */}
                               {message.attachments && message.attachments.length > 0 && (
@@ -3026,7 +3172,8 @@ const EnquiryResponses = () => {
                               )}
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                         
                         {/* Typing Indicator - Mobile Responsive */}
                         {isTyping && (
@@ -3398,10 +3545,10 @@ const EnquiryResponses = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => canUserChat(selectedResponse) && setShowAttachmentOptions(!showAttachmentOptions)}
-                            disabled={!canUserChat(selectedResponse)}
+                            onClick={() => canUserChat(selectedResponse) && !isBlocked && setShowAttachmentOptions(!showAttachmentOptions)}
+                            disabled={!canUserChat(selectedResponse) || isBlocked}
                             className={`h-9 w-9 lg:h-10 lg:w-10 p-0 ${
-                              canUserChat(selectedResponse) 
+                              (canUserChat(selectedResponse) && !isBlocked)
                                 ? 'text-slate-600 hover:text-blue-600 hover:bg-blue-50' 
                                 : 'md:text-slate-600 md:hover:text-blue-600 md:hover:bg-blue-50 text-slate-300 cursor-not-allowed'
                             }`}
@@ -3453,19 +3600,25 @@ const EnquiryResponses = () => {
 
                         <div className="flex-1 relative">
                           <Textarea
-                            placeholder={canUserChat(selectedResponse) ? "Type a message..." : "Chat not available - Response submitted successfully"}
+                            placeholder={
+                              isBlocked 
+                                ? "User blocked - Unblock to send messages" 
+                                : canUserChat(selectedResponse) 
+                                  ? "Type a message..." 
+                                  : "Chat not available - Response submitted successfully"
+                            }
                             value={newMessage}
                             onChange={(e) => {
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setNewMessage(e.target.value);
                                 if (e.target.value.length > 0) {
                                   handleTyping();
                                 }
                               }
                             }}
-                            disabled={!canUserChat(selectedResponse)}
+                            disabled={!canUserChat(selectedResponse) || isBlocked}
                             className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg px-3 py-2 pr-12 text-sm min-touch placeholder:text-xs placeholder:text-gray-500 ${
-                              !canUserChat(selectedResponse) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
+                              (!canUserChat(selectedResponse) || isBlocked) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}
                             style={{ minHeight: '50px', maxHeight: '100px' }}
@@ -3499,7 +3652,7 @@ const EnquiryResponses = () => {
                         {/* Send Button - Mobile Responsive */}
                         <Button
                           onClick={() => {
-                            if (canUserChat(selectedResponse)) {
+                            if (canUserChat(selectedResponse) && !isBlocked) {
                               if (user?.uid === selectedResponse?.sellerId) {
                                 sendSellerMessage();
                               } else {
@@ -3507,9 +3660,9 @@ const EnquiryResponses = () => {
                               }
                             }
                           }}
-                          disabled={!canUserChat(selectedResponse) || ((!newMessage.trim() && attachments.length === 0) || Object.values(uploadingFiles).some(uploading => uploading))}
+                          disabled={!canUserChat(selectedResponse) || isBlocked || ((!newMessage.trim() && attachments.length === 0) || Object.values(uploadingFiles).some(uploading => uploading))}
                           className={`h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 p-0 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed min-touch border-2 border-gray-800 ${
-                            canUserChat(selectedResponse) 
+                            (canUserChat(selectedResponse) && !isBlocked)
                               ? 'bg-slate-600 hover:bg-slate-700 text-white' 
                               : 'md:bg-slate-600 md:hover:bg-slate-700 md:text-white bg-slate-300 text-slate-500'
                           }`}
