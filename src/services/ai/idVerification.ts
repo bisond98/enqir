@@ -12,7 +12,13 @@ export async function extractIdNumberFromImage(
   idType: string
 ): Promise<{ number: string | null; confidence: number; error?: string }> {
   try {
-    const { data } = await Tesseract.recognize(imageUrl, 'eng');
+    // Optimize Tesseract for faster processing
+    const { data } = await Tesseract.recognize(imageUrl, 'eng', {
+      logger: () => {}, // Disable logging for performance
+      // Optimize for speed over accuracy (we validate format anyway)
+      tessedit_pageseg_mode: '6', // Assume uniform block of text
+      tessedit_char_whitelist: idType === 'aadhaar' ? '0123456789' : '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    });
     
     const extractedText = data.text;
     const confidence = data.confidence || 0;
@@ -189,44 +195,54 @@ export async function verifyIdNumberMatchBothSides(
     let foundInFront = false;
     let foundInBack = false;
     
-    // Check front image first
+    // Process both images in parallel for faster verification
+    const promises: Promise<IdVerificationResult>[] = [];
+    
     if (frontImageUrl) {
-      try {
-        const frontResult = await verifyIdNumberMatch(frontImageUrl, enteredNumber, idType);
-        if (frontResult.matches) {
-          foundInFront = true;
-          bestMatch = frontResult;
-          // If front matches, we're done - return success immediately
-        } else {
-          // Only store front result if it has an extracted number (not just "unclear" error)
-          if (frontResult.extractedNumber) {
-            if (!bestMatch || !bestMatch.extractedNumber) {
-              bestMatch = frontResult;
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error verifying front image:', error);
-      }
+      promises.push(
+        verifyIdNumberMatch(frontImageUrl, enteredNumber, idType)
+          .catch(error => {
+            console.error('Error verifying front image:', error);
+            return { matches: false, error: 'Failed to process front image' };
+          })
+      );
     }
     
-    // Check back image if front didn't match
-    if (!foundInFront && backImageUrl) {
-      try {
-        const backResult = await verifyIdNumberMatch(backImageUrl, enteredNumber, idType);
-        if (backResult.matches) {
+    if (backImageUrl) {
+      promises.push(
+        verifyIdNumberMatch(backImageUrl, enteredNumber, idType)
+          .catch(error => {
+            console.error('Error verifying back image:', error);
+            return { matches: false, error: 'Failed to process back image' };
+          })
+      );
+    }
+    
+    // Wait for all verifications to complete in parallel
+    const results = await Promise.all(promises);
+    
+    // Process results
+    for (const result of results) {
+      if (result.matches) {
+        // If any image matches, we're done
+        if (!foundInFront && frontImageUrl) {
+          foundInFront = true;
+          bestMatch = result;
+        } else if (!foundInBack && backImageUrl) {
           foundInBack = true;
-          bestMatch = backResult;
-        } else {
-          // Only store back result if it has an extracted number (not just "unclear" error)
-          if (backResult.extractedNumber) {
-            if (!bestMatch || !bestMatch.extractedNumber) {
-              bestMatch = backResult;
-            }
+          bestMatch = result;
+        }
+        // If we found a match, return immediately
+        if (foundInFront || foundInBack) {
+          break;
+        }
+      } else {
+        // Store best error result
+        if (result.extractedNumber) {
+          if (!bestMatch || !bestMatch.extractedNumber) {
+            bestMatch = result;
           }
         }
-      } catch (error) {
-        console.error('Error verifying back image:', error);
       }
     }
     

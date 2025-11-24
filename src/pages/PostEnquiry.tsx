@@ -1236,19 +1236,28 @@ export default function PostEnquiry() {
         setUploadStage('Uploading...');
         setUploadProgress(0);
         try {
+          // Upload both images in parallel for faster processing
+          const uploadPromises: Promise<string | null>[] = [];
+          
           if (idFrontImage) {
-            setUploadStage('Uploading...');
-            setUploadProgress(25);
-            idFrontUrl = await uploadToCloudinary(idFrontImage);
-            console.log('Front ID uploaded to Cloudinary');
+            uploadPromises.push(uploadToCloudinary(idFrontImage));
+          } else {
+            uploadPromises.push(Promise.resolve(null));
           }
           
           if (idBackImage) {
-            setUploadStage('Uploading...');
-            setUploadProgress(50);
-            idBackUrl = await uploadToCloudinary(idBackImage);
-            console.log('Back ID uploaded to Cloudinary');
+            uploadPromises.push(uploadToCloudinary(idBackImage));
+          } else {
+            uploadPromises.push(Promise.resolve(null));
           }
+          
+          // Wait for both uploads to complete in parallel
+          const [frontResult, backResult] = await Promise.all(uploadPromises);
+          idFrontUrl = frontResult;
+          idBackUrl = backResult;
+          
+          setUploadProgress(100);
+          console.log('ID images uploaded to Cloudinary (parallel upload)');
           
           setUploadProgress(75);
           setUploadStage('Uploading...');
@@ -2580,18 +2589,27 @@ export default function PostEnquiry() {
                             setIdErrors(prev => ({ ...prev, idNumber: "" }));
                             
                             try {
-                              // Upload images if not already uploaded
-                              let frontImageUrl = idFrontUrl;
+                              // Upload images in parallel if not already uploaded (faster)
+                              const uploadPromises: Promise<string | null>[] = [];
+                              
                               if (idFrontImage && !idFrontUrl) {
-                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
-                                setIdFrontUrl(frontImageUrl);
+                                uploadPromises.push(uploadToCloudinaryUnsigned(idFrontImage));
+                              } else {
+                                uploadPromises.push(Promise.resolve(idFrontUrl || null));
                               }
                               
-                              let backImageUrl = idBackUrl;
                               if (idBackImage && !idBackUrl) {
-                                backImageUrl = await uploadToCloudinaryUnsigned(idBackImage);
-                                setIdBackUrl(backImageUrl);
+                                uploadPromises.push(uploadToCloudinaryUnsigned(idBackImage));
+                              } else {
+                                uploadPromises.push(Promise.resolve(idBackUrl || null));
                               }
+                              
+                              // Wait for all uploads to complete in parallel
+                              const [frontImageUrl, backImageUrl] = await Promise.all(uploadPromises);
+                              
+                              // Update state with new URLs
+                              if (frontImageUrl && !idFrontUrl) setIdFrontUrl(frontImageUrl);
+                              if (backImageUrl && !idBackUrl) setIdBackUrl(backImageUrl);
                               
                               // Ensure we have at least one image URL
                               if (!frontImageUrl && !backImageUrl) {
