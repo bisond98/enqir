@@ -315,7 +315,29 @@ const Dashboard = () => {
         })
       );
       
-      // Sort by live first, then expired (each group sorted by date - newest first)
+      // Check which enquiries are deleted (using the same enquiryIds from above)
+      const deletedSet = new Set<string>();
+      
+      // Check each enquiry to see if it exists
+      await Promise.all(
+        enquiryIds.map(async (enquiryId) => {
+          try {
+            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+            if (!enquiryDoc.exists()) {
+              deletedSet.add(enquiryId);
+              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
+            }
+          } catch (error) {
+            console.error('Error checking enquiry:', enquiryId, error);
+            // If there's an error checking, assume it might be deleted
+            deletedSet.add(enquiryId);
+          }
+        })
+      );
+      
+      setDeletedEnquiries(deletedSet);
+      
+      // Sort by live first, then deleted, then expired (each group sorted by date - newest first)
       const now = new Date();
       const isEnquiryExpired = (enquiryId: string) => {
         const enquiry = enquiryDataMap[enquiryId];
@@ -339,14 +361,27 @@ const Dashboard = () => {
       };
 
       submissionsData.sort((a, b) => {
+        const aDeleted = deletedSet.has(a.enquiryId);
+        const bDeleted = deletedSet.has(b.enquiryId);
         const aExpired = isEnquiryExpired(a.enquiryId);
         const bExpired = isEnquiryExpired(b.enquiryId);
         
-        // Live enquiries first
-        if (aExpired && !bExpired) return 1;
-        if (!aExpired && bExpired) return -1;
+        // Determine status priority: 0 = live, 1 = deleted, 2 = expired
+        const getStatusPriority = (deleted: boolean, expired: boolean) => {
+          if (deleted) return 1;
+          if (expired) return 2;
+          return 0; // live
+        };
         
-        // If both are same status (both live or both expired), sort by createdAt (newest first)
+        const aPriority = getStatusPriority(aDeleted, aExpired);
+        const bPriority = getStatusPriority(bDeleted, bExpired);
+        
+        // Sort by priority: live (0) first, then deleted (1), then expired (2)
+        if (aPriority !== bPriority) {
+          return aPriority - bPriority;
+        }
+        
+        // If both are same status, sort by createdAt (newest first)
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
         const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
         return dateB.getTime() - dateA.getTime();
@@ -360,28 +395,6 @@ const Dashboard = () => {
       console.log('Dashboard: Setting seller submissions state NOW');
       setSellerSubmissions(submissionsData);
       setResponsesSummary(submissionsData);
-      
-      // Check which enquiries are deleted (using the same enquiryIds from above)
-      const deletedSet = new Set<string>();
-      
-      // Check each enquiry to see if it exists
-      await Promise.all(
-        enquiryIds.map(async (enquiryId) => {
-          try {
-            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
-            if (!enquiryDoc.exists()) {
-              deletedSet.add(enquiryId);
-              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
-            }
-          } catch (error) {
-            console.error('Error checking enquiry:', enquiryId, error);
-            // If there's an error checking, assume it might be deleted
-            deletedSet.add(enquiryId);
-          }
-        })
-      );
-      
-      setDeletedEnquiries(deletedSet);
       console.log('Dashboard: Deleted enquiries:', Array.from(deletedSet));
       
       // Only set ready after successfully loading data
@@ -516,7 +529,9 @@ const Dashboard = () => {
             }
           })
         ).then(() => {
-          // Sort by live first, then expired (each group sorted by date - newest first)
+          setDeletedEnquiries(deletedSet);
+          
+          // Sort by live first, then deleted, then expired (each group sorted by date - newest first)
           const now = new Date();
           const isEnquiryExpired = (enquiryId: string) => {
             const enquiry = enquiryDataMap[enquiryId];
@@ -540,14 +555,27 @@ const Dashboard = () => {
           };
 
           submissionsData.sort((a, b) => {
+            const aDeleted = deletedSet.has(a.enquiryId);
+            const bDeleted = deletedSet.has(b.enquiryId);
             const aExpired = isEnquiryExpired(a.enquiryId);
             const bExpired = isEnquiryExpired(b.enquiryId);
             
-            // Live enquiries first
-            if (aExpired && !bExpired) return 1;
-            if (!aExpired && bExpired) return -1;
+            // Determine status priority: 0 = live, 1 = deleted, 2 = expired
+            const getStatusPriority = (deleted: boolean, expired: boolean) => {
+              if (deleted) return 1;
+              if (expired) return 2;
+              return 0; // live
+            };
             
-            // If both are same status (both live or both expired), sort by createdAt (newest first)
+            const aPriority = getStatusPriority(aDeleted, aExpired);
+            const bPriority = getStatusPriority(bDeleted, bExpired);
+            
+            // Sort by priority: live (0) first, then deleted (1), then expired (2)
+            if (aPriority !== bPriority) {
+              return aPriority - bPriority;
+            }
+            
+            // If both are same status, sort by createdAt (newest first)
             const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
             const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
             return dateB.getTime() - dateA.getTime();
@@ -556,7 +584,6 @@ const Dashboard = () => {
           console.log('Dashboard: Seller submissions updated (realtime):', submissionsData.length);
           setSellerSubmissions(submissionsData);
           setResponsesSummary(submissionsData);
-          setDeletedEnquiries(deletedSet);
           console.log('Dashboard: Deleted enquiries (realtime):', Array.from(deletedSet));
           
           // Don't merge enquiryDataMap into enquiries - enquiryDataMap contains enquiries user responded to,

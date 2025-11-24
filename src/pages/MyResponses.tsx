@@ -269,15 +269,28 @@ const MyResponses = () => {
     return deadline < now;
   };
 
-  // Sort responses: live first, then expired
+  // Sort responses: live first, then deleted, then expired (each group sorted by date - newest first)
   const sortedSubmissions = useMemo(() => {
     return [...sellerSubmissions].sort((a, b) => {
+      const aDeleted = !enquiries[a.enquiryId]; // Enquiry is deleted if it doesn't exist
+      const bDeleted = !enquiries[b.enquiryId];
       const aExpired = isEnquiryExpired(a.enquiryId);
       const bExpired = isEnquiryExpired(b.enquiryId);
       
-      // Live enquiries first
-      if (aExpired && !bExpired) return 1;
-      if (!aExpired && bExpired) return -1;
+      // Determine status priority: 0 = live, 1 = deleted, 2 = expired
+      const getStatusPriority = (deleted: boolean, expired: boolean) => {
+        if (deleted) return 1;
+        if (expired) return 2;
+        return 0; // live
+      };
+      
+      const aPriority = getStatusPriority(aDeleted, aExpired);
+      const bPriority = getStatusPriority(bDeleted, bExpired);
+      
+      // Sort by priority: live (0) first, then deleted (1), then expired (2)
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+      }
       
       // If both are same status, sort by createdAt (newest first)
       const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
