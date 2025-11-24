@@ -34,6 +34,9 @@ interface Enquiry {
   isProfileVerified?: boolean;
   idFrontImage?: string;
   idBackImage?: string;
+  dealClosed?: boolean;
+  dealClosedAt?: any;
+  dealClosedBy?: string;
 }
 
 export default function EnquiryWall() {
@@ -191,18 +194,31 @@ export default function EnquiryWall() {
         
         console.log('📊 EnquiryWall: Total enquiries from query:', allEnquiriesData.length);
         
-        // Filter to only show enquiries with status='live' (admin accepted)
+        // Filter to show enquiries with status='live' OR status='deal_closed' (admin accepted)
         // Use case-insensitive check to catch any variations
         const liveStatusEnquiries = allEnquiriesData.filter(enquiry => {
           const status = (enquiry.status || '').toLowerCase().trim();
-          return status === 'live';
+          return status === 'live' || status === 'deal_closed';
         });
         
-        console.log('📊 EnquiryWall: Enquiries with status=live:', liveStatusEnquiries.length);
+        console.log('📊 EnquiryWall: Enquiries with status=live or deal_closed:', liveStatusEnquiries.length);
         
-        // Separate live and expired enquiries based on deadline
+        // Separate live, expired, and deal closed enquiries
         const now = new Date();
-        const liveEnquiries = liveStatusEnquiries.filter(enquiry => {
+        
+        // First, filter out deal closed enquiries (case-insensitive check)
+        const dealClosedEnquiries = liveStatusEnquiries.filter(enquiry => {
+          const status = (enquiry.status || '').toLowerCase().trim();
+          return status === 'deal_closed' || enquiry.dealClosed === true;
+        });
+        
+        // Then filter live and expired from the remaining enquiries
+        const activeEnquiries = liveStatusEnquiries.filter(enquiry => {
+          const status = (enquiry.status || '').toLowerCase().trim();
+          return !(status === 'deal_closed' || enquiry.dealClosed === true);
+        });
+        
+        const liveEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return true; // No deadline = live
           try {
             const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
@@ -212,7 +228,7 @@ export default function EnquiryWall() {
           }
         });
         
-        const expiredEnquiries = liveStatusEnquiries.filter(enquiry => {
+        const expiredEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return false; // No deadline = not expired
           try {
             const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
@@ -222,7 +238,7 @@ export default function EnquiryWall() {
           }
         });
         
-        console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length);
+        console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -245,9 +261,20 @@ export default function EnquiryWall() {
             return 0;
           }
         });
+
+        // Sort deal closed enquiries by date (newest first)
+        dealClosedEnquiries.sort((a, b) => {
+          try {
+            const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return bDate.getTime() - aDate.getTime();
+          } catch {
+            return 0;
+          }
+        });
         
-        // Combine: live first, then expired (both already sorted)
-        const combinedEnquiries = [...liveEnquiries, ...expiredEnquiries];
+        // Combine: live first, then expired, then deal closed (all already sorted)
+        const combinedEnquiries = [...liveEnquiries, ...expiredEnquiries, ...dealClosedEnquiries];
         
         // Deduplicate by enquiry ID to prevent duplicates
         const uniqueEnquiries = Array.from(
@@ -597,6 +624,17 @@ export default function EnquiryWall() {
     if (!enquiry.deadline) return false;
     const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
     return new Date() > deadline;
+  };
+
+  // Helper to check if an enquiry is deal closed (case-insensitive)
+  const isDealClosed = (enquiry: Enquiry) => {
+    const status = (enquiry.status || '').toLowerCase().trim();
+    return status === 'deal_closed' || enquiry.dealClosed === true;
+  };
+
+  // Helper to check if an enquiry is disabled (expired or deal closed)
+  const isEnquiryDisabled = (enquiry: Enquiry) => {
+    return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   };
 
   const formatDate = (dateString: string) => {
@@ -978,11 +1016,11 @@ export default function EnquiryWall() {
             }`}>
               {displayEnquiries.map((enquiry) => (
                 <div key={enquiry.id} className="block">
-                  <Link 
-                    to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
+                  <Link
+                    to={isEnquiryDisabled(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
                     className="block"
                     onClick={(e) => {
-                      if (isEnquiryOutdated(enquiry)) {
+                      if (isEnquiryDisabled(enquiry)) {
                         e.preventDefault();
                         e.stopPropagation();
                       }
@@ -991,7 +1029,7 @@ export default function EnquiryWall() {
                     <Card className={`${
                       viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border-4 border-black bg-white shadow-md hover:shadow-xl hover:border-black sm:hover:border-black flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden' : 'border-4 border-black bg-white shadow-sm hover:shadow-md hover:border-black rounded-2xl sm:rounded-3xl flex flex-col h-auto lg:min-h-[400px] xl:min-h-[450px]'
                     } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer ${
-                      isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale' : viewMode === 'list' ? '' : 'border-l-4 border-l-green-500'
+                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l-4 border-l-green-500'
                     }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
                       {/* Card Header - Black */}
                       <div className="bg-black px-2.5 sm:px-4 py-1.5 sm:py-2.5 border-b border-black">
@@ -1003,21 +1041,24 @@ export default function EnquiryWall() {
                             {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
-                                  isEnquiryOutdated(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
+                                  isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
                                 }`}>
                                   <Check className="h-1 w-1 sm:h-2 sm:w-2 text-white" />
                                 </div>
                                 <span className={`text-[8px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
-                                  isEnquiryOutdated(enquiry) ? 'text-gray-400' : 'text-blue-300'
+                                  isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-blue-300'
                                 }`}>Verified</span>
                               </>
                             )}
                           </div>
                           <div className="flex items-center gap-1 sm:gap-2">
-                            {!isEnquiryOutdated(enquiry) && (
+                            {!isEnquiryDisabled(enquiry) && (
                               <Badge className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
                             )}
-                            {isEnquiryOutdated(enquiry) && (
+                            {isDealClosed(enquiry) && (
+                              <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
+                            )}
+                            {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
                               <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Expired</Badge>
                             )}
                           </div>
@@ -1033,19 +1074,22 @@ export default function EnquiryWall() {
                               <div className="flex items-start justify-between gap-2 sm:gap-3">
                                 <div className="flex items-start gap-1.5 sm:gap-2.5 flex-1 min-w-0">
                                   <h3 className={`text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl line-clamp-2 flex-1 text-black text-center ${
-                                    isEnquiryOutdated(enquiry) ? 'text-gray-500' : ''
+                                    isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                   }`}>
                                     {enquiry.title}
                                   </h3>
                                 </div>
                                 <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                                  {enquiry.isUrgent && !isEnquiryOutdated(enquiry) && (
+                                  {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                                     <Badge className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
                                       <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                       Urgent
                                     </Badge>
                                   )}
-                                  {isEnquiryOutdated(enquiry) && (
+                                  {isDealClosed(enquiry) && (
+                                    <Badge variant="outline" className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
+                                  )}
+                                  {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
                                     <Badge variant="outline" className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
                                   )}
                                 </div>
@@ -1062,10 +1106,10 @@ export default function EnquiryWall() {
                         <CardHeader className="p-2.5 sm:p-5 lg:p-6 xl:p-7">
                           <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                             {/* Title with Verification Badge - Mobile Optimized */}
-                            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                              <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                               <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
                                 <h3 className={`text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl line-clamp-1 truncate flex-1 text-black text-center ${
-                                  isEnquiryOutdated(enquiry) ? 'text-gray-500' : ''
+                                  isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                 }`}>
                                   {enquiry.title}
                                 </h3>
@@ -1074,19 +1118,22 @@ export default function EnquiryWall() {
                                     2. This specific enquiry has ID images (enquiry-specific verification) */}
                                 {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                                   <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
-                                    isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
+                                    isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
                                     <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
                                   </div>
                                 )}
                               </div>
-                              {enquiry.isUrgent && !isEnquiryOutdated(enquiry) && (
+                              {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                                 <Badge className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
                                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                   Urgent
                                 </Badge>
                               )}
-                              {isEnquiryOutdated(enquiry) && (
+                              {isDealClosed(enquiry) && (
+                                <Badge variant="outline" className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Deal Closed</Badge>
+                              )}
+                              {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
                                 <Badge variant="outline" className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
                               )}
                             </div>
@@ -1111,7 +1158,7 @@ export default function EnquiryWall() {
                             
                             {/* Deadline Timer and Category - Side by side on desktop */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1.5 sm:pt-2 border-t border-gray-100">
-                              {enquiry.deadline && !isEnquiryOutdated(enquiry) && (
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
                                 <div className="flex-1">
                                   <CountdownTimer
                                     deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
@@ -1119,7 +1166,7 @@ export default function EnquiryWall() {
                                   />
                                 </div>
                               )}
-                              <div className={`${enquiry.deadline && !isEnquiryOutdated(enquiry) ? 'sm:ml-auto' : ''}`}>
+                              <div className={`${enquiry.deadline && !isEnquiryDisabled(enquiry) ? 'sm:ml-auto' : ''}`}>
                                 <Badge variant="secondary" className="text-[9px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold shadow-sm">
                                   {enquiry.category.replace('-', ' ')}
                                 </Badge>
@@ -1155,7 +1202,7 @@ export default function EnquiryWall() {
                                 {enquiry.category.replace('-', ' ')}
                               </Badge>
                               {/* Deadline Timer */}
-                              {enquiry.deadline && !isEnquiryOutdated(enquiry) && (
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
                                 <div className="border-4 border-black rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
                                   <CountdownTimer
                                     deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
@@ -1183,7 +1230,11 @@ export default function EnquiryWall() {
                                   Your Enquiry
                                 </button>
                               ) : authUser ? (
-                                isEnquiryOutdated(enquiry) ? (
+                                isDealClosed(enquiry) ? (
+                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                    Deal Closed
+                                  </Button>
+                                ) : isEnquiryOutdated(enquiry) ? (
                                   <Button variant="outline" size="sm" className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                     Expired
                                   </Button>
@@ -1230,7 +1281,11 @@ export default function EnquiryWall() {
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
-                              isEnquiryOutdated(enquiry) ? (
+                              isDealClosed(enquiry) ? (
+                                <Button variant="outline" size="sm" className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-lg sm:rounded-xl" disabled>
+                                  Deal Closed
+                                </Button>
+                              ) : isEnquiryOutdated(enquiry) ? (
                                 <Button variant="outline" size="sm" className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-lg sm:rounded-xl" disabled>
                                   Expired
                                 </Button>

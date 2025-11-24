@@ -31,7 +31,7 @@ interface Enquiry {
   category: string;
   budget: number;
   location?: string;
-  status: 'pending' | 'live' | 'rejected' | 'completed';
+  status: 'pending' | 'live' | 'rejected' | 'completed' | 'deal_closed';
   userId: string;
   createdAt: any;
   responses: number;
@@ -45,6 +45,9 @@ interface Enquiry {
   isPremium?: boolean;
   selectedPlanId?: string;
   selectedPlanPrice?: number;
+  dealClosed?: boolean;
+  dealClosedAt?: any;
+  dealClosedBy?: string;
 }
 
 interface SellerSubmission {
@@ -1808,10 +1811,14 @@ const Dashboard = () => {
                     <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                       {responsesSummary.slice(0, 3).map((submission) => {
                         const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
-                        // Check if enquiry is expired - must fetch if not in state
+                        // Check if enquiry is expired or deal closed - must fetch if not in state
                         const enquiry = enquiries.find(e => e.id === submission.enquiryId);
+                        const isDealClosed = (() => {
+                          if (!enquiry) return false;
+                          return enquiry.status === 'deal_closed' || enquiry.dealClosed === true;
+                        })();
                         const isEnquiryExpired = (() => {
-                          if (!enquiry || !enquiry.deadline) return false;
+                          if (!enquiry || !enquiry.deadline || isDealClosed) return false;
                           try {
                             const now = new Date();
                             let deadlineDate: Date;
@@ -1838,14 +1845,14 @@ const Dashboard = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
-                            isEnquiryDeleted || isEnquiryExpired
+                            isEnquiryDeleted || isEnquiryExpired || isDealClosed
                               ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
                               : 'bg-white border-4 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 rounded-t-xl sm:rounded-t-2xl lg:rounded-t-xl xl:rounded-t-2xl ${
-                            isEnquiryDeleted || isEnquiryExpired ? 'opacity-70' : ''
+                            isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
                             {/* Elegant pattern overlay */}
                             <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
@@ -1871,8 +1878,14 @@ const Dashboard = () => {
                                     Enquiry Deleted
                                   </Badge>
                                 )}
+                                {/* Deal Closed Badge */}
+                                {!isEnquiryDeleted && isDealClosed && (
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-purple-500/25 text-purple-200 border border-purple-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                    Deal Closed
+                                  </Badge>
+                                )}
                                 {/* Enquiry Expired Badge */}
-                                {!isEnquiryDeleted && isEnquiryExpired && (
+                                {!isEnquiryDeleted && !isDealClosed && isEnquiryExpired && (
                                   <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-orange-500/25 text-orange-200 border border-orange-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
                                     Enquiry Expired
                                   </Badge>

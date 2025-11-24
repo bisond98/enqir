@@ -2860,7 +2860,12 @@ const EnquiryResponses = () => {
                             onClick={handleCloseDealClick}
                             variant="outline"
                             size="sm"
-                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                            disabled={enquiry.status === 'deal_closed' || enquiry.dealClosed === true}
+                            className={`text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 transition-colors duration-200 flex-shrink-0 whitespace-nowrap ${
+                              enquiry.status === 'deal_closed' || enquiry.dealClosed === true
+                                ? 'text-gray-400 border-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
+                                : 'text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 border-gray-800'
+                            }`}
                           >
                             Deal Closed
                           </Button>
@@ -4006,9 +4011,14 @@ const EnquiryResponses = () => {
 
               {/* Content */}
               <div className="p-4 sm:p-6">
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 leading-relaxed mb-6 sm:mb-8">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 leading-relaxed mb-4 sm:mb-6">
                   Are you sure you want to close this deal? This will mark the enquiry as "Deal Closed" and prevent further responses.
                 </p>
+                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
+                  <p className="text-xs sm:text-sm lg:text-base text-red-700 font-semibold leading-relaxed">
+                    ⚠️ Warning: You will no longer have access to this enquiry once it's closed.
+                  </p>
+                </div>
 
                 {/* Actions */}
                 <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
