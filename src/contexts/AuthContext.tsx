@@ -233,32 +233,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isEmail(identifier)) {
         console.log('🔐 Attempting email sign-in');
         
-        // Simple email sign-in with retry logic
-        let retryCount = 0;
-        const maxRetries = 2;
+        const result = await signInWithEmailAndPassword(auth, identifier, password);
+        console.log('🔐 Sign-in result:', { uid: result.user.uid, emailVerified: result.user.emailVerified });
         
-        while (retryCount < maxRetries) {
-          try {
-            const result = await signInWithEmailAndPassword(auth, identifier, password);
-            console.log('🔐 Sign-in result:', { uid: result.user.uid, emailVerified: result.user.emailVerified });
-            
-            // Skip email verification check for testing
-            console.log('🔐 Sign-in successful, showing welcome popup');
-            setShowWelcomePopup(true);
-            setLoading(false);
-            return { error: null };
-          } catch (firebaseError: any) {
-            retryCount++;
-            console.warn(`🔐 Sign-in attempt ${retryCount} failed:`, firebaseError.code);
-            
-            if (retryCount >= maxRetries) {
-              throw firebaseError;
-            }
-            
-            // Wait before retry
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        }
+        // Skip email verification check for testing
+        console.log('🔐 Sign-in successful, showing welcome popup');
+        setShowWelcomePopup(true);
+        setLoading(false);
+        return { error: null };
       } else {
         // Phone signin - temporarily disabled
         toast({
@@ -277,10 +259,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: error.name
       });
       
+      // Always clear loading state on error
+      setLoading(false);
+      
       // Better error messages based on error codes
       let errorTitle = 'Sign in failed';
       let errorDescription = error.message;
-      
+
       if (error.code === 'auth/invalid-credential') {
         errorTitle = 'Hmm, That Doesn\'t Look Right 🔐';
         errorDescription = 'The email or password seems off. Double-check and give it another shot!';
@@ -294,8 +279,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         errorTitle = 'Slow Down There, Speed Racer! ⏸️';
         errorDescription = 'Too many attempts! Take a breather and try again in a few minutes.';
       } else if (error.code === 'auth/network-request-failed') {
+        const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
         errorTitle = 'Connection Troubles 🌐';
-        errorDescription = 'Looks like we\'re having trouble connecting. Check your internet and try again!';
+        if (isLocalhost) {
+          errorDescription = 'Unable to connect to Firebase from localhost. This is a network/firewall issue. Try: 1) Disable ad blockers, 2) Check firewall settings, 3) Try a different browser, 4) Use the live site (enqir.in) instead.';
+        } else {
+          errorDescription = 'Unable to connect to Firebase. Please check your internet connection, disable ad blockers, and try again. If the problem persists, Firebase services may be temporarily unavailable.';
+        }
       } else if (error.code === 'auth/user-disabled') {
         errorTitle = 'Account Temporarily Unavailable 🚫';
         errorDescription = 'This account is currently disabled. Please reach out to support for help.';
@@ -318,6 +308,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: errorDescription,
         variant: 'destructive',
       });
+      // Loading state already cleared above, ensure it's cleared
       setLoading(false);
       return { error };
     }

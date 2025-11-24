@@ -54,6 +54,7 @@ const SignIn = () => {
   const [isEmailLinkMode, setIsEmailLinkMode] = useState(false);
   const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
   
+  
   // Pre-fill email from URL parameter (from email verification)
   useEffect(() => {
     const emailParam = searchParams.get('email');
@@ -86,8 +87,6 @@ const SignIn = () => {
     setLoading(true);
     
     try {
-      console.log("🔍 Attempting sign in with:", identifier);
-      
       // Validate email format
       if (!isValidEmail(identifier)) {
         setError("Please enter a valid email address.");
@@ -95,22 +94,18 @@ const SignIn = () => {
         return;
       }
       
-      console.log("🔍 About to call signIn with:", { identifier, password: "***" });
-      
       const result = await signIn(identifier, password);
-      console.log("🔍 Sign in result:", result);
       
       if (!result.error) {
-        console.log("✅ Sign in successful, navigating to home");
+        setLoading(false);
         navigate("/");
       } else {
-        console.log("❌ Sign in failed:", result.error.message);
         setError(result.error.message || "Sign in failed");
+        setLoading(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("❌ Sign in error:", err);
-      setError("An unexpected error occurred during sign in");
-    } finally {
+      setError(err?.message || "An unexpected error occurred during sign in");
       setLoading(false);
     }
   };
@@ -312,7 +307,7 @@ const SignIn = () => {
                     >
                           {loading ? (
                             <>
-                              <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent mr-2"></div>
+                              <div className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
                               Signing in...
                             </>
                           ) : (
@@ -412,7 +407,7 @@ const SignIn = () => {
                     >
                           {loading ? (
                             <>
-                              <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent mr-2"></div>
+                              <div className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
                               Creating account...
                             </>
                           ) : (

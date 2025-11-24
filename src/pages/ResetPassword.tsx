@@ -133,14 +133,16 @@ const ResetPassword = () => {
     <Layout>
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background to-muted/20">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Set New Password</h1>
-            <p className="text-muted-foreground mt-2">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-3 sm:mb-4">
+              Set New Password
+            </h1>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mt-2 sm:mt-3">
               Create a new secure password for your account
             </p>
           </div>
 
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-4 border-black">
             <CardHeader className="space-y-1">
               <div className="flex items-center justify-center space-x-2 mb-4">
                 <Shield className="h-6 w-6 text-pal-blue" />
@@ -175,7 +177,7 @@ const ResetPassword = () => {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter new password"
-                      className="pl-10 pr-10"
+                      className="pl-10 pr-10 border-2 border-black focus:border-black focus:ring-2 focus:ring-black"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -210,7 +212,7 @@ const ResetPassword = () => {
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm new password"
-                      className="pl-10 pr-10"
+                      className="pl-10 pr-10 border-2 border-black focus:border-black focus:ring-2 focus:ring-black"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required

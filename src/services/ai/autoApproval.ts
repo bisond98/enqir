@@ -160,6 +160,62 @@ class AutoApprovalAI {
     try {
       console.log('🤖 AI: Analyzing profile for auto-verification...', profileData.userId);
 
+      // MANDATORY: Check OCR verification first - must pass before AI approval
+      if (profileData.ocrVerification) {
+        // Check if OCR verification passed (either verified or matches is true)
+        const ocrPassed = profileData.ocrVerification.verified || profileData.ocrVerification.matches;
+        
+        if (!ocrPassed) {
+          console.log('❌ AI: OCR verification failed - rejecting profile');
+          console.log('OCR verification data:', profileData.ocrVerification);
+          return {
+            verified: false,
+            confidence: 0,
+            reason: 'OCR verification failed. ID number does not match the uploaded image. Please ensure the ID number is clearly visible and matches what you entered.',
+            requiresHumanReview: false,
+            aiAnalysis: {
+              documentClarity: 0,
+              authenticityScore: 0,
+              riskLevel: 100,
+              complianceCheck: 0
+            }
+          };
+        }
+        console.log('✅ AI: OCR verification passed - proceeding with AI analysis');
+        console.log('OCR verification data:', profileData.ocrVerification);
+      } else {
+        // If OCR verification is missing but ID images are present, flag for review instead of rejecting
+        if (idImages && idImages.front) {
+          console.log('⚠️ AI: OCR verification data missing but ID images present - flagging for manual review');
+          return {
+            verified: false,
+            confidence: 30,
+            reason: 'OCR verification data missing. Manual review required.',
+            requiresHumanReview: true,
+            aiAnalysis: {
+              documentClarity: 70,
+              authenticityScore: 60,
+              riskLevel: 30,
+              complianceCheck: 70
+            }
+          };
+        } else {
+          console.log('⚠️ AI: No OCR verification data found - flagging for manual review');
+          return {
+            verified: false,
+            confidence: 0,
+            reason: 'OCR verification not completed. Manual review required.',
+            requiresHumanReview: true,
+            aiAnalysis: {
+              documentClarity: 0,
+              authenticityScore: 0,
+              riskLevel: 50,
+              complianceCheck: 0
+            }
+          };
+        }
+      }
+
       // AI Analysis Pipeline
       const documentClarity = await this.analyzeDocumentClarity(idImages);
       const authenticityScore = await this.analyzeDocumentAuthenticity(idImages);

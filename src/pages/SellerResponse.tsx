@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText } from "lucide-react";
+import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -17,6 +17,8 @@ import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, whe
 import { uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { verifyIdNumberMatch } from '@/services/ai/idVerification';
+import { useToast } from "@/components/ui/use-toast";
 
 interface Enquiry {
   id: string;
@@ -57,12 +59,15 @@ interface SellerSubmission {
   updatedAt: any;
   buyerViewed: boolean;
   chatEnabled: boolean;
+  userVerified?: boolean;
+  isProfileVerified?: boolean;
 }
 
 const SellerResponse = () => {
   const { enquiryId } = useParams();
   const navigate = useNavigate();
   const notificationContext = useContext(NotificationContext);
+  const { toast } = useToast();
   const createNotification = notificationContext?.createNotification || (async () => {
     console.warn('NotificationContext not available');
   });
@@ -78,6 +83,8 @@ const SellerResponse = () => {
   const [govIdFile, setGovIdFile] = useState<File | null>(null);
   const [govIdUrl, setGovIdUrl] = useState("");
   const [govIdProgress, setGovIdProgress] = useState(0);
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -251,6 +258,58 @@ const SellerResponse = () => {
     }
   }, [isSubmitted, navigate]);
 
+  // Real-time ID number validation
+  const validateIdNumber = (value: string, type: string) => {
+    if (!type) return;
+    
+    const cleanIdNumber = value.replace(/[\s-]/g, '').toUpperCase();
+    
+    if (!cleanIdNumber) {
+      setErrors(prev => ({ ...prev, govIdNumber: "" }));
+      return;
+    }
+    
+    let error = "";
+    
+    if (type === 'aadhaar') {
+      if (!/^\d+$/.test(cleanIdNumber)) {
+        error = "Aadhaar number must contain only digits";
+      } else if (cleanIdNumber.length !== 12) {
+        error = `Aadhaar number must be exactly 12 digits (current: ${cleanIdNumber.length})`;
+      }
+    } else if (type === 'pan') {
+      if (cleanIdNumber.length !== 10) {
+        error = `PAN must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+        error = "PAN format: 5 letters + 4 digits + 1 letter (e.g., ABCDE1234F)";
+      }
+    } else if (type === 'passport') {
+      if (cleanIdNumber.length !== 8) {
+        error = `Passport number must be exactly 8 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+        error = "Passport format: 1 letter + 7 digits (e.g., A1234567)";
+      }
+    } else if (type === 'driving_license') {
+      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15) {
+        error = `Driving License must be 10-15 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Driving License must contain only letters and numbers";
+      }
+    } else if (type === 'voter_id') {
+      if (cleanIdNumber.length !== 10) {
+        error = `Voter ID must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Voter ID must contain only letters and numbers";
+      }
+    }
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, govIdNumber: error }));
+    } else {
+      setErrors(prev => ({ ...prev, govIdNumber: "" }));
+    }
+  };
+
   // Validation function
   // Image compression function
   const compressImage = (file: File): Promise<File> => {
@@ -356,12 +415,42 @@ const SellerResponse = () => {
       
       if (!govIdNumber.trim()) {
         newErrors.govIdNumber = "ID number is required when uploading ID";
-      } else if (govIdNumber.length < 8) {
-        newErrors.govIdNumber = "ID number must be at least 8 characters";
+      } else {
+        const cleanIdNumber = govIdNumber.replace(/[\s-]/g, '').toUpperCase();
+        if (govIdType === 'aadhaar') {
+          if (!/^\d{12}$/.test(cleanIdNumber)) {
+            newErrors.govIdNumber = "Aadhaar number must be exactly 12 digits";
+          }
+        } else if (govIdType === 'pan') {
+          if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+            newErrors.govIdNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+          }
+        } else if (govIdType === 'passport') {
+          if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+            newErrors.govIdNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+          }
+        } else if (govIdType === 'driving_license') {
+          if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+            newErrors.govIdNumber = "Driving License must be 10-15 alphanumeric characters";
+          }
+        } else if (govIdType === 'voter_id') {
+          if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+            newErrors.govIdNumber = "Voter ID must be exactly 10 alphanumeric characters";
+          }
+        } else {
+          if (cleanIdNumber.length < 8) {
+            newErrors.govIdNumber = "ID number must be at least 8 characters";
+          }
+        }
       }
 
       if (!govIdFile && !govIdUrl) {
         newErrors.govId = "Please upload your government ID document";
+      }
+      
+      // Check OCR verification if image is uploaded
+      if (govIdUrl && (!idVerificationResult || !idVerificationResult.matches)) {
+        newErrors.govIdNumber = "Please verify ID number matches the image before submitting";
       }
     }
     
@@ -450,13 +539,11 @@ const SellerResponse = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (max 10MB for ID documents)
     if (file.size > 10 * 1024 * 1024) {
       setErrors(prev => ({ ...prev, govId: "ID document must be less than 10MB" }));
       return;
     }
 
-    // Validate file type (images and PDFs allowed)
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       setErrors(prev => ({ ...prev, govId: "Please upload a valid image or PDF file" }));
       return;
@@ -464,15 +551,15 @@ const SellerResponse = () => {
 
     setGovIdFile(file);
     setErrors(prev => ({ ...prev, govId: "" }));
+    setIdVerificationResult(null);
 
-    // Upload to Cloudinary
     try {
       setGovIdProgress(25);
-      // Compress image for faster upload
       const compressedFile = await compressImage(file);
       const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
       setGovIdProgress(100);
       setGovIdUrl(uploadedUrl);
+      // Don't verify automatically - wait for verify button click
     } catch (error) {
       console.error('Error uploading government ID:', error);
       setGovIdProgress(0);
@@ -508,6 +595,39 @@ const SellerResponse = () => {
       return;
     }
     console.log('Form validation passed');
+    
+    // Verify OCR if ID is uploaded
+    if (govIdUrl && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches)) {
+      setVerifyingId(true);
+      try {
+        const verification = await verifyIdNumberMatch(govIdUrl, govIdNumber, govIdType);
+        setIdVerificationResult(verification);
+        
+        if (!verification.matches) {
+          setErrors(prev => ({ 
+            ...prev, 
+            govIdNumber: verification.error || 'ID number does not match the image' 
+          }));
+          toast({
+            title: "ID Verification Failed",
+            description: verification.error || "ID number does not match the uploaded image.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error verifying ID:', error);
+        toast({
+          title: "Verification Error",
+          description: "Failed to verify ID number. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      } finally {
+        // Always clear verifying state, even if there's an error
+        setVerifyingId(false);
+      }
+    }
 
     setSubmitting(true);
     
@@ -1356,7 +1476,18 @@ const SellerResponse = () => {
                     <select
                       id="govIdType"
                       value={govIdType}
-                      onChange={(e) => setGovIdType(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setGovIdType(value);
+                        // Validate ID number when type changes
+                        if (govIdNumber && value) {
+                          validateIdNumber(govIdNumber, value);
+                        } else {
+                          setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                        }
+                        // Clear verification result when type changes
+                        setIdVerificationResult(null);
+                      }}
                       className={`w-full h-8 sm:h-12 px-2 sm:px-3 border-4 rounded-lg input-touch text-xs sm:text-sm ${errors.govIdType ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'} bg-background`}
                     >
                       <option value="">Select ID Type</option>
@@ -1382,17 +1513,67 @@ const SellerResponse = () => {
                     </Label>
                     <Input
                       id="govIdNumber"
-                      placeholder="Enter ID number"
+                      placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
                       value={govIdNumber}
-                      onChange={(e) => setGovIdNumber(e.target.value.toUpperCase())}
+                      onChange={(e) => {
+                        let value = e.target.value.toUpperCase();
+                        
+                        // Auto-format Aadhaar: add space after every 4 digits
+                        if (govIdType === 'aadhaar') {
+                          // Remove all spaces first
+                          const digitsOnly = value.replace(/\s/g, '');
+                          // Add space after every 4 digits
+                          value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                        }
+                        
+                        setGovIdNumber(value);
+                        if (govIdType) {
+                          validateIdNumber(value, govIdType);
+                        }
+                        // Clear verification result when user changes the number
+                        setIdVerificationResult(null);
+                      }}
                       className={`h-8 sm:h-12 input-touch text-xs sm:text-sm border-4 ${errors.govIdNumber ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
                     />
-                    {errors.govIdNumber && (
+                    {errors.govIdNumber && !idVerificationResult && (
                       <span className="text-xs text-red-500 flex items-center">
                         <AlertTriangle className="h-3 w-3 mr-1" />
                         {errors.govIdNumber}
                       </span>
                     )}
+                    {/* ID Verification Status */}
+                    {verifyingId && (
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600 mt-1">
+                        <div 
+                          className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent rounded-full flex-shrink-0"
+                          style={{
+                            animation: 'spin 1s linear infinite',
+                            WebkitAnimation: 'spin 1s linear infinite'
+                          }}
+                        ></div>
+                        <span>Verifying ID number with image...</span>
+                      </div>
+                    )}
+
+                    {idVerificationResult && !verifyingId && (
+                      <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                        idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {idVerificationResult.matches ? (
+                          <>
+                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                            <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                            <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    
+                    
                     <p className="text-[10px] sm:text-[10px] font-bold text-black mb-4 sm:mb-6">
                       This information is encrypted and securely stored. The whole world isn't as bad as you think.
                     </p>

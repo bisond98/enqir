@@ -14,6 +14,11 @@ export default defineConfig(({ mode }) => ({
     watch: {
       usePolling: true,
     },
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
   },
   optimizeDeps: {
     force: true, // Force dependency pre-bundling

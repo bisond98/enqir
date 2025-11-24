@@ -52,21 +52,29 @@ if (typeof window !== 'undefined') {
     const errorMsg = args.join(' ').toLowerCase();
     const firstArg = args[0]?.toString().toLowerCase() || '';
     
-    // Suppress XMLHttpRequest, CORS, and Firestore connection errors
+    // NEVER suppress Firebase Auth errors - they're critical
+    if (errorMsg.includes('auth') || errorMsg.includes('signin') || errorMsg.includes('sign-in') || 
+        firstArg.includes('auth') || firstArg.includes('firebase signin')) {
+      // Always show auth errors
+      originalConsoleError.apply(console, args);
+      return;
+    }
+    
+    // Suppress XMLHttpRequest, CORS, and Firestore connection errors only
     if (errorMsg.includes('xmlhttprequest') || 
         errorMsg.includes('cannot load') ||
-        errorMsg.includes('cors') || 
+        (errorMsg.includes('cors') && !errorMsg.includes('auth')) || 
         errorMsg.includes('access-control-allow-origin') ||
         errorMsg.includes('access control checks') ||
         errorMsg.includes('firestore.googleapis.com') ||
-        errorMsg.includes('firestore') ||
+        (errorMsg.includes('firestore') && !errorMsg.includes('auth')) ||
         errorMsg.includes('channel') ||
         errorMsg.includes('gsessionid') ||
         errorMsg.includes('listen/channel') ||
         errorMsg.includes('due to access control checks') ||
         firstArg.includes('xmlhttprequest') ||
         firstArg.includes('firestore.googleapis.com') ||
-        (firstArg.includes('error') && errorMsg.includes('firestore'))) {
+        (firstArg.includes('error') && errorMsg.includes('firestore') && !errorMsg.includes('auth'))) {
       // These are Firestore connection/retry errors that don't affect app functionality
       return;
     }
@@ -137,21 +145,27 @@ if (typeof window !== 'undefined') {
     const errorSource = event.filename?.toLowerCase() || '';
     const errorStack = event.error?.stack?.toLowerCase() || '';
     
-    // Suppress XMLHttpRequest, CORS, and Firestore connection errors
+    // NEVER suppress Firebase Auth errors - they're critical
+    if (errorMsg.includes('auth') || errorMsg.includes('signin') || errorMsg.includes('sign-in') ||
+        errorStack.includes('auth') || errorStack.includes('signin') || errorStack.includes('sign-in')) {
+      // Always show auth errors
+      return;
+    }
+    
+    // Suppress XMLHttpRequest, CORS, and Firestore connection errors only
     if (errorMsg.includes('xmlhttprequest') || 
         errorMsg.includes('cannot load') ||
-        errorMsg.includes('cors') || 
+        (errorMsg.includes('cors') && !errorMsg.includes('auth')) || 
         errorMsg.includes('access-control-allow-origin') ||
         errorMsg.includes('access control checks') ||
-        errorSource.includes('firestore') ||
-        errorSource.includes('firebase') ||
-        errorStack.includes('firestore') ||
+        (errorSource.includes('firestore') && !errorSource.includes('auth')) ||
+        (errorSource.includes('firebase') && !errorSource.includes('auth') && errorMsg.includes('load')) ||
+        (errorStack.includes('firestore') && !errorStack.includes('auth')) ||
         errorMsg.includes('channel') ||
         errorMsg.includes('gsessionid') ||
         errorMsg.includes('listen/channel') ||
         errorMsg.includes('firestore.googleapis.com') ||
-        errorMsg.includes('due to access control checks') ||
-        (errorSource.includes('firebase') && errorMsg.includes('load'))) {
+        errorMsg.includes('due to access control checks')) {
       // These are Firestore connection/retry errors that don't affect app functionality
       event.preventDefault();
       event.stopPropagation();
@@ -163,13 +177,21 @@ if (typeof window !== 'undefined') {
   // Also catch unhandled promise rejections from Firestore
   window.addEventListener('unhandledrejection', (event) => {
     const errorMsg = event.reason?.message?.toLowerCase() || '';
+    const errorCode = event.reason?.code?.toLowerCase() || '';
     
-    // Suppress XMLHttpRequest, CORS, and Firestore connection errors
+    // NEVER suppress Firebase Auth errors - they're critical
+    if (errorMsg.includes('auth') || errorCode.includes('auth') || 
+        errorMsg.includes('signin') || errorMsg.includes('sign-in')) {
+      // Always show auth errors
+      return;
+    }
+    
+    // Suppress XMLHttpRequest, CORS, and Firestore connection errors only
     if (errorMsg.includes('xmlhttprequest') || 
         errorMsg.includes('cannot load') ||
-        errorMsg.includes('cors') || 
+        (errorMsg.includes('cors') && !errorMsg.includes('auth')) || 
         errorMsg.includes('access-control-allow-origin') ||
-        errorMsg.includes('firestore') ||
+        (errorMsg.includes('firestore') && !errorMsg.includes('auth')) ||
         errorMsg.includes('channel') ||
         errorMsg.includes('gsessionid') ||
         errorMsg.includes('listen/channel') ||

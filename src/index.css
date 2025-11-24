@@ -31,6 +31,103 @@
     }
   }
   
+  /* Blue tick verification animations - Deconstructed to Reconstructed */
+  @keyframes circleReconstruct {
+    0% {
+      transform: scale(0) rotate(-180deg);
+      opacity: 0;
+      border-radius: 0%;
+    }
+    25% {
+      transform: scale(0.4) rotate(-90deg);
+      opacity: 0.5;
+      border-radius: 25%;
+    }
+    50% {
+      transform: scale(0.7) rotate(0deg);
+      opacity: 0.8;
+      border-radius: 50%;
+    }
+    75% {
+      transform: scale(1.15) rotate(90deg);
+      opacity: 1;
+      border-radius: 50%;
+    }
+    100% {
+      transform: scale(1) rotate(180deg);
+      opacity: 1;
+      border-radius: 50%;
+    }
+  }
+  
+  @keyframes checkmarkReconstruct {
+    0% {
+      transform: translate(-40px, -40px) scale(0) rotate(-90deg);
+      opacity: 0;
+    }
+    20% {
+      transform: translate(-25px, -25px) scale(0.4) rotate(-60deg);
+      opacity: 0.4;
+    }
+    40% {
+      transform: translate(-10px, -10px) scale(0.7) rotate(-30deg);
+      opacity: 0.7;
+    }
+    60% {
+      transform: translate(5px, 5px) scale(1.2) rotate(15deg);
+      opacity: 1;
+    }
+    80% {
+      transform: translate(-2px, -2px) scale(0.95) rotate(-5deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(0, 0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes particleAssemble {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+    30% {
+      opacity: 0.8;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    60% {
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.8),
+                  0 0 0 0 rgba(59, 130, 246, 0.6),
+                  0 0 20px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 12px rgba(37, 99, 235, 0),
+                  0 0 0 20px rgba(59, 130, 246, 0),
+                  0 0 30px rgba(37, 99, 235, 0.5);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  
   .animate-spin {
     animation: spin 1s linear infinite;
     will-change: transform;
@@ -618,7 +715,7 @@
 
     --border: 0 0% 94%;
     --input: 0 0% 100%;
-    --ring: 4 90% 58%;
+    --ring: 214 84% 56%;
 
     --radius: 12px;
     
@@ -695,7 +792,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 4 90% 58%;
+    --ring: 214 84% 56%;
 
     --sidebar-background: 222.2 84% 4.9%;
     --sidebar-foreground: 210 40% 98%;
@@ -1212,11 +1309,11 @@
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
+  @keyframes floatOriginal {
+    0%, 100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
     transform: translate3d(0, -10px, 0);
   }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
+import { verifyIdNumberMatch, verifyIdNumberMatchBothSides } from '@/services/ai/idVerification';
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
@@ -120,6 +121,14 @@ export default function PostEnquiry() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [idFrontImage, setIdFrontImage] = useState<File | null>(null);
   const [idBackImage, setIdBackImage] = useState<File | null>(null);
+  const [idType, setIdType] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [idFrontUrl, setIdFrontUrl] = useState("");
+  const [idBackUrl, setIdBackUrl] = useState("");
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
+  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
+  const idVerificationCardRef = useRef<HTMLDivElement>(null);
   const [idUploadLoading, setIdUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState('');
@@ -1039,6 +1048,58 @@ export default function PostEnquiry() {
     });
   };
 
+  // Real-time ID number validation
+  const validateIdNumber = (value: string, type: string) => {
+    if (!type) return;
+    
+    const cleanIdNumber = value.replace(/[\s-]/g, '').toUpperCase();
+    
+    if (!cleanIdNumber) {
+      setIdErrors(prev => ({ ...prev, idNumber: "" }));
+      return;
+    }
+    
+    let error = "";
+    
+    if (type === 'aadhaar') {
+      if (!/^\d+$/.test(cleanIdNumber)) {
+        error = "Aadhaar number must contain only digits";
+      } else if (cleanIdNumber.length !== 12) {
+        error = `Aadhaar number must be exactly 12 digits (current: ${cleanIdNumber.length})`;
+      }
+    } else if (type === 'pan') {
+      if (cleanIdNumber.length !== 10) {
+        error = `PAN must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+        error = "PAN format: 5 letters + 4 digits + 1 letter (e.g., ABCDE1234F)";
+      }
+    } else if (type === 'passport') {
+      if (cleanIdNumber.length !== 8) {
+        error = `Passport number must be exactly 8 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+        error = "Passport format: 1 letter + 7 digits (e.g., A1234567)";
+      }
+    } else if (type === 'driving_license') {
+      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15) {
+        error = `Driving License must be 10-15 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Driving License must contain only letters and numbers";
+      }
+    } else if (type === 'voter_id') {
+      if (cleanIdNumber.length !== 10) {
+        error = `Voter ID must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Voter ID must contain only letters and numbers";
+      }
+    }
+    
+    if (error) {
+      setIdErrors(prev => ({ ...prev, idNumber: error }));
+    } else {
+      setIdErrors(prev => ({ ...prev, idNumber: "" }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -1058,6 +1119,52 @@ export default function PostEnquiry() {
     if (!user) {
       alert('Please sign in to post an enquiry.');
       return;
+    }
+    
+    // Validate ID if provided
+    if (!isUserVerified && (idFrontImage || idBackImage)) {
+      const newErrors: {[key: string]: string} = {};
+      if (!idType.trim()) {
+        newErrors.idType = "Please select an ID type";
+      }
+      if (!idNumber.trim()) {
+        newErrors.idNumber = "ID number is required when uploading ID";
+      } else {
+        const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
+        if (idType === 'aadhaar') {
+          if (!/^\d{12}$/.test(cleanIdNumber)) {
+            newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+          }
+        } else if (idType === 'pan') {
+          if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+            newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+          }
+        } else if (idType === 'passport') {
+          if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+            newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+          }
+        } else if (idType === 'driving_license') {
+          if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+            newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+          }
+        } else if (idType === 'voter_id') {
+          if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+            newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
+          }
+        }
+      }
+      if (Object.keys(newErrors).length > 0) {
+        setIdErrors(newErrors);
+        toast({
+          title: "ID Validation Error",
+          description: "Please fix the ID information errors before submitting.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // ID verification is optional - users can post enquiry without it
+      // If ID images are uploaded but verification failed, still allow submission (optional feature)
     }
     
     if (!canPostEnquiry()) {
@@ -1126,25 +1233,25 @@ export default function PostEnquiry() {
       if (!isUserVerified && (idFrontImage || idBackImage)) {
         console.log('Starting ID image upload for non-verified user...');
         setIdUploadLoading(true);
-        setUploadStage('Uploading ID documents...');
+        setUploadStage('Uploading...');
         setUploadProgress(0);
         try {
           if (idFrontImage) {
-            setUploadStage('Uploading front ID to Cloudinary...');
+            setUploadStage('Uploading...');
             setUploadProgress(25);
             idFrontUrl = await uploadToCloudinary(idFrontImage);
             console.log('Front ID uploaded to Cloudinary');
           }
           
           if (idBackImage) {
-            setUploadStage('Uploading back ID to Cloudinary...');
+            setUploadStage('Uploading...');
             setUploadProgress(50);
             idBackUrl = await uploadToCloudinary(idBackImage);
             console.log('Back ID uploaded to Cloudinary');
           }
           
           setUploadProgress(75);
-          setUploadStage('ID documents uploaded successfully!');
+          setUploadStage('Uploading...');
         } catch (uploadError: any) {
           console.error('Error uploading ID documents:', uploadError);
           const errorMessage = uploadError instanceof Error 
@@ -1174,7 +1281,7 @@ export default function PostEnquiry() {
       }
       
       console.log('Now saving to Firestore...');
-      setUploadStage('Saving enquiry to database...');
+      setUploadStage('Uploading...');
       setUploadProgress(90);
       
       // PRO PLAN AUTO-ENQUIRY LOGIC - KEPT FOR FUTURE UPDATES
@@ -1430,6 +1537,20 @@ export default function PostEnquiry() {
       window.scrollTo(0, 0);
     }
   }, [isSubmitted]);
+
+  // Scroll to ID verification card when verification is successful
+  useEffect(() => {
+    if (idVerificationResult?.matches && idVerificationCardRef.current) {
+      // Small delay to ensure the card is rendered
+      setTimeout(() => {
+        idVerificationCardRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+      }, 100);
+    }
+  }, [idVerificationResult?.matches]);
 
   if (isSubmitted) {
     return (
@@ -2111,27 +2232,172 @@ export default function PostEnquiry() {
 
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
                   {!authLoading && !isUserVerified && (
-                  <div className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
+                  <div ref={idVerificationCardRef} className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
                     <div className="space-y-1">
                       <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">
                         <span className="block">ID</span>
                         <span className="block">Verification</span>
                       </h3>
-                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">(Optional)</p>
+                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
+                        (Optional) <span className="text-[9px] sm:text-xs text-black font-medium">Blue tick only for this enquiry.</span>
+                      </p>
                     </div>
-                    <div className="p-3 sm:p-4 bg-white border-2 border-black rounded-lg">
-                      {idFrontImage || idBackImage ? (
-                        <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                          <span>✓ ID uploaded - pending verification</span>
-                        </p>
-                      ) : (
-                        <p className="text-xs sm:text-sm text-slate-700 font-medium">
-                          The internet is becoming untrustful without a blue tick.
-                        </p>
-                      )}
+                    {idVerificationResult?.matches ? (
+                      <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
+                        <div 
+                          className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative"
+                          style={{
+                            animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)',
+                            willChange: 'transform, box-shadow, border-radius'
+                          }}
+                        >
+                          {/* Particle effects - deconstructed pieces assembling */}
+                          {[...Array(6)].map((_, i) => {
+                            const angle = (i * 60) * Math.PI / 180;
+                            const distance = 45;
+                            return (
+                              <div
+                                key={i}
+                                className="absolute w-3 h-3 bg-blue-400 rounded-full"
+                                style={{
+                                  left: '50%',
+                                  top: '50%',
+                                  transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  transformOrigin: 'center',
+                                  WebkitTransformOrigin: 'center',
+                                  willChange: 'transform, opacity'
+                                }}
+                              />
+                            );
+                          })}
+                          <CheckCircle 
+                            className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
+                            style={{
+                              animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              transform: 'translateZ(0)',
+                              WebkitTransform: 'translateZ(0)',
+                              willChange: 'transform, opacity'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="p-3 sm:p-4 bg-white border-2 border-black rounded-lg">
+                          {idFrontImage || idBackImage ? (
+                            <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
+                              <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                              <span>ID uploaded - Click "Get Trust Badge" to verify</span>
+                            </p>
+                          ) : (
+                            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+                              The internet is becoming untrustful without a blue tick.
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* ID Type and Number */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                      <div className="space-y-2.5">
+                        <Label htmlFor="idType" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Document Type
+                        </Label>
+                        <Select value={idType} onValueChange={(value) => {
+                          setIdType(value);
+                          if (idNumber && value) {
+                            validateIdNumber(idNumber, value);
+                          } else {
+                            setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                          }
+                          setIdVerificationResult(null);
+                        }}>
+                          <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black">
+                            <SelectValue placeholder="Select ID Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                            <SelectItem value="pan">PAN Card</SelectItem>
+                            <SelectItem value="passport">Passport</SelectItem>
+                            <SelectItem value="driving_license">Driving License</SelectItem>
+                            <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {idErrors.idType && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                            {idErrors.idType}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2.5">
+                        <Label htmlFor="idNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Number
+                        </Label>
+                        <Input
+                          id="idNumber"
+                          placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                          value={idNumber}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            
+                            // Auto-format Aadhaar: add space after every 4 digits
+                            if (idType === 'aadhaar') {
+                              // Remove all spaces first
+                              const digitsOnly = value.replace(/\s/g, '');
+                              // Add space after every 4 digits
+                              value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                            }
+                            
+                            setIdNumber(value);
+                            if (idType) {
+                              validateIdNumber(value, idType);
+                            }
+                            setIdVerificationResult(null);
+                          }}
+                          className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black"
+                        />
+                        {idErrors.idNumber && !idVerificationResult && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                            {idErrors.idNumber}
+                          </span>
+                        )}
+                        {/* ID Verification Status */}
+                        {verifyingId && (
+                          <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600 mt-1">
+                            <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                            <span>Verifying ID number with image...</span>
+                          </div>
+                        )}
+                        {idVerificationResult && !verifyingId && (
+                          <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                            idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {idVerificationResult.matches ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
+                    {/* Front and Back ID Upload - Only show when not verified */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       {/* Front ID - Enhanced */}
                       <div className="space-y-2.5">
@@ -2143,7 +2409,26 @@ export default function PostEnquiry() {
                             type="file"
                             id="idFront"
                             accept="image/*"
-                            onChange={(e) => setIdFrontImage(e.target.files?.[0] || null)}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setIdFrontImage(file);
+                              setIdErrors(prev => ({ ...prev, idFront: "" }));
+                              setIdVerificationResult(null);
+                              
+                              // Upload image but don't verify yet - wait for verify button
+                              try {
+                                const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                                setIdFrontUrl(uploadedUrl);
+                              } catch (error) {
+                                console.error('Error uploading ID:', error);
+                                toast({
+                                  title: "Upload Failed",
+                                  description: "Failed to upload image. Please try again.",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
                             className="hidden"
                           />
                           <label
@@ -2181,7 +2466,26 @@ export default function PostEnquiry() {
                             type="file"
                             id="idBack"
                             accept="image/*"
-                            onChange={(e) => setIdBackImage(e.target.files?.[0] || null)}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0] || null;
+                              setIdBackImage(file);
+                              setIdVerificationResult(null);
+                              
+                              // Upload image but don't verify yet - wait for verify button
+                              if (file) {
+                                try {
+                                  const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                                  setIdBackUrl(uploadedUrl);
+                                } catch (error) {
+                                  console.error('Error uploading back ID:', error);
+                                  toast({
+                                    title: "Upload Failed",
+                                    description: "Failed to upload image. Please try again.",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }
+                            }}
                             className="hidden"
                           />
                           <label
@@ -2209,6 +2513,164 @@ export default function PostEnquiry() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Verify Button - Show when images are uploaded but not yet verified */}
+                    {((idFrontImage || idBackImage) || (idFrontUrl || idBackUrl)) && idType && idNumber && (!idVerificationResult || !idVerificationResult.matches) && (
+                      <div className="mt-4 sm:mt-5">
+                        <Button
+                          type="button"
+                          onClick={async () => {
+                            // Check if required fields are filled
+                            if (!idType) {
+                              toast({
+                                title: "ID Type Required",
+                                description: "Please select an ID document type.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            if (!idNumber || idNumber.trim() === '') {
+                              toast({
+                                title: "ID Number Required",
+                                description: "Please enter your ID number.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            // Validate format first
+                            const newErrors: {[key: string]: string} = {};
+                            const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
+                            
+                            if (idType === 'aadhaar') {
+                              if (!/^\d{12}$/.test(cleanIdNumber)) {
+                                newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+                              }
+                            } else if (idType === 'pan') {
+                              if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+                                newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+                              }
+                            } else if (idType === 'passport') {
+                              if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+                                newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+                              }
+                            } else if (idType === 'driving_license') {
+                              if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+                                newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+                              }
+                            } else if (idType === 'voter_id') {
+                              if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+                                newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
+                              }
+                            }
+                            
+                            if (Object.keys(newErrors).length > 0) {
+                              setIdErrors(newErrors);
+                              toast({
+                                title: "ID Validation Error",
+                                description: "Please fix the ID information errors before verifying.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            // Set verifying state and clear errors
+                            setVerifyingId(true);
+                            setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                            
+                            try {
+                              // Upload images if not already uploaded
+                              let frontImageUrl = idFrontUrl;
+                              if (idFrontImage && !idFrontUrl) {
+                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
+                                setIdFrontUrl(frontImageUrl);
+                              }
+                              
+                              let backImageUrl = idBackUrl;
+                              if (idBackImage && !idBackUrl) {
+                                backImageUrl = await uploadToCloudinaryUnsigned(idBackImage);
+                                setIdBackUrl(backImageUrl);
+                              }
+                              
+                              // Ensure we have at least one image URL
+                              if (!frontImageUrl && !backImageUrl) {
+                                toast({
+                                  title: "Upload Error",
+                                  description: "Failed to upload ID images. Please try again.",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              
+                              const verification = await verifyIdNumberMatchBothSides(
+                                frontImageUrl,
+                                backImageUrl,
+                                idNumber,
+                                idType
+                              );
+                              
+                              setIdVerificationResult(verification);
+                              
+                              if (!verification.matches) {
+                                setIdErrors(prev => ({ 
+                                  ...prev, 
+                                  idNumber: verification.error || 'ID number does not match the image(s)' 
+                                }));
+                                toast({
+                                  title: "ID Verification Failed",
+                                  description: verification.error || "ID number does not match the uploaded image(s). Please ensure the number you entered matches the number visible in the image.",
+                                  variant: "destructive",
+                                });
+                              } else {
+                                setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                                toast({
+                                  title: "Verification Successful",
+                                  description: "Your ID has been verified! You can now post your enquiry.",
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error verifying ID:', error);
+                              toast({
+                                title: "Verification Error",
+                                description: "Failed to verify ID number. Please ensure the image is clear and the ID number is visible.",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              // Always clear verifying state, even if there's an error or early return
+                              setVerifyingId(false);
+                            }
+                          }}
+                          disabled={!idType || !idNumber || ((!idFrontImage && !idBackImage) && (!idFrontUrl && !idBackUrl)) || verifyingId}
+                          className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {verifyingId ? (
+                            <>
+                              <div 
+                                className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
+                                style={{
+                                  animation: 'spin 1s linear infinite',
+                                  WebkitAnimation: 'spin 1s linear infinite'
+                                }}
+                              ></div>
+                              Verifying ID...
+                            </>
+                          ) : idVerificationResult?.matches ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                              ID Verified ✓
+                            </>
+                          ) : (
+                            <>
+                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                              Get Trust Badge
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                      </>
+                    )}
                   </div>
                   )}
 
@@ -2232,32 +2694,18 @@ export default function PostEnquiry() {
                     </div>
                   )}
 
-                  {/* Upload Progress - Enhanced for Non-Verified Users */}
-                  {!authLoading && !isUserVerified && idUploadLoading && (
-                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm sm:text-base font-semibold text-slate-800">
-                          {uploadStage}
-                        </span>
-                        <span className="text-sm sm:text-base font-bold text-blue-600">
-                          {uploadProgress}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
-                        <div 
-                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
-                          style={{ width: `${uploadProgress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
 
 
                   {/* Submit Button - Enhanced Professional Design */}
                   <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
                     <Button
                       type="submit"
-                      disabled={loading || idUploadLoading || paymentLoading}
+                      disabled={
+                        loading || 
+                        idUploadLoading || 
+                        paymentLoading
+                        // ID verification is optional - not required for submission
+                      }
                       className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border-2 border-black"
                     >
                       {paymentLoading ? (
@@ -2268,7 +2716,7 @@ export default function PostEnquiry() {
                       ) : loading ? (
                         <div className="flex items-center justify-center space-x-3">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Submitting...</span>
+                          <span>Submitting enquiry...</span>
                         </div>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
@@ -2281,14 +2729,14 @@ export default function PostEnquiry() {
                     {loading && (
                       <div className="mt-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
                         <div className="flex items-center space-x-3 mb-3">
-                          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                          <span className="text-sm sm:text-base font-semibold text-slate-800">
-                            {idUploadLoading ? 'Uploading ID...' : 'Submitting enquiry...'}
+                          <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
+                          <span className="text-sm sm:text-base font-semibold text-black">
+                            Submitting enquiry...
                           </span>
                         </div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
                           <div 
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
+                            className="bg-black h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>

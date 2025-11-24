@@ -7,15 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2 } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, orderBy, onSnapshot, updateDoc, deleteField } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
-import { uploadToCloudinary } from "@/integrations/cloudinary";
+import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
+import { verifyIdNumberMatch, verifyIdNumberMatchBothSides } from '@/services/ai/idVerification';
 import SecurityDashboard from "@/components/SecurityDashboard";
 
 const Profile = () => {
@@ -38,6 +39,11 @@ const Profile = () => {
   const [idNumber, setIdNumber] = useState("");
   const [idFront, setIdFront] = useState<File | null>(null);
   const [idBack, setIdBack] = useState<File | null>(null);
+  const [idFrontUrl, setIdFrontUrl] = useState("");
+  const [idBackUrl, setIdBackUrl] = useState("");
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
+  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [submittedProfileId, setSubmittedProfileId] = useState<string | null>(null);
@@ -81,6 +87,62 @@ const Profile = () => {
     { code: "+212", country: "Morocco", flag: "🇲🇦" },
     { code: "+216", country: "Tunisia", flag: "🇹🇳" }
   ];
+
+  // AUTO-VERIFY: Automatically verify ID when number, type, and images are available (Profile page only)
+  // Stop auto-verifying if previous verification was successful OR failed (don't keep retrying)
+  useEffect(() => {
+    if (!idNumber || !idType || (!idFrontUrl && !idBackUrl) || verifyingId) return;
+    
+    // Don't auto-verify again if previous verification already has a result (success or failure)
+    // Only verify if there's no previous result or if user changed something
+    if (idVerificationResult) {
+      // If verification was successful, don't verify again
+      if (idVerificationResult.matches) {
+        return;
+      }
+      // If verification failed, also don't auto-verify again (user needs to fix manually)
+      if (!idVerificationResult.matches) {
+        return;
+      }
+    }
+    
+    // Debounce: Wait 800ms after user stops typing/changing
+    const timeoutId = setTimeout(async () => {
+      if (idNumber.trim() && idType && (idFrontUrl || idBackUrl) && !verifyingId) {
+        // Double-check: Don't verify if there's already a result
+        if (idVerificationResult) {
+          return;
+        }
+        
+        setVerifyingId(true);
+        try {
+          const verification = await verifyIdNumberMatchBothSides(
+            idFrontUrl,
+            idBackUrl,
+            idNumber,
+            idType
+          );
+          setIdVerificationResult(verification);
+          
+          if (!verification.matches) {
+            setIdErrors(prev => ({ 
+              ...prev, 
+              idNumber: verification.error || 'ID details does not match.' 
+            }));
+          } else {
+            setIdErrors(prev => ({ ...prev, idNumber: "" }));
+          }
+        } catch (error) {
+          console.error('Error auto-verifying ID:', error);
+        } finally {
+          // Always clear verifying state, even if there's an error
+          setVerifyingId(false);
+        }
+      }
+    }, 800);
+    
+    return () => clearTimeout(timeoutId);
+  }, [idNumber, idType, idFrontUrl, idBackUrl, verifyingId]);
 
   // Load profile data with REAL-TIME listener
   useEffect(() => {
@@ -235,6 +297,58 @@ const Profile = () => {
     }
   };
 
+  // Real-time ID number validation
+  const validateIdNumber = (value: string, type: string) => {
+    if (!type) return;
+    
+    const cleanIdNumber = value.replace(/[\s-]/g, '').toUpperCase();
+    
+    if (!cleanIdNumber) {
+      setIdErrors(prev => ({ ...prev, idNumber: "" }));
+      return;
+    }
+    
+    let error = "";
+    
+    if (type === 'aadhaar') {
+      if (!/^\d+$/.test(cleanIdNumber)) {
+        error = "Aadhaar number must contain only digits";
+      } else if (cleanIdNumber.length !== 12) {
+        error = `Aadhaar number must be exactly 12 digits (current: ${cleanIdNumber.length})`;
+      }
+    } else if (type === 'pan') {
+      if (cleanIdNumber.length !== 10) {
+        error = `PAN must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+        error = "PAN format: 5 letters + 4 digits + 1 letter (e.g., ABCDE1234F)";
+      }
+    } else if (type === 'passport') {
+      if (cleanIdNumber.length !== 8) {
+        error = `Passport number must be exactly 8 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+        error = "Passport format: 1 letter + 7 digits (e.g., A1234567)";
+      }
+    } else if (type === 'driving_license') {
+      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15) {
+        error = `Driving License must be 10-15 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Driving License must contain only letters and numbers";
+      }
+    } else if (type === 'voter_id') {
+      if (cleanIdNumber.length !== 10) {
+        error = `Voter ID must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Voter ID must contain only letters and numbers";
+      }
+    }
+    
+    if (error) {
+      setIdErrors(prev => ({ ...prev, idNumber: error }));
+    } else {
+      setIdErrors(prev => ({ ...prev, idNumber: "" }));
+    }
+  };
+
   // Handle ID upload - SIMPLE APPROACH
   const handleIdUpload = async () => {
     if (!idFront || !idType || !idNumber) {
@@ -245,27 +359,172 @@ const Profile = () => {
       });
       return;
     }
+    
+    // Validate ID format FIRST
+    const newErrors: {[key: string]: string} = {};
+    const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
+    if (idType === 'aadhaar') {
+      if (!/^\d{12}$/.test(cleanIdNumber)) {
+        newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+      }
+    } else if (idType === 'pan') {
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+        newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+      }
+    } else if (idType === 'passport') {
+      if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+        newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+      }
+    } else if (idType === 'driving_license') {
+      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+        newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+      }
+    } else if (idType === 'voter_id') {
+      if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+        newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
+      }
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setIdErrors(newErrors);
+      toast({
+        title: "ID Validation Error",
+        description: "Please fix the ID information errors before uploading.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // REQUIRED: OCR verification must pass before upload
+    if (!idFrontUrl) {
+      toast({
+        title: "Image Not Verified",
+        description: "Please upload the ID image first. It will be automatically verified.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // MANDATORY: OCR verification must pass before upload
+    if (!idFrontUrl) {
+      toast({
+        title: "Image Required",
+        description: "Please upload the ID image first. It will be automatically verified.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // If not verified yet, verify now (check both front and back)
+    if (!idVerificationResult) {
+      setVerifyingId(true);
+      try {
+        const verification = await verifyIdNumberMatchBothSides(
+          idFrontUrl,
+          idBackUrl,
+          idNumber,
+          idType
+        );
+        setIdVerificationResult(verification);
+        setVerifyingId(false);
+        
+        if (!verification.matches) {
+          toast({
+            title: "ID Verification Failed",
+            description: verification.error || "ID number does not match the uploaded image(s). The ID number should be visible on either the front or back side.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error verifying ID:', error);
+        setVerifyingId(false);
+        toast({
+          title: "Verification Error",
+          description: "Failed to verify ID number. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (!idVerificationResult.matches) {
+      // Verification was done but failed
+      toast({
+        title: "ID Verification Failed",
+        description: idVerificationResult.error || "ID number does not match the uploaded image. Please check and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     console.log('🚀 Starting ID upload process...');
     setIsUploading(true);
     setUploadProgress(10);
 
     try {
-      console.log('📤 Uploading front ID to Cloudinary...');
-      setUploadProgress(25);
+      let frontImageUrl = idFrontUrl;
       
-      // Upload front ID image to Cloudinary
-      const frontImageUrl = await uploadToCloudinary(idFront);
-      console.log('✅ Front ID uploaded to Cloudinary:', frontImageUrl);
+      if (!frontImageUrl) {
+        console.log('📤 Uploading front ID to Cloudinary...');
+        setUploadProgress(25);
+        
+        // Upload front ID image to Cloudinary (use unsigned for consistency with enquiry form)
+        frontImageUrl = await uploadToCloudinaryUnsigned(idFront);
+        
+        // Verify after upload if not already verified
+        if (frontImageUrl) {
+          setVerifyingId(true);
+          const verification = await verifyIdNumberMatch(frontImageUrl, idNumber, idType);
+          setIdVerificationResult(verification);
+          
+          if (!verification.matches) {
+            setVerifyingId(false);
+            setIsUploading(false);
+            setUploadProgress(0);
+            toast({
+              title: "ID Verification Failed",
+              description: verification.error || "ID number does not match the uploaded image. Please check and try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+          setVerifyingId(false);
+        }
+      }
+      console.log('✅ Front ID uploaded and verified:', frontImageUrl);
       setUploadProgress(50);
 
       // Upload back ID image if provided (optional)
-      let backImageUrl = null;
-      if (idBack) {
+      let backImageUrl = idBackUrl;
+      if (idBack && !idBackUrl) {
         console.log('📤 Uploading back ID to Cloudinary...');
         setUploadProgress(75);
-        backImageUrl = await uploadToCloudinary(idBack);
+        backImageUrl = await uploadToCloudinaryUnsigned(idBack);
+        setIdBackUrl(backImageUrl);
         console.log('✅ Back ID uploaded to Cloudinary:', backImageUrl);
+        
+        // Re-verify with both images after back upload
+        if (frontImageUrl && backImageUrl) {
+          setVerifyingId(true);
+          const verification = await verifyIdNumberMatchBothSides(
+            frontImageUrl,
+            backImageUrl,
+            idNumber,
+            idType
+          );
+          setIdVerificationResult(verification);
+          setVerifyingId(false);
+          
+          if (!verification.matches) {
+            setIsUploading(false);
+            setUploadProgress(0);
+            toast({
+              title: "ID Verification Failed",
+              description: verification.error || "ID number does not match the uploaded image(s). The ID number should be visible on either the front or back side.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
       }
 
       console.log('💾 Storing verification data in Firestore...');
@@ -282,6 +541,15 @@ const Profile = () => {
         idNumber: idNumber,
         frontImageUrl: frontImageUrl,
         backImageUrl: backImageUrl,
+        // Store OCR verification result - MANDATORY for AI approval
+        ocrVerification: {
+          verified: idVerificationResult?.matches === true,
+          matches: idVerificationResult?.matches === true,
+          extractedNumber: idVerificationResult?.extractedNumber || null,
+          confidence: idVerificationResult?.confidence || 0,
+          error: idVerificationResult?.error || null,
+          verifiedAt: serverTimestamp()
+        },
         verificationRequestedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       };
@@ -522,16 +790,16 @@ const Profile = () => {
             
             {/* VERIFIED PROFILE - Show only success message */}
             {verificationStatus === 'approved' && (
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 sm:p-6 text-center">
-                <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 border-4 border-blue-500 rounded-t-none rounded-b-xl text-center -m-4 sm:-m-5 lg:-m-5 lg:-mt-4 p-4 sm:p-5 lg:p-5 lg:pt-4">
+                <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-blue-400 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                 </div>
-                <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-2">Profile Verified!</h3>
-                <p className="text-green-700 text-[10px] sm:text-xs">
+                <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white mb-2">Profile Verified!</h3>
+                <p className="text-blue-50 text-[10px] sm:text-xs">
                   Congratulations! Your profile has been verified and you now have a verified badge.
                 </p>
                 <div className="mt-3 sm:mt-4">
-                  <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300 text-xs sm:text-sm">
+                  <Badge variant="secondary" className="bg-blue-400 text-white border-blue-300 text-xs sm:text-sm">
                     <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Verified Profile
                   </Badge>
@@ -574,8 +842,14 @@ const Profile = () => {
               </div>
             )}
 
-            {/* REJECTED VERIFICATION */}
-            {verificationStatus === 'rejected' && (
+            {/* REJECTED VERIFICATION - Only show if image is actually unclear/blurry (OCR error indicates unclear image) */}
+            {verificationStatus === 'rejected' && 
+             (!idVerificationResult || !idVerificationResult.matches) && 
+             idVerificationResult?.error && 
+             (idVerificationResult.error.toLowerCase().includes('unclear') || 
+              idVerificationResult.error.toLowerCase().includes('blur') ||
+              idVerificationResult.error.toLowerCase().includes('not clear') ||
+              idVerificationResult.error.toLowerCase().includes('image quality')) && (
               <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4 sm:p-6 text-center">
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
                   <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
@@ -587,21 +861,34 @@ const Profile = () => {
               </div>
             )}
 
-            {/* UPLOAD FORM - Only show for unverified users */}
-            {!verificationStatus || verificationStatus === 'rejected' ? (
+            {/* UPLOAD FORM - Hide after profile is verified (only show for unverified users) */}
+            {!isProfileVerified && 
+             verificationStatus !== 'approved' && 
+             verificationStatus !== 'verified' && 
+             verificationStatus !== 'completed' && 
+             (!verificationStatus || verificationStatus === 'rejected' || (idVerificationResult && idVerificationResult.matches)) ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label>
-                    <Select value={idType} onValueChange={setIdType}>
+                        <Select value={idType} onValueChange={(value) => {
+                          setIdType(value);
+                          if (idNumber && value) {
+                            validateIdNumber(idNumber, value);
+                          } else {
+                            setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                          }
+                          setIdVerificationResult(null);
+                        }}>
                       <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black">
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="aadhar">Aadhar Card</SelectItem>
+                        <SelectContent>
+                        <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
                         <SelectItem value="pan">PAN Card</SelectItem>
-                        <SelectItem value="driving_license">Driving License</SelectItem>
                         <SelectItem value="passport">Passport</SelectItem>
+                        <SelectItem value="driving_license">Driving License</SelectItem>
+                        <SelectItem value="voter_id">Voter ID Card</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -610,10 +897,62 @@ const Profile = () => {
                     <Input
                       id="idNumber"
                       value={idNumber}
-                      onChange={(e) => setIdNumber(e.target.value)}
-                      placeholder="Enter ID number"
+                      onChange={(e) => {
+                        let value = e.target.value.toUpperCase();
+                        
+                        // Auto-format Aadhaar: add space after every 4 digits
+                        if (idType === 'aadhaar') {
+                          // Remove all spaces first
+                          const digitsOnly = value.replace(/\s/g, '');
+                          // Add space after every 4 digits
+                          value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                        }
+                        
+                        setIdNumber(value);
+                        if (idType) {
+                          validateIdNumber(value, idType);
+                        }
+                        setIdVerificationResult(null);
+                      }}
+                      placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
                       className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
                     />
+                    {idErrors.idNumber && !idVerificationResult && (
+                      <span className="text-xs text-red-500 flex items-center">
+                        <XCircle className="h-3 w-3 mr-1" />
+                        {idErrors.idNumber}
+                      </span>
+                    )}
+                    {/* ID Verification Status */}
+                    {verifyingId && (
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600 mt-1">
+                        <div 
+                          className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent rounded-full flex-shrink-0"
+                          style={{
+                            animation: 'spin 1s linear infinite',
+                            WebkitAnimation: 'spin 1s linear infinite'
+                          }}
+                        ></div>
+                        <span>Verifying ID number with image...</span>
+                      </div>
+                    )}
+                    {idVerificationResult && !verifyingId && (
+                      <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                        idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {idVerificationResult.matches ? (
+                          <>
+                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                            <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                            <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -625,7 +964,27 @@ const Profile = () => {
                         id="idFront"
                         type="file"
                         accept="image/*"
-                        onChange={(e) => setIdFront(e.target.files?.[0] || null)}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setIdFront(file);
+                          setIdErrors(prev => ({ ...prev, idFront: "" }));
+                          setIdVerificationResult(null);
+                          
+                          // Upload image but don't verify yet - wait for verify button
+                          try {
+                            const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                            setIdFrontUrl(uploadedUrl);
+                            setIdVerificationResult(null);
+                          } catch (error) {
+                            console.error('Error uploading ID:', error);
+                            toast({
+                              title: "Upload Failed",
+                              description: "Failed to upload image. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
                         className="hidden"
                       />
                       <Label htmlFor="idFront" className="cursor-pointer">
@@ -688,13 +1047,137 @@ const Profile = () => {
                   </div>
                 )}
 
+                {/* Combined Verify & Upload Button */}
                 <Button
-                  onClick={handleIdUpload}
-                  disabled={!idType || !idNumber || !idFront || isUploading}
+                  onClick={async () => {
+                    // First verify, then upload if verification passes
+                    if (!idFront || !idType || !idNumber) {
+                      toast({
+                        title: "Missing Information",
+                        description: "Please fill in all required fields and upload front ID image.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    
+                    // Validate format first
+                    const newErrors: {[key: string]: string} = {};
+                    const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
+                    if (idType === 'aadhaar') {
+                      if (!/^\d{12}$/.test(cleanIdNumber)) {
+                        newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+                      }
+                    } else if (idType === 'pan') {
+                      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+                        newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+                      }
+                    } else if (idType === 'passport') {
+                      if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+                        newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+                      }
+                    } else if (idType === 'driving_license') {
+                      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+                        newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+                      }
+                    } else if (idType === 'voter_id') {
+                      if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+                        newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
+                      }
+                    }
+                    
+                    if (Object.keys(newErrors).length > 0) {
+                      setIdErrors(newErrors);
+                      toast({
+                        title: "ID Validation Error",
+                        description: "Please fix the ID information errors before uploading.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    
+                    // Verify OCR if image is already uploaded
+                    if (idFrontUrl || idBackUrl) {
+                      setVerifyingId(true);
+                      setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                      
+                      try {
+                        const verification = await verifyIdNumberMatchBothSides(
+                          idFrontUrl,
+                          idBackUrl,
+                          idNumber,
+                          idType
+                        );
+                        
+                        setIdVerificationResult(verification);
+                        
+                        if (!verification.matches) {
+                          setIdErrors(prev => ({ 
+                            ...prev, 
+                            idNumber: verification.error || 'ID number does not match the image(s)' 
+                          }));
+                          toast({
+                            title: "Verification Failed",
+                            description: verification.error || "ID number does not match the uploaded image(s).",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+                      } catch (error) {
+                        console.error('Error verifying ID:', error);
+                        toast({
+                          title: "Verification Error",
+                          description: "Failed to verify ID number. Please try again.",
+                          variant: "destructive",
+                        });
+                        return;
+                      } finally {
+                        // Always clear verifying state
+                        setVerifyingId(false);
+                      }
+                    }
+                    
+                    // If verification passed or no image uploaded yet, proceed with upload
+                    handleIdUpload();
+                  }}
+                  disabled={
+                    !idType || 
+                    !idNumber || 
+                    !idFront || 
+                    isUploading || 
+                    verifyingId ||
+                    (idErrors.idNumber && idErrors.idNumber.length > 0) || 
+                    !idVerificationResult || 
+                    !idVerificationResult.matches
+                  }
                   className="w-full h-8 sm:h-10 text-xs sm:text-sm"
                 >
-                  <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  {isUploading ? "Uploading..." : "Upload ID for Trust Badge"}
+                  {verifyingId ? (
+                    <>
+                      <div 
+                        className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
+                        style={{
+                          animation: 'spin 1s linear infinite',
+                          WebkitAnimation: 'spin 1s linear infinite'
+                        }}
+                      ></div>
+                      Verifying...
+                    </>
+                  ) : isUploading ? (
+                    <>
+                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Uploading...
+                    </>
+                  ) : !idVerificationResult || !idVerificationResult.matches ? (
+                    <>
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Verify ID First
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Upload ID for Trust Badge
+                    </>
+                  )}
                 </Button>
 
               </>
