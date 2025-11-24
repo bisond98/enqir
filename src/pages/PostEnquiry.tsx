@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
-import { verifyIdNumberMatch, verifyIdNumberMatchBothSides } from '@/services/ai/idVerification';
+import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
@@ -126,6 +126,8 @@ export default function PostEnquiry() {
   const [idFrontUrl, setIdFrontUrl] = useState("");
   const [idBackUrl, setIdBackUrl] = useState("");
   const [verifyingId, setVerifyingId] = useState(false);
+  const [verificationCountdown, setVerificationCountdown] = useState(60);
+  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
   const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
@@ -1561,6 +1563,48 @@ export default function PostEnquiry() {
     }
   }, [idVerificationResult?.matches]);
 
+  // Countdown timer for verification
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (verifyingId) {
+      interval = setInterval(() => {
+        setTotalElapsedSeconds((prev) => {
+          const newTotal = prev + 1;
+          
+          // After 120 seconds total, stop incrementing
+          if (newTotal >= 120) {
+            return 120;
+          }
+          
+          // If we've completed 60 seconds, restart countdown to 60
+          if (newTotal === 60) {
+            setVerificationCountdown(60);
+          }
+          
+          // Update countdown based on which minute we're in
+          if (newTotal < 60) {
+            setVerificationCountdown(60 - newTotal);
+          } else {
+            setVerificationCountdown(120 - newTotal);
+          }
+          
+          return newTotal;
+        });
+      }, 1000);
+    } else {
+      // Reset when verification stops
+      setVerificationCountdown(60);
+      setTotalElapsedSeconds(0);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [verifyingId]);
+
   if (isSubmitted) {
     return (
       <Layout>
@@ -2242,13 +2286,16 @@ export default function PostEnquiry() {
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
                   {!authLoading && !isUserVerified && (
                   <div ref={idVerificationCardRef} className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
-                    <div className="space-y-1">
-                      <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">
-                        <span className="block">ID</span>
-                        <span className="block">Verification</span>
-                      </h3>
+                    <div className="space-y-1 w-full">
+                      <div className="flex items-center gap-2 w-full">
+                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
+                          <span className="block">Trust</span>
+                          <span className="block">Badge</span>
+                        </h3>
+                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0">(optional)</span>
+                      </div>
                       <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
-                        (Optional) <span className="text-[9px] sm:text-xs text-black font-medium">Blue tick only for this enquiry.</span>
+                        <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue tick for this enquiry.</span>
                       </p>
                     </div>
                     {idVerificationResult?.matches ? (
@@ -2299,19 +2346,6 @@ export default function PostEnquiry() {
                       </div>
                     ) : (
                       <>
-                        <div className="p-3 sm:p-4 bg-white border-2 border-black rounded-lg">
-                          {idFrontImage || idBackImage ? (
-                            <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
-                              <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                              <span>ID uploaded - Click "Get Trust Badge" to verify</span>
-                            </p>
-                          ) : (
-                            <p className="text-xs sm:text-sm text-slate-700 font-medium">
-                              The internet is becoming untrustful without a blue tick.
-                            </p>
-                          )}
-                        </div>
-                        
                         {/* ID Type and Number */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div className="space-y-2.5">
@@ -2326,8 +2360,8 @@ export default function PostEnquiry() {
                             setIdErrors(prev => ({ ...prev, idNumber: "" }));
                           }
                           setIdVerificationResult(null);
-                        }}>
-                          <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black">
+                        }} disabled={verifyingId}>
+                          <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black" disabled={verifyingId}>
                             <SelectValue placeholder="Select ID Type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -2372,6 +2406,7 @@ export default function PostEnquiry() {
                             setIdVerificationResult(null);
                           }}
                           className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black"
+                          disabled={verifyingId}
                         />
                         {idErrors.idNumber && !idVerificationResult && (
                           <span className="text-xs text-red-500 flex items-center">
@@ -2381,9 +2416,19 @@ export default function PostEnquiry() {
                         )}
                         {/* ID Verification Status */}
                         {verifyingId && (
-                          <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600 mt-1">
-                            <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-                            <span>Verifying ID number with image...</span>
+                          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
+                            {totalElapsedSeconds >= 120 ? (
+                              <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
+                            ) : (
+                              <>
+                                <span className="text-xs sm:text-sm font-medium text-white">Verifying</span>
+                                <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-none">
+                                  <span className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
+                                    {Math.floor(verificationCountdown / 60)}:{(verificationCountdown % 60).toString().padStart(2, '0')}
+                                  </span>
+                                </div>
+                              </>
+                            )}
                           </div>
                         )}
                         {idVerificationResult && !verifyingId && (
@@ -2406,18 +2451,17 @@ export default function PostEnquiry() {
                       </div>
                     </div>
                     
-                    {/* Front and Back ID Upload - Only show when not verified */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                      {/* Front ID - Enhanced */}
-                      <div className="space-y-2.5">
-                        <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
-                          Front Side
-                        </Label>
+                    {/* ID Upload - Only show when not verified */}
+                    <div className="space-y-2.5">
+                      <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        ID Document
+                      </Label>
                         <div className="relative">
                           <input
                             type="file"
                             id="idFront"
                             accept="image/*"
+                            disabled={verifyingId}
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
@@ -2442,11 +2486,18 @@ export default function PostEnquiry() {
                           />
                           <label
                             htmlFor="idFront"
-                            className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center ${
-                              idFrontImage
-                                ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md'
-                                : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30'
+                            className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl transition-all duration-200 flex flex-col items-center justify-center text-center ${
+                              verifyingId
+                                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                : idFrontImage
+                                ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md cursor-pointer'
+                                : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30 cursor-pointer'
                             }`}
+                            onClick={(e) => {
+                              if (verifyingId) {
+                                e.preventDefault();
+                              }
+                            }}
                           >
                             {idFrontImage ? (
                               <div className="space-y-2 px-3">
@@ -2458,73 +2509,15 @@ export default function PostEnquiry() {
                               <div className="space-y-2 px-3">
                                 <Upload className="h-6 w-6 sm:h-7 sm:w-7 text-slate-500 mx-auto" />
                                 <p className="text-xs sm:text-sm text-slate-700 font-semibold">Click to upload</p>
-                                <p className="text-[10px] sm:text-xs text-slate-500">Front side of ID</p>
+                                <p className="text-[10px] sm:text-xs text-slate-500">Upload your ID document</p>
                               </div>
                             )}
                           </label>
                         </div>
                       </div>
-
-                      {/* Back ID - Enhanced */}
-                      <div className="space-y-2.5">
-                        <Label htmlFor="idBack" className="text-xs sm:text-sm font-semibold text-slate-700">
-                          Back Side
-                        </Label>
-                        <div className="relative">
-                          <input
-                            type="file"
-                            id="idBack"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0] || null;
-                              setIdBackImage(file);
-                              setIdVerificationResult(null);
-                              
-                              // Upload image but don't verify yet - wait for verify button
-                              if (file) {
-                                try {
-                                  const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                  setIdBackUrl(uploadedUrl);
-                                } catch (error) {
-                                  console.error('Error uploading back ID:', error);
-                                  toast({
-                                    title: "Upload Failed",
-                                    description: "Failed to upload image. Please try again.",
-                                    variant: "destructive",
-                                  });
-                                }
-                              }
-                            }}
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor="idBack"
-                            className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center ${
-                              idBackImage
-                                ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md'
-                                : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30'
-                            }`}
-                          >
-                            {idBackImage ? (
-                              <div className="space-y-2 px-3">
-                                <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 mx-auto" />
-                                <p className="text-xs sm:text-sm text-green-700 font-semibold">Uploaded</p>
-                                <p className="text-[10px] sm:text-xs text-green-600 truncate max-w-full">{idBackImage.name}</p>
-                              </div>
-                            ) : (
-                              <div className="space-y-2 px-3">
-                                <Upload className="h-6 w-6 sm:h-7 sm:w-7 text-slate-500 mx-auto" />
-                                <p className="text-xs sm:text-sm text-slate-700 font-semibold">Click to upload</p>
-                                <p className="text-[10px] sm:text-xs text-slate-500">Back side of ID</p>
-                              </div>
-                            )}
-                          </label>
-                        </div>
-                      </div>
-                    </div>
                     
-                    {/* Verify Button - Show when images are uploaded but not yet verified */}
-                    {((idFrontImage || idBackImage) || (idFrontUrl || idBackUrl)) && idType && idNumber && (!idVerificationResult || !idVerificationResult.matches) && (
+                    {/* Verify Button - Show when image is uploaded but not yet verified */}
+                    {(idFrontImage || idFrontUrl) && idType && idNumber && (!idVerificationResult || !idVerificationResult.matches) && (
                       <div className="mt-4 sm:mt-5">
                         <Button
                           type="button"
@@ -2586,44 +2579,33 @@ export default function PostEnquiry() {
                             
                             // Set verifying state and clear errors
                             setVerifyingId(true);
+                            setVerificationCountdown(60); // Reset countdown to 60 seconds
                             setIdErrors(prev => ({ ...prev, idNumber: "" }));
                             
                             try {
-                              // Upload images in parallel if not already uploaded (faster)
-                              const uploadPromises: Promise<string | null>[] = [];
+                              // Upload image if not already uploaded
+                              let frontImageUrl: string | null = null;
                               
                               if (idFrontImage && !idFrontUrl) {
-                                uploadPromises.push(uploadToCloudinaryUnsigned(idFrontImage));
+                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
+                                setIdFrontUrl(frontImageUrl);
                               } else {
-                                uploadPromises.push(Promise.resolve(idFrontUrl || null));
+                                frontImageUrl = idFrontUrl || null;
                               }
                               
-                              if (idBackImage && !idBackUrl) {
-                                uploadPromises.push(uploadToCloudinaryUnsigned(idBackImage));
-                              } else {
-                                uploadPromises.push(Promise.resolve(idBackUrl || null));
-                              }
-                              
-                              // Wait for all uploads to complete in parallel
-                              const [frontImageUrl, backImageUrl] = await Promise.all(uploadPromises);
-                              
-                              // Update state with new URLs
-                              if (frontImageUrl && !idFrontUrl) setIdFrontUrl(frontImageUrl);
-                              if (backImageUrl && !idBackUrl) setIdBackUrl(backImageUrl);
-                              
-                              // Ensure we have at least one image URL
-                              if (!frontImageUrl && !backImageUrl) {
+                              // Ensure we have an image URL
+                              if (!frontImageUrl) {
                                 toast({
                                   title: "Upload Error",
-                                  description: "Failed to upload ID images. Please try again.",
+                                  description: "Failed to upload ID image. Please try again.",
                                   variant: "destructive",
                                 });
+                                setVerifyingId(false);
                                 return;
                               }
                               
-                              const verification = await verifyIdNumberMatchBothSides(
+                              const verification = await verifyIdNumberMatch(
                                 frontImageUrl,
-                                backImageUrl,
                                 idNumber,
                                 idType
                               );
@@ -2659,7 +2641,7 @@ export default function PostEnquiry() {
                               setVerifyingId(false);
                             }
                           }}
-                          disabled={!idType || !idNumber || ((!idFrontImage && !idBackImage) && (!idFrontUrl && !idBackUrl)) || verifyingId}
+                          disabled={!idType || !idNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
                           className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {verifyingId ? (

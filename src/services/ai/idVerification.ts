@@ -12,12 +12,15 @@ export async function extractIdNumberFromImage(
   idType: string
 ): Promise<{ number: string | null; confidence: number; error?: string }> {
   try {
-    // Optimize Tesseract for faster processing
+    // Optimize Tesseract for faster processing - use fastest settings
     const { data } = await Tesseract.recognize(imageUrl, 'eng', {
       logger: () => {}, // Disable logging for performance
       // Optimize for speed over accuracy (we validate format anyway)
       tessedit_pageseg_mode: '6', // Assume uniform block of text
       tessedit_char_whitelist: idType === 'aadhaar' ? '0123456789' : '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      // Additional speed optimizations
+      tessedit_ocr_engine_mode: '1', // Use LSTM OCR engine only (faster)
+      preserve_interword_spaces: '0', // Don't preserve spaces (faster)
     });
     
     const extractedText = data.text;
@@ -196,6 +199,8 @@ export async function verifyIdNumberMatchBothSides(
     let foundInBack = false;
     
     // Process both images in parallel for faster verification
+    // Try front image first, then back image if front fails
+    // This allows early return if front image matches
     const promises: Promise<IdVerificationResult>[] = [];
     
     if (frontImageUrl) {
@@ -218,26 +223,34 @@ export async function verifyIdNumberMatchBothSides(
       );
     }
     
-    // Wait for all verifications to complete in parallel
-    const results = await Promise.all(promises);
+    // Process in parallel but check for early success
+    const results = await Promise.allSettled(promises);
     
-    // Process results
-    for (const result of results) {
+    // Convert settled results to verification results
+    const verificationResults: IdVerificationResult[] = results.map(result => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        return { matches: false, error: 'Failed to process image' };
+      }
+    });
+    
+    // Process results - check for matches first (early return optimization)
+    for (let i = 0; i < verificationResults.length; i++) {
+      const result = verificationResults[i];
       if (result.matches) {
-        // If any image matches, we're done
-        if (!foundInFront && frontImageUrl) {
+        // If any image matches, return immediately (early exit for speed)
+        if (i === 0 && frontImageUrl) {
           foundInFront = true;
           bestMatch = result;
-        } else if (!foundInBack && backImageUrl) {
+          break; // Early return - found match in front image
+        } else if (i === 1 && backImageUrl) {
           foundInBack = true;
           bestMatch = result;
-        }
-        // If we found a match, return immediately
-        if (foundInFront || foundInBack) {
-          break;
+          break; // Early return - found match in back image
         }
       } else {
-        // Store best error result
+        // Store best error result for later use
         if (result.extractedNumber) {
           if (!bestMatch || !bestMatch.extractedNumber) {
             bestMatch = result;
