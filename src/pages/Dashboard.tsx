@@ -284,13 +284,6 @@ const Dashboard = () => {
         submissionsData.push(submission);
       });
       
-      // Sort by createdAt descending (latest first)
-      submissionsData.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      });
-      
       // Fetch enquiry data for each response to check expiration
       const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
       const enquiryDataMap: {[key: string]: Enquiry} = {};
@@ -321,6 +314,43 @@ const Dashboard = () => {
           }
         })
       );
+      
+      // Sort by live first, then expired (each group sorted by date - newest first)
+      const now = new Date();
+      const isEnquiryExpired = (enquiryId: string) => {
+        const enquiry = enquiryDataMap[enquiryId];
+        if (!enquiry || !enquiry.deadline) return false;
+        try {
+          let deadlineDate: Date;
+          if (enquiry.deadline && typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+            deadlineDate = (enquiry.deadline as any).toDate();
+          } else if (typeof enquiry.deadline === 'string' || typeof enquiry.deadline === 'number') {
+            deadlineDate = new Date(enquiry.deadline);
+          } else if (enquiry.deadline instanceof Date) {
+            deadlineDate = enquiry.deadline;
+          } else {
+            return false;
+          }
+          if (!deadlineDate || isNaN(deadlineDate.getTime())) return false;
+          return deadlineDate.getTime() < now.getTime();
+        } catch {
+          return false;
+        }
+      };
+
+      submissionsData.sort((a, b) => {
+        const aExpired = isEnquiryExpired(a.enquiryId);
+        const bExpired = isEnquiryExpired(b.enquiryId);
+        
+        // Live enquiries first
+        if (aExpired && !bExpired) return 1;
+        if (!aExpired && bExpired) return -1;
+        
+        // If both are same status (both live or both expired), sort by createdAt (newest first)
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
       
       // Don't merge enquiryDataMap into enquiries - enquiryDataMap contains enquiries user responded to,
       // not enquiries user created. Only enquiries with userId === user.uid should be in enquiries state.
@@ -456,23 +486,12 @@ const Dashboard = () => {
           submissionsData.push(submission);
         });
         
-        // Sort by createdAt descending (latest first)
-        submissionsData.sort((a, b) => {
-          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return dateB.getTime() - dateA.getTime();
-        });
-        
         // Skip first snapshot to avoid overriding initial fetch data
         if (isInitialSnapshot) {
           isInitialSnapshot = false;
           console.log('Dashboard: Skipping initial snapshot, data already loaded');
           return;
         }
-        
-        console.log('Dashboard: Seller submissions updated (realtime):', submissionsData.length);
-        setSellerSubmissions(submissionsData);
-        setResponsesSummary(submissionsData);
         
         // Check which enquiries are deleted (for real-time updates)
         const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
@@ -497,6 +516,46 @@ const Dashboard = () => {
             }
           })
         ).then(() => {
+          // Sort by live first, then expired (each group sorted by date - newest first)
+          const now = new Date();
+          const isEnquiryExpired = (enquiryId: string) => {
+            const enquiry = enquiryDataMap[enquiryId];
+            if (!enquiry || !enquiry.deadline) return false;
+            try {
+              let deadlineDate: Date;
+              if (enquiry.deadline && typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+                deadlineDate = (enquiry.deadline as any).toDate();
+              } else if (typeof enquiry.deadline === 'string' || typeof enquiry.deadline === 'number') {
+                deadlineDate = new Date(enquiry.deadline);
+              } else if (enquiry.deadline instanceof Date) {
+                deadlineDate = enquiry.deadline;
+              } else {
+                return false;
+              }
+              if (!deadlineDate || isNaN(deadlineDate.getTime())) return false;
+              return deadlineDate.getTime() < now.getTime();
+            } catch {
+              return false;
+            }
+          };
+
+          submissionsData.sort((a, b) => {
+            const aExpired = isEnquiryExpired(a.enquiryId);
+            const bExpired = isEnquiryExpired(b.enquiryId);
+            
+            // Live enquiries first
+            if (aExpired && !bExpired) return 1;
+            if (!aExpired && bExpired) return -1;
+            
+            // If both are same status (both live or both expired), sort by createdAt (newest first)
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+          
+          console.log('Dashboard: Seller submissions updated (realtime):', submissionsData.length);
+          setSellerSubmissions(submissionsData);
+          setResponsesSummary(submissionsData);
           setDeletedEnquiries(deletedSet);
           console.log('Dashboard: Deleted enquiries (realtime):', Array.from(deletedSet));
           
