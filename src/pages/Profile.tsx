@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2 } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
@@ -18,6 +19,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import { verifyIdNumberMatch, verifyIdNumberMatchBothSides } from '@/services/ai/idVerification';
 import SecurityDashboard from "@/components/SecurityDashboard";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 const Profile = () => {
   const { user: authUser } = useAuth();
@@ -49,6 +51,28 @@ const Profile = () => {
   const [submittedProfileId, setSubmittedProfileId] = useState<string | null>(null);
   const [showRemoveConfirmDialog, setShowRemoveConfirmDialog] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [verificationCountdown, setVerificationCountdown] = useState(60);
+
+  // Camera state for ID upload
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraVideoRef, setCameraVideoRef] = useState<HTMLVideoElement | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase()) ||
+        (window.innerWidth <= 768);
+      setIsMobile(isMobileDevice);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // SecurityDashboard data states
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -88,61 +112,29 @@ const Profile = () => {
     { code: "+216", country: "Tunisia", flag: "🇹🇳" }
   ];
 
-  // AUTO-VERIFY: Automatically verify ID when number, type, and images are available (Profile page only)
-  // Stop auto-verifying if previous verification was successful OR failed (don't keep retrying)
+  // Countdown timer for verification
   useEffect(() => {
-    if (!idNumber || !idType || (!idFrontUrl && !idBackUrl) || verifyingId) return;
-    
-    // Don't auto-verify again if previous verification already has a result (success or failure)
-    // Only verify if there's no previous result or if user changed something
-    if (idVerificationResult) {
-      // If verification was successful, don't verify again
-      if (idVerificationResult.matches) {
-        return;
-      }
-      // If verification failed, also don't auto-verify again (user needs to fix manually)
-      if (!idVerificationResult.matches) {
-        return;
-      }
+    if (!verifyingId) {
+      // Reset countdown when not verifying
+      setVerificationCountdown(60);
+      return;
     }
-    
-    // Debounce: Wait 800ms after user stops typing/changing
-    const timeoutId = setTimeout(async () => {
-      if (idNumber.trim() && idType && (idFrontUrl || idBackUrl) && !verifyingId) {
-        // Double-check: Don't verify if there's already a result
-        if (idVerificationResult) {
-          return;
+
+    // Ensure countdown starts at 60 when verification begins
+    setVerificationCountdown(60);
+
+    // Start countdown timer immediately - update every second
+    const interval = setInterval(() => {
+      setVerificationCountdown((prev) => {
+        if (prev <= 1) {
+          return 60; // Reset to 60 seconds if verification is still running
         }
-        
-        setVerifyingId(true);
-        try {
-          const verification = await verifyIdNumberMatchBothSides(
-            idFrontUrl,
-            idBackUrl,
-            idNumber,
-            idType
-          );
-          setIdVerificationResult(verification);
-          
-          if (!verification.matches) {
-            setIdErrors(prev => ({ 
-              ...prev, 
-              idNumber: verification.error || 'ID details does not match.' 
-            }));
-          } else {
-            setIdErrors(prev => ({ ...prev, idNumber: "" }));
-          }
-        } catch (error) {
-          console.error('Error auto-verifying ID:', error);
-        } finally {
-          // Always clear verifying state, even if there's an error
-          setVerifyingId(false);
-        }
-      }
-    }, 800);
-    
-    return () => clearTimeout(timeoutId);
-  }, [idNumber, idType, idFrontUrl, idBackUrl, verifyingId]);
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [verifyingId]);
 
   // Load profile data with REAL-TIME listener
   useEffect(() => {
@@ -349,9 +341,150 @@ const Profile = () => {
     }
   };
 
+  // Camera functions for ID upload
+  const startCamera = async () => {
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: isMobile 
+          ? { 
+              facingMode: 'environment',
+              width: { ideal: 1920, max: 1920 },
+              height: { ideal: 1080, max: 1080 }
+            }
+          : {
+              facingMode: 'user',
+              width: { ideal: 1920, max: 1920 },
+              height: { ideal: 1080, max: 1080 }
+            }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      setShowCameraModal(true);
+      
+      setTimeout(() => {
+        if (cameraVideoRef && stream) {
+          cameraVideoRef.srcObject = stream;
+          cameraVideoRef.play().catch(err => console.error('Video play error:', err));
+        }
+      }, 100);
+    } catch (error: any) {
+      console.error('Error accessing camera:', error);
+      let errorMessage = "Please allow camera access to take ID photos.";
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        errorMessage = "No camera found. Please connect a camera device.";
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        errorMessage = "Camera is already in use by another application.";
+      }
+      
+      toast({
+        title: "Camera Access Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    if (cameraVideoRef) {
+      cameraVideoRef.srcObject = null;
+    }
+    setShowCameraModal(false);
+    setCapturedImage(null);
+    setIsUploadingPhoto(false);
+  };
+
+  const capturePhoto = () => {
+    if (!cameraVideoRef || !cameraStream) return;
+    
+    try {
+      const canvas = document.createElement('canvas');
+      const video = cameraVideoRef;
+      
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
+      
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const imageUrl = URL.createObjectURL(blob);
+            setCapturedImage(imageUrl);
+          }
+        }, 'image/jpeg', 0.95);
+      }
+    } catch (error) {
+      console.error('Error capturing photo:', error);
+      toast({
+        title: "Capture Failed",
+        description: "Failed to capture photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const useCapturedPhoto = async () => {
+    if (!capturedImage) return;
+    
+    setIsUploadingPhoto(true);
+    
+    try {
+      // Convert blob URL to File (exactly like file upload)
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], `id-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      
+      // Upload to Cloudinary (same as file upload)
+      const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+      
+      // Set state exactly like file upload does
+      setIdFront(file);
+      setIdFrontUrl(uploadedUrl);
+      setIdErrors(prev => ({ ...prev, idFront: "" }));
+      setIdVerificationResult(null);
+      
+      // Close camera modal after successful upload
+      stopCamera();
+      
+      toast({
+        title: "Photo Uploaded",
+        description: "ID photo captured and uploaded successfully!",
+      });
+    } catch (error) {
+      console.error('Error uploading captured photo:', error);
+      setIsUploadingPhoto(false);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload captured photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Cleanup camera on unmount
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+      if (cameraVideoRef) {
+        cameraVideoRef.srcObject = null;
+      }
+    };
+  }, [cameraStream]);
+
   // Handle ID upload - SIMPLE APPROACH
   const handleIdUpload = async () => {
-    if (!idFront || !idType || !idNumber) {
+    if (!idFrontUrl || !idType || !idNumber) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields and upload front ID image.",
@@ -395,62 +528,20 @@ const Profile = () => {
       return;
     }
     
-    // REQUIRED: OCR verification must pass before upload
-    if (!idFrontUrl) {
-      toast({
-        title: "Image Not Verified",
-        description: "Please upload the ID image first. It will be automatically verified.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // MANDATORY: OCR verification must pass before upload
+    // Check if verification has passed (required before upload)
     if (!idFrontUrl) {
       toast({
         title: "Image Required",
-        description: "Please upload the ID image first. It will be automatically verified.",
+        description: "Please upload the ID image first.",
         variant: "destructive",
       });
       return;
     }
     
-    // If not verified yet, verify now (check both front and back)
-    if (!idVerificationResult) {
-      setVerifyingId(true);
-      try {
-        const verification = await verifyIdNumberMatchBothSides(
-          idFrontUrl,
-          idBackUrl,
-          idNumber,
-          idType
-        );
-        setIdVerificationResult(verification);
-        setVerifyingId(false);
-        
-        if (!verification.matches) {
-          toast({
-            title: "ID Verification Failed",
-            description: verification.error || "ID number does not match the uploaded image(s). The ID number should be visible on either the front or back side.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } catch (error) {
-        console.error('Error verifying ID:', error);
-        setVerifyingId(false);
-        toast({
-          title: "Verification Error",
-          description: "Failed to verify ID number. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else if (!idVerificationResult.matches) {
-      // Verification was done but failed
+    if (!idVerificationResult || !idVerificationResult.matches) {
       toast({
-        title: "ID Verification Failed",
-        description: idVerificationResult.error || "ID number does not match the uploaded image. Please check and try again.",
+        title: "Verification Required",
+        description: "Please verify your ID first by clicking the 'Verify' button.",
         variant: "destructive",
       });
       return;
@@ -461,71 +552,22 @@ const Profile = () => {
     setUploadProgress(10);
 
     try {
-      let frontImageUrl = idFrontUrl;
+      // Use existing idFrontUrl (already uploaded during image upload)
+      const frontImageUrl = idFrontUrl;
       
       if (!frontImageUrl) {
-        console.log('📤 Uploading front ID to Cloudinary...');
-        setUploadProgress(25);
-        
-        // Upload front ID image to Cloudinary (use unsigned for consistency with enquiry form)
-        frontImageUrl = await uploadToCloudinaryUnsigned(idFront);
-        
-        // Verify after upload if not already verified
-        if (frontImageUrl) {
-          setVerifyingId(true);
-          const verification = await verifyIdNumberMatch(frontImageUrl, idNumber, idType);
-          setIdVerificationResult(verification);
-          
-          if (!verification.matches) {
-            setVerifyingId(false);
-            setIsUploading(false);
-            setUploadProgress(0);
-            toast({
-              title: "ID Verification Failed",
-              description: verification.error || "ID number does not match the uploaded image. Please check and try again.",
-              variant: "destructive",
-            });
-            return;
-          }
-          setVerifyingId(false);
-        }
+        toast({
+          title: "Image Required",
+          description: "Please upload the ID image first.",
+          variant: "destructive",
+        });
+        setIsUploading(false);
+        setUploadProgress(0);
+        return;
       }
-      console.log('✅ Front ID uploaded and verified:', frontImageUrl);
-      setUploadProgress(50);
-
-      // Upload back ID image if provided (optional)
-      let backImageUrl = idBackUrl;
-      if (idBack && !idBackUrl) {
-        console.log('📤 Uploading back ID to Cloudinary...');
-        setUploadProgress(75);
-        backImageUrl = await uploadToCloudinaryUnsigned(idBack);
-        setIdBackUrl(backImageUrl);
-        console.log('✅ Back ID uploaded to Cloudinary:', backImageUrl);
-        
-        // Re-verify with both images after back upload
-        if (frontImageUrl && backImageUrl) {
-          setVerifyingId(true);
-          const verification = await verifyIdNumberMatchBothSides(
-            frontImageUrl,
-            backImageUrl,
-            idNumber,
-            idType
-          );
-          setIdVerificationResult(verification);
-          setVerifyingId(false);
-          
-          if (!verification.matches) {
-            setIsUploading(false);
-            setUploadProgress(0);
-            toast({
-              title: "ID Verification Failed",
-              description: verification.error || "ID number does not match the uploaded image(s). The ID number should be visible on either the front or back side.",
-              variant: "destructive",
-            });
-            return;
-          }
-        }
-      }
+      
+      console.log('✅ Using existing uploaded image:', frontImageUrl);
+      setUploadProgress(75);
 
       console.log('💾 Storing verification data in Firestore...');
       setUploadProgress(90);
@@ -540,7 +582,7 @@ const Profile = () => {
         idType: idType,
         idNumber: idNumber,
         frontImageUrl: frontImageUrl,
-        backImageUrl: backImageUrl,
+        backImageUrl: null, // Removed back image requirement
         // Store OCR verification result - MANDATORY for AI approval
         ocrVerification: {
           verified: idVerificationResult?.matches === true,
@@ -564,7 +606,7 @@ const Profile = () => {
       // 🤖 AI Processing - Runs in background without interrupting user experience
       // Process the profile verification with AI in real-time (non-blocking)
       console.log('🤖 Profile: Starting AI processing for profile verification:', authUser.uid);
-      realtimeAI.processProfileVerification(authUser.uid, profileData, { front: frontImageUrl, back: backImageUrl })
+      realtimeAI.processProfileVerification(authUser.uid, profileData, { front: frontImageUrl, back: null })
         .then((result) => {
           if (result.success) {
             console.log('✅ AI: Profile auto-verified instantly!');
@@ -622,7 +664,6 @@ const Profile = () => {
 
       // Reset form
       setIdFront(null);
-      setIdBack(null);
       setIdType("");
       setIdNumber("");
 
@@ -643,14 +684,7 @@ const Profile = () => {
   };
 
   if (!authUser) {
-    return (
-      <Layout>
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-[20px] border-pal-blue mx-auto mb-4"></div>
-          <p className="text-muted-foreground font-bold">Loading profile...</p>
-        </div>
-      </Layout>
-    );
+    return <LoadingAnimation message="Loading your profile" />;
   }
 
   return (
@@ -861,12 +895,65 @@ const Profile = () => {
               </div>
             )}
 
-            {/* UPLOAD FORM - Hide after profile is verified (only show for unverified users) */}
+            {/* ID VERIFICATION SUCCESS - Deconstructed Blue Tick Animation */}
+            {idVerificationResult && idVerificationResult.matches && !verifyingId && verificationStatus !== 'approved' && (
+              <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible mb-4 sm:mb-6">
+                <div 
+                  className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative rounded-full"
+                  style={{
+                    animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                    WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)',
+                    willChange: 'transform, box-shadow, border-radius'
+                  }}
+                >
+                  {/* Particle effects - deconstructed pieces assembling */}
+                  {[...Array(6)].map((_, i) => {
+                    const angle = (i * 60) * Math.PI / 180;
+                    const distance = 45;
+                    return (
+                      <div
+                        key={i}
+                        className="absolute w-3 h-3 bg-blue-400 rounded-full"
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                          transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                          WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                          animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                          WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                          transformOrigin: 'center',
+                          WebkitTransformOrigin: 'center',
+                          willChange: 'transform, opacity'
+                        }}
+                      />
+                    );
+                  })}
+                  <CheckCircle 
+                    className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
+                    style={{
+                      animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                      WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                      transform: 'translateZ(0)',
+                      WebkitTransform: 'translateZ(0)',
+                      willChange: 'transform, opacity'
+                    }}
+                  />
+                </div>
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter leading-none font-heading text-black mb-2">
+                  ID Verified Successfully!
+                </h3>
+              </div>
+            )}
+
+            {/* UPLOAD FORM - Hide after profile is verified or when verification succeeds (only show for unverified users) */}
             {!isProfileVerified && 
              verificationStatus !== 'approved' && 
              verificationStatus !== 'verified' && 
              verificationStatus !== 'completed' && 
-             (!verificationStatus || verificationStatus === 'rejected' || (idVerificationResult && idVerificationResult.matches)) ? (
+             !(idVerificationResult && idVerificationResult.matches && !verifyingId) &&
+             (!verificationStatus || verificationStatus === 'rejected') ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
                   <div className="space-y-1 sm:space-y-2">
@@ -879,8 +966,8 @@ const Profile = () => {
                             setIdErrors(prev => ({ ...prev, idNumber: "" }));
                           }
                           setIdVerificationResult(null);
-                        }}>
-                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black">
+                        }} disabled={verifyingId || isUploading}>
+                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black" disabled={verifyingId || isUploading}>
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                         <SelectContent>
@@ -916,6 +1003,7 @@ const Profile = () => {
                       }}
                       placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
                       className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                      disabled={verifyingId || isUploading}
                     />
                     {idErrors.idNumber && !idVerificationResult && (
                       <span className="text-xs text-red-500 flex items-center">
@@ -933,90 +1021,116 @@ const Profile = () => {
                             WebkitAnimation: 'spin 1s linear infinite'
                           }}
                         ></div>
-                        <span>Verifying ID number with image...</span>
+                        <span>Verifying ID number with image... ({verificationCountdown}s)</span>
                       </div>
                     )}
-                    {idVerificationResult && !verifyingId && (
-                      <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                        idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {idVerificationResult.matches ? (
-                          <>
-                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                            <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                            <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
-                          </>
-                        )}
+                    {idVerificationResult && !verifyingId && !idVerificationResult.matches && (
+                      <div className="flex items-start gap-1.5 sm:gap-2 mt-1 text-red-600">
+                        <XCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                        <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
-                  <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="idFront" className="text-xs sm:text-sm">Front Side *</Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-pal-blue transition-colors">
-                      <input
-                        id="idFront"
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          setIdFront(file);
-                          setIdErrors(prev => ({ ...prev, idFront: "" }));
+                {/* ID Upload - Single Slot with Camera */}
+                <div className="space-y-2.5">
+                  <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                    ID Document *
+                  </Label>
+                  
+                  {/* Upload Options - File and Camera - Side by Side */}
+                  <div className="flex flex-row gap-2 mb-3 sm:mb-2">
+                    <input
+                      type="file"
+                      id="idFront"
+                      accept="image/*"
+                      capture="environment"
+                      disabled={verifyingId || isUploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIdFront(file);
+                        setIdErrors(prev => ({ ...prev, idFront: "" }));
+                        setIdVerificationResult(null);
+                        
+                        try {
+                          const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                          setIdFrontUrl(uploadedUrl);
                           setIdVerificationResult(null);
-                          
-                          // Upload image but don't verify yet - wait for verify button
-                          try {
-                            const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                            setIdFrontUrl(uploadedUrl);
-                            setIdVerificationResult(null);
-                          } catch (error) {
-                            console.error('Error uploading ID:', error);
-                            toast({
-                              title: "Upload Failed",
-                              description: "Failed to upload image. Please try again.",
-                              variant: "destructive",
-                            });
-                          }
+                        } catch (error) {
+                          console.error('Error uploading ID:', error);
+                          toast({
+                            title: "Upload Failed",
+                            description: "Failed to upload image. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    
+                    {/* File Upload Button - Same dimensions as Camera */}
+                    <label
+                      htmlFor="idFront"
+                      className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                        verifyingId || isUploading
+                          ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                          : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                      }`}
+                      onClick={(e) => {
+                        if (verifyingId || isUploading) {
+                          e.preventDefault();
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Upload className="h-5 w-5 text-slate-600" />
+                        <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                      </div>
+                    </label>
+                    
+                    {/* Camera Button - Same dimensions as Upload */}
+                    <button
+                      type="button"
+                      onClick={startCamera}
+                      disabled={verifyingId || isUploading}
+                      className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
+                        verifyingId || isUploading
+                          ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                          : 'border-blue-300 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Camera className="h-5 w-5 text-blue-600" />
+                        <span className="text-sm text-blue-700 font-semibold">Camera</span>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  {/* Image Upload Status - Text Only */}
+                  {(idFront || idFrontUrl) && (
+                    <div className="w-full border-2 border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md">
+                      <div className="flex items-center gap-2 sm:gap-2.5">
+                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                        <span className="text-sm sm:text-base font-semibold text-green-700">Image uploaded</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIdFront(null);
+                          setIdFrontUrl("");
+                          setIdVerificationResult(null);
                         }}
-                        className="hidden"
-                      />
-                      <Label htmlFor="idFront" className="cursor-pointer">
-                        <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                          <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
-                          <span className="text-xs sm:text-sm text-gray-600">
-                            {idFront ? idFront.name : "Click to upload front side"}
-                          </span>
-                        </div>
-                      </Label>
+                        className="bg-red-500 text-white rounded-lg px-3 py-1.5 sm:px-2 sm:py-1 hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation shadow-sm text-xs sm:text-sm font-medium"
+                        disabled={verifyingId || isUploading}
+                        aria-label="Remove image"
+                      >
+                        <X className="h-4 w-4 sm:h-3 sm:w-3 inline mr-1" />
+                        Remove
+                      </button>
                     </div>
-                  </div>
-                  <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="idBack" className="text-xs sm:text-sm">Back Side (Optional)</Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-pal-blue transition-colors">
-                      <input
-                        id="idBack"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setIdBack(e.target.files?.[0] || null)}
-                        className="hidden"
-                      />
-                      <Label htmlFor="idBack" className="cursor-pointer">
-                        <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                          <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
-                          <span className="text-xs sm:text-sm text-gray-600">
-                            {idBack ? idBack.name : "Click to upload back side"}
-                          </span>
-                        </div>
-                      </Label>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Improved Progress Bar */}
@@ -1038,8 +1152,7 @@ const Profile = () => {
                       <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-[20px] border-blue-500 border-t-transparent"></div>
                       <span className="font-bold">
                         {uploadProgress < 25 && "Preparing upload..."}
-                        {uploadProgress >= 25 && uploadProgress < 50 && "Uploading front ID..."}
-                        {uploadProgress >= 50 && uploadProgress < 75 && "Uploading back ID..."}
+                        {uploadProgress >= 25 && uploadProgress < 75 && "Uploading ID..."}
                         {uploadProgress >= 75 && uploadProgress < 100 && "Saving to database..."}
                         {uploadProgress === 100 && "Upload complete!"}
                       </span>
@@ -1050,60 +1163,97 @@ const Profile = () => {
                 {/* Combined Verify & Upload Button */}
                 <Button
                   onClick={async () => {
-                    // First verify, then upload if verification passes
-                    if (!idFront || !idType || !idNumber) {
-                      toast({
-                        title: "Missing Information",
-                        description: "Please fill in all required fields and upload front ID image.",
-                        variant: "destructive",
+                    // If verification hasn't passed, verify first
+                    if (!idVerificationResult || !idVerificationResult.matches) {
+                      // Verify step - check if we have file or URL
+                      if ((!idFront && !idFrontUrl) || !idType || !idNumber) {
+                        toast({
+                          title: "Missing Information",
+                          description: "Please fill in all required fields and upload ID image.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      
+                      // CRITICAL: Set countdown and disable button FIRST - before any async operations
+                      // This ensures immediate UI feedback
+                      flushSync(() => {
+                        setVerificationCountdown(60);
+                        setVerifyingId(true);
+                        setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                        setIdVerificationResult(null);
                       });
-                      return;
-                    }
-                    
-                    // Validate format first
-                    const newErrors: {[key: string]: string} = {};
-                    const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
-                    if (idType === 'aadhaar') {
-                      if (!/^\d{12}$/.test(cleanIdNumber)) {
-                        newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+                      
+                      // Now do async operations (upload image if needed)
+                      let imageUrl = idFrontUrl;
+                      if (!imageUrl && idFront) {
+                        try {
+                          imageUrl = await uploadToCloudinaryUnsigned(idFront);
+                          setIdFrontUrl(imageUrl);
+                        } catch (error) {
+                          console.error('Error uploading ID:', error);
+                          setVerifyingId(false);
+                          setVerificationCountdown(60);
+                          toast({
+                            title: "Upload Failed",
+                            description: "Failed to upload image. Please try again.",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
                       }
-                    } else if (idType === 'pan') {
-                      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
-                        newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+                      
+                      if (!imageUrl) {
+                        setVerifyingId(false);
+                        setVerificationCountdown(60);
+                        toast({
+                          title: "Image Required",
+                          description: "Please upload the ID image first.",
+                          variant: "destructive",
+                        });
+                        return;
                       }
-                    } else if (idType === 'passport') {
-                      if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
-                        newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+                      
+                      // Validate format
+                      const newErrors: {[key: string]: string} = {};
+                      const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
+                      if (idType === 'aadhaar') {
+                        if (!/^\d{12}$/.test(cleanIdNumber)) {
+                          newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
+                        }
+                      } else if (idType === 'pan') {
+                        if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+                          newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
+                        }
+                      } else if (idType === 'passport') {
+                        if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+                          newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
+                        }
+                      } else if (idType === 'driving_license') {
+                        if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
+                          newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+                        }
+                      } else if (idType === 'voter_id') {
+                        if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
+                          newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
+                        }
                       }
-                    } else if (idType === 'driving_license') {
-                      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
-                        newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
+                      
+                      if (Object.keys(newErrors).length > 0) {
+                        setVerifyingId(false);
+                        setVerificationCountdown(60);
+                        setIdErrors(newErrors);
+                        toast({
+                          title: "ID Validation Error",
+                          description: "Please fix the ID information errors before verifying.",
+                          variant: "destructive",
+                        });
+                        return;
                       }
-                    } else if (idType === 'voter_id') {
-                      if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
-                        newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
-                      }
-                    }
-                    
-                    if (Object.keys(newErrors).length > 0) {
-                      setIdErrors(newErrors);
-                      toast({
-                        title: "ID Validation Error",
-                        description: "Please fix the ID information errors before uploading.",
-                        variant: "destructive",
-                      });
-                      return;
-                    }
-                    
-                    // Verify OCR if image is already uploaded
-                    if (idFrontUrl || idBackUrl) {
-                      setVerifyingId(true);
-                      setIdErrors(prev => ({ ...prev, idNumber: "" }));
                       
                       try {
-                        const verification = await verifyIdNumberMatchBothSides(
-                          idFrontUrl,
-                          idBackUrl,
+                        const verification = await verifyIdNumberMatch(
+                          imageUrl,
                           idNumber,
                           idType
                         );
@@ -1113,14 +1263,18 @@ const Profile = () => {
                         if (!verification.matches) {
                           setIdErrors(prev => ({ 
                             ...prev, 
-                            idNumber: verification.error || 'ID number does not match the image(s)' 
+                            idNumber: verification.error || 'ID number does not match the image' 
                           }));
                           toast({
                             title: "Verification Failed",
-                            description: verification.error || "ID number does not match the uploaded image(s).",
+                            description: verification.error || "ID number does not match the uploaded image.",
                             variant: "destructive",
                           });
-                          return;
+                        } else {
+                          toast({
+                            title: "Verification Successful",
+                            description: "ID number verified successfully! Click again to upload for trust badge.",
+                          });
                         }
                       } catch (error) {
                         console.error('Error verifying ID:', error);
@@ -1129,25 +1283,23 @@ const Profile = () => {
                           description: "Failed to verify ID number. Please try again.",
                           variant: "destructive",
                         });
-                        return;
                       } finally {
-                        // Always clear verifying state
                         setVerifyingId(false);
+                        setVerificationCountdown(60);
                       }
+                    } else {
+                      // Verification passed - user clicked button again to upload
+                      // This is a SEPARATE click - only upload, do NOT verify again
+                      handleIdUpload();
                     }
-                    
-                    // If verification passed or no image uploaded yet, proceed with upload
-                    handleIdUpload();
                   }}
                   disabled={
                     !idType || 
                     !idNumber || 
-                    !idFront || 
+                    (!idFront && !idFrontUrl) || 
                     isUploading || 
                     verifyingId ||
-                    (idErrors.idNumber && idErrors.idNumber.length > 0) || 
-                    !idVerificationResult || 
-                    !idVerificationResult.matches
+                    (idErrors.idNumber && idErrors.idNumber.length > 0)
                   }
                   className="w-full h-8 sm:h-10 text-xs sm:text-sm"
                 >
@@ -1167,21 +1319,40 @@ const Profile = () => {
                       <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                       Uploading...
                     </>
-                  ) : !idVerificationResult || !idVerificationResult.matches ? (
+                  ) : (idVerificationResult && idVerificationResult.matches) ? (
                     <>
-                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      Verify ID First
+                      Get Trust Badge
                     </>
                   ) : (
                     <>
-                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      Upload ID for Trust Badge
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Verify
                     </>
                   )}
                 </Button>
 
               </>
             ) : null}
+
+            {/* Upload Button - Show when verification succeeds */}
+            {idVerificationResult && idVerificationResult.matches && !verifyingId && verificationStatus !== 'approved' && (
+              <Button
+                onClick={handleIdUpload}
+                disabled={isUploading}
+                className="w-full h-8 sm:h-10 text-xs sm:text-sm mt-4"
+              >
+                {isUploading ? (
+                  <>
+                    <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    Get Trust Badge
+                  </>
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -1243,6 +1414,138 @@ const Profile = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Camera Modal - Mobile Optimized */}
+      {showCameraModal && (
+        <div 
+          className={`fixed inset-0 bg-black ${isMobile ? 'bg-opacity-100' : 'bg-opacity-90'} z-50 flex items-center justify-center ${isMobile ? 'p-0' : 'p-2 sm:p-4'}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isUploadingPhoto && !isMobile) {
+              stopCamera();
+            }
+          }}
+        >
+          <div className={`${isMobile ? 'w-full h-full rounded-none' : 'bg-white rounded-xl max-w-2xl w-full max-h-[90vh]'} overflow-hidden flex flex-col`}>
+            {/* Header - Mobile Optimized */}
+            <div className={`flex items-center justify-between ${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm' : 'p-3 sm:p-4 border-b bg-white'}`}>
+              <h3 className={`${isMobile ? 'text-lg text-white' : 'text-base sm:text-lg font-bold text-black'}`}>
+                {isMobile ? '📷 Take ID Photo' : 'Take ID Photo'}
+              </h3>
+              <button
+                onClick={stopCamera}
+                disabled={isUploadingPhoto}
+                className={`${isMobile ? 'p-3 bg-white/20 hover:bg-white/30 active:bg-white/40' : 'p-2 hover:bg-gray-100 active:bg-gray-200'} rounded-full transition-colors touch-manipulation disabled:opacity-50`}
+                aria-label="Close camera"
+              >
+                <X className={`h-6 w-6 ${isMobile ? 'text-white' : 'text-gray-600'}`} />
+              </button>
+            </div>
+            
+            {/* Camera Preview - Mobile Optimized */}
+            <div className={`relative flex-1 bg-black flex items-center justify-center ${isMobile ? 'h-[calc(100vh-180px)]' : 'min-h-[300px] sm:min-h-[400px]'}`}>
+              {!capturedImage ? (
+                <>
+                  <video
+                    ref={(el) => {
+                      setCameraVideoRef(el);
+                      if (el && cameraStream) {
+                        el.srcObject = cameraStream;
+                        el.play().catch(err => console.error('Video play error:', err));
+                      }
+                    }}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    style={{ 
+                      maxHeight: isMobile ? '100%' : '80vh',
+                      transform: isMobile ? 'scaleX(-1)' : 'none'
+                    }}
+                  />
+                  
+                  {/* Capture Button - Mobile Optimized */}
+                  <div className={`absolute ${isMobile ? 'bottom-6' : 'bottom-4 sm:bottom-8'} left-1/2 transform -translate-x-1/2 z-10`}>
+                    <button
+                      onClick={capturePhoto}
+                      className={`${isMobile ? 'w-20 h-20 border-[5px]' : 'w-16 h-16 sm:w-20 sm:h-20 border-4'} bg-white rounded-full border-gray-300 flex items-center justify-center hover:scale-110 active:scale-90 transition-transform touch-manipulation shadow-2xl`}
+                      aria-label="Capture photo"
+                    >
+                      <div className={`${isMobile ? 'w-14 h-14 border-[3px]' : 'w-12 h-12 sm:w-14 sm:h-14 border-2'} bg-white rounded-full border-gray-400`}></div>
+                    </button>
+                  </div>
+                  
+                  {/* Instructions Overlay - Mobile Optimized */}
+                  {isMobile && (
+                    <div className="absolute top-6 left-4 right-4 bg-gradient-to-r from-black/80 via-black/70 to-black/80 backdrop-blur-sm text-white text-sm px-4 py-3 rounded-xl border border-white/20">
+                      <p className="text-center font-medium">📄 Position your ID clearly in the frame</p>
+                      <p className="text-center text-xs mt-1 text-white/80">Make sure all text is visible and readable</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={capturedImage}
+                    alt="Captured ID"
+                    className="max-w-full max-h-full object-contain"
+                    style={{ maxHeight: isMobile ? '100%' : '80vh' }}
+                  />
+                  
+                  {/* Upload Progress - Mobile Optimized */}
+                  {isUploadingPhoto && (
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center">
+                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mb-4"></div>
+                      <p className="text-white text-base font-semibold">Uploading photo...</p>
+                      <p className="text-white/70 text-sm mt-1">Please wait</p>
+                    </div>
+                  )}
+                  
+                  {/* Action Buttons - Mobile Optimized */}
+                  {!isUploadingPhoto && (
+                    <div className={`absolute ${isMobile ? 'bottom-6 left-4 right-4' : 'bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2'} flex ${isMobile ? 'flex-col gap-3' : 'flex-col sm:flex-row gap-3 sm:gap-4'} ${isMobile ? 'w-auto' : 'w-full sm:w-auto'} ${isMobile ? '' : 'px-4 sm:px-0'}`}>
+                      <button
+                        onClick={() => {
+                          setCapturedImage(null);
+                          if (cameraVideoRef && cameraStream) {
+                            cameraVideoRef.srcObject = cameraStream;
+                            cameraVideoRef.play().catch(err => console.error('Video play error:', err));
+                          }
+                        }}
+                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-gray-700/90 backdrop-blur-sm text-white rounded-xl hover:bg-gray-800 active:bg-gray-900 transition-colors font-medium touch-manipulation shadow-lg border border-white/10`}
+                      >
+                        🔄 Retake
+                      </button>
+                      <button
+                        onClick={useCapturedPhoto}
+                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium touch-manipulation shadow-lg`}
+                      >
+                        ✅ Use Photo
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Instructions Footer - Mobile Optimized */}
+            <div className={`${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm border-t border-white/10' : 'p-3 sm:p-4 bg-gray-50 border-t'}`}>
+              <p className={`${isMobile ? 'text-sm text-white/90' : 'text-xs sm:text-sm text-gray-600'} text-center font-medium`}>
+                {isUploadingPhoto 
+                  ? "⏳ Uploading your photo, please wait..."
+                  : !capturedImage 
+                    ? (isMobile 
+                        ? "👆 Tap the white button below to capture your ID"
+                        : "Position your ID document clearly in the frame and click the capture button")
+                    : (isMobile
+                        ? "👀 Review your photo. Tap 'Use Photo' to upload, or 'Retake' to try again."
+                        : "Review your photo. Click 'Use Photo' to upload, or 'Retake' to try again.")
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
   );
 };

@@ -139,3 +139,4 @@ While you can't change the email template, you can:
 3. **If customizing:** Set up Firebase Admin SDK + email service
 4. **Test:** Ensure sign-in still works regardless of email branding
 
+
