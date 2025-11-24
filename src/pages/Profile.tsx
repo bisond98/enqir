@@ -816,7 +816,7 @@ const Profile = () => {
               Trust Badge (Optional)
             </h2>
             <p className="text-[10px] sm:text-xs text-gray-300 mt-1.5">
-              They made everything feel untrustful without a blue tick.
+              Make all enquires and responses verified.
             </p>
           </div>
           {/* Card Content - Enhanced White Background */}
@@ -829,9 +829,6 @@ const Profile = () => {
                   <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                 </div>
                 <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white mb-2">Profile Verified!</h3>
-                <p className="text-blue-50 text-[10px] sm:text-xs">
-                  Congratulations! Your profile has been verified and you now have a verified badge.
-                </p>
                 <div className="mt-3 sm:mt-4">
                   <Badge variant="secondary" className="bg-blue-400 text-white border-blue-300 text-xs sm:text-sm">
                     <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
