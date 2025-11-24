@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X } from "lucide-react";
+import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -152,6 +152,28 @@ const SellerResponse = () => {
   const [idFrontUrl, setIdFrontUrl] = useState("");
   const [idBackUrl, setIdBackUrl] = useState("");
   const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
+  
+  // Camera state for ID upload
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraVideoRef, setCameraVideoRef] = useState<HTMLVideoElement | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase()) ||
+        (window.innerWidth <= 768);
+      setIsMobile(isMobileDevice);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -644,6 +666,149 @@ const SellerResponse = () => {
     setGovIdProgress(0);
     setErrors(prev => ({ ...prev, govId: "" }));
   };
+
+  // Camera functions for ID upload
+  const startCamera = async () => {
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: isMobile 
+          ? { 
+              facingMode: 'environment',
+              width: { ideal: 1920, max: 1920 },
+              height: { ideal: 1080, max: 1080 }
+            }
+          : {
+              facingMode: 'user',
+              width: { ideal: 1920, max: 1920 },
+              height: { ideal: 1080, max: 1080 }
+            }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      setShowCameraModal(true);
+      
+      setTimeout(() => {
+        if (cameraVideoRef && stream) {
+          cameraVideoRef.srcObject = stream;
+          cameraVideoRef.play().catch(err => console.error('Video play error:', err));
+        }
+      }, 100);
+    } catch (error: any) {
+      console.error('Error accessing camera:', error);
+      let errorMessage = "Please allow camera access to take ID photos.";
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        errorMessage = "No camera found. Please connect a camera device.";
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        errorMessage = "Camera is already in use by another application.";
+      }
+      
+      toast({
+        title: "Camera Access Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    if (cameraVideoRef) {
+      cameraVideoRef.srcObject = null;
+    }
+    setShowCameraModal(false);
+    setCapturedImage(null);
+    setIsUploadingPhoto(false);
+  };
+
+  const capturePhoto = () => {
+    if (!cameraVideoRef || !cameraStream) return;
+    
+    try {
+      const canvas = document.createElement('canvas');
+      const video = cameraVideoRef;
+      
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
+      
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const imageUrl = URL.createObjectURL(blob);
+            setCapturedImage(imageUrl);
+          }
+        }, 'image/jpeg', 0.95);
+      }
+    } catch (error) {
+      console.error('Error capturing photo:', error);
+      toast({
+        title: "Capture Failed",
+        description: "Failed to capture photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const useCapturedPhoto = async () => {
+    if (!capturedImage) return;
+    
+    setIsUploadingPhoto(true);
+    
+    try {
+      // Convert blob URL to File (exactly like file upload)
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], `id-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      
+      // Upload to Cloudinary (same as file upload)
+      const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+      
+      // Set state exactly like file upload does
+      setIdFrontImage(file);
+      setIdFrontUrl(uploadedUrl);
+      setIdErrors(prev => ({ ...prev, idFront: "" }));
+      setIdVerificationResult(null);
+      // Keep backward compatibility with govIdUrl
+      if (!govIdUrl) setGovIdUrl(uploadedUrl);
+      
+      // Close camera modal after successful upload
+      stopCamera();
+      
+      toast({
+        title: "Photo Uploaded",
+        description: "ID photo captured and uploaded successfully!",
+      });
+    } catch (error) {
+      console.error('Error uploading captured photo:', error);
+      setIsUploadingPhoto(false);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload captured photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Cleanup camera on unmount
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+      if (cameraVideoRef) {
+        cameraVideoRef.srcObject = null;
+      }
+    };
+  }, [cameraStream]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1717,71 +1882,111 @@ const SellerResponse = () => {
                           </div>
                         </div>
                         
-                        {/* ID Upload */}
+                        {/* ID Upload - Side by Side on Mobile */}
                         <div className="space-y-2.5">
                           <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
                             ID Document
                           </Label>
-                            <div className="relative">
-                              <input
-                                type="file"
-                                id="idFront"
-                                accept="image/*"
-                                disabled={verifyingId}
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  setIdFrontImage(file);
-                                  setIdErrors(prev => ({ ...prev, idFront: "" }));
-                                  setIdVerificationResult(null);
-                                  
-                                  try {
-                                    const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                    setIdFrontUrl(uploadedUrl);
-                                    // Keep backward compatibility with govIdUrl
-                                    if (!govIdUrl) setGovIdUrl(uploadedUrl);
-                                  } catch (error) {
-                                    console.error('Error uploading ID:', error);
-                                    toast({
-                                      title: "Upload Failed",
-                                      description: "Failed to upload image. Please try again.",
-                                      variant: "destructive",
-                                    });
-                                  }
-                                }}
-                                className="hidden"
-                              />
-                              <label
-                                htmlFor="idFront"
-                                className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl transition-all duration-200 flex flex-col items-center justify-center text-center ${
-                                  verifyingId
-                                    ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                                    : idFrontImage || idFrontUrl
-                                    ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md cursor-pointer'
-                                    : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30 cursor-pointer'
-                                }`}
-                                onClick={(e) => {
-                                  if (verifyingId) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              >
-                                {idFrontImage || idFrontUrl ? (
-                                  <div className="space-y-2 px-3">
-                                    <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 mx-auto" />
-                                    <p className="text-xs sm:text-sm text-green-700 font-semibold">Uploaded</p>
-                                    <p className="text-[10px] sm:text-xs text-green-600 truncate max-w-full">{idFrontImage?.name || 'Front ID'}</p>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-2 px-3">
-                                    <Upload className="h-6 w-6 sm:h-7 sm:w-7 text-slate-500 mx-auto" />
-                                    <p className="text-xs sm:text-sm text-slate-700 font-semibold">Click to upload</p>
-                                    <p className="text-[10px] sm:text-xs text-slate-500">Upload your ID document</p>
-                                  </div>
-                                )}
-                              </label>
-                            </div>
+                          
+                          {/* Upload Options - File and Camera - Side by Side */}
+                          <div className="flex flex-row gap-2 mb-3 sm:mb-2">
+                            <input
+                              type="file"
+                              id="idFront"
+                              accept="image/*"
+                              capture="environment"
+                              disabled={verifyingId}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setIdFrontImage(file);
+                                setIdErrors(prev => ({ ...prev, idFront: "" }));
+                                setIdVerificationResult(null);
+                                
+                                try {
+                                  const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                                  setIdFrontUrl(uploadedUrl);
+                                  // Keep backward compatibility with govIdUrl
+                                  if (!govIdUrl) setGovIdUrl(uploadedUrl);
+                                } catch (error) {
+                                  console.error('Error uploading ID:', error);
+                                  toast({
+                                    title: "Upload Failed",
+                                    description: "Failed to upload image. Please try again.",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }}
+                              className="hidden"
+                            />
+                            
+                            {/* File Upload Button - Same dimensions as Camera */}
+                            <label
+                              htmlFor="idFront"
+                              className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                                verifyingId
+                                  ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                  : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                              }`}
+                              onClick={(e) => {
+                                if (verifyingId) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Upload className="h-5 w-5 text-slate-600" />
+                                <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                              </div>
+                            </label>
+                            
+                            {/* Camera Button - Same dimensions as Upload */}
+                            <button
+                              type="button"
+                              onClick={startCamera}
+                              disabled={verifyingId}
+                              className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
+                                verifyingId
+                                  ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                  : 'border-blue-300 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Camera className="h-5 w-5 text-blue-600" />
+                                <span className="text-sm text-blue-700 font-semibold">Camera</span>
+                              </div>
+                            </button>
                           </div>
+                          
+                          {/* Image Preview - Mobile Optimized */}
+                          {(idFrontImage || idFrontUrl) && (
+                            <div className="relative w-full h-36 sm:h-32 border-2 border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl overflow-hidden shadow-md">
+                              <img
+                                src={idFrontUrl || (idFrontImage ? URL.createObjectURL(idFrontImage) : '')}
+                                alt="ID Document"
+                                className="w-full h-full object-contain bg-white"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIdFrontImage(null);
+                                  setIdFrontUrl("");
+                                  if (govIdUrl === idFrontUrl) setGovIdUrl("");
+                                  setIdVerificationResult(null);
+                                }}
+                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 sm:p-1.5 hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation shadow-lg"
+                                disabled={verifyingId}
+                                aria-label="Remove image"
+                              >
+                                <X className="h-4 w-4 sm:h-3 sm:w-3" />
+                              </button>
+                              <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs sm:text-xs px-3 py-1.5 sm:px-2 sm:py-1 rounded-lg sm:rounded flex items-center gap-1.5 sm:gap-1 shadow-md">
+                                <CheckCircle className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
+                                <span className="font-semibold sm:font-normal">Uploaded</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         
                         {/* Upload ID for Trust Badge Button */}
                         {(idFrontImage || idFrontUrl) && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches) && (
@@ -1958,6 +2163,138 @@ const SellerResponse = () => {
           )}
         </div>
       </div>
+
+      {/* Camera Modal - Mobile Optimized */}
+      {showCameraModal && (
+        <div 
+          className={`fixed inset-0 bg-black ${isMobile ? 'bg-opacity-100' : 'bg-opacity-90'} z-50 flex items-center justify-center ${isMobile ? 'p-0' : 'p-2 sm:p-4'}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isUploadingPhoto && !isMobile) {
+              stopCamera();
+            }
+          }}
+        >
+          <div className={`${isMobile ? 'w-full h-full rounded-none' : 'bg-white rounded-xl max-w-2xl w-full max-h-[90vh]'} overflow-hidden flex flex-col`}>
+            {/* Header - Mobile Optimized */}
+            <div className={`flex items-center justify-between ${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm' : 'p-3 sm:p-4 border-b bg-white'}`}>
+              <h3 className={`${isMobile ? 'text-lg text-white' : 'text-base sm:text-lg font-bold text-black'}`}>
+                {isMobile ? '📷 Take ID Photo' : 'Take ID Photo'}
+              </h3>
+              <button
+                onClick={stopCamera}
+                disabled={isUploadingPhoto}
+                className={`${isMobile ? 'p-3 bg-white/20 hover:bg-white/30 active:bg-white/40' : 'p-2 hover:bg-gray-100 active:bg-gray-200'} rounded-full transition-colors touch-manipulation disabled:opacity-50`}
+                aria-label="Close camera"
+              >
+                <X className={`h-6 w-6 ${isMobile ? 'text-white' : 'text-gray-600'}`} />
+              </button>
+            </div>
+            
+            {/* Camera Preview - Mobile Optimized */}
+            <div className={`relative flex-1 bg-black flex items-center justify-center ${isMobile ? 'h-[calc(100vh-180px)]' : 'min-h-[300px] sm:min-h-[400px]'}`}>
+              {!capturedImage ? (
+                <>
+                  <video
+                    ref={(el) => {
+                      setCameraVideoRef(el);
+                      if (el && cameraStream) {
+                        el.srcObject = cameraStream;
+                        el.play().catch(err => console.error('Video play error:', err));
+                      }
+                    }}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    style={{ 
+                      maxHeight: isMobile ? '100%' : '80vh',
+                      transform: isMobile ? 'scaleX(-1)' : 'none'
+                    }}
+                  />
+                  
+                  {/* Capture Button - Mobile Optimized */}
+                  <div className={`absolute ${isMobile ? 'bottom-6' : 'bottom-4 sm:bottom-8'} left-1/2 transform -translate-x-1/2 z-10`}>
+                    <button
+                      onClick={capturePhoto}
+                      className={`${isMobile ? 'w-20 h-20 border-[5px]' : 'w-16 h-16 sm:w-20 sm:h-20 border-4'} bg-white rounded-full border-gray-300 flex items-center justify-center hover:scale-110 active:scale-90 transition-transform touch-manipulation shadow-2xl`}
+                      aria-label="Capture photo"
+                    >
+                      <div className={`${isMobile ? 'w-14 h-14 border-[3px]' : 'w-12 h-12 sm:w-14 sm:h-14 border-2'} bg-white rounded-full border-gray-400`}></div>
+                    </button>
+                  </div>
+                  
+                  {/* Instructions Overlay - Mobile Optimized */}
+                  {isMobile && (
+                    <div className="absolute top-6 left-4 right-4 bg-gradient-to-r from-black/80 via-black/70 to-black/80 backdrop-blur-sm text-white text-sm px-4 py-3 rounded-xl border border-white/20">
+                      <p className="text-center font-medium">📄 Position your ID clearly in the frame</p>
+                      <p className="text-center text-xs mt-1 text-white/80">Make sure all text is visible and readable</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={capturedImage}
+                    alt="Captured ID"
+                    className="max-w-full max-h-full object-contain"
+                    style={{ maxHeight: isMobile ? '100%' : '80vh' }}
+                  />
+                  
+                  {/* Upload Progress - Mobile Optimized */}
+                  {isUploadingPhoto && (
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center">
+                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mb-4"></div>
+                      <p className="text-white text-base font-semibold">Uploading photo...</p>
+                      <p className="text-white/70 text-sm mt-1">Please wait</p>
+                    </div>
+                  )}
+                  
+                  {/* Action Buttons - Mobile Optimized */}
+                  {!isUploadingPhoto && (
+                    <div className={`absolute ${isMobile ? 'bottom-6 left-4 right-4' : 'bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2'} flex ${isMobile ? 'flex-col gap-3' : 'flex-col sm:flex-row gap-3 sm:gap-4'} ${isMobile ? 'w-auto' : 'w-full sm:w-auto'} ${isMobile ? '' : 'px-4 sm:px-0'}`}>
+                      <button
+                        onClick={() => {
+                          setCapturedImage(null);
+                          if (cameraVideoRef && cameraStream) {
+                            cameraVideoRef.srcObject = cameraStream;
+                            cameraVideoRef.play().catch(err => console.error('Video play error:', err));
+                          }
+                        }}
+                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-gray-700/90 backdrop-blur-sm text-white rounded-xl hover:bg-gray-800 active:bg-gray-900 transition-colors font-medium touch-manipulation shadow-lg border border-white/10`}
+                      >
+                        🔄 Retake
+                      </button>
+                      <button
+                        onClick={useCapturedPhoto}
+                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium touch-manipulation shadow-lg`}
+                      >
+                        ✅ Use Photo
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Instructions Footer - Mobile Optimized */}
+            <div className={`${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm border-t border-white/10' : 'p-3 sm:p-4 bg-gray-50 border-t'}`}>
+              <p className={`${isMobile ? 'text-sm text-white/90' : 'text-xs sm:text-sm text-gray-600'} text-center font-medium`}>
+                {isUploadingPhoto 
+                  ? "⏳ Uploading your photo, please wait..."
+                  : !capturedImage 
+                    ? (isMobile 
+                        ? "👆 Tap the white button below to capture your ID"
+                        : "Position your ID document clearly in the frame and click the capture button")
+                    : (isMobile
+                        ? "👀 Review your photo. Tap 'Use Photo' to upload, or 'Retake' to try again."
+                        : "Review your photo. Click 'Use Photo' to upload, or 'Retake' to try again.")
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
   );
 };
