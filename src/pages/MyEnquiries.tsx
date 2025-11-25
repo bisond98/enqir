@@ -578,6 +578,7 @@ const MyEnquiries = () => {
                 return (
                 <motion.div
                   key={enquiry.id}
+                  style={{ willChange: 'transform, opacity' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}

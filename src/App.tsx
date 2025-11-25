@@ -71,10 +71,31 @@ if (typeof window !== 'undefined') {
     }
   };
   
-  // Check periodically and on focus
-  setInterval(ensureScroll, 1000);
+  // Check periodically and on focus (optimized with throttled requestAnimationFrame)
+  let lastCheck = 0;
+  const throttleDelay = 1000; // Check every 1 second (same as original interval)
+  let rafId: number | null = null;
+  
+  const checkScrollThrottled = (timestamp: number) => {
+    if (timestamp - lastCheck >= throttleDelay) {
+      ensureScroll();
+      lastCheck = timestamp;
+    }
+    rafId = requestAnimationFrame(checkScrollThrottled);
+  };
+  
+  // Start the throttled animation frame loop
+  rafId = requestAnimationFrame(checkScrollThrottled);
+  
   window.addEventListener('focus', ensureScroll);
   window.addEventListener('load', ensureScroll);
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+    }
+  });
 }
 
 const App = () => {

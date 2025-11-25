@@ -479,6 +479,8 @@ const DetailedResponses = () => {
                                   src={imageUrl}
                                   alt={`Product ${imgIndex + 1}`}
                                   className="w-full h-full object-cover"
+                                  loading="lazy"
+                                  decoding="async"
                                   onError={(e) => {
                                     console.error('Image load error:', imageUrl);
                                     e.currentTarget.style.display = 'none';

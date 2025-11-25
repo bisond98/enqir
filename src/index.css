@@ -176,7 +176,43 @@
   .overflow-x-auto,
   [class*="overflow"] {
     -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
     will-change: scroll-position;
+    contain: layout style paint;
+  }
+  
+  /* Performance: Optimize cards and interactive elements */
+  .card,
+  [class*="Card"] {
+    contain: layout style;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Performance: Reduce repaints on hover */
+  button,
+  a,
+  [role="button"] {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Performance: Optimize images */
+  img {
+    content-visibility: auto;
+    will-change: auto;
+  }
+  
+  /* Performance: Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
   
   /* Optimize images */

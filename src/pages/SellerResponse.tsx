@@ -1178,25 +1178,27 @@ const SellerResponse = () => {
               <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2 mb-3 sm:mb-4 lg:mb-6">
                 Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
               </p>
-              <div className="mt-3 sm:mt-4 lg:mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 text-[10px] sm:text-xs lg:text-sm text-white/80 px-2">
-                <div className="flex items-center">
-                  <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 mr-1 flex-shrink-0" />
-                  <span>Secure & Private</span>
-                </div>
-                <div className="flex items-center">
-                  <Verified className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 mr-1 flex-shrink-0" />
-                  <span>Admin Reviewed</span>
-                </div>
-                <div className="flex items-center">
-                  <Lock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 mr-1 flex-shrink-0" />
-                  <span>Confidential</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          
+          {/* Security Badges */}
+          <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-center gap-2 sm:gap-4 lg:gap-5 text-[9px] sm:text-sm lg:text-base text-gray-700">
+            <div className="flex items-center">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
+              <span className="font-medium">Secure & Private</span>
+            </div>
+            <div className="flex items-center">
+              <Verified className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
+              <span className="font-medium">Admin Reviewed</span>
+            </div>
+            <div className="flex items-center">
+              <Lock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
+              <span className="font-medium">Confidential</span>
+            </div>
+          </div>
           
           {/* Already Submitted Message */}
           {hasAlreadySubmitted && existingSubmission && (
@@ -1265,13 +1267,20 @@ const SellerResponse = () => {
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
-                {enquiry.idFrontImage || enquiry.idBackImage ? (
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
-                ) : (
-                  <p className="text-xs sm:text-sm font-semibold text-white">
-                    Enquiry Details
-                  </p>
-                )}
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {enquiry.idFrontImage || enquiry.idBackImage ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                      <span className="text-[10px] sm:text-xs text-white font-medium">
+                        Trust badge
+                      </span>
+                    </>
+                  ) : (
+                    <p className="text-xs sm:text-sm font-semibold text-white">
+                      Enquiry Details
+                    </p>
+                  )}
+                </div>
                 <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full">
                   {enquiry.category}
                 </Badge>
@@ -1307,28 +1316,15 @@ const SellerResponse = () => {
                   </p>
                 </div>
                 
-                {/* Deadline and Trust Badge */}
-                <div className="space-y-2 sm:space-y-2.5">
-                  {/* Deadline */}
-                  {enquiry.deadline && (
-                    <div className="flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 bg-red-50 border border-red-200 rounded-lg">
-                      <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-500 mr-1.5 flex-shrink-0" />
-                      <span className="text-[11px] sm:text-xs text-red-700 font-medium">
-                        Deadline: {formatDate(enquiry.deadline)}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {/* Trust Badge */}
-                  {enquiry.idFrontImage ? (
-                    <div className="flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                      <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-500 mr-1.5 flex-shrink-0" />
-                      <span className="text-[11px] sm:text-xs text-blue-700 font-medium">
-                        This buyer has a trust badge
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
+                {/* Deadline */}
+                {enquiry.deadline && (
+                  <div className="flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border-2" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white mr-1.5 flex-shrink-0" />
+                    <span className="text-[11px] sm:text-xs text-white font-medium">
+                      Deadline: {formatDate(enquiry.deadline)}
+                    </span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -1422,7 +1418,7 @@ const SellerResponse = () => {
                 
                 {/* Enquiry Budget Display */}
                 {enquiry && (
-                  <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#ef4444', borderColor: '#dc2626' }}>
+                  <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                     <div className="flex flex-row items-center justify-between gap-2">
                       <span className="text-[10px] sm:text-xs text-white font-semibold">Buyer's Budget:</span>
                       <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>

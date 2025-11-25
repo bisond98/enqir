@@ -1777,6 +1777,7 @@ const Landing = () => {
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
+                        willChange: 'transform, opacity',
                         // Position cards right-to-left: middle card centered below "Live Needs"
                         left: baseLeft,
                         transform: showAllEnquiries ? 'none' : 'none',
@@ -2167,6 +2168,7 @@ const Landing = () => {
                     <motion.div
                       key={`${category.value}-${index}`}
                         className="group flex justify-center items-center"
+                        style={{ willChange: 'transform, opacity, filter' }}
                         initial={{ opacity: 0, scale: 0.5, y: 40, rotateX: -90, filter: "blur(8px)" }}
                         animate={{ 
                           opacity: isShufflingCategories ? 0 : 1, 
@@ -2197,6 +2199,7 @@ const Landing = () => {
                           {/* Circle Container */}
                       <motion.div
                             className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
+                            style={{ willChange: 'transform, box-shadow' }}
                             whileHover={{ 
                               scale: 1.1,
                               boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)"

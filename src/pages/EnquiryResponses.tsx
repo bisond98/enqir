@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useMemo } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -374,15 +374,24 @@ const EnquiryResponses = () => {
     };
   }, [selectedResponse, enquiryId, blockedUsers]);
 
-  // Fetch user profiles for verification status
-  useEffect(() => {
-    if (chatMessages.length === 0) return;
+  // Memoize unique user IDs to avoid unnecessary recalculations
+  const uniqueUserIds = useMemo(() => {
+    if (chatMessages.length === 0) return [];
+    return [...new Set(chatMessages.map(msg => msg.senderId))];
+  }, [chatMessages]);
 
-    const userIds = [...new Set(chatMessages.map(msg => msg.senderId))];
+  // Fetch user profiles for verification status (optimized with debouncing)
+  useEffect(() => {
+    if (uniqueUserIds.length === 0) return;
+
+    // Only fetch profiles for users we don't already have
+    const missingIds = uniqueUserIds.filter(id => !userProfiles[id]);
+    if (missingIds.length === 0) return;
+
     const profilesData: {[key: string]: any} = {};
 
     const fetchProfiles = async () => {
-      for (const userId of userIds) {
+      for (const userId of missingIds) {
         try {
           const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
           if (profileDoc.exists()) {
@@ -392,11 +401,14 @@ const EnquiryResponses = () => {
           console.error('Error fetching user profile:', error);
         }
       }
-      setUserProfiles(profilesData);
+      // Merge with existing profiles instead of replacing
+      setUserProfiles(prev => ({ ...prev, ...profilesData }));
     };
 
-    fetchProfiles();
-  }, [chatMessages]);
+    // Debounce to avoid fetching on every message
+    const timer = setTimeout(fetchProfiles, 300);
+    return () => clearTimeout(timer);
+  }, [uniqueUserIds, userProfiles]);
 
   // Check if users are blocked
   useEffect(() => {

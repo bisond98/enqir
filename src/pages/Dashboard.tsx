@@ -1254,16 +1254,16 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
-                {/* Header Section with Title */}
-                <div className="text-center mb-4 sm:mb-6">
-                  <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Enquiries</h2>
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                {/* Header Section with Title - Centered */}
+                <div className="text-center w-full">
+                  <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
                 </div>
                 
-                {/* Content Card - White Background */}
-                <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                {/* Content Card - Black Background */}
+                <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
                   <div className="text-center">
-                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
+                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
                       Track your needs; nobody is here to do that.
                     </p>
                   </div>
@@ -1739,13 +1739,13 @@ const Dashboard = () => {
               <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
-                  <h2 className="text-base sm:text-2xl lg:text-lg xl:text-xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Responses</h2>
+                  <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Responses</h2>
                 </div>
                 
-                {/* Content Card - White Background */}
-                <div className="bg-white border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
+                {/* Content Card - Black Background */}
+                <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
                   <div className="text-center">
-                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
+                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
                       Track your sales. You need money, right?
                     </p>
                   </div>
@@ -1841,6 +1841,7 @@ const Dashboard = () => {
                         return (
                         <motion.div
                           key={submission.id}
+                          style={{ willChange: 'transform, opacity' }}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
@@ -1927,27 +1928,27 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold ${
+                                  <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold backdrop-blur-sm shadow-sm ${
                                     submission.status === 'approved'
-                                      ? 'bg-white text-black border-black'
+                                      ? 'bg-green-900/80 text-green-50 border-green-800/90'
                                       : 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-300/60'
                                   }`}>
                                     <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-full flex-shrink-0 ${
-                                      submission.status === 'approved' ? 'bg-black/20' : 'bg-amber-500/20'
+                                      submission.status === 'approved' ? 'bg-green-800/80' : 'bg-amber-500/20'
                                     }`}>
                                       {submission.status === 'approved' ? (
-                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-black" />
+                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-green-50" />
                                       ) : (
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
                                       )}
                                     </div>
                                     <span className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-black ${
-                                      submission.status === 'approved' ? 'text-black' : 'text-amber-900'
+                                      submission.status === 'approved' ? 'text-green-50' : 'text-amber-900'
                                     }`}>
                                 {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
                               </span>
                               {submission.status === 'approved' && (
-                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-black ml-0.5 sm:ml-1">
+                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-50 font-black ml-0.5 sm:ml-1">
                                   (Ready for chat)
                                 </span>
                                     )}
@@ -1955,11 +1956,10 @@ const Dashboard = () => {
                               )}
                             </div>
 
-                            {/* Experience/Details */}
+                            {/* Details */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                  <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-black">Experience: </span>
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-bold truncate">
                                     {submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}
                                   </span>
