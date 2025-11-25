@@ -2056,7 +2056,7 @@ export default function PostEnquiry() {
                                   return (
                                     <div 
                                       key={cat.value} 
-                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
+                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors border-2 border-gray-400 mb-2 last:mb-0 ${
                                         isDisabled ? 'opacity-50' : ''
                                       }`}
                                       onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
@@ -2160,7 +2160,7 @@ export default function PostEnquiry() {
                                 return (
                                   <div 
                                     key={cat.value} 
-                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation border-2 border-gray-400 mb-2 last:mb-0 ${
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
@@ -2447,7 +2447,109 @@ export default function PostEnquiry() {
 
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
                   {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
+                  <div ref={idVerificationCardRef} className="relative space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
+                    {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
+                    {verifyingId && (
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
+                        {/* Moving Tick - All Over Card */}
+                        <div 
+                          className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
+                          style={{
+                            animation: 'tickMoveAround 8s ease-in-out infinite',
+                            WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)'
+                          }}
+                        >
+                          {/* Bright Bold Distorted Tick */}
+                          <svg 
+                            className="w-full h-full text-blue-400 drop-shadow-2xl"
+                            viewBox="0 0 100 100"
+                            style={{
+                              filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
+                              animation: 'tickForming 2s ease-in-out infinite',
+                              WebkitAnimation: 'tickForming 2s ease-in-out infinite'
+                            }}
+                          >
+                            {/* Bold Distorted Tick */}
+                            <path
+                              d="M 20 50 L 40 70 L 80 30"
+                              stroke="currentColor"
+                              strokeWidth="12"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeDasharray="100"
+                              style={{
+                                strokeDashoffset: '100',
+                                animation: 'tickDraw 2s ease-in-out infinite',
+                                WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 8px currentColor)'
+                              }}
+                            />
+                            {/* Bold Pulsing Circles */}
+                            <circle
+                              cx="20"
+                              cy="50"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="40"
+                              cy="70"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="80"
+                              cy="30"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                          </svg>
+                          
+                          {/* Bright Glowing Background */}
+                          <div 
+                            className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
+                            style={{
+                              animation: 'pulseGlow 2s ease-in-out infinite',
+                              WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
+                              transform: 'scale(1.3)',
+                              WebkitTransform: 'scale(1.3)'
+                            }}
+                          ></div>
+                        </div>
+                        
+                        {/* Countdown Text - Fixed Position */}
+                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg">
+                            <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
+                            <span className="text-sm sm:text-base font-bold tabular-nums">
+                              {verificationCountdown}s
+                            </span>
+                          </div>
+                          <p className="mt-3 text-xs sm:text-sm text-gray-600 font-medium">
+                            Verifying your ID...
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="space-y-1 w-full">
                       <div className="flex items-center gap-2 w-full">
                         <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
@@ -2457,7 +2559,7 @@ export default function PostEnquiry() {
                         <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0">(optional)</span>
                       </div>
                       <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
-                        <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue tick for this enquiry.</span>
+                        <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue Badge For This Enquiry.</span>
                       </p>
                     </div>
                     {idVerificationResult?.matches ? (
@@ -2619,82 +2721,83 @@ export default function PostEnquiry() {
                         ID Document
                       </Label>
                       
-                      {/* Upload Options - File and Camera - Side by Side on Mobile */}
-                      <div className="flex flex-row gap-2 mb-3 sm:mb-2">
-                        <input
-                          type="file"
-                          id="idFront"
-                          accept="image/*"
-                          capture="environment"
-                          disabled={verifyingId}
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            setIdFrontImage(file);
-                            setIdErrors(prev => ({ ...prev, idFront: "" }));
-                            setIdVerificationResult(null);
-                            
-                            try {
-                              const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                              setIdFrontUrl(uploadedUrl);
-                            } catch (error) {
-                              console.error('Error uploading ID:', error);
-                              toast({
-                                title: "Upload Failed",
-                                description: "Failed to upload image. Please try again.",
-                                variant: "destructive",
-                              });
-                            }
-                          }}
-                          className="hidden"
-                        />
-                        
-                        {/* File Upload Button - Same dimensions as Camera */}
-                        <label
-                          htmlFor="idFront"
-                          className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
-                            verifyingId
-                              ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                              : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
-                          }`}
-                          onClick={(e) => {
-                            if (verifyingId) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Upload className="h-5 w-5 text-slate-600" />
-                            <span className="text-sm text-slate-700 font-semibold">Upload</span>
-                          </div>
-                        </label>
-                        
-                        {/* Camera Button - Same dimensions as Upload */}
-                        <button
-                          type="button"
-                          onClick={startCamera}
-                          disabled={verifyingId}
-                          className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
-                            verifyingId
-                              ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                              : 'border-blue-300 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Camera className="h-5 w-5 text-blue-600" />
-                            <span className="text-sm text-blue-700 font-semibold">Camera</span>
-                          </div>
-                        </button>
-                      </div>
-                      
-                      {/* Image Preview - Mobile Optimized */}
-                      {(idFrontImage || idFrontUrl) && (
-                        <div className="relative w-full h-36 sm:h-32 border-2 border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl overflow-hidden shadow-md">
-                          <img
-                            src={idFrontUrl || (idFrontImage ? URL.createObjectURL(idFrontImage) : '')}
-                            alt="ID Document"
-                            className="w-full h-full object-contain bg-white"
+                      {/* Upload Options - File and Camera - Side by Side on Mobile - Hide when image uploaded */}
+                      {!(idFrontImage || idFrontUrl) && (
+                        <div className="flex flex-row gap-2 mb-3 sm:mb-2">
+                          <input
+                            type="file"
+                            id="idFront"
+                            accept="image/*"
+                            capture="environment"
+                            disabled={verifyingId}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setIdFrontImage(file);
+                              setIdErrors(prev => ({ ...prev, idFront: "" }));
+                              setIdVerificationResult(null);
+                              
+                              try {
+                                const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                                setIdFrontUrl(uploadedUrl);
+                              } catch (error) {
+                                console.error('Error uploading ID:', error);
+                                toast({
+                                  title: "Upload Failed",
+                                  description: "Failed to upload image. Please try again.",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                            className="hidden"
                           />
+                          
+                          {/* File Upload Button - Same dimensions as Camera */}
+                          <label
+                            htmlFor="idFront"
+                            className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                              verifyingId
+                                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                            }`}
+                            onClick={(e) => {
+                              if (verifyingId) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Upload className="h-5 w-5 text-slate-600" />
+                              <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                            </div>
+                          </label>
+                          
+                          {/* Camera Button - Same dimensions as Upload */}
+                          <button
+                            type="button"
+                            onClick={startCamera}
+                            disabled={verifyingId}
+                            className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
+                              verifyingId
+                                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                : 'border-black bg-blue-50/50 hover:border-black hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Camera className="h-5 w-5 text-blue-600" />
+                              <span className="text-sm text-blue-700 font-semibold">Camera</span>
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                      
+                      {/* Image Upload Status - Text Only */}
+                      {(idFrontImage || idFrontUrl) && (
+                        <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#003300', borderColor: '#002200' }}>
+                          <div className="flex items-center gap-2 sm:gap-2.5">
+                            <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
+                            <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => {
@@ -2702,16 +2805,13 @@ export default function PostEnquiry() {
                               setIdFrontUrl("");
                               setIdVerificationResult(null);
                             }}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 sm:p-1.5 hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation shadow-lg"
+                            className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                            style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
                             disabled={verifyingId}
                             aria-label="Remove image"
                           >
-                            <X className="h-4 w-4 sm:h-3 sm:w-3" />
+                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
                           </button>
-                          <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs sm:text-xs px-3 py-1.5 sm:px-2 sm:py-1 rounded-lg sm:rounded flex items-center gap-1.5 sm:gap-1 shadow-md">
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
-                            <span className="font-semibold sm:font-normal">Uploaded</span>
-                          </div>
                         </div>
                       )}
                     </div>

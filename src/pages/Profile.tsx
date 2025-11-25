@@ -1209,7 +1209,7 @@ const Profile = () => {
                       className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
                         verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                          : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                          : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
                       }`}
                       onClick={(e) => {
                         if (verifyingId || isUploading || (idFront || idFrontUrl)) {
@@ -1231,7 +1231,7 @@ const Profile = () => {
                       className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
                         verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                          : 'border-blue-300 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
+                          : 'border-black bg-blue-50/50 hover:border-black hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
                       }`}
                     >
                       <div className="flex items-center gap-2">

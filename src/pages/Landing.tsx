@@ -2271,8 +2271,8 @@ const Landing = () => {
 
           {/* Animated SVG Flow - Compact Layout */}
           <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-4 border-black shadow-md sm:shadow-lg">
-            <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-              <p className="text-xs sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
+            <div className="text-center mb-8 sm:mb-4 lg:mb-6">
+              <p className="text-[8px] sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
             </div>
             <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
               {/* Step 1: Larger Animated Human Character */}
