@@ -1465,13 +1465,32 @@ const SellerResponse = () => {
                     </span>
                   )}
                   <span className="text-[8px] sm:text-sm text-black ml-auto">
-                    Attracts buyers. Ahhh… whatever -your product, your price - you're the king.
+                    Attracts buyers. Ahhh… Whatever -Your Product, Your Price
                   </span>
                 </div>
               </div>
 
+              {/* Form Progress Indicator */}
+              <div className="pt-4 space-y-3 border-4 border-black rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-semibold text-foreground">Form Completion</h3>
+                  <span className={`text-[10px] sm:text-xs ${formProgress === 100 ? 'text-green-600 font-semibold' : 'text-muted-foreground'}`}>
+                    {Math.round(formProgress)}% Complete
+                  </span>
+                </div>
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                  <div 
+                    className={`h-full transition-all ${formProgress === 100 ? 'bg-green-600' : 'bg-primary'}`}
+                    style={{ width: `${formProgress}%` }}
+                  />
+                </div>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">
+                  Fill in the details and price to share your offer
+                </p>
+              </div>
+
               {/* Separator */}
-              <Separator className="my-8" />
+              <Separator className="my-12 sm:my-16 bg-gray-300 h-[2px]" />
 
               {/* Enhanced Additional Notes */}
               <div className="space-y-3">
@@ -1482,7 +1501,7 @@ const SellerResponse = () => {
                   </span>
                 </Label>
                 <p className="text-[8px] sm:text-sm text-black">
-                  Include payment terms, delivery details, warranties, or any special conditions
+                  Payment Terms, Delivery Details, Warranties, Or Any Special Conditions
                 </p>
                 <Textarea
                   id="notes"
@@ -1502,16 +1521,16 @@ const SellerResponse = () => {
               {/* Enhanced 5-Slot Image Upload */}
               <div className="space-y-6">
                 <div className="text-center flex flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-2 mb-6 sm:mb-8">
+                  <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
                     <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
                       Product Images
                     </h3>
                     <span className="text-xs sm:text-sm text-black font-medium">(optional)</span>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-black">
-                    Show them who you are and what you've got.
+                  <p className="text-[8px] sm:text-[10px] text-black">
+                    Show Them Who You Are And What You've Got.
                   </p>
-                  <div className="mt-2 text-[10px] sm:text-xs text-black font-medium">
+                  <div className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-black font-medium">
                     {imageUrls.filter(url => url.trim() !== "").length}/5 images uploaded
                   </div>
                 </div>
@@ -1672,18 +1691,12 @@ const SellerResponse = () => {
               <div className="space-y-6">
                   {/* Show Verified Profile Badge */}
                   {!authLoading && isUserVerified ? (
-                    <div className="p-3 sm:p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg text-center">
-                      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-2 sm:mb-2.5">
-                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
-                        <span className="text-green-800 font-semibold text-xs sm:text-base">Profile Verified</span>
-                      </div>
-                      <p className="text-[10px] sm:text-xs text-green-700 mb-2 sm:mb-2.5">
-                        Already verified. No ID upload needed.
-                      </p>
-                      <div className="inline-flex">
-                        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300 text-[10px] sm:text-xs px-2 py-0.5">
+                    <div className="p-3 sm:p-4 border border-black rounded-lg text-center" style={{ backgroundColor: '#004d00', borderColor: '#003300' }}>
+                      <div className="inline-flex items-center gap-1.5 sm:gap-2">
+                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0" />
+                        <Badge variant="secondary" className="bg-transparent text-white border-transparent text-[10px] sm:text-xs px-2 py-0.5">
                           <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                          Verified Response
+                          You Already Have a Trust Badge
                         </Badge>
                       </div>
                     </div>
@@ -2099,18 +2112,6 @@ const SellerResponse = () => {
                   </div>
                 )}
 
-              </div>
-
-              {/* Form Progress Indicator */}
-              <div className="pt-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs sm:text-sm font-semibold text-foreground">Form Completion</h3>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">{Math.round(formProgress)}% Complete</span>
-                </div>
-                <Progress value={formProgress} className="h-2" />
-                <p className="text-[10px] sm:text-xs text-muted-foreground">
-                  Fill in the details and price to share your offer (title is auto-filled)
-                </p>
               </div>
 
               {/* Enhanced Submit Button */}
