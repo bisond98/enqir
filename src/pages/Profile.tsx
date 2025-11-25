@@ -1172,13 +1172,12 @@ const Profile = () => {
                     ID Document *
                   </Label>
                   
-                  {/* Upload Options - File and Camera - Side by Side */}
-                  <div className="flex flex-row gap-2 mb-3 sm:mb-2">
+                  {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
+                  <div className="mb-3 sm:mb-2">
                     <input
                       type="file"
                       id="idFront"
                       accept="image/*"
-                      capture="environment"
                       disabled={verifyingId || isUploading || (idFront || idFrontUrl)}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
@@ -1203,10 +1202,10 @@ const Profile = () => {
                       className="hidden"
                     />
                     
-                    {/* File Upload Button - Same dimensions as Camera */}
+                    {/* Upload Button - Full Width */}
                     <label
                       htmlFor="idFront"
-                      className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                      className={`w-full h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
                         verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                           : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
@@ -1222,23 +1221,6 @@ const Profile = () => {
                         <span className="text-sm text-slate-700 font-semibold">Upload</span>
                       </div>
                     </label>
-                    
-                    {/* Camera Button - Same dimensions as Upload */}
-                    <button
-                      type="button"
-                      onClick={startCamera}
-                      disabled={verifyingId || isUploading || (idFront || idFrontUrl)}
-                      className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
-                        verifyingId || isUploading || (idFront || idFrontUrl)
-                          ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                          : 'border-black bg-blue-50/50 hover:border-black hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Camera className="h-5 w-5 text-blue-600" />
-                        <span className="text-sm text-blue-700 font-semibold">Camera</span>
-                      </div>
-                    </button>
                   </div>
                   
                   {/* Image Upload Status - Text Only */}
