@@ -1043,7 +1043,7 @@ const Profile = () => {
                       id="idFront"
                       accept="image/*"
                       capture="environment"
-                      disabled={verifyingId || isUploading}
+                      disabled={verifyingId || isUploading || (idFront || idFrontUrl)}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
@@ -1071,12 +1071,12 @@ const Profile = () => {
                     <label
                       htmlFor="idFront"
                       className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
-                        verifyingId || isUploading
+                        verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                           : 'border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
                       }`}
                       onClick={(e) => {
-                        if (verifyingId || isUploading) {
+                        if (verifyingId || isUploading || (idFront || idFrontUrl)) {
                           e.preventDefault();
                         }
                       }}
@@ -1091,9 +1091,9 @@ const Profile = () => {
                     <button
                       type="button"
                       onClick={startCamera}
-                      disabled={verifyingId || isUploading}
+                      disabled={verifyingId || isUploading || (idFront || idFrontUrl)}
                       className={`flex-1 h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center touch-manipulation shadow-sm ${
-                        verifyingId || isUploading
+                        verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                           : 'border-blue-300 bg-blue-50/50 hover:border-blue-500 hover:bg-blue-100 active:bg-blue-200 active:scale-[0.98] cursor-pointer'
                       }`}
@@ -1107,10 +1107,10 @@ const Profile = () => {
                   
                   {/* Image Upload Status - Text Only */}
                   {(idFront || idFrontUrl) && (
-                    <div className="w-full border-2 border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md">
+                    <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#003300', borderColor: '#002200' }}>
                       <div className="flex items-center gap-2 sm:gap-2.5">
-                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
-                        <span className="text-sm sm:text-base font-semibold text-green-700">Image uploaded</span>
+                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
+                        <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
                       </div>
                       <button
                         type="button"
@@ -1119,11 +1119,12 @@ const Profile = () => {
                           setIdFrontUrl("");
                           setIdVerificationResult(null);
                         }}
-                        className="bg-red-500 text-white rounded-lg px-3 py-1.5 sm:px-2 sm:py-1 hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation shadow-sm text-xs sm:text-sm font-medium"
-                        disabled={verifyingId || isUploading}
+                        className="rounded-lg px-2 py-1 sm:px-1.5 sm:py-0.5 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm text-[10px] sm:text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
+                        disabled={verifyingId}
                         aria-label="Remove image"
                       >
-                        <X className="h-4 w-4 sm:h-3 sm:w-3 inline mr-1" />
+                        <X className="h-3 w-3 sm:h-2.5 sm:w-2.5 inline mr-0.5" />
                         Remove
                       </button>
                     </div>

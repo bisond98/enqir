@@ -1186,19 +1186,19 @@ const SellerResponse = () => {
           
           {/* Security Badges */}
           <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-center gap-2 sm:gap-4 lg:gap-5 text-[9px] sm:text-sm lg:text-base text-gray-700">
-            <div className="flex items-center">
+                <div className="flex items-center">
               <Shield className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
               <span className="font-medium">Secure & Private</span>
-            </div>
-            <div className="flex items-center">
+                </div>
+                <div className="flex items-center">
               <Verified className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
               <span className="font-medium">Admin Reviewed</span>
-            </div>
-            <div className="flex items-center">
+                </div>
+                <div className="flex items-center">
               <Lock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-600" />
               <span className="font-medium">Confidential</span>
-            </div>
           </div>
+        </div>
           
           {/* Already Submitted Message */}
           {hasAlreadySubmitted && existingSubmission && (
@@ -1268,18 +1268,18 @@ const SellerResponse = () => {
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  {enquiry.idFrontImage || enquiry.idBackImage ? (
+                {enquiry.idFrontImage || enquiry.idBackImage ? (
                     <>
-                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
                       <span className="text-[10px] sm:text-xs text-white font-medium">
                         Trust badge
                       </span>
                     </>
-                  ) : (
-                    <p className="text-xs sm:text-sm font-semibold text-white">
-                      Enquiry Details
-                    </p>
-                  )}
+                ) : (
+                  <p className="text-xs sm:text-sm font-semibold text-white">
+                    Enquiry Details
+                  </p>
+                )}
                 </div>
                 <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full">
                   {enquiry.category}
@@ -1316,15 +1316,15 @@ const SellerResponse = () => {
                   </p>
                 </div>
                 
-                {/* Deadline */}
-                {enquiry.deadline && (
+                  {/* Deadline */}
+                  {enquiry.deadline && (
                   <div className="flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border-2" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                     <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white mr-1.5 flex-shrink-0" />
                     <span className="text-[11px] sm:text-xs text-white font-medium">
-                      Deadline: {formatDate(enquiry.deadline)}
-                    </span>
-                  </div>
-                )}
+                        Deadline: {formatDate(enquiry.deadline)}
+                      </span>
+                    </div>
+                  )}
               </div>
             </CardContent>
           </Card>
@@ -2150,7 +2150,7 @@ const SellerResponse = () => {
                   )}
                 </Button>
                 
-                <p className="text-[10px] sm:text-xs text-center text-muted-foreground">
+                <p className="text-[8px] sm:text-[10px] text-center text-muted-foreground">
                   By submitting, you agree to our terms and confirm all information is accurate
                 </p>
               </div>
