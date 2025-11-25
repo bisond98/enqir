@@ -820,7 +820,109 @@ const Profile = () => {
             </p>
           </div>
           {/* Card Content - Enhanced White Background */}
-          <CardContent className="p-4 sm:p-5 lg:p-5 lg:pt-4 space-y-4 sm:space-y-6 lg:space-y-4">
+          <CardContent className="p-4 sm:p-5 lg:p-5 lg:pt-4 space-y-4 sm:space-y-6 lg:space-y-4 relative">
+            
+            {/* Loading Animation - Distorted Blue Tick Forming */}
+            {verifyingId && (
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-b-3xl sm:rounded-b-2xl z-50 p-6 sm:p-8 overflow-hidden">
+                {/* Moving Tick - All Over Card */}
+                <div 
+                  className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
+                  style={{
+                    animation: 'tickMoveAround 8s ease-in-out infinite',
+                    WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)'
+                  }}
+                >
+                  {/* Bright Bold Distorted Tick */}
+                  <svg 
+                    className="w-full h-full text-blue-400 drop-shadow-2xl"
+                    viewBox="0 0 100 100"
+                    style={{
+                      filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
+                      animation: 'tickForming 2s ease-in-out infinite',
+                      WebkitAnimation: 'tickForming 2s ease-in-out infinite'
+                    }}
+                  >
+                    {/* Bold Distorted Tick */}
+                    <path
+                      d="M 20 50 L 40 70 L 80 30"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeDasharray="100"
+                      style={{
+                        strokeDashoffset: '100',
+                        animation: 'tickDraw 2s ease-in-out infinite',
+                        WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
+                        filter: 'drop-shadow(0 0 8px currentColor)'
+                      }}
+                    />
+                    {/* Bold Pulsing Circles */}
+                    <circle
+                      cx="20"
+                      cy="50"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                    <circle
+                      cx="40"
+                      cy="70"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                    <circle
+                      cx="80"
+                      cy="30"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                  </svg>
+                  
+                  {/* Bright Glowing Background */}
+                  <div 
+                    className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
+                    style={{
+                      animation: 'pulseGlow 2s ease-in-out infinite',
+                      WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
+                      transform: 'scale(1.3)',
+                      WebkitTransform: 'scale(1.3)'
+                    }}
+                  ></div>
+                </div>
+                
+                {/* Countdown Text - Fixed Position */}
+                <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg">
+                    <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
+                    <span className="text-sm sm:text-base font-bold tabular-nums">
+                      {verificationCountdown}s
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs sm:text-sm text-gray-600 font-medium">
+                    Verifying your ID...
+                  </p>
+                </div>
+              </div>
+            )}
             
             {/* VERIFIED PROFILE - Show only success message */}
             {verificationStatus === 'approved' && (
@@ -1008,17 +1110,51 @@ const Profile = () => {
                         {idErrors.idNumber}
                       </span>
                     )}
-                    {/* ID Verification Status */}
+                    {/* ID Verification Status - Enhanced Design */}
                     {verifyingId && (
-                      <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600 mt-1">
-                        <div 
-                          className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent rounded-full flex-shrink-0"
-                          style={{
-                            animation: 'spin 1s linear infinite',
-                            WebkitAnimation: 'spin 1s linear infinite'
-                          }}
-                        ></div>
-                        <span>Verifying ID number with image... ({verificationCountdown}s)</span>
+                      <div className="mt-2 sm:mt-3 p-3 sm:p-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200 rounded-xl shadow-sm">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          {/* Animated Spinner */}
+                          <div className="relative flex-shrink-0">
+                            <div 
+                              className="h-8 w-8 sm:h-10 sm:w-10 border-4 border-blue-200 border-t-blue-600 rounded-full flex-shrink-0"
+                              style={{
+                                animation: 'spin 0.8s linear infinite',
+                                WebkitAnimation: 'spin 0.8s linear infinite'
+                              }}
+                            ></div>
+                            <div 
+                              className="absolute inset-0 h-8 w-8 sm:h-10 sm:w-10 border-4 border-transparent border-r-purple-500 rounded-full opacity-50"
+                              style={{
+                                animation: 'spin 1.2s linear infinite reverse',
+                                WebkitAnimation: 'spin 1.2s linear infinite reverse'
+                              }}
+                            ></div>
+                          </div>
+                          
+                          {/* Text and Countdown */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs sm:text-sm font-semibold text-blue-700">
+                                Verifying ID number with image...
+                              </span>
+                              {/* Animated Countdown Badge */}
+                              <div className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-600 text-white rounded-full shadow-sm">
+                                <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 bg-white rounded-full animate-pulse"></div>
+                                <span className="text-[10px] sm:text-xs font-bold tabular-nums">
+                                  {verificationCountdown}s
+                                </span>
+                              </div>
+                            </div>
+                            {/* Progress Bar */}
+                            <div className="mt-2 w-full bg-blue-100 rounded-full h-1.5 sm:h-2 overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+                                style={{ width: `${((60 - verificationCountdown) / 60) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                     {idVerificationResult && !verifyingId && !idVerificationResult.matches && (
@@ -1119,13 +1255,12 @@ const Profile = () => {
                           setIdFrontUrl("");
                           setIdVerificationResult(null);
                         }}
-                        className="rounded-lg px-2 py-1 sm:px-1.5 sm:py-0.5 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm text-[10px] sm:text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
                         disabled={verifyingId}
                         aria-label="Remove image"
                       >
-                        <X className="h-3 w-3 sm:h-2.5 sm:w-2.5 inline mr-0.5" />
-                        Remove
+                        <X className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     </div>
                   )}
@@ -1271,7 +1406,7 @@ const Profile = () => {
                         } else {
                           toast({
                             title: "Verification Successful",
-                            description: "ID number verified successfully! Click again to upload for trust badge.",
+                            description: "ID Verified Successfully! Click Get Trust Badge Now",
                           });
                         }
                       } catch (error) {

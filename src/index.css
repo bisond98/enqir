@@ -1827,6 +1827,96 @@
   }
 }
 
+/* Trust Badge Loading Animation - Distorted Tick Forming */
+@keyframes tickForming {
+  0% {
+    transform: scale(0.8) rotate(-10deg) translateX(-5px);
+    opacity: 0.6;
+  }
+  25% {
+    transform: scale(0.9) rotate(5deg) translateX(3px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1) rotate(0deg) translateX(0px);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.05) rotate(-2deg) translateX(-2px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1) rotate(0deg) translateX(0px);
+    opacity: 1;
+  }
+}
+
+/* Tick Moving Around Card */
+@keyframes tickMoveAround {
+  0% {
+    top: 10%;
+    left: 10%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    top: 10%;
+    left: 70%;
+    transform: translate(0, 0) rotate(90deg);
+  }
+  50% {
+    top: 60%;
+    left: 70%;
+    transform: translate(0, 0) rotate(180deg);
+  }
+  75% {
+    top: 60%;
+    left: 10%;
+    transform: translate(0, 0) rotate(270deg);
+  }
+  100% {
+    top: 10%;
+    left: 10%;
+    transform: translate(0, 0) rotate(360deg);
+  }
+}
+
+@keyframes tickDraw {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0.3;
+  }
+  50% {
+    stroke-dashoffset: 50;
+    opacity: 0.7;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
 /* CRITICAL: Ensure Razorpay modal is always on top and interactive */
 .razorpay-container,
 [class*="razorpay"],
