@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ const Profile = () => {
   const [showRemoveConfirmDialog, setShowRemoveConfirmDialog] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const [verificationCountdown, setVerificationCountdown] = useState(60);
+  const inlineVerificationRef = useRef<HTMLDivElement>(null);
 
   // Camera state for ID upload
   const [showCameraModal, setShowCameraModal] = useState(false);
@@ -1112,7 +1113,7 @@ const Profile = () => {
                     )}
                     {/* ID Verification Status - Enhanced Design */}
                     {verifyingId && (
-                      <div className="mt-2 sm:mt-3 p-3 sm:p-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200 rounded-xl shadow-sm">
+                      <div ref={inlineVerificationRef} className="mt-2 sm:mt-3 p-3 sm:p-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200 rounded-xl shadow-sm">
                         <div className="flex items-center gap-3 sm:gap-4">
                           {/* Animated Spinner */}
                           <div className="relative flex-shrink-0">
@@ -1298,6 +1299,17 @@ const Profile = () => {
                         setIdErrors(prev => ({ ...prev, idNumber: "" }));
                         setIdVerificationResult(null);
                       });
+                      
+                      // Scroll inline verification countdown into view on mobile (non-intrusive)
+                      setTimeout(() => {
+                        if (inlineVerificationRef.current) {
+                          inlineVerificationRef.current.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                            inline: 'nearest'
+                          });
+                        }
+                      }, 200);
                       
                       // Now do async operations (upload image if needed)
                       let imageUrl = idFrontUrl;

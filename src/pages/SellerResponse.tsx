@@ -89,6 +89,7 @@ const SellerResponse = () => {
   const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
   const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
+  const inlineVerificationRef = useRef<HTMLDivElement>(null);
   
   // Scroll to ID verification card when verification is successful
   useEffect(() => {
@@ -1160,7 +1161,7 @@ const SellerResponse = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Enhanced Header */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             <div className="mb-4 sm:mb-6 lg:mb-8">
               <button onClick={() => window.history.back()} className="inline-flex items-center text-[10px] sm:text-xs lg:text-sm text-white/80 hover:text-white transition-all">
                 <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
@@ -1182,7 +1183,7 @@ const SellerResponse = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-12">
           
           {/* Security Badges */}
           <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-center gap-2 sm:gap-4 lg:gap-5 text-[9px] sm:text-sm lg:text-base text-gray-700">
@@ -1945,7 +1946,7 @@ const SellerResponse = () => {
                             )}
                             {/* ID Verification Status */}
                             {verifyingId && (
-                              <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
+                              <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
                                 {totalElapsedSeconds >= 120 ? (
                                   <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
                                 ) : (
@@ -2093,6 +2094,17 @@ const SellerResponse = () => {
                                 setVerifyingId(true);
                                 setVerificationCountdown(60); // Reset countdown to 60 seconds
                                 setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                
+                                // Scroll inline verification countdown into view on mobile (non-intrusive)
+                                setTimeout(() => {
+                                  if (inlineVerificationRef.current) {
+                                    inlineVerificationRef.current.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'center',
+                                      inline: 'nearest'
+                                    });
+                                  }
+                                }, 200);
                                 
                                 try {
                                   // Upload image if not already uploaded
