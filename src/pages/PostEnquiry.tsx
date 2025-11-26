@@ -131,6 +131,7 @@ export default function PostEnquiry() {
   const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
+  const inlineVerificationRef = useRef<HTMLDivElement>(null);
   const [idUploadLoading, setIdUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState('');
@@ -2680,7 +2681,7 @@ export default function PostEnquiry() {
                         )}
                         {/* ID Verification Status */}
                         {verifyingId && (
-                          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
+                          <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
                             {totalElapsedSeconds >= 120 ? (
                               <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
                             ) : (
@@ -2775,7 +2776,7 @@ export default function PostEnquiry() {
                       
                       {/* Image Upload Status - Text Only */}
                       {(idFrontImage || idFrontUrl) && (
-                        <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#003300', borderColor: '#002200' }}>
+                        <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
                           <div className="flex items-center gap-2 sm:gap-2.5">
                             <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
                             <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
@@ -2863,6 +2864,17 @@ export default function PostEnquiry() {
                             setVerifyingId(true);
                             setVerificationCountdown(60); // Reset countdown to 60 seconds
                             setIdErrors(prev => ({ ...prev, idNumber: "" }));
+                            
+                            // Scroll inline verification countdown into view on mobile (non-intrusive)
+                            setTimeout(() => {
+                              if (inlineVerificationRef.current) {
+                                inlineVerificationRef.current.scrollIntoView({
+                                  behavior: 'smooth',
+                                  block: 'center',
+                                  inline: 'nearest'
+                                });
+                              }
+                            }, 200);
                             
                             try {
                               // Upload image if not already uploaded
