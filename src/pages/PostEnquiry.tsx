@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Camera } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,7 +26,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
-import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
@@ -121,17 +120,6 @@ export default function PostEnquiry() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [idFrontImage, setIdFrontImage] = useState<File | null>(null);
   const [idBackImage, setIdBackImage] = useState<File | null>(null);
-  const [idType, setIdType] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [idFrontUrl, setIdFrontUrl] = useState("");
-  const [idBackUrl, setIdBackUrl] = useState("");
-  const [verifyingId, setVerifyingId] = useState(false);
-  const [verificationCountdown, setVerificationCountdown] = useState(60);
-  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
-  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
-  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
-  const idVerificationCardRef = useRef<HTMLDivElement>(null);
-  const inlineVerificationRef = useRef<HTMLDivElement>(null);
   const [idUploadLoading, setIdUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState('');
@@ -148,27 +136,6 @@ export default function PostEnquiry() {
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-
-  // Camera state for ID upload
-  const [showCameraModal, setShowCameraModal] = useState(false);
-  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
-  const [cameraVideoRef, setCameraVideoRef] = useState<HTMLVideoElement | null>(null);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile device
-  useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase()) ||
-        (window.innerWidth <= 768);
-      setIsMobile(isMobileDevice);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const handlePayment = async () => {
     if (!selectedPlan || !user?.uid) return;
@@ -796,10 +763,6 @@ export default function PostEnquiry() {
     { value: "art", label: "Art & Artifacts", group: "Products" },
     { value: "automobile", label: "Automobile", group: "Products" },
     { value: "books-publications", label: "Books & Publications", group: "Products" },
-    { value: "baby-kids", label: "Baby & Kids", group: "Products" },
-    { value: "bags-luggage", label: "Bags & Luggage", group: "Products" },
-    { value: "beauty-products", label: "Beauty", group: "Products" },
-    { value: "bicycles", label: "Bicycles", group: "Products" },
     { value: "collectibles", label: "Collectibles", group: "Products" },
     { value: "electronics-gadgets", label: "Electronics & Gadgets", group: "Products" },
     { value: "fashion-apparel", label: "Fashion & Apparel", group: "Products" },
@@ -810,16 +773,6 @@ export default function PostEnquiry() {
     { value: "souvenir", label: "Souvenir", group: "Products" },
     { value: "thrift", label: "Thrift", group: "Products" },
     { value: "vintage", label: "Vintage Items", group: "Products" },
-    { value: "musical-instruments", label: "Musical Instruments", group: "Products" },
-    { value: "tools-equipment", label: "Tools & Equipment", group: "Products" },
-    { value: "appliances", label: "Appliances", group: "Products" },
-    { value: "photography-cameras", label: "Photography & Cameras", group: "Products" },
-    { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment", group: "Products" },
-    { value: "kitchen-dining", label: "Kitchen & Dining", group: "Products" },
-    { value: "garden-outdoor", label: "Garden & Outdoor", group: "Products" },
-    { value: "office-supplies", label: "Office Supplies", group: "Products" },
-    { value: "medical-equipment", label: "Medical Equipment", group: "Products" },
-    { value: "musical-accessories", label: "Musical Accessories", group: "Products" },
     // Lifestyle & Services
     { value: "agriculture-farming", label: "Agriculture & Farming", group: "Lifestyle" },
     { value: "childcare-family", label: "Childcare & Family", group: "Lifestyle" },
@@ -833,10 +786,6 @@ export default function PostEnquiry() {
     { value: "sports-outdoor", label: "Sports & Outdoor", group: "Lifestyle" },
     { value: "travel-tourism", label: "Travel & Tourism", group: "Lifestyle" },
     { value: "wedding-events", label: "Wedding & Events", group: "Lifestyle" },
-    { value: "repair-services", label: "Repair Services", group: "Lifestyle" },
-    { value: "cleaning-services", label: "Cleaning Services", group: "Lifestyle" },
-    { value: "musical-services", label: "Musical Services", group: "Lifestyle" },
-    { value: "tutoring-lessons", label: "Tutoring & Lessons", group: "Lifestyle" },
     // Technology & Innovation
     { value: "technology", label: "Technology", group: "Technology" },
     { value: "renewable-energy", label: "Renewable Energy", group: "Technology" },
@@ -975,147 +924,6 @@ export default function PostEnquiry() {
     });
   };
 
-  // Camera functions for ID upload
-  const startCamera = async () => {
-    try {
-      const constraints: MediaStreamConstraints = {
-        video: isMobile 
-          ? { 
-              facingMode: 'environment',
-              width: { ideal: 1920, max: 1920 },
-              height: { ideal: 1080, max: 1080 }
-            }
-          : {
-              facingMode: 'user',
-              width: { ideal: 1920, max: 1920 },
-              height: { ideal: 1080, max: 1080 }
-            }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      setCameraStream(stream);
-      setShowCameraModal(true);
-      
-      setTimeout(() => {
-        if (cameraVideoRef && stream) {
-          cameraVideoRef.srcObject = stream;
-          cameraVideoRef.play().catch(err => console.error('Video play error:', err));
-        }
-      }, 100);
-    } catch (error: any) {
-      console.error('Error accessing camera:', error);
-      let errorMessage = "Please allow camera access to take ID photos.";
-      
-      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
-      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-        errorMessage = "No camera found. Please connect a camera device.";
-      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-        errorMessage = "Camera is already in use by another application.";
-      }
-      
-      toast({
-        title: "Camera Access Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const stopCamera = () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      setCameraStream(null);
-    }
-    if (cameraVideoRef) {
-      cameraVideoRef.srcObject = null;
-    }
-    setShowCameraModal(false);
-    setCapturedImage(null);
-    setIsUploadingPhoto(false);
-  };
-
-  const capturePhoto = () => {
-    if (!cameraVideoRef || !cameraStream) return;
-    
-    try {
-      const canvas = document.createElement('canvas');
-      const video = cameraVideoRef;
-      
-      canvas.width = video.videoWidth || 1920;
-      canvas.height = video.videoHeight || 1080;
-      
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const imageUrl = URL.createObjectURL(blob);
-            setCapturedImage(imageUrl);
-          }
-        }, 'image/jpeg', 0.95);
-      }
-    } catch (error) {
-      console.error('Error capturing photo:', error);
-      toast({
-        title: "Capture Failed",
-        description: "Failed to capture photo. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const useCapturedPhoto = async () => {
-    if (!capturedImage) return;
-    
-    setIsUploadingPhoto(true);
-    
-    try {
-      // Convert blob URL to File (exactly like file upload)
-      const response = await fetch(capturedImage);
-      const blob = await response.blob();
-      const file = new File([blob], `id-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
-      // Upload to Cloudinary (same as file upload)
-      const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-      
-      // Set state exactly like file upload does
-      setIdFrontImage(file);
-      setIdFrontUrl(uploadedUrl);
-      setIdErrors(prev => ({ ...prev, idFront: "" }));
-      setIdVerificationResult(null);
-      
-      // Close camera modal after successful upload
-      stopCamera();
-      
-      toast({
-        title: "Photo Uploaded",
-        description: "ID photo captured and uploaded successfully!",
-      });
-    } catch (error) {
-      console.error('Error uploading captured photo:', error);
-      setIsUploadingPhoto(false);
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload captured photo. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Cleanup camera on unmount
-  useEffect(() => {
-    return () => {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-      }
-      if (cameraVideoRef) {
-        cameraVideoRef.srcObject = null;
-      }
-    };
-  }, [cameraStream]);
-
   // Handle reference image upload
   const handleReferenceImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
@@ -1213,58 +1021,6 @@ export default function PostEnquiry() {
     });
   };
 
-  // Real-time ID number validation
-  const validateIdNumber = (value: string, type: string) => {
-    if (!type) return;
-    
-    const cleanIdNumber = value.replace(/[\s-]/g, '').toUpperCase();
-    
-    if (!cleanIdNumber) {
-      setIdErrors(prev => ({ ...prev, idNumber: "" }));
-      return;
-    }
-    
-    let error = "";
-    
-    if (type === 'aadhaar') {
-      if (!/^\d+$/.test(cleanIdNumber)) {
-        error = "Aadhaar number must contain only digits";
-      } else if (cleanIdNumber.length !== 12) {
-        error = `Aadhaar number must be exactly 12 digits (current: ${cleanIdNumber.length})`;
-      }
-    } else if (type === 'pan') {
-      if (cleanIdNumber.length !== 10) {
-        error = `PAN must be exactly 10 characters (current: ${cleanIdNumber.length})`;
-      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
-        error = "PAN format: 5 letters + 4 digits + 1 letter (e.g., ABCDE1234F)";
-      }
-    } else if (type === 'passport') {
-      if (cleanIdNumber.length !== 8) {
-        error = `Passport number must be exactly 8 characters (current: ${cleanIdNumber.length})`;
-      } else if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
-        error = "Passport format: 1 letter + 7 digits (e.g., A1234567)";
-      }
-    } else if (type === 'driving_license') {
-      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15) {
-        error = `Driving License must be 10-15 characters (current: ${cleanIdNumber.length})`;
-      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
-        error = "Driving License must contain only letters and numbers";
-      }
-    } else if (type === 'voter_id') {
-      if (cleanIdNumber.length !== 10) {
-        error = `Voter ID must be exactly 10 characters (current: ${cleanIdNumber.length})`;
-      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
-        error = "Voter ID must contain only letters and numbers";
-      }
-    }
-    
-    if (error) {
-      setIdErrors(prev => ({ ...prev, idNumber: error }));
-    } else {
-      setIdErrors(prev => ({ ...prev, idNumber: "" }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -1284,52 +1040,6 @@ export default function PostEnquiry() {
     if (!user) {
       alert('Please sign in to post an enquiry.');
       return;
-    }
-    
-    // Validate ID if provided
-    if (!isUserVerified && (idFrontImage || idBackImage)) {
-      const newErrors: {[key: string]: string} = {};
-      if (!idType.trim()) {
-        newErrors.idType = "Please select an ID type";
-      }
-      if (!idNumber.trim()) {
-        newErrors.idNumber = "ID number is required when uploading ID";
-      } else {
-        const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
-        if (idType === 'aadhaar') {
-          if (!/^\d{12}$/.test(cleanIdNumber)) {
-            newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
-          }
-        } else if (idType === 'pan') {
-          if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
-            newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
-          }
-        } else if (idType === 'passport') {
-          if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
-            newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
-          }
-        } else if (idType === 'driving_license') {
-          if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
-            newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
-          }
-        } else if (idType === 'voter_id') {
-          if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
-            newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
-          }
-        }
-      }
-      if (Object.keys(newErrors).length > 0) {
-        setIdErrors(newErrors);
-        toast({
-          title: "ID Validation Error",
-          description: "Please fix the ID information errors before submitting.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // ID verification is optional - users can post enquiry without it
-      // If ID images are uploaded but verification failed, still allow submission (optional feature)
     }
     
     if (!canPostEnquiry()) {
@@ -1398,34 +1108,25 @@ export default function PostEnquiry() {
       if (!isUserVerified && (idFrontImage || idBackImage)) {
         console.log('Starting ID image upload for non-verified user...');
         setIdUploadLoading(true);
-        setUploadStage('Uploading...');
+        setUploadStage('Uploading ID documents...');
         setUploadProgress(0);
         try {
-          // Upload both images in parallel for faster processing
-          const uploadPromises: Promise<string | null>[] = [];
-          
           if (idFrontImage) {
-            uploadPromises.push(uploadToCloudinary(idFrontImage));
-          } else {
-            uploadPromises.push(Promise.resolve(null));
+            setUploadStage('Uploading front ID to Cloudinary...');
+            setUploadProgress(25);
+            idFrontUrl = await uploadToCloudinary(idFrontImage);
+            console.log('Front ID uploaded to Cloudinary');
           }
           
           if (idBackImage) {
-            uploadPromises.push(uploadToCloudinary(idBackImage));
-          } else {
-            uploadPromises.push(Promise.resolve(null));
+            setUploadStage('Uploading back ID to Cloudinary...');
+            setUploadProgress(50);
+            idBackUrl = await uploadToCloudinary(idBackImage);
+            console.log('Back ID uploaded to Cloudinary');
           }
           
-          // Wait for both uploads to complete in parallel
-          const [frontResult, backResult] = await Promise.all(uploadPromises);
-          idFrontUrl = frontResult;
-          idBackUrl = backResult;
-          
-          setUploadProgress(100);
-          console.log('ID images uploaded to Cloudinary (parallel upload)');
-          
           setUploadProgress(75);
-          setUploadStage('Uploading...');
+          setUploadStage('ID documents uploaded successfully!');
         } catch (uploadError: any) {
           console.error('Error uploading ID documents:', uploadError);
           const errorMessage = uploadError instanceof Error 
@@ -1455,7 +1156,7 @@ export default function PostEnquiry() {
       }
       
       console.log('Now saving to Firestore...');
-      setUploadStage('Uploading...');
+      setUploadStage('Saving enquiry to database...');
       setUploadProgress(90);
       
       // PRO PLAN AUTO-ENQUIRY LOGIC - KEPT FOR FUTURE UPDATES
@@ -1675,28 +1376,11 @@ export default function PostEnquiry() {
         // setIdBackImage(null);
       } catch (dbError) {
         console.error('Error saving to Firestore:', dbError);
-        const errorMessage = dbError instanceof Error ? dbError.message : String(dbError);
-        
-        // Check for specific Firebase errors
-        if (errorMessage.includes('permission-denied')) {
-          throw new Error('You don\'t have permission to create enquiries. Please check your account.');
-        } else if (errorMessage.includes('network') || errorMessage.includes('unavailable')) {
-          throw new Error('Network connection issue. Please check your internet and try again.');
-        } else {
-          throw new Error(`Failed to save enquiry: ${errorMessage}. Please try again.`);
-        }
+        throw new Error(`Failed to save enquiry to database: ${dbError}`);
       }
     } catch (err: any) {
       console.error('Error submitting enquiry:', err);
-      const errorMessage = err?.message || 'Unknown error occurred';
-      
-      // Use toast instead of alert for better UX
-      toast({
-        title: "Failed to Submit Enquiry",
-        description: errorMessage,
-        variant: "destructive",
-        duration: 5000
-      });
+      alert(`Failed to submit enquiry: ${err?.message || 'Unknown error occurred'}. Please try again.`);
     } finally {
       setLoading(false);
       setIdUploadLoading(false);
@@ -1711,62 +1395,6 @@ export default function PostEnquiry() {
       window.scrollTo(0, 0);
     }
   }, [isSubmitted]);
-
-  // Scroll to ID verification card when verification is successful
-  useEffect(() => {
-    if (idVerificationResult?.matches && idVerificationCardRef.current) {
-      // Small delay to ensure the card is rendered
-      setTimeout(() => {
-        idVerificationCardRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-          inline: 'center'
-        });
-      }, 100);
-    }
-  }, [idVerificationResult?.matches]);
-
-  // Countdown timer for verification
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    
-    if (verifyingId) {
-      interval = setInterval(() => {
-        setTotalElapsedSeconds((prev) => {
-          const newTotal = prev + 1;
-          
-          // After 120 seconds total, stop incrementing
-          if (newTotal >= 120) {
-            return 120;
-          }
-          
-          // If we've completed 60 seconds, restart countdown to 60
-          if (newTotal === 60) {
-            setVerificationCountdown(60);
-          }
-          
-          // Update countdown based on which minute we're in
-          if (newTotal < 60) {
-            setVerificationCountdown(60 - newTotal);
-          } else {
-            setVerificationCountdown(120 - newTotal);
-          }
-          
-          return newTotal;
-        });
-      }, 1000);
-    } else {
-      // Reset when verification stops
-      setVerificationCountdown(60);
-      setTotalElapsedSeconds(0);
-    }
-    
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [verifyingId]);
 
   if (isSubmitted) {
     return (
@@ -1791,9 +1419,9 @@ export default function PostEnquiry() {
             </div>
 
             {/* Main Content Card */}
-            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6 lg:min-h-[150px]">
+            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6">
               {/* AI Processing Status - Card Header */}
-              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4 lg:px-4 lg:py-3">
+              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4">
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
                   <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
@@ -1805,7 +1433,7 @@ export default function PostEnquiry() {
               </div>
               
               {/* Card Content */}
-              <CardContent className="p-4 sm:p-6 lg:p-5 lg:pt-4">
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-3 sm:space-y-4 text-center">
                   <div className="space-y-1.5 sm:space-y-2">
                     <p className="text-xs sm:text-sm font-medium text-green-700">
@@ -1914,7 +1542,7 @@ export default function PostEnquiry() {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-6 sm:py-8 lg:py-10">
-        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
@@ -1938,8 +1566,8 @@ export default function PostEnquiry() {
                       Post Enquiry
                     </h2>
                   </div>
-                  <p className="text-[10px] sm:text-base lg:text-sm xl:text-base text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    From hobbies to necessities, from needs to requirements.
+                  <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    What in the f***n world are you looking for?
                   </p>
                 </div>
               </div>
@@ -1948,8 +1576,8 @@ export default function PostEnquiry() {
 
           {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
-            <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden lg:min-h-[200px]">
-              <CardContent className="p-6 sm:p-8 lg:p-6 lg:pt-5 text-center">
+            <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
+              <CardContent className="p-6 sm:p-8 text-center">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg">
                   <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 </div>
@@ -1979,21 +1607,21 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design */}
           {!isSubmitted && (
-            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden lg:min-h-[300px]">
-              <CardContent className="p-5 sm:p-6 lg:p-6 lg:pt-5">
-                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-6">
+            <Card className="border border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden" style={{ borderWidth: '1px' }}>
+              <CardContent className="p-5 sm:p-6 lg:p-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {category === "jobs" ? "Job Title" : "From a 4 a.m. tea spot to a piece of the moon."}
+                      {category === "jobs" ? "Job Title" : "What do you need? From a 4 a.m. tea spot to a piece of the moon."}
                     </Label>
                     <Input
                       id="title"
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                      className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -2006,6 +1634,10 @@ export default function PostEnquiry() {
                         <span className="text-blue-600">*</span>
                         Choose Categories
                       </Label>
+                      <p className="text-[10px] sm:text-xs text-slate-600 flex items-center gap-1.5">
+                        <span className="text-blue-500">💡</span>
+                        Select up to 3 categories for better reach
+                      </p>
                     </div>
                     
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
@@ -2016,7 +1648,7 @@ export default function PostEnquiry() {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-4 rounded-xl transition-all duration-200 text-base font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -2057,36 +1689,18 @@ export default function PostEnquiry() {
                                   return (
                                     <div 
                                       key={cat.value} 
-                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors border-2 border-gray-400 mb-2 last:mb-0 ${
+                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
                                         isDisabled ? 'opacity-50' : ''
                                       }`}
                                       onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
                                     >
-                                      <div 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-                                          if (!isDisabled) {
-                                            handleCategoryToggle(cat.value);
-                                          }
-                                        }}
-                                        onTouchStart={(e) => {
-                                          e.stopPropagation();
-                                          if (!isDisabled) {
-                                            handleCategoryToggle(cat.value);
-                                          }
-                                        }}
-                                        className="cursor-pointer touch-manipulation flex items-center justify-center min-w-[24px] min-h-[24px] -ml-1"
-                                        style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
-                                      >
-                                        <Checkbox
-                                          id={`mobile-${cat.value}`}
-                                          checked={isSelected}
-                                          disabled={isDisabled}
-                                          onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                          className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
-                                        />
-                                      </div>
+                                      <Checkbox
+                                        id={`mobile-${cat.value}`}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
+                                      />
                                       <Label
                                         htmlFor={`mobile-${cat.value}`}
                                         className={`text-base flex-1 cursor-pointer ${
@@ -2117,7 +1731,7 @@ export default function PostEnquiry() {
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium ${
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-4 rounded-xl transition-all duration-200 font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -2161,35 +1775,17 @@ export default function PostEnquiry() {
                                 return (
                                   <div 
                                     key={cat.value} 
-                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation border-2 border-gray-400 mb-2 last:mb-0 ${
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                   >
-                                    <div 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        if (!isDisabled) {
-                                          handleCategoryToggle(cat.value);
-                                        }
-                                      }}
-                                      onTouchStart={(e) => {
-                                        e.stopPropagation();
-                                        if (!isDisabled) {
-                                          handleCategoryToggle(cat.value);
-                                        }
-                                      }}
-                                      className="cursor-pointer touch-manipulation flex items-center justify-center min-w-[24px] min-h-[24px] -ml-1"
-                                      style={{ pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent' }}
-                                    >
-                                      <Checkbox
-                                        id={cat.value}
-                                        checked={isSelected}
-                                        disabled={isDisabled}
-                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
-                                      />
-                                    </div>
+                                    <Checkbox
+                                      id={cat.value}
+                                      checked={isSelected}
+                                      disabled={isDisabled}
+                                      onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
+                                    />
                                     <Label
                                       htmlFor={cat.value}
                                       className={`text-sm sm:text-sm flex-1 cursor-pointer ${
@@ -2214,7 +1810,8 @@ export default function PostEnquiry() {
                       </div>
                       
                       {selectedCategories.length === 0 && (
-                        <p className="text-[10px] sm:text-xs text-red-600 font-medium">
+                        <p className="text-[10px] sm:text-xs text-amber-600 flex items-center gap-1.5 font-medium">
+                          <span>⚠️</span>
                           Select at least one category
                         </p>
                       )}
@@ -2233,7 +1830,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
+                      className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -2339,7 +1936,7 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                        className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -2358,7 +1955,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                          className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2407,7 +2004,7 @@ export default function PostEnquiry() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className="border border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
+                        className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                       />
                     </div>
@@ -2448,523 +2045,104 @@ export default function PostEnquiry() {
 
                   {/* Government ID - Enhanced Professional Design for Non-Verified Users */}
                   {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className="relative space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
-                    {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
-                    {verifyingId && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
-                        {/* Moving Tick - All Over Card */}
-                        <div 
-                          className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
-                          style={{
-                            animation: 'tickMoveAround 8s ease-in-out infinite',
-                            WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
-                            transform: 'translateZ(0)',
-                            WebkitTransform: 'translateZ(0)'
-                          }}
-                        >
-                          {/* Bright Bold Distorted Tick */}
-                          <svg 
-                            className="w-full h-full text-blue-400 drop-shadow-2xl"
-                            viewBox="0 0 100 100"
-                            style={{
-                              filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
-                              animation: 'tickForming 2s ease-in-out infinite',
-                              WebkitAnimation: 'tickForming 2s ease-in-out infinite'
-                            }}
-                          >
-                            {/* Bold Distorted Tick */}
-                            <path
-                              d="M 20 50 L 40 70 L 80 30"
-                              stroke="currentColor"
-                              strokeWidth="12"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeDasharray="100"
-                              style={{
-                                strokeDashoffset: '100',
-                                animation: 'tickDraw 2s ease-in-out infinite',
-                                WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
-                                filter: 'drop-shadow(0 0 8px currentColor)'
-                              }}
-                            />
-                            {/* Bold Pulsing Circles */}
-                            <circle
-                              cx="20"
-                              cy="50"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                            <circle
-                              cx="40"
-                              cy="70"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite 0.3s',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                            <circle
-                              cx="80"
-                              cy="30"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite 0.6s',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                          </svg>
-                          
-                          {/* Bright Glowing Background */}
-                          <div 
-                            className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
-                            style={{
-                              animation: 'pulseGlow 2s ease-in-out infinite',
-                              WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
-                              transform: 'scale(1.3)',
-                              WebkitTransform: 'scale(1.3)'
-                            }}
-                          ></div>
-                        </div>
-                        
-                        {/* Countdown Text - Fixed Position */}
-                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg">
-                            <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
-                            <span className="text-sm sm:text-base font-bold tabular-nums">
-                              {verificationCountdown}s
-                            </span>
-                          </div>
-                          <p className="mt-3 text-xs sm:text-sm text-gray-600 font-medium">
-                            Verifying your ID...
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-1 w-full">
-                      <div className="flex items-center gap-2 w-full">
-                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
-                          <span className="block">Trust</span>
-                          <span className="block">Badge</span>
-                        </h3>
-                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0">(optional)</span>
-                      </div>
-                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
-                        <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue Badge For This Enquiry.</span>
-                      </p>
+                  <div className="space-y-4 sm:space-y-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl">
+                    <div className="space-y-1">
+                      <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">
+                        <span className="block">ID</span>
+                        <span className="block">Verification</span>
+                      </h3>
+                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">(Optional)</p>
                     </div>
-                    {idVerificationResult?.matches ? (
-                      <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
-                        <div 
-                          className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative"
-                          style={{
-                            animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
-                            WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
-                            transform: 'translateZ(0)',
-                            WebkitTransform: 'translateZ(0)',
-                            willChange: 'transform, box-shadow, border-radius'
-                          }}
-                        >
-                          {/* Particle effects - deconstructed pieces assembling */}
-                          {[...Array(6)].map((_, i) => {
-                            const angle = (i * 60) * Math.PI / 180;
-                            const distance = 45;
-                            return (
-                              <div
-                                key={i}
-                                className="absolute w-3 h-3 bg-blue-400 rounded-full"
-                                style={{
-                                  left: '50%',
-                                  top: '50%',
-                                  transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
-                                  WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
-                                  animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
-                                  WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
-                                  transformOrigin: 'center',
-                                  WebkitTransformOrigin: 'center',
-                                  willChange: 'transform, opacity'
-                                }}
-                              />
-                            );
-                          })}
-                          <CheckCircle 
-                            className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
-                            style={{
-                              animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
-                              WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
-                              transform: 'translateZ(0)',
-                              WebkitTransform: 'translateZ(0)',
-                              willChange: 'transform, opacity'
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {/* ID Type and Number */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                      <div className="space-y-2.5">
-                        <Label htmlFor="idType" className="text-xs sm:text-sm font-semibold text-slate-700">
-                          ID Document Type
-                        </Label>
-                        <Select value={idType} onValueChange={(value) => {
-                          setIdType(value);
-                          if (idNumber && value) {
-                            validateIdNumber(idNumber, value);
-                          } else {
-                            setIdErrors(prev => ({ ...prev, idNumber: "" }));
-                          }
-                          setIdVerificationResult(null);
-                        }} disabled={verifyingId}>
-                          <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black" disabled={verifyingId}>
-                            <SelectValue placeholder="Select ID Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                            <SelectItem value="pan">PAN Card</SelectItem>
-                            <SelectItem value="passport">Passport</SelectItem>
-                            <SelectItem value="driving_license">Driving License</SelectItem>
-                            <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {idErrors.idType && (
-                          <span className="text-xs text-red-500 flex items-center">
-                            <X className="h-3 w-3 mr-1" />
-                            {idErrors.idType}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2.5">
-                        <Label htmlFor="idNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
-                          ID Number
-                        </Label>
-                        <Input
-                          id="idNumber"
-                          placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                          value={idNumber}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            
-                            // Auto-format Aadhaar: add space after every 4 digits
-                            if (idType === 'aadhaar') {
-                              // Remove all spaces first
-                              const digitsOnly = value.replace(/\s/g, '');
-                              // Add space after every 4 digits
-                              value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                            }
-                            
-                            setIdNumber(value);
-                            if (idType) {
-                              validateIdNumber(value, idType);
-                            }
-                            setIdVerificationResult(null);
-                          }}
-                          className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black"
-                          disabled={verifyingId}
-                        />
-                        {idErrors.idNumber && !idVerificationResult && (
-                          <span className="text-xs text-red-500 flex items-center">
-                            <X className="h-3 w-3 mr-1" />
-                            {idErrors.idNumber}
-                          </span>
-                        )}
-                        {/* ID Verification Status */}
-                        {verifyingId && (
-                          <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
-                            {totalElapsedSeconds >= 120 ? (
-                              <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
-                            ) : (
-                              <>
-                                <span className="text-xs sm:text-sm font-medium text-white">Verifying</span>
-                                <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-none">
-                                  <span className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
-                                    {Math.floor(verificationCountdown / 60)}:{(verificationCountdown % 60).toString().padStart(2, '0')}
-                                  </span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        )}
-                        {idVerificationResult && !verifyingId && (
-                          <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                            idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {idVerificationResult.matches ? (
-                              <>
-                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
-                              </>
-                            ) : (
-                              <>
-                                <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                    <div className="p-3 sm:p-4 bg-white border-2 border-black rounded-lg">
+                      {idFrontImage || idBackImage ? (
+                        <p className="text-xs sm:text-sm text-slate-700 font-medium flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                          <span>✓ ID uploaded - pending verification</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs sm:text-sm text-slate-700 font-medium">
+                          The world isn't exactly a trust-friendly place, but relax, you'll have a blue tick
+                        </p>
+                      )}
                     </div>
                     
-                    {/* ID Upload - Only show when not verified */}
-                    <div className="space-y-2.5">
-                      <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
-                        ID Document
-                      </Label>
-                      
-                      {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
-                      {!(idFrontImage || idFrontUrl) && (
-                        <div className="mb-3 sm:mb-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                      {/* Front ID - Enhanced */}
+                      <div className="space-y-2.5">
+                        <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          Front Side
+                        </Label>
+                        <div className="relative">
                           <input
                             type="file"
                             id="idFront"
                             accept="image/*"
-                            disabled={verifyingId}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setIdFrontImage(file);
-                              setIdErrors(prev => ({ ...prev, idFront: "" }));
-                              setIdVerificationResult(null);
-                              
-                              try {
-                                const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                setIdFrontUrl(uploadedUrl);
-                              } catch (error) {
-                                console.error('Error uploading ID:', error);
-                                toast({
-                                  title: "Upload Failed",
-                                  description: "Failed to upload image. Please try again.",
-                                  variant: "destructive",
-                                });
-                              }
-                            }}
+                            onChange={(e) => setIdFrontImage(e.target.files?.[0] || null)}
                             className="hidden"
                           />
-                          
-                          {/* Upload Button - Full Width */}
                           <label
                             htmlFor="idFront"
-                            className={`w-full h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
-                              verifyingId
-                                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                                : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                            className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center ${
+                              idFrontImage
+                                ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md'
+                                : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30'
                             }`}
-                            onClick={(e) => {
-                              if (verifyingId) {
-                                e.preventDefault();
-                              }
-                            }}
                           >
-                            <div className="flex items-center gap-2">
-                              <Upload className="h-5 w-5 text-slate-600" />
-                              <span className="text-sm text-slate-700 font-semibold">Upload</span>
-                            </div>
+                            {idFrontImage ? (
+                              <div className="space-y-2 px-3">
+                                <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 mx-auto" />
+                                <p className="text-xs sm:text-sm text-green-700 font-semibold">Uploaded</p>
+                                <p className="text-[10px] sm:text-xs text-green-600 truncate max-w-full">{idFrontImage.name}</p>
+                              </div>
+                            ) : (
+                              <div className="space-y-2 px-3">
+                                <Upload className="h-6 w-6 sm:h-7 sm:w-7 text-slate-500 mx-auto" />
+                                <p className="text-xs sm:text-sm text-slate-700 font-semibold">Click to upload</p>
+                                <p className="text-[10px] sm:text-xs text-slate-500">Front side of ID</p>
+                              </div>
+                            )}
                           </label>
                         </div>
-                      )}
-                      
-                      {/* Image Upload Status - Text Only */}
-                      {(idFrontImage || idFrontUrl) && (
-                        <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
-                          <div className="flex items-center gap-2 sm:gap-2.5">
-                            <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
-                            <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIdFrontImage(null);
-                              setIdFrontUrl("");
-                              setIdVerificationResult(null);
-                            }}
-                            className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                            style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
-                            disabled={verifyingId}
-                            aria-label="Remove image"
-                          >
-                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Verify Button - Show when image is uploaded but not yet verified */}
-                    {(idFrontImage || idFrontUrl) && idType && idNumber && (!idVerificationResult || !idVerificationResult.matches) && (
-                      <div className="mt-4 sm:mt-5">
-                        <Button
-                          type="button"
-                          onClick={async () => {
-                            // Check if required fields are filled
-                            if (!idType) {
-                              toast({
-                                title: "ID Type Required",
-                                description: "Please select an ID document type.",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            if (!idNumber || idNumber.trim() === '') {
-                              toast({
-                                title: "ID Number Required",
-                                description: "Please enter your ID number.",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            // Validate format first
-                            const newErrors: {[key: string]: string} = {};
-                            const cleanIdNumber = idNumber.replace(/[\s-]/g, '').toUpperCase();
-                            
-                            if (idType === 'aadhaar') {
-                              if (!/^\d{12}$/.test(cleanIdNumber)) {
-                                newErrors.idNumber = "Aadhaar number must be exactly 12 digits";
-                              }
-                            } else if (idType === 'pan') {
-                              if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
-                                newErrors.idNumber = "PAN must be 10 characters: 5 letters + 4 digits + 1 letter";
-                              }
-                            } else if (idType === 'passport') {
-                              if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
-                                newErrors.idNumber = "Passport number must be 8 characters: 1 letter + 7 digits";
-                              }
-                            } else if (idType === 'driving_license') {
-                              if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15 || !/^[A-Z0-9]{10,15}$/.test(cleanIdNumber)) {
-                                newErrors.idNumber = "Driving License must be 10-15 alphanumeric characters";
-                              }
-                            } else if (idType === 'voter_id') {
-                              if (cleanIdNumber.length !== 10 || !/^[A-Z0-9]{10}$/.test(cleanIdNumber)) {
-                                newErrors.idNumber = "Voter ID must be exactly 10 alphanumeric characters";
-                              }
-                            }
-                            
-                            if (Object.keys(newErrors).length > 0) {
-                              setIdErrors(newErrors);
-                              toast({
-                                title: "ID Validation Error",
-                                description: "Please fix the ID information errors before verifying.",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            // Set verifying state and clear errors
-                            setVerifyingId(true);
-                            setVerificationCountdown(60); // Reset countdown to 60 seconds
-                            setIdErrors(prev => ({ ...prev, idNumber: "" }));
-                            
-                            // Scroll inline verification countdown into view on mobile (non-intrusive)
-                            setTimeout(() => {
-                              if (inlineVerificationRef.current) {
-                                inlineVerificationRef.current.scrollIntoView({
-                                  behavior: 'smooth',
-                                  block: 'center',
-                                  inline: 'nearest'
-                                });
-                              }
-                            }, 200);
-                            
-                            try {
-                              // Upload image if not already uploaded
-                              let frontImageUrl: string | null = null;
-                              
-                              if (idFrontImage && !idFrontUrl) {
-                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
-                                setIdFrontUrl(frontImageUrl);
-                              } else {
-                                frontImageUrl = idFrontUrl || null;
-                              }
-                              
-                              // Ensure we have an image URL
-                              if (!frontImageUrl) {
-                                toast({
-                                  title: "Upload Error",
-                                  description: "Failed to upload ID image. Please try again.",
-                                  variant: "destructive",
-                                });
-                                setVerifyingId(false);
-                                return;
-                              }
-                              
-                              const verification = await verifyIdNumberMatch(
-                                frontImageUrl,
-                                idNumber,
-                                idType
-                              );
-                              
-                              setIdVerificationResult(verification);
-                              
-                              if (!verification.matches) {
-                                setIdErrors(prev => ({ 
-                                  ...prev, 
-                                  idNumber: verification.error || 'ID number does not match the image(s)' 
-                                }));
-                                toast({
-                                  title: "ID Verification Failed",
-                                  description: verification.error || "ID number does not match the uploaded image(s). Please ensure the number you entered matches the number visible in the image.",
-                                  variant: "destructive",
-                                });
-                              } else {
-                                setIdErrors(prev => ({ ...prev, idNumber: "" }));
-                                toast({
-                                  title: "Verification Successful",
-                                  description: "Your ID has been verified! You can now post your enquiry.",
-                                });
-                              }
-                            } catch (error) {
-                              console.error('Error verifying ID:', error);
-                              toast({
-                                title: "Verification Error",
-                                description: "Failed to verify ID number. Please ensure the image is clear and the ID number is visible.",
-                                variant: "destructive",
-                              });
-                            } finally {
-                              // Always clear verifying state, even if there's an error or early return
-                              setVerifyingId(false);
-                            }
-                          }}
-                          disabled={!idType || !idNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                          className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {verifyingId ? (
-                            <>
-                              <div 
-                                className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
-                                style={{
-                                  animation: 'spin 1s linear infinite',
-                                  WebkitAnimation: 'spin 1s linear infinite'
-                                }}
-                              ></div>
-                              Verifying ID...
-                            </>
-                          ) : idVerificationResult?.matches ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                              ID Verified ✓
-                            </>
-                          ) : (
-                            <>
-                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                              Get Trust Badge
-                            </>
-                          )}
-                        </Button>
                       </div>
-                    )}
-                      </>
-                    )}
+
+                      {/* Back ID - Enhanced */}
+                      <div className="space-y-2.5">
+                        <Label htmlFor="idBack" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          Back Side
+                        </Label>
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id="idBack"
+                            accept="image/*"
+                            onChange={(e) => setIdBackImage(e.target.files?.[0] || null)}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor="idBack"
+                            className={`block w-full h-28 sm:h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center ${
+                              idBackImage
+                                ? 'border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-md'
+                                : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50/30'
+                            }`}
+                          >
+                            {idBackImage ? (
+                              <div className="space-y-2 px-3">
+                                <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-green-600 mx-auto" />
+                                <p className="text-xs sm:text-sm text-green-700 font-semibold">Uploaded</p>
+                                <p className="text-[10px] sm:text-xs text-green-600 truncate max-w-full">{idBackImage.name}</p>
+                              </div>
+                            ) : (
+                              <div className="space-y-2 px-3">
+                                <Upload className="h-6 w-6 sm:h-7 sm:w-7 text-slate-500 mx-auto" />
+                                <p className="text-xs sm:text-sm text-slate-700 font-semibold">Click to upload</p>
+                                <p className="text-[10px] sm:text-xs text-slate-500">Back side of ID</p>
+                              </div>
+                            )}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   )}
 
@@ -2988,18 +2166,32 @@ export default function PostEnquiry() {
                     </div>
                   )}
 
+                  {/* Upload Progress - Enhanced for Non-Verified Users */}
+                  {!authLoading && !isUserVerified && idUploadLoading && (
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm sm:text-base font-semibold text-slate-800">
+                          {uploadStage}
+                        </span>
+                        <span className="text-sm sm:text-base font-bold text-blue-600">
+                          {uploadProgress}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
 
 
                   {/* Submit Button - Enhanced Professional Design */}
                   <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
                     <Button
                       type="submit"
-                      disabled={
-                        loading || 
-                        idUploadLoading || 
-                        paymentLoading
-                        // ID verification is optional - not required for submission
-                      }
+                      disabled={loading || idUploadLoading || paymentLoading}
                       className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border-2 border-black"
                     >
                       {paymentLoading ? (
@@ -3010,7 +2202,7 @@ export default function PostEnquiry() {
                       ) : loading ? (
                         <div className="flex items-center justify-center space-x-3">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Submitting enquiry...</span>
+                          <span>Submitting...</span>
                         </div>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
@@ -3023,14 +2215,14 @@ export default function PostEnquiry() {
                     {loading && (
                       <div className="mt-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
                         <div className="flex items-center space-x-3 mb-3">
-                          <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
-                          <span className="text-sm sm:text-base font-semibold text-black">
-                            Submitting enquiry...
+                          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-sm sm:text-base font-semibold text-slate-800">
+                            {idUploadLoading ? 'Uploading ID...' : 'Submitting enquiry...'}
                           </span>
                         </div>
                         <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
                           <div 
-                            className="bg-black h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>
@@ -3045,8 +2237,8 @@ export default function PostEnquiry() {
 
           {/* Real-time Verification Status - Enhanced Professional Design */}
           {submittedEnquiryId && (
-            <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden lg:min-h-[200px]">
-              <CardContent className="p-6 sm:p-8 lg:p-6 lg:pt-5">
+            <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+              <CardContent className="p-6 sm:p-8">
                 <div className="text-center mb-5 sm:mb-6">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <span className="text-2xl sm:text-3xl">🎉</span>
@@ -3305,137 +2497,6 @@ export default function PostEnquiry() {
             </div>
           </div>
         )}
-
-      {/* Camera Modal - Mobile Optimized */}
-      {showCameraModal && (
-        <div 
-          className={`fixed inset-0 bg-black ${isMobile ? 'bg-opacity-100' : 'bg-opacity-90'} z-50 flex items-center justify-center ${isMobile ? 'p-0' : 'p-2 sm:p-4'}`}
-          onClick={(e) => {
-            if (e.target === e.currentTarget && !isUploadingPhoto && !isMobile) {
-              stopCamera();
-            }
-          }}
-        >
-          <div className={`${isMobile ? 'w-full h-full rounded-none' : 'bg-white rounded-xl max-w-2xl w-full max-h-[90vh]'} overflow-hidden flex flex-col`}>
-            {/* Header - Mobile Optimized */}
-            <div className={`flex items-center justify-between ${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm' : 'p-3 sm:p-4 border-b bg-white'}`}>
-              <h3 className={`${isMobile ? 'text-lg text-white' : 'text-base sm:text-lg font-bold text-black'}`}>
-                {isMobile ? '📷 Take ID Photo' : 'Take ID Photo'}
-              </h3>
-              <button
-                onClick={stopCamera}
-                disabled={isUploadingPhoto}
-                className={`${isMobile ? 'p-3 bg-white/20 hover:bg-white/30 active:bg-white/40' : 'p-2 hover:bg-gray-100 active:bg-gray-200'} rounded-full transition-colors touch-manipulation disabled:opacity-50`}
-                aria-label="Close camera"
-              >
-                <X className={`h-6 w-6 ${isMobile ? 'text-white' : 'text-gray-600'}`} />
-              </button>
-            </div>
-            
-            {/* Camera Preview - Mobile Optimized */}
-            <div className={`relative flex-1 bg-black flex items-center justify-center ${isMobile ? 'h-[calc(100vh-180px)]' : 'min-h-[300px] sm:min-h-[400px]'}`}>
-              {!capturedImage ? (
-                <>
-                  <video
-                    ref={(el) => {
-                      setCameraVideoRef(el);
-                      if (el && cameraStream) {
-                        el.srcObject = cameraStream;
-                        el.play().catch(err => console.error('Video play error:', err));
-                      }
-                    }}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                    style={{ 
-                      maxHeight: isMobile ? '100%' : '80vh',
-                      transform: isMobile ? 'scaleX(-1)' : 'none'
-                    }}
-                  />
-                  
-                  {/* Capture Button - Mobile Optimized */}
-                  <div className={`absolute ${isMobile ? 'bottom-6' : 'bottom-4 sm:bottom-8'} left-1/2 transform -translate-x-1/2 z-10`}>
-                    <button
-                      onClick={capturePhoto}
-                      className={`${isMobile ? 'w-20 h-20 border-[5px]' : 'w-16 h-16 sm:w-20 sm:h-20 border-4'} bg-white rounded-full border-gray-300 flex items-center justify-center hover:scale-110 active:scale-90 transition-transform touch-manipulation shadow-2xl`}
-                      aria-label="Capture photo"
-                    >
-                      <div className={`${isMobile ? 'w-14 h-14 border-[3px]' : 'w-12 h-12 sm:w-14 sm:h-14 border-2'} bg-white rounded-full border-gray-400`}></div>
-                    </button>
-                  </div>
-                  
-                  {/* Instructions Overlay - Mobile Optimized */}
-                  {isMobile && (
-                    <div className="absolute top-6 left-4 right-4 bg-gradient-to-r from-black/80 via-black/70 to-black/80 backdrop-blur-sm text-white text-sm px-4 py-3 rounded-xl border border-white/20">
-                      <p className="text-center font-medium">📄 Position your ID clearly in the frame</p>
-                      <p className="text-center text-xs mt-1 text-white/80">Make sure all text is visible and readable</p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <img
-                    src={capturedImage}
-                    alt="Captured ID"
-                    className="max-w-full max-h-full object-contain"
-                    style={{ maxHeight: isMobile ? '100%' : '80vh' }}
-                  />
-                  
-                  {/* Upload Progress - Mobile Optimized */}
-                  {isUploadingPhoto && (
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center">
-                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mb-4"></div>
-                      <p className="text-white text-base font-semibold">Uploading photo...</p>
-                      <p className="text-white/70 text-sm mt-1">Please wait</p>
-                    </div>
-                  )}
-                  
-                  {/* Action Buttons - Mobile Optimized */}
-                  {!isUploadingPhoto && (
-                    <div className={`absolute ${isMobile ? 'bottom-6 left-4 right-4' : 'bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2'} flex ${isMobile ? 'flex-col gap-3' : 'flex-col sm:flex-row gap-3 sm:gap-4'} ${isMobile ? 'w-auto' : 'w-full sm:w-auto'} ${isMobile ? '' : 'px-4 sm:px-0'}`}>
-                      <button
-                        onClick={() => {
-                          setCapturedImage(null);
-                          if (cameraVideoRef && cameraStream) {
-                            cameraVideoRef.srcObject = cameraStream;
-                            cameraVideoRef.play().catch(err => console.error('Video play error:', err));
-                          }
-                        }}
-                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-gray-700/90 backdrop-blur-sm text-white rounded-xl hover:bg-gray-800 active:bg-gray-900 transition-colors font-medium touch-manipulation shadow-lg border border-white/10`}
-                      >
-                        🔄 Retake
-                      </button>
-                      <button
-                        onClick={useCapturedPhoto}
-                        className={`${isMobile ? 'w-full h-14 text-base font-semibold' : 'w-full sm:w-auto px-6 py-3 text-sm sm:text-base'} bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium touch-manipulation shadow-lg`}
-                      >
-                        ✅ Use Photo
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            {/* Instructions Footer - Mobile Optimized */}
-            <div className={`${isMobile ? 'p-4 bg-black/80 backdrop-blur-sm border-t border-white/10' : 'p-3 sm:p-4 bg-gray-50 border-t'}`}>
-              <p className={`${isMobile ? 'text-sm text-white/90' : 'text-xs sm:text-sm text-gray-600'} text-center font-medium`}>
-                {isUploadingPhoto 
-                  ? "⏳ Uploading your photo, please wait..."
-                  : !capturedImage 
-                    ? (isMobile 
-                        ? "👆 Tap the white button below to capture your ID"
-                        : "Position your ID document clearly in the frame and click the capture button")
-                    : (isMobile
-                        ? "👀 Review your photo. Tap 'Use Photo' to upload, or 'Retake' to try again."
-                        : "Review your photo. Click 'Use Photo' to upload, or 'Retake' to try again.")
-                }
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
     </Layout>
   );
