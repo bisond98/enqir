@@ -1225,7 +1225,7 @@ const Profile = () => {
                   
                   {/* Image Upload Status - Text Only */}
                   {(idFront || idFrontUrl) && (
-                    <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#003300', borderColor: '#002200' }}>
+                    <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
                       <div className="flex items-center gap-2 sm:gap-2.5">
                         <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
                         <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
