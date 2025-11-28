@@ -1706,8 +1706,18 @@ const Landing = () => {
 
           {/* Sell Section */}
 
-          {/* Recent Enquiries Grid (Reverted to previous implementation) */}
-          <section className={`py-4 sm:py-16 transition-colors duration-300 relative z-10 ${expandedCardId ? 'bg-white' : 'bg-transparent'}`} style={{ backgroundColor: expandedCardId ? 'white' : 'transparent' }}>
+          {/* Recent Enquiries Grid - White background full viewport width */}
+          <section className="py-4 sm:py-16 transition-colors duration-300 relative bg-white w-full" style={{ 
+            backgroundColor: '#ffffff',
+            background: '#ffffff',
+            width: '100vw',
+            marginLeft: 'calc(-50vw + 50%)',
+            marginRight: 'calc(-50vw + 50%)',
+            paddingLeft: 'calc(50vw - 50%)',
+            paddingRight: 'calc(50vw - 50%)',
+            position: 'relative',
+            zIndex: expandedCardId ? 30 : 20
+          }}>
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
