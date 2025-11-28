@@ -8,7 +8,7 @@ interface ConditionalAuthProviderProps {
 
 export const ConditionalAuthProvider: React.FC<ConditionalAuthProviderProps> = ({ children }) => {
   const [useMockAuth, setUseMockAuth] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(false); // Start as false to prevent loading screen flash
 
   useEffect(() => {
     // Check if Firebase is working
@@ -38,17 +38,7 @@ export const ConditionalAuthProvider: React.FC<ConditionalAuthProviderProps> = (
     setIsChecking(false);
   }, []);
 
-  // Show loading while checking
-  if (isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600 font-medium">Initializing authentication...</p>
-        </div>
-      </div>
-    );
-  }
+  // Skip loading screen - Firebase is always used, show landing page immediately
 
   // Use mock authentication if Firebase is not available
   if (useMockAuth) {
