@@ -1895,7 +1895,9 @@ const Landing = () => {
                     } else if (isHovered && isAnyCardHovered) {
                       animationState = { opacity: 1, ...hoveredCardAnimation };
                     } else if (isAnyCardHovered && !isHovered) {
-                      animationState = { opacity: 1, ...nonHoveredCardAnimation }; // Keep cards fully opaque
+                      // On mobile, keep non-hovered cards at default state (no animation) to prevent dulling
+                      // Only apply non-hovered animation on desktop for depth effect
+                      animationState = isMobile ? { opacity: 1, ...defaultAnimation } : { opacity: 1, ...nonHoveredCardAnimation };
                     } else {
                       animationState = { opacity: 1, ...defaultAnimation };
                     }
