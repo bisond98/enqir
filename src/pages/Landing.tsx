@@ -1644,10 +1644,17 @@ const Landing = () => {
               <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
             </button>
             </Link>
+            {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
+                - Text centered with slight right offset (paddingLeft: '2.75rem')
+                - Icon positioned at left-2.5 sm:left-5
+                - Search bar and button connected (gap-0, rounded corners adjusted)
+                - Placeholder text size matches "Show All Enquiries" (text-xs sm:text-base)
+                Last updated: Search bar styling and positioning finalized
+            */}
             <div className="w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
-              <div className="flex gap-2 sm:gap-2">
+              <div className="flex gap-0">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
-                  <Search className="absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
+                  <Search className="absolute left-2.5 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -1664,13 +1671,13 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-4 border-r-0 border-black rounded-l-lg sm:rounded-l-2xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
                     style={{ 
-                      fontSize: '16px',
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
                       paddingBottom: '0.75rem',
-                      textAlign: searchTerm ? 'left' : 'center'
+                      textAlign: 'center',
+                      paddingLeft: '2.75rem'
                     }}
                   />
                   
@@ -1678,7 +1685,7 @@ const Landing = () => {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-black hover:bg-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px] border-4 border-black"
+                className="bg-black hover:bg-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-r-lg sm:rounded-r-lg rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px] border-4 border-l-0 border-black"
               >
                 {isSearching ? (
                   <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -1725,15 +1732,12 @@ const Landing = () => {
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
-            {/* Live Needs Heading */}
+            {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
-              <h3 className="text-sm sm:text-2xl md:text-3xl font-bold text-foreground mb-1 sm:mb-4">
-                Live Needs
-              </h3>
-              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-black border border-black rounded-full" style={{ backgroundColor: '#000000' }}>
+              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs sm:text-xs font-medium text-white">
-                  {allLiveEnquiries.length} enquir{allLiveEnquiries.length !== 1 ? 'ys' : 'y'} available
+                <span className="text-xs sm:text-xs font-bold text-black">
+                  {allLiveEnquiries.length} Live Enquiries
                 </span>
               </div>
             </div>

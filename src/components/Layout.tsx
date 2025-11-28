@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, ChevronDown, Crown, Moon, Sun } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -397,74 +396,16 @@ export default function Layout({ children, showNavigation = true }: { children: 
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
           <div className="flex h-14 sm:h-20 items-center justify-between gap-4 min-w-0">
-            {/* Logo with Dropdown Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button 
-                  className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 active:outline-none"
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                >
-                  <div className="hidden sm:flex w-7 h-7 sm:w-10 sm:h-10 bg-black rounded-lg sm:rounded-xl items-center justify-center shadow-lg">
-                  </div>
-                        <span className="text-lg sm:text-2xl font-bold text-foreground hidden sm:block">Enqir<span className="text-sm">.in</span></span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link to="/" className="flex items-center">
-                    <Home className="h-4 w-4 mr-2" />
-                    Home
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/enquiries" className="flex items-center">
-                    <Search className="h-4 w-4 mr-2" />
-                    Browse Enquiries
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/post-enquiry" className="flex items-center">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Post Enquiry
-                  </Link>
-                </DropdownMenuItem>
-                {user && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="flex items-center">
-                        <BarChart3 className="h-4 w-4 mr-2" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className="flex items-center">
-                        <User className="h-4 w-4 mr-2" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/settings" className="flex items-center">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOutClick} className="text-red-600 focus:text-red-700">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {!user && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/signin" className="flex items-center">
-                      <User className="h-4 w-4 mr-2" />
-                      Sign In
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Logo - Direct Home Link (Desktop) */}
+            <Link 
+              to="/"
+              className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 active:outline-none"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+            >
+              <div className="hidden sm:flex w-7 h-7 sm:w-10 sm:h-10 bg-black rounded-lg sm:rounded-xl items-center justify-center shadow-lg">
+              </div>
+              <span className="text-lg sm:text-2xl font-bold text-foreground hidden sm:block">Enqir<span className="text-sm">.in</span></span>
+            </Link>
 
             {/* Desktop Navigation */}
             {showNavigation && !isMobile && (
