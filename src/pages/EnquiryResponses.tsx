@@ -2497,7 +2497,7 @@ const EnquiryResponses = () => {
     return (
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-          <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-0 sm:pt-2 pb-2 sm:pb-8">
+          <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 pt-0 sm:pt-2 pb-2 sm:pb-8">
             {/* Back Button */}
             <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
               <Button
@@ -2730,7 +2730,7 @@ const EnquiryResponses = () => {
           </div>
 
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
             {/* Responses List */}
             <div className="lg:col-span-1 order-2 lg:order-1">
               <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 mb-2 sm:mb-3 lg:mb-4">Approved Responses</h3>
@@ -2807,7 +2807,7 @@ const EnquiryResponses = () => {
             </div>
 
             {/* Chat Section */}
-            <div className="lg:col-span-2 order-1 lg:order-2 min-h-0">
+            <div className="lg:col-span-4 order-1 lg:order-2 min-h-0">
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
