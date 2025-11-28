@@ -1707,7 +1707,7 @@ const Landing = () => {
           {/* Sell Section */}
 
           {/* Recent Enquiries Grid (Reverted to previous implementation) */}
-          <section className="py-4 sm:py-16">
+          <section className={`py-4 sm:py-16 transition-colors duration-300 relative z-10 ${expandedCardId ? 'bg-white' : 'bg-transparent'}`} style={{ backgroundColor: expandedCardId ? 'white' : 'transparent' }}>
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
@@ -1729,6 +1729,7 @@ const Landing = () => {
               {/* Container for overlapped cards - horizontal right-to-left layout */}
               <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible transition-colors duration-300" style={{ 
                 background: expandedCardId ? 'white' : 'transparent',
+                backgroundColor: expandedCardId ? 'white' : 'transparent',
                 minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
                 height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
