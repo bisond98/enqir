@@ -1737,7 +1737,7 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible transition-colors duration-300" style={{ 
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden transition-colors duration-300" style={{ 
                 background: expandedCardId ? 'white' : 'transparent',
                 backgroundColor: expandedCardId ? 'white' : 'transparent',
                 minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
@@ -1769,28 +1769,86 @@ const Landing = () => {
                     // Also need to account for card width to center the card itself, not just its left edge
                     const cardCenterOffset = cardWidth / 2; // Half card width to center the card
                     const baseLeft = showAllEnquiries ? 'auto' : `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
-                    // When any card is hovered/touched, all cards expand and others "pop up"
-                    // Same behavior for both desktop hover and mobile touch
-                    const popUpOffset = isAnyCardHovered && !isHovered ? -15 : 0;
-                    const scaleAmount = isAnyCardHovered ? 1.05 : 1;
-                    const popUpY = isAnyCardHovered && !isHovered ? -20 : 0; // Pop up effect for non-hovered cards
+                    // Creative animation: When any card is hovered/touched, it pops forward with spring effect
+                    // Other cards elegantly move back and slightly up with rotation
+                    // Highly optimized for mobile with minimal movements and no rotation
+                    const isMobile = windowWidth < 1024;
+                    const isSmallMobile = windowWidth < 640;
+                    const isTinyMobile = windowWidth < 400;
+                    
+                    // Hovered card: Smooth pop-forward with elegant scale and elevation
+                    // Y movement limited to stay within padding bounds (paddingTop: 30px desktop, 20px tablet, 15px mobile)
+                    // Account for scale effect which also moves the card up
+                    const hoveredScale = isTinyMobile ? 1.02 : (isSmallMobile ? 1.03 : (isMobile ? 1.05 : 1.08));
+                    // Calculate safe Y movement: paddingTop - margin - scale effect
+                    const paddingTop = windowWidth >= 1024 ? 30 : (windowWidth >= 640 ? 20 : 15);
+                    const scaleEffect = (hoveredScale - 1) * (windowWidth >= 1024 ? 450 : (windowWidth >= 640 ? 400 : 320)) * 0.5; // Half card height * scale increase
+                    const safeMargin = 8; // Safe margin from padding border
+                    const maxYMovement = Math.max(0, paddingTop - safeMargin - scaleEffect);
+                    const hoveredY = isTinyMobile ? -5 : (isSmallMobile ? -6 : (isMobile ? -8 : -maxYMovement));
+                    // Subtle rotation for depth on hovered card
+                    const hoveredRotateZ = isMobile ? 0 : 0.5;
+                    const hoveredCardAnimation = {
+                      scale: hoveredScale,
+                      y: hoveredY,
+                      rotateZ: hoveredRotateZ,
+                      rotateY: 0,
+                    };
+                    
+                    // Non-hovered cards: Smoothly fade back with elegant scale and rotation
+                    // Creates depth perception with smooth transitions
+                    // Y movement also limited to stay within bounds
+                    const nonHoveredScale = isTinyMobile ? 0.98 : (isSmallMobile ? 0.97 : (isMobile ? 0.96 : 0.93));
+                    const nonHoveredY = isTinyMobile ? -2 : (isSmallMobile ? -2 : (isMobile ? -3 : -12));
+                    const nonHoveredRotationZ = isMobile ? 0 : (index % 2 === 0 ? -2 : 2);
+                    const nonHoveredRotationY = isMobile ? 0 : (index % 2 === 0 ? -2.5 : 2.5);
+                    const nonHoveredCardAnimation = {
+                      scale: nonHoveredScale,
+                      y: nonHoveredY,
+                      rotateZ: nonHoveredRotationZ,
+                      rotateY: nonHoveredRotationY,
+                    };
+                    
+                    // Default state: normal position
+                    const defaultAnimation = {
+                      scale: 1,
+                      y: 0,
+                      rotateZ: 0,
+                      rotateY: 0,
+                    };
+                    
+                    // Determine animation state
+                    let animationState;
+                    if (isShuffling) {
+                      animationState = { opacity: 0, scale: 0.92, y: 10, rotateY: 0, rotateZ: 0 };
+                    } else if (isHovered && isAnyCardHovered) {
+                      animationState = { opacity: 1, ...hoveredCardAnimation };
+                    } else if (isAnyCardHovered && !isHovered) {
+                      animationState = { opacity: isMobile ? 0.94 : 0.86, ...nonHoveredCardAnimation };
+                    } else {
+                      animationState = { opacity: 1, ...defaultAnimation };
+                    }
+                    
+                    // Smooth initial and exit animations with elegant curves
+                    const initialX = isTinyMobile ? 5 : (isSmallMobile ? 8 : (isMobile ? 12 : 25));
+                    const initialY = isTinyMobile ? 5 : (isSmallMobile ? 6 : (isMobile ? 10 : 18));
+                    const initialRotateZ = isMobile ? 0 : (isSmallMobile ? -1 : -6);
+                    const initialRotateY = isMobile ? 0 : (isSmallMobile ? 2 : 12);
                     
                     return (
                     <motion.div
                       key={enquiry.id}
-                      initial={{ opacity: 0, x: 15, scale: 0.96, y: 10 }}
-                      animate={{ 
-                        opacity: isShuffling ? 0 : 1, 
-                        x: isShuffling ? 15 : popUpOffset, 
-                        y: isShuffling ? 10 : popUpY,
-                        scale: isShuffling ? 0.92 : scaleAmount,
-                        rotateY: isShuffling ? 5 : 0,
-                      }}
-                      exit={{ opacity: 0, x: 15, scale: 0.96, y: 10 }}
+                      initial={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: initialRotateZ, rotateY: initialRotateY }}
+                      animate={animationState}
+                      exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
-                        duration: isShuffling ? 0.5 : 0.4,
-                        ease: isShuffling ? [0.4, 0, 0.2, 1] : [0.34, 1.56, 0.64, 1],
-                        delay: isShuffling ? index * 0.08 : index * 0.06
+                        type: isShuffling ? "tween" : (isMobile ? "tween" : "spring"),
+                        duration: isShuffling ? 0.5 : (isMobile ? 0.3 : undefined),
+                        stiffness: isShuffling ? undefined : (isMobile ? undefined : 80),
+                        damping: isShuffling ? undefined : (isMobile ? undefined : 12),
+                        mass: isShuffling ? undefined : (isMobile ? undefined : 0.8),
+                        ease: isShuffling ? [0.4, 0, 0.2, 1] : (isMobile ? [0.34, 1.56, 0.64, 1] : [0.34, 1.56, 0.64, 1]),
+                        delay: isShuffling ? index * 0.08 : (isTinyMobile ? 0 : (isSmallMobile ? index * 0.015 : (isMobile ? index * 0.03 : index * 0.05)))
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
