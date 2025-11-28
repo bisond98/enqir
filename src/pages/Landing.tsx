@@ -1707,7 +1707,7 @@ const Landing = () => {
           {/* Sell Section */}
 
           {/* Recent Enquiries Grid - White background full viewport width */}
-          <section className="py-4 sm:py-16 transition-colors duration-300 relative bg-white w-full" style={{ 
+          <section className="py-4 sm:py-16 relative w-full" style={{ 
             backgroundColor: '#ffffff',
             background: '#ffffff',
             width: '100vw',
@@ -1716,7 +1716,11 @@ const Landing = () => {
             paddingLeft: 'calc(50vw - 50%)',
             paddingRight: 'calc(50vw - 50%)',
             position: 'relative',
-            zIndex: expandedCardId ? 30 : 20
+            zIndex: 10,
+            overflow: 'hidden', // Prevent any grey from showing
+            // Creative: Add subtle gradient overlay when cards are active
+            boxShadow: expandedCardId && windowWidth < 1024 ? 'inset 0 0 100px rgba(0,0,0,0.02)' : 'none',
+            transition: 'box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
@@ -1737,17 +1741,19 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden bg-white" style={{ 
-                background: expandedCardId ? '#ffffff' : '#ffffff',
-                backgroundColor: expandedCardId ? '#ffffff' : '#ffffff',
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl" style={{ 
+                backgroundColor: '#ffffff',
+                background: '#ffffff',
+                // Creative: Add subtle elevation effect when cards are touched
+                boxShadow: expandedCardId ? (windowWidth < 640 ? '0 8px 32px rgba(0,0,0,0.08)' : '0 12px 48px rgba(0,0,0,0.12)') : '0 4px 16px rgba(0,0,0,0.04)',
                 minHeight: showAllEnquiries ? 'auto' : (() => {
                   if (windowWidth >= 1024) return '500px';
                   if (windowWidth >= 640) return '450px';
                   // Mobile: shrink container when cards are touched
                   if (expandedCardId && windowWidth < 640) {
                     const cardHeight = 320;
-                    const nonHoveredScale = 0.96; // Cards scale down to 96% when touched
-                    const padding = 30; // 15px top + 15px bottom
+                    const nonHoveredScale = 0.97; // Slightly less aggressive for smoother feel
+                    const padding = 30;
                     return `${(cardHeight * nonHoveredScale) + padding}px`;
                   }
                   return '360px';
@@ -1755,28 +1761,44 @@ const Landing = () => {
                 height: showAllEnquiries ? 'auto' : (() => {
                   if (windowWidth >= 1024) return '500px';
                   if (windowWidth >= 640) return '450px';
-                  // Mobile: shrink container when cards are touched
                   if (expandedCardId && windowWidth < 640) {
                     const cardHeight = 320;
-                    const nonHoveredScale = 0.96; // Cards scale down to 96% when touched
-                    const padding = 30; // 15px top + 15px bottom
+                    const nonHoveredScale = 0.97;
+                    const padding = 30;
                     return `${(cardHeight * nonHoveredScale) + padding}px`;
                   }
                   return '360px';
                 })(),
-                transition: 'height 0.3s ease-out, min-height 0.3s ease-out, background-color 0.3s ease-out, background 0.3s ease-out',
+                // Creative: Smooth, elastic transitions
+                transition: 'height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s ease-out',
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
-                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')
+                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'),
+                overflow: 'visible', // Allow smooth card animations
+                position: 'relative',
+                zIndex: 1,
+                // Creative: Add subtle border that appears on interaction
+                border: expandedCardId ? '2px solid rgba(0,0,0,0.05)' : '2px solid transparent',
+                transform: expandedCardId && windowWidth < 1024 ? 'translateY(-2px)' : 'translateY(0)',
+                transformOrigin: 'center'
               }}>
-                {/* White background layer to cover space when cards scale down - extends to cover padding area */}
-                <div className="absolute bg-white z-0" style={{ 
-                  backgroundColor: expandedCardId ? '#ffffff' : '#ffffff', 
-                  background: expandedCardId ? '#ffffff' : '#ffffff',
-                  top: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
-                  bottom: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
-                  left: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px'),
-                  right: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px')
-                }}></div>
+                {/* Creative: Animated background glow effect when cards are active */}
+                {expandedCardId && (
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br from-white via-white to-slate-50/30 rounded-2xl sm:rounded-3xl -z-10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ 
+                      background: '#ffffff',
+                      backgroundColor: '#ffffff',
+                      top: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
+                      bottom: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
+                      left: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px'),
+                      right: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px')
+                    }}
+                  />
+                )}
                 <AnimatePresence mode="wait">
                   {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
                     const isHovered = expandedCardId === enquiry.id;
@@ -1808,16 +1830,16 @@ const Landing = () => {
                     const isSmallMobile = windowWidth < 640;
                     const isTinyMobile = windowWidth < 400;
                     
-                    // Hovered card: Smooth pop-forward with elegant scale and elevation
+                    // Hovered card: Creative pop with subtle bounce
                     // Y movement limited to stay within padding bounds (paddingTop: 30px desktop, 20px tablet, 15px mobile)
                     // Account for scale effect which also moves the card up
-                    const hoveredScale = isTinyMobile ? 1.02 : (isSmallMobile ? 1.03 : (isMobile ? 1.05 : 1.08));
+                    const hoveredScale = isTinyMobile ? 1.04 : (isSmallMobile ? 1.05 : (isMobile ? 1.07 : 1.09));
                     // Calculate safe Y movement: paddingTop - margin - scale effect
                     const paddingTop = windowWidth >= 1024 ? 30 : (windowWidth >= 640 ? 20 : 15);
                     const scaleEffect = (hoveredScale - 1) * (windowWidth >= 1024 ? 450 : (windowWidth >= 640 ? 400 : 320)) * 0.5; // Half card height * scale increase
                     const safeMargin = 8; // Safe margin from padding border
                     const maxYMovement = Math.max(0, paddingTop - safeMargin - scaleEffect);
-                    const hoveredY = isTinyMobile ? -5 : (isSmallMobile ? -6 : (isMobile ? -8 : -maxYMovement));
+                    const hoveredY = isTinyMobile ? -4 : (isSmallMobile ? -5 : (isMobile ? -7 : -maxYMovement));
                     // Subtle rotation for depth on hovered card
                     const hoveredRotateZ = isMobile ? 0 : 0.5;
                     const hoveredCardAnimation = {
@@ -1827,11 +1849,11 @@ const Landing = () => {
                       rotateY: 0,
                     };
                     
-                    // Non-hovered cards: Smoothly fade back with elegant scale and rotation
+                    // Non-hovered cards: Creative subtle retreat with smooth scaling
                     // Creates depth perception with smooth transitions
                     // Y movement also limited to stay within bounds
-                    const nonHoveredScale = isTinyMobile ? 0.98 : (isSmallMobile ? 0.97 : (isMobile ? 0.96 : 0.93));
-                    const nonHoveredY = isTinyMobile ? -2 : (isSmallMobile ? -2 : (isMobile ? -3 : -12));
+                    const nonHoveredScale = isTinyMobile ? 0.99 : (isSmallMobile ? 0.98 : (isMobile ? 0.97 : 0.94));
+                    const nonHoveredY = isTinyMobile ? -1 : (isSmallMobile ? -1.5 : (isMobile ? -2.5 : -10));
                     const nonHoveredRotationZ = isMobile ? 0 : (index % 2 === 0 ? -2 : 2);
                     const nonHoveredRotationY = isMobile ? 0 : (index % 2 === 0 ? -2.5 : 2.5);
                     const nonHoveredCardAnimation = {
@@ -1874,13 +1896,14 @@ const Landing = () => {
                       animate={animationState}
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
-                        type: isShuffling ? "tween" : (isMobile ? "tween" : "spring"),
-                        duration: isShuffling ? 0.5 : (isMobile ? 0.3 : undefined),
-                        stiffness: isShuffling ? undefined : (isMobile ? undefined : 80),
-                        damping: isShuffling ? undefined : (isMobile ? undefined : 12),
-                        mass: isShuffling ? undefined : (isMobile ? undefined : 0.8),
-                        ease: isShuffling ? [0.4, 0, 0.2, 1] : (isMobile ? [0.34, 1.56, 0.64, 1] : [0.34, 1.56, 0.64, 1]),
-                        delay: isShuffling ? index * 0.08 : (isTinyMobile ? 0 : (isSmallMobile ? index * 0.015 : (isMobile ? index * 0.03 : index * 0.05)))
+                        type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
+                        duration: isShuffling ? 0.5 : undefined,
+                        // Creative: Different spring physics for mobile vs desktop
+                        stiffness: isShuffling ? undefined : (isMobile ? 120 : 90), // Higher for snappier response
+                        damping: isShuffling ? undefined : (isMobile ? 18 : 14), // More damping for smooth stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.5 : 0.7), // Lighter for faster response
+                        ease: isShuffling ? [0.4, 0, 0.2, 1] : undefined,
+                        delay: isShuffling ? index * 0.08 : 0 // Instant response
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
@@ -1946,7 +1969,12 @@ const Landing = () => {
               className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               } ${isHovered ? 'shadow-2xl border-black' : ''}`}
-              style={{ backgroundColor: 'white' }}
+              style={{ 
+                backgroundColor: 'white',
+                // Creative: Add subtle glow when hovered
+                filter: isHovered ? 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' : 'none',
+                transition: 'filter 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
               transition={{ duration: 0.3 }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
