@@ -1782,7 +1782,8 @@ const Landing = () => {
                 position: 'relative',
                 zIndex: 1,
                 // Creative: Add subtle border that appears on interaction
-                border: expandedCardId ? '2px solid rgba(0,0,0,0.05)' : '2px solid transparent',
+                // Remove border on mobile to prevent dulling shadow on center card
+                border: expandedCardId && windowWidth < 640 ? '2px solid transparent' : (expandedCardId ? '2px solid rgba(0,0,0,0.05)' : '2px solid transparent'),
                 transform: expandedCardId && windowWidth < 1024 ? 'translateY(-2px)' : 'translateY(0)',
                 transformOrigin: 'center'
               }}>
