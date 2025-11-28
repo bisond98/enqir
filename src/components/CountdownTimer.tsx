@@ -176,15 +176,16 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {showIcon && (
-        <div className="flex items-center">
-          {styles.icon}
+        <div className="flex items-center text-white">
+          {React.cloneElement(styles.icon, { className: 'text-white' })}
         </div>
       )}
       <Badge 
         variant="outline" 
-        className={`${styles.bg} text-xs font-medium px-2 py-1 ${
+        className={`text-xs font-medium px-2 py-1 text-white border-2 ${
           urgencyLevel === 'critical' || urgencyLevel === 'urgent' ? 'animate-pulse' : ''
         }`}
+        style={{ backgroundColor: '#dc2626', borderColor: '#000000', color: 'white' }}
       >
         {formatTimeLeft()}
       </Badge>

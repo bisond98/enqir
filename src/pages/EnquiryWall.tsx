@@ -62,6 +62,16 @@ export default function EnquiryWall() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isAISearching, setIsAISearching] = useState(false);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Real-time expiry check - update every second to automatically disable expired cards
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle URL parameters on component mount
   useEffect(() => {
@@ -619,11 +629,11 @@ export default function EnquiryWall() {
     return authUser && enquiry.userId === authUser.uid;
   };
 
-  // Helper to check if an enquiry is expired
+  // Helper to check if an enquiry is expired (uses currentTime state for real-time updates)
   const isEnquiryOutdated = (enquiry: Enquiry) => {
     if (!enquiry.deadline) return false;
     const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-    return new Date() > deadline;
+    return currentTime > deadline;
   };
 
   // Helper to check if an enquiry is deal closed (case-insensitive)
@@ -797,6 +807,9 @@ export default function EnquiryWall() {
                 <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start mb-2 sm:mb-0 lg:mb-3">
                   {[
                     { value: "all", label: "All" },
+                    { value: "business", label: "Business" },
+                    { value: "personal", label: "Personal" },
+                    { value: "service", label: "Service" },
                     { value: "agriculture-farming", label: "Agriculture" },
                     { value: "antiques", label: "Antiques" },
                     { value: "art", label: "Art" },
@@ -820,64 +833,85 @@ export default function EnquiryWall() {
                 {/* Mobile: Additional Categories - Expandable */}
                 <div className={`${showAllCategories ? 'block' : 'hidden sm:block'} transition-all duration-300`}>
                   <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start lg:mt-0">
-                    {[
-                      { value: "baby-kids", label: "Baby & Kids" },
-                      { value: "bags-luggage", label: "Bags & Luggage" },
-                      { value: "beauty-products", label: "Beauty" },
-                      { value: "bicycles", label: "Bicycles" },
-                      { value: "childcare-family", label: "Childcare" },
-                      { value: "collectibles", label: "Collectibles" },
-                      { value: "construction-renovation", label: "Construction" },
-                      { value: "education-training", label: "Education" },
-                      { value: "electronics-gadgets", label: "Electronics" },
-                      { value: "entertainment-media", label: "Entertainment" },
-                      { value: "events-entertainment", label: "Events" },
-                      { value: "fashion-apparel", label: "Fashion" },
-                      { value: "food-beverage", label: "Food" },
-                      { value: "gaming-recreation", label: "Gaming" },
-                      { value: "government-public", label: "Government" },
-                      { value: "health-beauty", label: "Health" },
-                      { value: "home-furniture", label: "Home" },
-                      { value: "insurance-services", label: "Insurance" },
-                      { value: "jobs", label: "Jobs" },
-                      { value: "jewelry-accessories", label: "Jewelry" },
-                      { value: "legal-financial", label: "Legal" },
-                      { value: "marketing-advertising", label: "Marketing" },
-                      { value: "memorabilia", label: "Memorabilia" },
-                      { value: "non-profit-charity", label: "Non-Profit" },
-                      { value: "pets", label: "Pets" },
-                      { value: "professional-services", label: "Services" },
-                      { value: "raw-materials-industrial", label: "Industrial" },
-                      { value: "real-estate", label: "Real Estate" },
-                      { value: "real-estate-services", label: "Real Estate Services" },
-                      { value: "renewable-energy", label: "Renewable Energy" },
-                      { value: "security-safety", label: "Security" },
-                      { value: "sneakers", label: "Sneakers" },
-                      { value: "souvenir", label: "Souvenir" },
-                      { value: "sports-outdoor", label: "Sports" },
-                      { value: "technology", label: "Technology" },
-                      { value: "thrift", label: "Thrift" },
-                      { value: "transportation-logistics", label: "Transportation" },
-                      { value: "travel-tourism", label: "Travel" },
-                      { value: "vintage", label: "Vintage" },
-                      { value: "waste-management", label: "Waste Management" },
-                      { value: "wedding-events", label: "Wedding" },
-                      { value: "musical-instruments", label: "Musical Instruments" },
-                      { value: "tools-equipment", label: "Tools & Equipment" },
-                      { value: "appliances", label: "Appliances" },
-                      { value: "photography-cameras", label: "Photography & Cameras" },
-                      { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment" },
-                      { value: "kitchen-dining", label: "Kitchen & Dining" },
-                      { value: "garden-outdoor", label: "Garden & Outdoor" },
-                      { value: "office-supplies", label: "Office Supplies" },
-                      { value: "repair-services", label: "Repair Services" },
-                      { value: "cleaning-services", label: "Cleaning Services" },
-                      { value: "musical-services", label: "Musical Services" },
-                      { value: "tutoring-lessons", label: "Tutoring & Lessons" },
-                      { value: "medical-equipment", label: "Medical Equipment" },
-                      { value: "musical-accessories", label: "Musical Accessories" },
-                      { value: "other", label: "Other" }
-                    ].map((category) => (
+                    {(() => {
+                      const allCategories = [
+                        // Main categories at the top
+                        { value: "business", label: "Business" },
+                        { value: "personal", label: "Personal" },
+                        { value: "service", label: "Service" },
+                        // Rest of categories
+                        { value: "agriculture-farming", label: "Agriculture" },
+                        { value: "antiques", label: "Antiques" },
+                        { value: "art", label: "Art" },
+                        { value: "automobile", label: "Automobile" },
+                        { value: "baby-kids", label: "Baby & Kids" },
+                        { value: "bags-luggage", label: "Bags & Luggage" },
+                        { value: "books-publications", label: "Books" },
+                        { value: "beauty-products", label: "Beauty" },
+                        { value: "bicycles", label: "Bicycles" },
+                        { value: "childcare-family", label: "Childcare" },
+                        { value: "collectibles", label: "Collectibles" },
+                        { value: "construction-renovation", label: "Construction" },
+                        { value: "education-training", label: "Education" },
+                        { value: "electronics-gadgets", label: "Electronics" },
+                        { value: "entertainment-media", label: "Entertainment" },
+                        { value: "events-entertainment", label: "Events" },
+                        { value: "fashion-apparel", label: "Fashion" },
+                        { value: "food-beverage", label: "Food" },
+                        { value: "gaming-recreation", label: "Gaming" },
+                        { value: "government-public", label: "Government" },
+                        { value: "health-beauty", label: "Health" },
+                        { value: "home-furniture", label: "Home" },
+                        { value: "insurance-services", label: "Insurance" },
+                        { value: "jobs", label: "Jobs" },
+                        { value: "jewelry-accessories", label: "Jewelry" },
+                        { value: "legal-financial", label: "Legal" },
+                        { value: "marketing-advertising", label: "Marketing" },
+                        { value: "memorabilia", label: "Memorabilia" },
+                        { value: "non-profit-charity", label: "Non-Profit" },
+                        { value: "pets", label: "Pets" },
+                        { value: "professional-services", label: "Services" },
+                        { value: "raw-materials-industrial", label: "Industrial" },
+                        { value: "real-estate", label: "Real Estate" },
+                        { value: "real-estate-services", label: "Real Estate Services" },
+                        { value: "renewable-energy", label: "Renewable Energy" },
+                        { value: "security-safety", label: "Security" },
+                        { value: "sneakers", label: "Sneakers" },
+                        { value: "souvenir", label: "Souvenir" },
+                        { value: "sports-outdoor", label: "Sports" },
+                        { value: "technology", label: "Technology" },
+                        { value: "thrift", label: "Thrift" },
+                        { value: "transportation-logistics", label: "Transportation" },
+                        { value: "travel-tourism", label: "Travel" },
+                        { value: "vintage", label: "Vintage" },
+                        { value: "waste-management", label: "Waste Management" },
+                        { value: "wedding-events", label: "Wedding" },
+                        { value: "musical-instruments", label: "Musical Instruments" },
+                        { value: "tools-equipment", label: "Tools & Equipment" },
+                        { value: "appliances", label: "Appliances" },
+                        { value: "photography-cameras", label: "Photography & Cameras" },
+                        { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment" },
+                        { value: "kitchen-dining", label: "Kitchen & Dining" },
+                        { value: "garden-outdoor", label: "Garden & Outdoor" },
+                        { value: "office-supplies", label: "Office Supplies" },
+                        { value: "repair-services", label: "Repair Services" },
+                        { value: "cleaning-services", label: "Cleaning Services" },
+                        { value: "musical-services", label: "Musical Services" },
+                        { value: "tutoring-lessons", label: "Tutoring & Lessons" },
+                        { value: "medical-equipment", label: "Medical Equipment" },
+                        { value: "musical-accessories", label: "Musical Accessories" },
+                        { value: "other", label: "Other" }
+                      ];
+                      // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
+                      const mainCategories = allCategories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
+                      const otherCategories = allCategories.filter(cat => !['business', 'personal', 'service', 'other'].includes(cat.value));
+                      const otherCategory = allCategories.find(cat => cat.value === 'other');
+                      return [
+                        ...mainCategories,
+                        ...otherCategories.sort((a, b) => a.label.localeCompare(b.label)),
+                        otherCategory
+                      ].filter(Boolean);
+                    })().map((category) => (
                       <button
                         key={category.value}
                         onClick={() => {
@@ -960,12 +994,12 @@ export default function EnquiryWall() {
             <>
             {/* Category Fallback Message */}
             {showCategoryFallback && (
-              <div className="mb-4 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg sm:rounded-xl">
+              <div className="mb-4 p-3 sm:p-4 bg-black border border-black rounded-lg sm:rounded-xl">
                 <div className="text-center">
-                  <p className="text-amber-800 font-semibold text-xs sm:text-base">
+                  <p className="text-white font-semibold text-xs sm:text-base">
                     No enquiries found in "{selectedCategory.replace('-', ' ')}" category
                   </p>
-                  <p className="text-amber-600 text-[10px] sm:text-sm mt-1">
+                  <p className="text-white text-[10px] sm:text-sm mt-1">
                     Showing all enquiries below
                   </p>
                 </div>
@@ -974,25 +1008,25 @@ export default function EnquiryWall() {
             
             {/* AI Search Results Messages */}
             {aiSearchResults && filteredEnquiries.length === 0 && (
-              <div className="mb-4 p-2.5 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mb-4 p-2.5 sm:p-3 bg-black border border-black rounded-lg">
                 {aiSearchResults.noResultsInCategory ? (
                   <div className="text-center">
-                    <p className="text-blue-800 font-medium text-xs sm:text-sm px-1">
+                    <p className="text-white font-medium text-xs sm:text-sm px-1">
                       No enquiries found in {aiSearchResults.searchedCategory?.replace('-', ' ')} category
                     </p>
-                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1 break-words leading-relaxed">
+                    <p className="text-white text-[10px] sm:text-xs mt-1 px-1 break-words leading-relaxed">
                       AI Analysis: {aiSearchResults.aiAnalysis?.reasoning}
                     </p>
-                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1">
+                    <p className="text-white text-[10px] sm:text-xs mt-1 px-1">
                       Showing all enquiries below
                     </p>
                   </div>
                 ) : aiSearchResults.showAllFallback ? (
                   <div className="text-center">
-                    <p className="text-blue-800 font-medium text-xs sm:text-sm px-1">
+                    <p className="text-white font-medium text-xs sm:text-sm px-1">
                       AI couldn't determine category for "{searchTerm}"
                     </p>
-                    <p className="text-blue-600 text-[10px] sm:text-xs mt-1 px-1">
+                    <p className="text-white text-[10px] sm:text-xs mt-1 px-1">
                       Showing all enquiries
                     </p>
                   </div>
@@ -1158,19 +1192,19 @@ export default function EnquiryWall() {
                             
                             {/* Deadline Timer and Category - Side by side on desktop */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1.5 sm:pt-2 border-t border-gray-100">
+                              <div>
+                                <Badge variant="secondary" className="text-[9px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold shadow-sm">
+                                  {enquiry.category.replace('-', ' ')}
+                                </Badge>
+                              </div>
                               {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="flex-1">
+                                <div className="ml-auto">
                                   <CountdownTimer
                                     deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
                                     className="text-[10px] sm:text-sm"
                                   />
                                 </div>
                               )}
-                              <div className={`${enquiry.deadline && !isEnquiryDisabled(enquiry) ? 'sm:ml-auto' : ''}`}>
-                                <Badge variant="secondary" className="text-[9px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold shadow-sm">
-                                  {enquiry.category.replace('-', ' ')}
-                                </Badge>
-                              </div>
                             </div>
                           </div>
                         </CardHeader>
@@ -1201,23 +1235,24 @@ export default function EnquiryWall() {
                               <Badge variant="secondary" className="text-[9px] sm:text-[10px] md:text-sm px-1.5 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold">
                                 {enquiry.category.replace('-', ' ')}
                               </Badge>
-                              {/* Deadline Timer */}
-                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="border-4 border-black rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
-                                  <CountdownTimer
-                                    deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                    className="text-[9px] sm:text-[10px] md:text-sm"
-                                  />
-                                </div>
-                              )}
-                              {/* Date */}
-                              {enquiry.createdAt?.toDate && (
-                                <div className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-500 bg-white rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 border-4 border-black">
-                                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-500 flex-shrink-0" />
-                                  <span className="whitespace-nowrap">{formatDate(enquiry.createdAt.toDate().toISOString())}</span>
+                              {/* Response Count - Only show for own enquiries */}
+                              {isOwnEnquiry(enquiry) && (
+                                <div className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-700 bg-white rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 border-4 border-black">
+                                  <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-600 flex-shrink-0" />
+                                  <span className="whitespace-nowrap font-semibold">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
                                 </div>
                               )}
                             </div>
+                            
+                            {/* Deadline Timer - Right Aligned */}
+                            {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
+                              <div className="ml-auto rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
+                                <CountdownTimer
+                                  deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
+                                  className="text-[9px] sm:text-[10px] md:text-sm"
+                                />
+                              </div>
+                            )}
                             
                             {/* Right: Action Button */}
                             <div className="flex-shrink-0 w-full sm:w-auto mt-1.5 sm:mt-0">
@@ -1225,7 +1260,8 @@ export default function EnquiryWall() {
                                 <button 
                                   type="button"
                                   disabled
-                                  className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-4 border-black bg-white text-gray-600 rounded-md cursor-not-allowed"
+                                  className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-4 border-black text-white rounded-md cursor-not-allowed"
+                                  style={{ backgroundColor: '#022c22' }}
                                 >
                                   Your Enquiry
                                 </button>
@@ -1259,15 +1295,12 @@ export default function EnquiryWall() {
                         ) : (
                           <div className="space-y-2 sm:space-y-2.5">
                             {isOwnEnquiry(enquiry) && (
-                              <div className="flex items-center justify-between text-[9px] sm:text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border-4 border-black shadow-sm">
+                              <div className="flex items-center justify-center text-[9px] sm:text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border-4 border-black shadow-sm">
                                 <div className="flex items-center gap-1.5 sm:gap-2">
                                   <div className="flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full bg-white shadow-sm">
                                     <MessageSquare className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-gray-600" />
                                   </div>
-                                  <span className="font-semibold text-gray-700">{enquiry.responses || 0} responses</span>
-                                </div>
-                                <div className="text-[9px] sm:text-xs font-semibold text-gray-500">
-                                  {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
+                                  <span className="font-semibold text-gray-700">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
                                 </div>
                               </div>
                             )}
@@ -1276,7 +1309,8 @@ export default function EnquiryWall() {
                               <button 
                                 type="button"
                                 disabled
-                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-4 border-black bg-gray-50 text-gray-600 cursor-not-allowed transition-all duration-200 rounded-lg sm:rounded-xl"
+                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-4 border-black text-white cursor-not-allowed transition-all duration-200 rounded-lg sm:rounded-xl"
+                                style={{ backgroundColor: '#022c22' }}
                               >
                                 Your Enquiry
                               </button>

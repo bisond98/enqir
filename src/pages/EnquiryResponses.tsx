@@ -134,6 +134,7 @@ const EnquiryResponses = () => {
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
   const [callsEnabled, setCallsEnabled] = useState(false); // Call feature disabled - Coming Soon
   const [showMobileCallPopup, setShowMobileCallPopup] = useState(false); // Mobile call popup visibility
+  const [showDesktopCallPopup, setShowDesktopCallPopup] = useState(false); // Desktop call popup visibility
   
   // Auto-hide mobile call popup after 3 seconds
   useEffect(() => {
@@ -144,6 +145,16 @@ const EnquiryResponses = () => {
       return () => clearTimeout(timer);
     }
   }, [showMobileCallPopup]);
+  
+  // Auto-hide desktop call popup after 3 seconds
+  useEffect(() => {
+    if (showDesktopCallPopup) {
+      const timer = setTimeout(() => {
+        setShowDesktopCallPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDesktopCallPopup]);
   
   // Microphone permission state
   const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
@@ -1222,16 +1233,11 @@ const EnquiryResponses = () => {
 
   // Toggle calls for this chat - Disabled (Coming Soon)
   const toggleCallsEnabled = async () => {
-    // Show mobile popup on mobile devices
+    // Show popup on click for both mobile and desktop
     if (window.innerWidth < 640) {
       setShowMobileCallPopup(true);
     } else {
-      // Feature disabled - show coming soon message for desktop
-      toast({
-        title: "Call Feature Coming Soon",
-        description: "Voice calling will be available in a future update. Stay tuned!",
-        duration: 4000,
-      });
+      setShowDesktopCallPopup(true);
     }
     return;
 
@@ -2014,6 +2020,14 @@ const EnquiryResponses = () => {
 
   // File upload functions
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isBlocked) {
+      toast({ 
+        title: 'Blocked', 
+        description: 'User is blocked. Unblock to send messages.', 
+        variant: 'destructive' 
+      });
+      return;
+    }
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
@@ -2041,6 +2055,14 @@ const EnquiryResponses = () => {
 
   // Audio recording functions
   const startRecording = async () => {
+    if (isBlocked) {
+      toast({ 
+        title: 'Blocked', 
+        description: 'User is blocked. Unblock to send messages.', 
+        variant: 'destructive' 
+      });
+      return;
+    }
     try {
       // Check microphone permission first
       const permissionStatus = await checkMicrophonePermission();
@@ -2826,43 +2848,50 @@ const EnquiryResponses = () => {
                       </div>
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
-                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap relative overflow-visible">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap relative" style={{ overflow: 'visible' }}>
                         {/* Call Feature - Coming Soon Badge */}
                         {canUserChat(selectedResponse) && (
-                          <div className="relative group">
+                          <div className="relative" style={{ zIndex: showDesktopCallPopup || showMobileCallPopup ? 10000 : 'auto' }}>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-300 text-gray-400 cursor-pointer opacity-60"
+                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-400 text-gray-600 cursor-pointer"
                               title="Call feature coming soon"
                             >
-                              <Phone className="h-4 w-4" />
+                              <Phone className="h-4 w-4 text-gray-700" />
                             </Button>
                             
                             {/* Coming Soon Tooltip/Badge - Desktop */}
-                            <div className="hidden sm:block absolute -top-12 left-1/2 -translate-x-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                              <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative">
-                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-black rotate-45"></div>
-                                <div className="flex items-center gap-2">
-                                  <Phone className="h-3.5 w-3.5 animate-pulse" />
-                                  <span>Call Feature</span>
-                                  <span className="text-yellow-300">Coming Soon</span>
+                            {showDesktopCallPopup && (
+                              <div className="hidden sm:block absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ zIndex: 10000 }}>
+                                <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative">
+                                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                                  <div className="flex items-center gap-2">
+                                    <Phone className="h-3.5 w-3.5 animate-pulse" />
+                                    <span>Call Feature Coming Soon</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
+                            )}
                             
                             {/* Coming Soon Tooltip/Badge - Mobile */}
-                            <div className={`sm:hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50 transition-opacity duration-200 pointer-events-none ${showMobileCallPopup ? 'opacity-100' : 'opacity-0'}`} style={{ left: '50%', transform: 'translateX(-50%)', maxWidth: 'calc(100% - 0.5rem)' }}>
-                              <div className="bg-black text-white text-[10px] font-bold px-4 py-2.5 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: '180px' }}>
-                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-black rotate-45"></div>
-                                <div className="flex items-center gap-2 whitespace-nowrap">
-                                  <Phone className="h-3.5 w-3.5 animate-pulse flex-shrink-0" />
-                                  <span>Call Feature</span>
-                                  <span className="text-yellow-300">Coming Soon</span>
+                            {showMobileCallPopup && (
+                              <div className="sm:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ 
+                                zIndex: 10000,
+                                maxWidth: 'calc(100% - 1rem)',
+                                left: '50%',
+                                transform: 'translateX(-50%)'
+                              }}>
+                                <div className="bg-black text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: '160px' }}>
+                                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                                  <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                    <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
+                                    <span>Call Feature Coming Soon</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         )}
                         
@@ -2938,7 +2967,7 @@ const EnquiryResponses = () => {
                               </Badge>
                             )}
                           </h3>
-                          <p className="text-xs text-black font-medium truncate">{enquiry.description}</p>
+                          <p className="hidden sm:block text-xs text-black font-medium truncate">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
                           <div className="text-xs lg:text-sm font-semibold text-emerald-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
@@ -3512,41 +3541,41 @@ const EnquiryResponses = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            disabled={!canUserChat(selectedResponse)}
+                            disabled={!canUserChat(selectedResponse) || isBlocked}
                             onMouseDown={() => {
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setIsButtonPressed(true);
                                 startRecording();
                               }
                             }}
                             onMouseUp={() => {
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setIsButtonPressed(false);
                                 stopRecording();
                               }
                             }}
                             onMouseLeave={() => {
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setIsButtonPressed(false);
                                 stopRecording();
                               }
                             }}
                             onTouchStart={(e) => {
                               e.preventDefault();
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setIsButtonPressed(true);
                                 startRecording();
                               }
                             }}
                             onTouchEnd={(e) => {
                               e.preventDefault();
-                              if (canUserChat(selectedResponse)) {
+                              if (canUserChat(selectedResponse) && !isBlocked) {
                                 setIsButtonPressed(false);
                                 stopRecording();
                               }
                             }}
                             className={`h-9 w-9 lg:h-10 lg:w-10 p-0 transition-all duration-150 ${
-                              !canUserChat(selectedResponse)
+                              !canUserChat(selectedResponse) || isBlocked
                                 ? 'md:text-red-600 md:hover:text-red-700 md:hover:bg-red-50 md:active:bg-red-100 md:active:scale-95 text-slate-300 cursor-not-allowed'
                                 : isButtonPressed 
                                   ? 'text-white bg-red-600 scale-110 shadow-lg' 
@@ -3589,14 +3618,19 @@ const EnquiryResponses = () => {
                                   />
                                 </label>
 
-                                <label className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-slate-50 rounded cursor-pointer">
-                                  <Mic className="h-4 w-4 text-gray-800" />
-                                  <span>Audio</span>
+                                <label className={`flex items-center space-x-2 px-3 py-2 text-sm rounded ${
+                                  isBlocked 
+                                    ? 'opacity-50 cursor-not-allowed' 
+                                    : 'hover:bg-slate-50 cursor-pointer'
+                                }`}>
+                                  <Mic className={`h-4 w-4 ${isBlocked ? 'text-gray-400' : 'text-gray-800'}`} />
+                                  <span className={isBlocked ? 'text-gray-400' : ''}>Audio</span>
                                   <input
                                     type="file"
                                     accept="audio/*"
                                     multiple
                                     onChange={handleFileUpload}
+                                    disabled={isBlocked}
                                     className="hidden"
                                   />
                                 </label>
