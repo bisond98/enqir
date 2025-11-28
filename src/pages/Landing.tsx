@@ -1740,8 +1740,31 @@ const Landing = () => {
               <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden bg-white" style={{ 
                 background: '#ffffff',
                 backgroundColor: '#ffffff',
-                minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
-                height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
+                minHeight: showAllEnquiries ? 'auto' : (() => {
+                  if (windowWidth >= 1024) return '500px';
+                  if (windowWidth >= 640) return '450px';
+                  // Mobile: shrink container when cards are touched
+                  if (expandedCardId && windowWidth < 640) {
+                    const cardHeight = 320;
+                    const nonHoveredScale = 0.96; // Cards scale down to 96% when touched
+                    const padding = 30; // 15px top + 15px bottom
+                    return `${(cardHeight * nonHoveredScale) + padding}px`;
+                  }
+                  return '360px';
+                })(),
+                height: showAllEnquiries ? 'auto' : (() => {
+                  if (windowWidth >= 1024) return '500px';
+                  if (windowWidth >= 640) return '450px';
+                  // Mobile: shrink container when cards are touched
+                  if (expandedCardId && windowWidth < 640) {
+                    const cardHeight = 320;
+                    const nonHoveredScale = 0.96; // Cards scale down to 96% when touched
+                    const padding = 30; // 15px top + 15px bottom
+                    return `${(cardHeight * nonHoveredScale) + padding}px`;
+                  }
+                  return '360px';
+                })(),
+                transition: 'height 0.3s ease-out, min-height 0.3s ease-out',
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
                 paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')
               }}>
