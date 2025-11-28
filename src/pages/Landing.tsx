@@ -1745,8 +1745,15 @@ const Landing = () => {
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
                 paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')
               }}>
-                {/* White background layer to cover space when cards scale down */}
-                <div className="absolute inset-0 bg-white z-0" style={{ backgroundColor: '#ffffff', background: '#ffffff' }}></div>
+                {/* White background layer to cover space when cards scale down - extends to cover padding area */}
+                <div className="absolute bg-white z-0" style={{ 
+                  backgroundColor: '#ffffff', 
+                  background: '#ffffff',
+                  top: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
+                  bottom: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
+                  left: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px'),
+                  right: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px')
+                }}></div>
                 <AnimatePresence mode="wait">
                   {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
                     const isHovered = expandedCardId === enquiry.id;
