@@ -1233,7 +1233,7 @@ const Landing = () => {
         </div>
 
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="absolute inset-0 bg-white" style={{ backgroundColor: '#ffffff', background: '#ffffff' }}>
           {/* 2D Black and White Cartoon Drawing - Mobile Compatible */}
           <div className="absolute inset-0 opacity-20 sm:opacity-25">
             <svg className="w-full h-full min-w-full min-h-full" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -1737,9 +1737,9 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden transition-colors duration-300" style={{ 
-                background: expandedCardId ? 'white' : 'transparent',
-                backgroundColor: expandedCardId ? 'white' : 'transparent',
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden transition-colors duration-300 bg-white" style={{ 
+                background: '#ffffff',
+                backgroundColor: '#ffffff',
                 minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
                 height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
