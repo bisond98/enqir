@@ -1745,7 +1745,8 @@ const Landing = () => {
                 backgroundColor: '#ffffff',
                 background: '#ffffff',
                 // Creative: Add subtle elevation effect when cards are touched
-                boxShadow: expandedCardId ? (windowWidth < 640 ? '0 8px 32px rgba(0,0,0,0.08)' : '0 12px 48px rgba(0,0,0,0.12)') : '0 4px 16px rgba(0,0,0,0.04)',
+                // Remove shadow on mobile (< 640px) to prevent dulling center card
+                boxShadow: expandedCardId && windowWidth < 640 ? 'none' : (expandedCardId ? '0 12px 48px rgba(0,0,0,0.12)' : '0 4px 16px rgba(0,0,0,0.04)'),
                 // Mobile: Container exactly matches card size (180px x 320px)
                 width: windowWidth < 640 ? '180px' : 'auto',
                 minHeight: showAllEnquiries ? 'auto' : (() => {
