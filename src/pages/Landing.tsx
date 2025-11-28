@@ -1664,7 +1664,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 px-2 sm:px-5 pl-12 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-xs border-4 border-black rounded-lg sm:rounded-2xl focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
                     style={{ 
                       fontSize: '16px',
                       lineHeight: '1.5',
@@ -1727,7 +1727,7 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible" style={{ minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')) }}>
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible" style={{ minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), paddingTop: windowWidth >= 1024 ? '30px' : '0px', paddingBottom: windowWidth >= 1024 ? '30px' : '0px' }}>
                 <AnimatePresence mode="wait">
                   {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
                     const isHovered = expandedCardId === enquiry.id;
@@ -1836,7 +1836,7 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-hidden group relative ${
+              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               } ${isHovered ? 'shadow-2xl border-black' : ''}`}
               transition={{ duration: 0.3 }}
@@ -1860,7 +1860,7 @@ const Landing = () => {
                           }}
                         />
                       )}
-                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''}`}>
+                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
                       {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
                       <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''}`}>
                         <div className="flex justify-between items-center">
@@ -1900,7 +1900,7 @@ const Landing = () => {
                       <h3 className={`${windowWidth < 640 ? 'text-xs leading-tight' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-2 sm:mb-2.5'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${windowWidth < 640 ? 'border-b border-black pb-1.5' : 'border-b-2 border-black pb-1.5 sm:pb-2'} ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       }`}>
-                        {enquiry.title}
+                        {enquiry.title && enquiry.title.length > 22 ? enquiry.title.substring(0, 22).trim() + '...' : enquiry.title}
                       </h3>
                       
                       {/* Budget and Location - Horizontal Layout on Desktop, Stacked on Mobile */}
