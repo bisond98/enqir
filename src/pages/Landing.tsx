@@ -1727,7 +1727,13 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible" style={{ minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), paddingTop: windowWidth >= 1024 ? '30px' : '0px', paddingBottom: windowWidth >= 1024 ? '30px' : '0px' }}>
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-visible" style={{ 
+                background: 'transparent',
+                minHeight: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
+                height: showAllEnquiries ? 'auto' : (windowWidth >= 1024 ? '500px' : (windowWidth >= 640 ? '450px' : '360px')), 
+                paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
+                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')
+              }}>
                 <AnimatePresence mode="wait">
                   {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
                     const isHovered = expandedCardId === enquiry.id;
@@ -1839,6 +1845,7 @@ const Landing = () => {
               className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               } ${isHovered ? 'shadow-2xl border-black' : ''}`}
+              style={{ backgroundColor: 'white' }}
               transition={{ duration: 0.3 }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
