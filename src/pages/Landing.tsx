@@ -1746,33 +1746,36 @@ const Landing = () => {
                 background: '#ffffff',
                 // Creative: Add subtle elevation effect when cards are touched
                 boxShadow: expandedCardId ? (windowWidth < 640 ? '0 8px 32px rgba(0,0,0,0.08)' : '0 12px 48px rgba(0,0,0,0.12)') : '0 4px 16px rgba(0,0,0,0.04)',
+                // Mobile: Container exactly matches card size (180px x 320px)
+                width: windowWidth < 640 ? '180px' : 'auto',
                 minHeight: showAllEnquiries ? 'auto' : (() => {
                   if (windowWidth >= 1024) return '500px';
                   if (windowWidth >= 640) return '450px';
-                  // Mobile: shrink container when cards are touched
+                  // Mobile: container exactly matches card height
                   if (expandedCardId && windowWidth < 640) {
                     const cardHeight = 320;
-                    const nonHoveredScale = 0.97; // Slightly less aggressive for smoother feel
-                    const padding = 30;
-                    return `${(cardHeight * nonHoveredScale) + padding}px`;
+                    const nonHoveredScale = 0.97;
+                    return `${cardHeight * nonHoveredScale}px`;
                   }
-                  return '360px';
+                  return '320px'; // Exact card height
                 })(),
                 height: showAllEnquiries ? 'auto' : (() => {
                   if (windowWidth >= 1024) return '500px';
                   if (windowWidth >= 640) return '450px';
+                  // Mobile: container exactly matches card height
                   if (expandedCardId && windowWidth < 640) {
                     const cardHeight = 320;
                     const nonHoveredScale = 0.97;
-                    const padding = 30;
-                    return `${(cardHeight * nonHoveredScale) + padding}px`;
+                    return `${cardHeight * nonHoveredScale}px`;
                   }
-                  return '360px';
+                  return '320px'; // Exact card height
                 })(),
                 // Creative: Smooth, elastic transitions
-                transition: 'height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s ease-out',
-                paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
-                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'),
+                transition: 'height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s ease-out',
+                paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '0px'), 
+                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '0px'),
+                paddingLeft: windowWidth < 640 ? '0px' : (windowWidth >= 1024 ? '32px' : '24px'),
+                paddingRight: windowWidth < 640 ? '0px' : (windowWidth >= 1024 ? '32px' : '24px'),
                 overflow: 'visible', // Allow smooth card animations
                 position: 'relative',
                 zIndex: 1,
@@ -1788,10 +1791,10 @@ const Landing = () => {
                     style={{ 
                       background: '#ffffff',
                       backgroundColor: '#ffffff',
-                      top: `-${windowWidth >= 640 ? '20px' : '15px'}`,
-                      bottom: `-${windowWidth >= 640 ? '20px' : '15px'}`,
-                      left: windowWidth >= 640 ? '-24px' : '-16px',
-                      right: windowWidth >= 640 ? '-24px' : '-16px'
+                      top: windowWidth < 640 ? '0px' : `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      bottom: windowWidth < 640 ? '0px' : `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      left: windowWidth < 640 ? '0px' : (windowWidth >= 640 ? '-24px' : '-16px'),
+                      right: windowWidth < 640 ? '0px' : (windowWidth >= 640 ? '-24px' : '-16px')
                     }}
                   />
                 )}
@@ -1863,10 +1866,10 @@ const Landing = () => {
                       rotateY: 0,
                     };
                     
-                    // Non-hovered cards: Creative subtle retreat with smooth scaling
-                    // Creates depth perception with smooth transitions
-                    // Y movement also limited to stay within bounds
-                    const nonHoveredScale = isTinyMobile ? 0.99 : (isSmallMobile ? 0.98 : (isMobile ? 0.97 : 0.94));
+                    // Non-hovered cards: Keep at normal size on mobile to prevent dull appearance
+                    // Only hovered card scales up, others stay normal size
+                    // On desktop, still scale down for depth effect
+                    const nonHoveredScale = isMobile ? 1.0 : 0.94; // Keep full size on mobile - no scaling down to prevent dulling
                     const nonHoveredY = isTinyMobile ? -1 : (isSmallMobile ? -1.5 : (isMobile ? -2.5 : -10));
                     const nonHoveredRotationZ = isMobile ? 0 : (index % 2 === 0 ? -2 : 2);
                     const nonHoveredRotationY = isMobile ? 0 : (index % 2 === 0 ? -2.5 : 2.5);
