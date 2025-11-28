@@ -1718,8 +1718,8 @@ const Landing = () => {
             position: 'relative',
             zIndex: 10,
             overflow: 'hidden', // Prevent any grey from showing
-            // Creative: Add subtle gradient overlay when cards are active
-            boxShadow: expandedCardId && windowWidth < 1024 ? 'inset 0 0 100px rgba(0,0,0,0.02)' : 'none',
+            // Ensure pure white on mobile - no gradients
+            boxShadow: windowWidth < 1024 ? 'none' : (expandedCardId ? 'inset 0 0 100px rgba(0,0,0,0.02)' : 'none'),
             transition: 'box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
             <div className="text-center mb-4 sm:mb-12">
@@ -1781,8 +1781,22 @@ const Landing = () => {
                 transform: expandedCardId && windowWidth < 1024 ? 'translateY(-2px)' : 'translateY(0)',
                 transformOrigin: 'center'
               }}>
-                {/* Creative: Animated background glow effect when cards are active */}
-                {expandedCardId && (
+                {/* Permanent white background layer for mobile - ensures no grey shows */}
+                {windowWidth < 1024 && (
+                  <div 
+                    className="absolute inset-0 bg-white rounded-2xl sm:rounded-3xl -z-10"
+                    style={{ 
+                      background: '#ffffff',
+                      backgroundColor: '#ffffff',
+                      top: `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      bottom: `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      left: windowWidth >= 640 ? '-24px' : '-16px',
+                      right: windowWidth >= 640 ? '-24px' : '-16px'
+                    }}
+                  />
+                )}
+                {/* Creative: Animated background glow effect when cards are active - desktop only */}
+                {expandedCardId && windowWidth >= 1024 && (
                   <motion.div 
                     className="absolute inset-0 bg-gradient-to-br from-white via-white to-slate-50/30 rounded-2xl sm:rounded-3xl -z-10"
                     initial={{ opacity: 0 }}
@@ -1792,10 +1806,10 @@ const Landing = () => {
                     style={{ 
                       background: '#ffffff',
                       backgroundColor: '#ffffff',
-                      top: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
-                      bottom: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
-                      left: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px'),
-                      right: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px')
+                      top: '-30px',
+                      bottom: '-30px',
+                      left: '-32px',
+                      right: '-32px'
                     }}
                   />
                 )}
@@ -1926,6 +1940,12 @@ const Landing = () => {
                       onMouseLeave={() => {
                         if (windowWidth >= 1024) {
                           setExpandedCardId(null);
+                        }
+                      }}
+                      onMouseMove={() => {
+                        // Ensure hover effect is active when mouse moves over card on desktop
+                        if (!isEnquiryOutdated(enquiry) && windowWidth >= 1024 && expandedCardId !== enquiry.id) {
+                          setExpandedCardId(enquiry.id);
                         }
                       }}
                       onTouchStart={(e) => {
