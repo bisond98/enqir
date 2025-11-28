@@ -1738,8 +1738,8 @@ const Landing = () => {
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
               <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start overflow-hidden bg-white" style={{ 
-                background: '#ffffff',
-                backgroundColor: '#ffffff',
+                background: expandedCardId ? '#ffffff' : '#ffffff',
+                backgroundColor: expandedCardId ? '#ffffff' : '#ffffff',
                 minHeight: showAllEnquiries ? 'auto' : (() => {
                   if (windowWidth >= 1024) return '500px';
                   if (windowWidth >= 640) return '450px';
@@ -1764,14 +1764,14 @@ const Landing = () => {
                   }
                   return '360px';
                 })(),
-                transition: 'height 0.3s ease-out, min-height 0.3s ease-out',
+                transition: 'height 0.3s ease-out, min-height 0.3s ease-out, background-color 0.3s ease-out, background 0.3s ease-out',
                 paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px'), 
                 paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')
               }}>
                 {/* White background layer to cover space when cards scale down - extends to cover padding area */}
                 <div className="absolute bg-white z-0" style={{ 
-                  backgroundColor: '#ffffff', 
-                  background: '#ffffff',
+                  backgroundColor: expandedCardId ? '#ffffff' : '#ffffff', 
+                  background: expandedCardId ? '#ffffff' : '#ffffff',
                   top: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
                   bottom: `-${windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '15px')}`,
                   left: windowWidth >= 1024 ? '-32px' : (windowWidth >= 640 ? '-24px' : '-16px'),
@@ -1856,7 +1856,7 @@ const Landing = () => {
                     } else if (isHovered && isAnyCardHovered) {
                       animationState = { opacity: 1, ...hoveredCardAnimation };
                     } else if (isAnyCardHovered && !isHovered) {
-                      animationState = { opacity: isMobile ? 0.94 : 0.86, ...nonHoveredCardAnimation };
+                      animationState = { opacity: 1, ...nonHoveredCardAnimation }; // Keep cards fully opaque
                     } else {
                       animationState = { opacity: 1, ...defaultAnimation };
                     }
