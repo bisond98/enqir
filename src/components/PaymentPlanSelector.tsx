@@ -18,6 +18,7 @@ interface PaymentPlanSelectorProps {
   enquiryCreatedAt?: any; // For determining if enquiry is old vs new for Pro users
   className?: string;
   user?: any; // User object for payment processing
+  squareCards?: boolean; // When true, render plan cards with square corners (no rounding)
 }
 
 const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
@@ -28,7 +29,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   isUpgrade = false,
   enquiryCreatedAt,
   className = '',
-  user
+  user,
+  squareCards = false
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>(currentPlanId);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -287,7 +289,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               plan.isPopular 
                 ? 'border border-black bg-blue-50/30' 
                 : 'border border-black'
-            }`}
+            } ${squareCards ? 'rounded-none' : ''}`}
           >
             {/* Card Header */}
             <div className="bg-black px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center">

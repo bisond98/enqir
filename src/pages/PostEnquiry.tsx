@@ -1787,16 +1787,16 @@ export default function PostEnquiry() {
             </Card>
           )}
 
-          {/* Main Form - Professional Enhanced Design */}
+          {/* Main Form - Professional Enhanced Design (Border thickness matched with SellerResponse form) */}
           {!isSubmitted && (
-            <Card className="border border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
+            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {category === "jobs" ? "Job Title" : "What do you need? From a 4 a.m. tea spot to a piece of the moon."}
+                      {category === "jobs" ? "Job Title" : "From a 4 a.m. tea Spot to a piece of the moon."}
                     </Label>
                     <Input
                       id="title"
@@ -1816,10 +1816,6 @@ export default function PostEnquiry() {
                         <span className="text-blue-600">*</span>
                         Choose Categories
                       </Label>
-                      <p className="text-[10px] sm:text-xs text-slate-600 flex items-center gap-1.5">
-                        <span className="text-blue-500">💡</span>
-                        Select up to 3 categories for better reach
-                      </p>
                     </div>
                     
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
@@ -2004,7 +2000,7 @@ export default function PostEnquiry() {
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="description" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {selectedCategories.includes("jobs") ? "Job Description" : "explain"}
+                      {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
                     <Textarea
                       id="description"
@@ -2240,6 +2236,7 @@ export default function PostEnquiry() {
                         }}
                         isUpgrade={false}
                         className="max-w-4xl mx-auto"
+                        squareCards={true}
                       />
                     </div>
                   </div>
@@ -2350,12 +2347,14 @@ export default function PostEnquiry() {
                     )}
                     
                     <div className="space-y-1 w-full">
-                      <div className="flex items-center gap-2 w-full">
+                      <div className="flex items-start justify-between w-full">
                         <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
                           <span className="block">Trust</span>
                           <span className="block">Badge</span>
                         </h3>
-                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0">(optional)</span>
+                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
+                          (optional)
+                        </span>
                       </div>
                       <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
                         <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue Badge For This Enquiry.</span>
