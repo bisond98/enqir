@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
@@ -45,6 +45,7 @@ interface Enquiry {
 const MyEnquiries = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [enquiryResponses, setEnquiryResponses] = useState<{[key: string]: any[]}>({});
   const [selectedEnquiryForResponses, setSelectedEnquiryForResponses] = useState<Enquiry | null>(null);
@@ -57,6 +58,8 @@ const MyEnquiries = () => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
+  const [highlightEnquiryId, setHighlightEnquiryId] = useState<string | null>(null);
+  const highlightedEnquiryRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -137,6 +140,41 @@ const MyEnquiries = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Read highlight from navigation state or query parameter (from dashboard deep-link)
+  useEffect(() => {
+    let highlight: string | null = null;
+
+    // Prefer state passed via navigate('/my-enquiries', { state: { highlightId } })
+    const state = location.state as any;
+    if (state && typeof state.highlightId === "string") {
+      highlight = state.highlightId;
+    } else {
+      // Fallback to query param ?highlight=<id> if present
+      const params = new URLSearchParams(location.search);
+      highlight = params.get("highlight");
+    }
+
+    if (highlight) {
+      setHighlightEnquiryId(highlight);
+    }
+  }, [location]);
+
+  // Scroll highlighted enquiry into view once data & ref are ready
+  useEffect(() => {
+    if (highlightEnquiryId && highlightedEnquiryRef.current) {
+      const node = highlightedEnquiryRef.current;
+      // Small delay to ensure layout & animations settle before scrolling
+      setTimeout(() => {
+        if (node) {
+          node.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }, 300);
+    }
+  }, [highlightEnquiryId, enquiries]);
   
   // Fetch user payment plan
   useEffect(() => {
@@ -575,9 +613,11 @@ const MyEnquiries = () => {
                   const d = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
                   return d < new Date();
                 })();
+                const isHighlighted = highlightEnquiryId === enquiry.id;
                 return (
                 <motion.div
                   key={enquiry.id}
+                  ref={isHighlighted ? highlightedEnquiryRef : undefined}
                   style={{ willChange: 'transform, opacity' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

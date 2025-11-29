@@ -1140,7 +1140,7 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-0 sm:pt-2 pb-2 sm:pb-8">
+        <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-0 sm:pt-2 pb-2 sm:pb-8">
           {/* Back Button */}
           <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
             <Button
@@ -1382,7 +1382,15 @@ const Dashboard = () => {
                                 ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
                                 : 'bg-white border border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
-                            onClick={() => !expiredFlag && navigate(`/enquiry/${enquiry.id}`)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              if (!expiredFlag) {
+                                navigate('/my-enquiries', {
+                                  state: { highlightId: enquiry.id },
+                                });
+                              }
+                            }}
                           >
                             {/* Premium Header with Sophisticated Design */}
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-5 sm:px-6 lg:px-3.5 xl:px-4 py-4 sm:py-5 lg:py-2.5 xl:py-3 ${
@@ -1633,10 +1641,12 @@ const Dashboard = () => {
                                 size="sm" 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                    e.preventDefault();
-                                    if (!expiredFlag) {
-                                      navigate(`/my-enquiries?highlight=${enquiry.id}`);
-                                    }
+                                  e.preventDefault();
+                                  if (!expiredFlag) {
+                                    navigate('/my-enquiries', {
+                                      state: { highlightId: enquiry.id }
+                                    });
+                                  }
                                 }}
                                   disabled={expiredFlag}
                                   className="w-full sm:flex-none flex-shrink-0 border border-black bg-black hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
@@ -2172,13 +2182,16 @@ const Dashboard = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                                onClick={() => {
-                                  if (!isExpired) {
-                                    navigate(`/enquiry/${enquiry.id}`);
-                                  }
-                                }}
-                                disabled={isExpired}
-                                className="w-full border border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isExpired) {
+                            navigate('/my-enquiries', {
+                              state: { highlightId: enquiry.id },
+                            });
+                          }
+                        }}
+                        disabled={isExpired}
+                        className="w-full border border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
                                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
                         View Details
