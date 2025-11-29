@@ -2568,23 +2568,23 @@ const EnquiryResponses = () => {
                       </div>
                       
                       {/* Budget and Location Row */}
-                      <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-2 border-black justify-center">
-                        {/* Budget Section */}
-                        <div className="flex items-start gap-2 flex-1 min-w-0 max-w-[200px]">
-                          <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
-                            <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
+                      <div className="flex items-center justify-between pt-2 border-t-2 border-black">
+                        {/* Budget Section - Left */}
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <span className="text-base sm:text-lg text-black flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">₹</span>
+                          <div className="text-left">
+                            <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Budget</div>
+                            <div className="text-sm sm:text-base font-bold text-black">{formatBudget(enquiry.budget)}</div>
                           </div>
                         </div>
                         
-                        {/* Location Section */}
+                        {/* Location Section - Right */}
                         {enquiry.location && (
-                          <div className="flex items-start gap-2 flex-shrink-0 max-w-[200px]">
-                            <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
-                            <div className="min-w-0">
-                              <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
-                              <div className="text-sm sm:text-base font-bold text-black truncate">{enquiry.location}</div>
+                          <div className="flex items-center gap-2 sm:gap-2.5">
+                            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
+                            <div className="text-right">
+                              <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Location</div>
+                              <div className="text-sm sm:text-base font-bold text-black">{enquiry.location}</div>
                             </div>
                           </div>
                         )}
@@ -2718,23 +2718,23 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Budget and Location Row - Single Color Layout */}
-                    <div className="flex items-start gap-4 sm:gap-6 pt-2 border-t-2 border-black justify-center">
-                      {/* Budget Section */}
-                      <div className="flex items-start gap-2 flex-1 min-w-0 max-w-[200px]">
-                        <span className="text-sm sm:text-base text-black flex-shrink-0 mt-0.5">₹</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Budget</div>
-                          <div className="text-sm sm:text-base font-bold text-black truncate">{formatBudget(enquiry.budget)}</div>
+                    <div className="flex items-center justify-between pt-2 border-t-2 border-black">
+                      {/* Budget Section - Left */}
+                      <div className="flex items-center gap-2 sm:gap-2.5">
+                        <span className="text-base sm:text-lg text-black flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">₹</span>
+                        <div className="text-left">
+                          <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Budget</div>
+                          <div className="text-sm sm:text-base font-bold text-black">{formatBudget(enquiry.budget)}</div>
                         </div>
                       </div>
                       
-                      {/* Location Section */}
+                      {/* Location Section - Right */}
                       {enquiry.location && (
-                        <div className="flex items-start gap-2 flex-shrink-0 max-w-[200px]">
-                          <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-black flex-shrink-0 mt-0.5" />
-                          <div className="min-w-0">
-                            <div className="text-[10px] sm:text-xs text-black font-medium mb-1">Location</div>
-                            <div className="text-sm sm:text-base font-bold text-black truncate">{enquiry.location}</div>
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
+                          <div className="text-right">
+                            <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Location</div>
+                            <div className="text-sm sm:text-base font-bold text-black">{enquiry.location}</div>
                           </div>
                         </div>
                       )}
@@ -2828,7 +2828,7 @@ const EnquiryResponses = () => {
                 // Always show chat box for sellers, but with different behavior
                 <>
                 <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
-                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-2 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
+                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-4 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
@@ -2972,7 +2972,7 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-2 border-gray-800">
+                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-4 border-gray-800">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black truncate">
@@ -3219,7 +3219,7 @@ const EnquiryResponses = () => {
                               </div>
                               
                               {/* Sender Name - Mobile Responsive */}
-                              {message.senderId !== user?.uid && (
+                              {message.senderId !== user?.uid && message.senderName && message.senderName !== 'User' && (
                                 <div className="mt-1.5 sm:mt-2">
                                   <VerifiedUser 
                                     name={message.senderName}
@@ -3260,7 +3260,7 @@ const EnquiryResponses = () => {
                     )}
                   </div>
 
-                  <div className="border-t-2 border-gray-800 bg-white">
+                  <div className="border-t-4 border-gray-800 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
                     <div className="p-2.5 sm:p-3 lg:p-4">
                       {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
@@ -3306,13 +3306,13 @@ const EnquiryResponses = () => {
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-[3px] border-black rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               Meetup
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-[3px] border-black rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
                               Samples
                             </button>
@@ -3347,25 +3347,25 @@ const EnquiryResponses = () => {
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we meet in person to discuss?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 border-2 border-orange-200 rounded-md hover:bg-orange-100 hover:border-orange-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-orange-50 text-orange-700 border-[3px] border-black rounded-md hover:bg-orange-100 transition-colors duration-200 font-medium min-touch"
                             >
                               Meetup
                             </button>
                             <button
                               onClick={() => setNewMessage("Do you have samples I can check?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-pink-50 text-pink-700 border-2 border-pink-200 rounded-md hover:bg-pink-100 hover:border-pink-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-pink-50 text-pink-700 border-[3px] border-black rounded-md hover:bg-pink-100 transition-colors duration-200 font-medium min-touch"
                             >
                               Samples
                             </button>
                             <button
                               onClick={() => setNewMessage("What's your best price for this?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-yellow-50 text-yellow-700 border-2 border-yellow-200 rounded-md hover:bg-yellow-100 hover:border-yellow-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-yellow-50 text-yellow-700 border-[3px] border-black rounded-md hover:bg-yellow-100 transition-colors duration-200 font-medium min-touch"
                             >
                               Best Price
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you provide references or reviews?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-indigo-50 text-indigo-700 border-2 border-indigo-200 rounded-md hover:bg-indigo-100 hover:border-indigo-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-indigo-50 text-indigo-700 border-[3px] border-black rounded-md hover:bg-indigo-100 transition-colors duration-200 font-medium min-touch"
                             >
                               Reviews
                             </button>
