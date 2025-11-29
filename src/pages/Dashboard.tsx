@@ -1682,10 +1682,14 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border border-black bg-[#022c22] hover:bg-[#064e3b] text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
+                                  className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
                               >
-                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
-                                  <span className="tracking-tight whitespace-nowrap">View Responses</span>
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">View Responses</span>
                               </Button>
                               
                                 {/* Premium Upgrade Button - Mobile/Tablet Only (Desktop version is in Response Metrics) */}
@@ -1711,10 +1715,14 @@ const Dashboard = () => {
                                               }
                                             }}
                                             disabled={expiredFlag}
-                                            className="flex-1 sm:flex-none flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black flex items-center justify-center sm:min-w-[110px]"
+                                            className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade flex items-center justify-center sm:min-w-[110px] relative overflow-hidden disabled:grayscale"
                                           >
-                                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
-                                            <span className="tracking-tight whitespace-nowrap">Upgrade</span>
+                                            {/* Physical button depth effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                            {/* Shimmer effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform relative z-10" />
+                                            <span className="tracking-tight whitespace-nowrap relative z-10">Upgrade</span>
                                           </Button>
                                         );
                                       }
@@ -1731,10 +1739,14 @@ const Dashboard = () => {
                                       }
                                     }}
                                     disabled={expiredFlag}
-                                    className="flex-1 sm:flex-none flex-shrink-0 border border-black hover:border-black text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px]"
+                                    className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
                                   >
-                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
-                                    <span className="tracking-tight whitespace-nowrap">Delete</span>
+                                    {/* Physical button depth effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                    {/* Shimmer effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                    <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
                                   </Button>
                                 </div>
                             </div>
@@ -2049,11 +2061,15 @@ const Dashboard = () => {
                                     state: { highlightSubmissionId: submission.id }
                                   });
                                 }}
-                                  className="flex-1 sm:flex-none border border-black bg-white text-black hover:bg-gray-50 hover:border-black hover:text-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="flex-1 sm:flex-none border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black hover:from-gray-300 hover:to-gray-400 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden disabled:grayscale"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                                View Details
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10" />
+                                  <span className="relative z-10">View Details</span>
                               </Button>
                             </div>
                           </div>
@@ -2296,16 +2312,24 @@ const Dashboard = () => {
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full h-full bg-gradient-to-r from-blue-950 via-blue-950 to-blue-900 hover:from-blue-900 hover:via-blue-900 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black min-h-[48px] lg:min-h-[52px]">
-                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-sm font-bold tracking-tight whitespace-nowrap">Make a wish</span>
+                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-300 hover:to-gray-400 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10" />
+                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Make a wish</span>
                   </button>
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full h-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:shadow-2xl border border-black hover:border-black min-h-[48px] lg:min-h-[52px]">
-                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm sm:text-base lg:text-sm font-bold tracking-tight whitespace-nowrap">Be the genie</span>
+                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-300 hover:to-gray-400 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10" />
+                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Be the genie</span>
                   </button>
                 </Link>
               </div>
