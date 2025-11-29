@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
-import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, ChevronDown, Crown, Moon, Sun } from "lucide-react";
+import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Footer from "./Footer";
 import AIChatbot from "./AIChatbot";
@@ -17,8 +17,8 @@ import SignOutDialog from "./SignOutDialog";
 import { lazy, Suspense } from "react";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getProEnquiriesRemaining } from "@/services/paymentService";
-// import { doc, onSnapshot, getDoc } from "firebase/firestore";
-// import { db } from "@/firebase";
+import { collection, query, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/firebase";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 
 // Lazy load Mobile AI Controller to improve performance
@@ -28,6 +28,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
@@ -37,6 +38,135 @@ export default function Layout({ children, showNavigation = true }: { children: 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Count unread chat messages
+  useEffect(() => {
+    if (!user?.uid) {
+      setUnreadChatCount(0);
+      return;
+    }
+
+    const countUnreadChats = async () => {
+      try {
+        // Get all chat messages
+        const chatMessagesQuery = query(collection(db, "chatMessages"));
+        const snapshot = await getDocs(chatMessagesQuery);
+        
+        const activeChatThreads = new Set<string>();
+        
+        // Process all messages
+        for (const docSnap of snapshot.docs) {
+          const messageData = docSnap.data();
+          const enquiryId = messageData.enquiryId;
+          const sellerId = messageData.sellerId;
+          const senderId = messageData.senderId;
+          
+          if (!enquiryId || !sellerId || !senderId) continue;
+          
+          // Skip system messages
+          if (messageData.isSystemMessage) continue;
+          
+          // Only count messages from other users
+          if (senderId === user.uid) continue;
+          
+          const threadKey = `${enquiryId}_${sellerId}`;
+          
+          // Check if user is involved in this chat (buyer or seller)
+          try {
+            const enquiryDoc = await getDoc(doc(db, "enquiries", enquiryId));
+            
+            if (!enquiryDoc.exists()) {
+              // Enquiry deleted - skip this chat
+              continue;
+            }
+            
+            const enquiryData = enquiryDoc.data();
+            const buyerId = enquiryData.userId;
+            
+            // Check if user is involved (buyer or seller)
+            const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
+            
+            if (!isUserInvolved) continue;
+            
+            // Check if deal is closed
+            if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) {
+              continue; // Deal closed - skip this chat
+            }
+            
+            // Check if enquiry is expired
+            if (enquiryData.deadline) {
+              const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+              const now = new Date();
+              if (deadline < now) {
+                continue; // Enquiry expired - skip this chat
+              }
+            }
+            
+            // Check if enquiry status would close the chat (rejected, completed, etc.)
+            if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') {
+              continue; // Enquiry in closed state - skip this chat
+            }
+            
+            // Check if user has viewed this chat
+            const readKey = `chat_read_${user.uid}_${threadKey}`;
+            const lastViewedTime = localStorage.getItem(readKey);
+            
+            if (lastViewedTime) {
+              // Only count messages that arrived after last view
+              const messageTime = messageData.timestamp?.toDate 
+                ? messageData.timestamp.toDate().getTime() 
+                : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+              const viewedTime = parseInt(lastViewedTime, 10);
+              
+              if (messageTime <= viewedTime) {
+                continue; // Message was already viewed - skip
+              }
+            }
+            // If no lastViewedTime, treat as unread (continue to add to activeChatThreads)
+            
+            // This is an active chat with unread message
+            activeChatThreads.add(threadKey);
+          } catch (error) {
+            console.error("Error checking enquiry:", error);
+            continue; // Skip if we can't verify the enquiry
+          }
+        }
+        
+        // Count unique active chat threads with unread messages
+        setUnreadChatCount(activeChatThreads.size);
+      } catch (error) {
+        console.error("Error counting unread chats:", error);
+        setUnreadChatCount(0);
+      }
+    };
+
+    // Initial count
+    countUnreadChats();
+    
+    // Set up real-time listener for chat messages
+    const unsubscribe = onSnapshot(
+      query(collection(db, "chatMessages")),
+      () => {
+        countUnreadChats();
+      },
+      (error) => {
+        console.error("Error listening to chat messages:", error);
+      }
+    );
+
+    // Listen for chat viewed events
+    const handleChatViewed = () => {
+      countUnreadChats();
+    };
+    
+    window.addEventListener('chatViewed', handleChatViewed);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('chatViewed', handleChatViewed);
+    };
+  }, [user?.uid]);
+
   // PRO PLAN - KEPT FOR FUTURE UPDATES
   // const [proRemainingCount, setProRemainingCount] = useState<number>(0);
   // const currentUserIdRef = useRef<string | null>(null);
@@ -474,7 +604,26 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
                     </Button>
                   </Link>
-                  <Link to="/settings">
+                  {/* Chats button – shows all user chats (mobile + desktop) */}
+                  <Link to="/my-chats">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black relative"
+                    >
+                      <div className="relative">
+                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
+                        {unreadChatCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                            {unreadChatCount > 9 ? '9+' : unreadChatCount}
+                          </span>
+                        )}
+                      </div>
+                      <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
+                    </Button>
+                  </Link>
+                  {/* Settings button - hidden on mobile, visible on sm+ */}
+                  <Link to="/settings" className="hidden sm:inline-flex">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
                       <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                       <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>

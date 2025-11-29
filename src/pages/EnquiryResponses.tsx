@@ -385,6 +385,21 @@ const EnquiryResponses = () => {
     };
   }, [selectedResponse, enquiryId, blockedUsers]);
 
+  // Mark chat as read when chat is opened
+  useEffect(() => {
+    if (!selectedResponse || !enquiryId || !user?.uid) return;
+    
+    // Mark this chat as read when it's opened
+    const threadKey = `${enquiryId}_${selectedResponse.sellerId}`;
+    const readKey = `chat_read_${user.uid}_${threadKey}`;
+    localStorage.setItem(readKey, Date.now().toString());
+    
+    // Trigger a custom event to notify other components
+    window.dispatchEvent(new CustomEvent('chatViewed', { 
+      detail: { enquiryId, sellerId: selectedResponse.sellerId } 
+    }));
+  }, [selectedResponse, enquiryId, user?.uid]);
+
   // Memoize unique user IDs to avoid unnecessary recalculations
   const uniqueUserIds = useMemo(() => {
     if (chatMessages.length === 0) return [];
@@ -841,7 +856,7 @@ const EnquiryResponses = () => {
 
       toast({ 
         title: 'User Blocked', 
-        description: `${userToBlock.name} has been blocked. Both users cannot send or receive messages.` 
+        description: 'User has been blocked. Both users cannot send or receive messages.' 
       });
       
       setUserToBlock(null);
@@ -889,7 +904,7 @@ const EnquiryResponses = () => {
 
       toast({ 
         title: 'User Unblocked', 
-        description: `${otherUserName} has been unblocked. You can now send and receive messages.` 
+        description: 'User has been unblocked. You can now send and receive messages.' 
       });
     } catch (error) {
       console.error('Error unblocking user:', error);
@@ -2651,10 +2666,11 @@ const EnquiryResponses = () => {
                   <Button
                     variant="ghost"
                     onClick={() => {
-                      // Navigate back to responses-page if enquiryId exists, otherwise go to my-enquiries
-                      if (enquiryId) {
-                        navigate(`/enquiry/${enquiryId}/responses-page`);
+                      // Go back to previous page (where user came from)
+                      if (window.history.length > 1) {
+                        navigate(-1);
                       } else {
+                        // Fallback if no history, go to my-enquiries
                         navigate('/my-enquiries');
                       }
                     }}
@@ -2811,7 +2827,7 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white overflow-visible">
+                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
                   <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4 overflow-visible relative">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
@@ -3017,7 +3033,7 @@ const EnquiryResponses = () => {
                                 className={`max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-lg relative ${
                                   message.senderId === user?.uid
                                     ? 'bg-blue-600 text-white'
-                                    : 'bg-black border border-black text-white'
+                                    : 'bg-blue-500 text-white'
                                 }`}
                               >
                                 {/* Message Content */}
@@ -3307,28 +3323,29 @@ const EnquiryResponses = () => {
                           </>
                         ) : (
                           // BUYER Suggestions - Mobile Responsive
+                          // PROTECTED: Button borders updated to border-2 (thicker) - Do not revert
                           <>
                             <button
                               onClick={() => setNewMessage("Can you provide more details about pricing?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 border border-blue-200 rounded-md hover:bg-blue-100 hover:border-blue-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 border-2 border-black rounded-md hover:bg-blue-100 transition-colors duration-200 font-medium"
                             >
                               💰 Pricing
                             </button>
                             <button
                               onClick={() => setNewMessage("What's the delivery timeline?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-green-50 text-green-700 border border-green-200 rounded-md hover:bg-green-100 hover:border-green-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-green-50 text-green-700 border-2 border-black rounded-md hover:bg-green-100 transition-colors duration-200 font-medium"
                             >
                               ⏰ Timeline
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you share more images?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-gray-50 text-gray-700 border border-gray-200 rounded-md hover:bg-gray-100 hover:border-gray-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-gray-50 text-gray-700 border-2 border-black rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium"
                             >
                               🖼️ Images
                             </button>
                             <button
                               onClick={() => setNewMessage("What are the payment terms?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md hover:bg-emerald-100 hover:border-emerald-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-emerald-50 text-emerald-700 border-2 border-black rounded-md hover:bg-emerald-100 transition-colors duration-200 font-medium"
                             >
                               💳 Terms
                             </button>
