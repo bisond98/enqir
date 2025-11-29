@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check } from "lucide-react";
+import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -819,13 +820,21 @@ export default function EnquiryWall() {
                     <button
                       key={category.value}
                       onClick={() => handleCategorySelect(category.value)}
-                      className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
+                      className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
                         selectedCategory === category.value
-                          ? 'bg-black text-white border-2 border-black shadow-md hover:bg-gray-900 scale-105'
-                          : 'bg-white text-gray-700 border-2 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
+                          ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
+                          : 'bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
                       }`}
                     >
-                      {category.label}
+                      {/* Physical button depth effect */}
+                      <div className={`absolute inset-0 bg-gradient-to-b ${
+                        selectedCategory === category.value
+                          ? 'from-white/10 to-transparent'
+                          : 'from-white/20 to-transparent'
+                      } rounded-xl sm:rounded-2xl pointer-events-none`} />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
+                      <span className="relative z-10">{category.label}</span>
                     </button>
                   ))}
                 </div>
@@ -923,13 +932,21 @@ export default function EnquiryWall() {
                             setShowSuggestions(false);
                           }
                         }}
-                        className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch ${
+                        className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
                           selectedCategory === category.value
-                            ? 'bg-black text-white border-2 border-black shadow-md hover:bg-gray-900 scale-105'
-                            : 'bg-white text-gray-700 border-2 border-black hover:border-black hover:bg-gray-50 hover:shadow-sm'
+                            ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
+                            : 'bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
                         }`}
                       >
-                        {category.label}
+                        {/* Physical button depth effect */}
+                        <div className={`absolute inset-0 bg-gradient-to-b ${
+                          selectedCategory === category.value
+                            ? 'from-white/10 to-transparent'
+                            : 'from-white/20 to-transparent'
+                        } rounded-xl sm:rounded-2xl pointer-events-none`} />
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
+                        <span className="relative z-10">{category.label}</span>
                       </button>
                     ))}
                   </div>
@@ -940,19 +957,25 @@ export default function EnquiryWall() {
               <div className="text-center sm:hidden pt-2">
                 <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium bg-black text-white border-2 border-black rounded-xl hover:bg-gray-900 hover:border-black hover:shadow-sm transition-all duration-200 min-touch"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-black bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 min-touch relative overflow-hidden"
                 >
-                  {showAllCategories ? (
-                    <>
-                      <X className="w-3.5 h-3.5" />
-                      Show Less
-                    </>
-                  ) : (
-                    <>
-                      <Filter className="w-3.5 h-3.5" />
-                      Show More (+38)
-                    </>
-                  )}
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {showAllCategories ? (
+                      <>
+                        <X className="w-3.5 h-3.5" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <Filter className="w-3.5 h-3.5" />
+                        Show More (+38)
+                      </>
+                    )}
+                  </span>
                 </button>
               </div>
             </div>
@@ -963,30 +986,76 @@ export default function EnquiryWall() {
             <h3 className="text-sm sm:text-xl font-semibold text-foreground">
               {displayEnquiries.length} enquiries
             </h3>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Button
-                variant={viewMode === 'grid' ? 'outline' : 'ghost'}
-                size="sm"
+            <motion.div 
+              className="relative inline-flex items-center bg-white border-4 border-black rounded-xl p-1 sm:p-2 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+              
+              {/* Animated Background Slider */}
+              <motion.div 
+                className={`absolute top-1 bottom-1 sm:top-2 sm:bottom-2 rounded-lg bg-gradient-to-b from-black to-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
+                  viewMode === 'grid' ? 'left-1 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1 sm:left-1/2 sm:right-2'
+                }`}
+                style={{ width: 'calc(50% - 2px)' }}
+                layout
+              >
+                {/* Button highlight */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-lg pointer-events-none" />
+              </motion.div>
+              
+              {/* Grid Button */}
+              <motion.button
+                type="button"
                 onClick={() => setViewMode('grid')}
-                className={`h-5 sm:h-8 px-1.5 sm:px-3 text-[9px] sm:text-sm ${
-                  viewMode === 'grid' ? '!bg-black !text-white !border-black hover:!bg-gray-900' : ''
+                className={`relative z-10 px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-sm transition-all duration-300 flex items-center gap-0.5 sm:gap-1.5 min-w-[60px] sm:min-w-[90px] justify-center ${
+                  viewMode === 'grid'
+                    ? 'text-white drop-shadow-lg'
+                    : 'text-black hover:text-black'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
               >
-                <Grid3X3 className="h-2.5 w-2.5 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
-                Grid
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'outline' : 'ghost'}
-                size="sm"
+                <motion.div 
+                  className="relative flex items-center justify-center"
+                  animate={viewMode === 'grid' ? {
+                    rotate: [0, -10, 10, 0],
+                    scale: [1, 1.1, 1]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Grid3X3 className={`h-3 w-3 sm:h-4.5 sm:w-4.5 transition-all duration-300 ${viewMode === 'grid' ? 'drop-shadow-md' : ''}`} />
+                </motion.div>
+                <span className="whitespace-nowrap relative z-10">Grid</span>
+              </motion.button>
+              
+              {/* List Button */}
+              <motion.button
+                type="button"
                 onClick={() => setViewMode('list')}
-                className={`h-5 sm:h-8 px-1.5 sm:px-3 text-[9px] sm:text-sm ${
-                  viewMode === 'list' ? '!bg-black !text-white !border-black hover:!bg-gray-900' : ''
+                className={`relative z-10 px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-sm transition-all duration-300 flex items-center gap-0.5 sm:gap-1.5 min-w-[60px] sm:min-w-[90px] justify-center ${
+                  viewMode === 'list'
+                    ? 'text-white drop-shadow-lg'
+                    : 'text-black hover:text-black'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
               >
-                <List className="h-2.5 w-2.5 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
-                List
-              </Button>
-            </div>
+                <motion.div 
+                  className="relative flex items-center justify-center"
+                  animate={viewMode === 'list' ? {
+                    rotate: [0, -10, 10, 0],
+                    scale: [1, 1.1, 1]
+                  } : {}}
+                  transition={{ duration: 0.5 }}
+                >
+                  <List className={`h-3 w-3 sm:h-4.5 sm:w-4.5 transition-all duration-300 ${viewMode === 'list' ? 'drop-shadow-md' : ''}`} />
+                </motion.div>
+                <span className="whitespace-nowrap relative z-10">List</span>
+              </motion.button>
+            </motion.div>
           </div>
 
           {/* Enquiries Grid/List */}
@@ -1061,39 +1130,47 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border-4 border-black bg-white shadow-md hover:shadow-xl hover:border-black sm:hover:border-black flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden' : 'border-4 border-black bg-white shadow-sm hover:shadow-md hover:border-black rounded-2xl sm:rounded-3xl flex flex-col h-auto lg:min-h-[400px] xl:min-h-[450px]'
-                    } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer ${
-                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l-4 border-l-green-500'
+                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border-2 sm:border-4 border-black bg-white flex flex-col rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden relative' : 'border-2 sm:border-4 border-black bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                    } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
+                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l-2 sm:border-l-4 border-l-green-500'
                     }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
+                      {/* Physical button depth effect */}
+                      {!isEnquiryDisabled(enquiry) && (
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+                      )}
+                      {/* Shimmer effect */}
+                      {!isEnquiryDisabled(enquiry) && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
+                      )}
                       {/* Card Header - Black */}
-                      <div className="bg-black px-2.5 sm:px-4 py-1.5 sm:py-2.5 border-b border-black">
+                      <div className="bg-black px-2 sm:px-4 py-1 sm:py-2.5 border-b border-black relative z-10">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-1 sm:gap-2">
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
-                            {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
-                              <>
-                                <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
-                                  isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
-                                }`}>
-                                  <Check className="h-1 w-1 sm:h-2 sm:w-2 text-white" />
-                                </div>
-                                <span className={`text-[8px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
-                                  isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-blue-300'
-                                }`}>Verified</span>
-                              </>
-                            )}
+                                {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                  <>
+                                    <div className={`flex items-center justify-center w-2 h-2 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
+                                      isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
+                                    }`}>
+                                      <Check className="h-0.5 w-0.5 sm:h-2 sm:w-2 text-white" />
+                                    </div>
+                                    <span className={`text-[7px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
+                                      isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-blue-300'
+                                    }`}>Verified</span>
+                                  </>
+                                )}
                           </div>
-                          <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="flex items-center gap-0.5 sm:gap-2">
                             {!isEnquiryDisabled(enquiry) && (
-                              <Badge className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
+                              <Badge className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
                             )}
                             {isDealClosed(enquiry) && (
-                              <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
+                              <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
                             )}
                             {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                              <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Expired</Badge>
+                              <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Expired</Badge>
                             )}
                           </div>
                         </div>
@@ -1102,47 +1179,47 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-2.5 sm:p-5 flex flex-col justify-start flex-1 min-h-0" style={{ flex: '1 1 50%' }}>
-                            <div className="space-y-2 sm:space-y-3">
+                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
+                            <div className="space-y-1.5 sm:space-y-3">
                               {/* Title Row */}
-                              <div className="flex items-start justify-between gap-2 sm:gap-3">
-                                <div className="flex items-start gap-1.5 sm:gap-2.5 flex-1 min-w-0">
-                                  <h3 className={`text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl line-clamp-2 flex-1 text-black text-center ${
+                              <div className="flex items-start justify-between gap-1.5 sm:gap-3">
+                                <div className="flex items-start gap-1 sm:gap-2.5 flex-1 min-w-0">
+                                  <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-2 flex-1 text-black text-center ${
                                     isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                   }`}>
                                     {enquiry.title}
                                   </h3>
                                 </div>
-                                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                                <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
                                   {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                    <Badge className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
-                                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
+                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
+                                      <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                       Urgent
                                     </Badge>
                                   )}
                                   {isDealClosed(enquiry) && (
-                                    <Badge variant="outline" className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
+                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
                                   )}
                                   {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                    <Badge variant="outline" className="text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
+                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
                                   )}
                                 </div>
                               </div>
                               
-                              {/* Description */}
-                              <p className="text-[10px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-3 flex-1">
+                              {/* Description - Centered in list view */}
+                              <p className="text-[10px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-3 flex-1 mt-12 sm:mt-4">
                                 {enquiry.description}
                               </p>
                             </div>
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className="p-2.5 sm:p-5 lg:p-6 xl:p-7">
-                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
+                          <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
                             {/* Title with Verification Badge - Mobile Optimized */}
-                              <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
-                                <h3 className={`text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl line-clamp-1 truncate flex-1 text-black text-center ${
+                              <div className="flex items-center justify-between gap-1 sm:gap-2 mb-1.5 sm:mb-3">
+                              <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
+                                <h3 className={`text-base sm:text-xl lg:text-2xl font-black tracking-tight leading-tight line-clamp-1 truncate flex-1 text-black text-center ${
                                   isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                 }`}>
                                   {enquiry.title}
@@ -1151,49 +1228,49 @@ export default function EnquiryWall() {
                                     1. User has profile-level verification (applies to all enquiries), OR
                                     2. This specific enquiry has ID images (enquiry-specific verification) */}
                                 {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
-                                  <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
+                                  <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
-                                    <Check className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
+                                    <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
                                   </div>
                                 )}
                               </div>
                               {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                <Badge className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
-                                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
+                                <Badge className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
+                                  <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                   Urgent
                                 </Badge>
                               )}
                               {isDealClosed(enquiry) && (
-                                <Badge variant="outline" className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Deal Closed</Badge>
+                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Deal Closed</Badge>
                               )}
                               {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                <Badge variant="outline" className="text-[9px] sm:text-[11px] px-1 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
+                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
                               )}
                             </div>
                             
                             {/* Budget and Location - Grouped together */}
-                            <div className="flex flex-col gap-2 sm:gap-2.5">
+                            <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="flex items-center gap-2 sm:gap-2.5 bg-gray-50 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border border-black shadow-sm">
-                                  <span className="font-black text-black text-base sm:text-xl">₹</span>
-                                  <span className="truncate font-black text-gray-900 text-sm sm:text-lg">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-1.5 sm:gap-2.5 bg-gray-50 rounded-md sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black shadow-sm">
+                                  <span className="font-black text-black text-sm sm:text-xl">₹</span>
+                                  <span className="truncate font-black text-gray-900 text-xs sm:text-lg">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
-                                <div className="flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-1.5 sm:py-2 border-4 border-black rounded-lg">
-                                  <div className="flex items-center justify-center w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-gray-100 flex-shrink-0">
-                                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
+                                <div className="flex items-center gap-1.5 sm:gap-2.5 px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black rounded-md sm:rounded-lg">
+                                  <div className="flex items-center justify-center w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full bg-gray-100 flex-shrink-0">
+                                    <MapPin className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-gray-600" />
                                   </div>
-                                  <span className="truncate text-[10px] sm:text-sm font-semibold text-gray-700">{enquiry.location}</span>
+                                  <span className="truncate text-[9px] sm:text-sm font-semibold text-gray-700">{enquiry.location}</span>
                                 </div>
                               )}
                             </div>
                             
                             {/* Deadline Timer and Category - Side by side on desktop */}
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1.5 sm:pt-2 border-t border-gray-100">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
                               <div>
-                                <Badge variant="secondary" className="text-[9px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold shadow-sm">
+                                <Badge variant="secondary" className="text-[8px] sm:text-xs px-1.5 sm:px-3.5 py-0.5 sm:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold shadow-sm">
                                   {enquiry.category.replace('-', ' ')}
                                 </Badge>
                               </div>
@@ -1201,7 +1278,7 @@ export default function EnquiryWall() {
                                 <div className="ml-auto">
                                   <CountdownTimer
                                     deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                    className="text-[10px] sm:text-sm"
+                                    className="text-[9px] sm:text-sm"
                                   />
                                 </div>
                               )}
@@ -1210,35 +1287,35 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-2.5 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2.5 sm:p-5 lg:p-6 xl:p-7 justify-between'}`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
-                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 justify-between w-full">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
-                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 bg-gray-50 rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border border-black">
-                                  <span className="font-black text-black text-sm sm:text-base md:text-xl">₹</span>
-                                  <span className="font-black text-gray-900 text-[10px] sm:text-xs md:text-base">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-0.5 sm:gap-1.5 bg-gray-50 rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black">
+                                  <span className="font-black text-black text-xs sm:text-base md:text-xl">₹</span>
+                                  <span className="font-black text-gray-900 text-[9px] sm:text-xs md:text-base">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 text-gray-700 border-4 border-black rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5">
+                                <div className="flex items-center gap-0.5 sm:gap-1.5 text-gray-700 border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5">
                                   <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0">
-                                    <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-gray-600" />
+                                    <MapPin className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-gray-600" />
                                   </div>
-                                  <span className="text-[10px] sm:text-xs md:text-base font-semibold truncate max-w-[80px] sm:max-w-none">{enquiry.location}</span>
+                                  <span className="text-[9px] sm:text-xs md:text-base font-semibold truncate max-w-[70px] sm:max-w-none">{enquiry.location}</span>
                                 </div>
                               )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[9px] sm:text-[10px] md:text-sm px-1.5 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-4 border-black font-semibold">
+                              <Badge variant="secondary" className="text-[8px] sm:text-[10px] md:text-sm px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold">
                                 {enquiry.category.replace('-', ' ')}
                               </Badge>
                               {/* Response Count - Only show for own enquiries */}
                               {isOwnEnquiry(enquiry) && (
-                                <div className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-700 bg-white rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 border-4 border-black">
-                                  <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-600 flex-shrink-0" />
+                                <div className="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[10px] md:text-xs text-gray-700 bg-white rounded-md px-1 sm:px-2 py-0.5 sm:py-1 border-2 sm:border-4 border-black">
+                                  <MessageSquare className="h-2 w-2 sm:h-3 sm:w-3 text-gray-600 flex-shrink-0" />
                                   <span className="whitespace-nowrap font-semibold">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
                                 </div>
                               )}
@@ -1246,46 +1323,52 @@ export default function EnquiryWall() {
                             
                             {/* Deadline Timer - Right Aligned */}
                             {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                              <div className="ml-auto rounded-lg px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
+                              <div className="ml-auto rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
                                 <CountdownTimer
                                   deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                  className="text-[9px] sm:text-[10px] md:text-sm"
+                                  className="text-[8px] sm:text-[10px] md:text-sm"
                                 />
                               </div>
                             )}
                             
                             {/* Right: Action Button */}
-                            <div className="flex-shrink-0 w-full sm:w-auto mt-1.5 sm:mt-0">
+                            <div className="flex-shrink-0 w-full sm:w-auto mt-1 sm:mt-0">
                               {isOwnEnquiry(enquiry) ? (
                                 <button 
                                   type="button"
                                   disabled
-                                  className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-4 border-black text-white rounded-md cursor-not-allowed"
+                                  className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 sm:border-4 border-black text-white rounded-md sm:rounded-xl cursor-not-allowed"
                                   style={{ backgroundColor: '#022c22' }}
                                 >
                                   Your Enquiry
                                 </button>
                               ) : authUser ? (
                                 isDealClosed(enquiry) ? (
-                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                     Deal Closed
                                   </Button>
                                 ) : isEnquiryOutdated(enquiry) ? (
-                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                     Expired
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-bold bg-black hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-xl border-4 border-black"
+                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
-                                    Sell
-                                    <ArrowRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 ml-1 sm:ml-1.5 md:ml-2" />
+                                    {/* Physical button depth effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                    {/* Shimmer effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-xl" />
+                                    <span className="relative z-10 flex items-center">
+                                      Sell
+                                      <ArrowRight className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 ml-0.5 sm:ml-1.5 md:ml-2" />
+                                    </span>
                                   </Button>
                                 )
                               ) : (
                                 <Link to="/signin" className="w-full sm:w-auto block">
-                                  <Button variant="outline" className="w-full sm:w-auto h-7 sm:h-8 md:h-10 px-2 sm:px-3 md:px-6 text-[10px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-xl">
+                                  <Button variant="outline" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md sm:rounded-xl">
                                     Sign In to Respond
                                   </Button>
                                 </Link>
@@ -1293,12 +1376,12 @@ export default function EnquiryWall() {
                             </div>
                           </div>
                         ) : (
-                          <div className="space-y-2 sm:space-y-2.5">
+                          <div className="space-y-1.5 sm:space-y-2.5">
                             {isOwnEnquiry(enquiry) && (
-                              <div className="flex items-center justify-center text-[9px] sm:text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border-4 border-black shadow-sm">
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                  <div className="flex items-center justify-center w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full bg-white shadow-sm">
-                                    <MessageSquare className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-gray-600" />
+                              <div className="flex items-center justify-center text-[8px] sm:text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 rounded-md sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black shadow-sm">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <div className="flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full bg-white shadow-sm">
+                                    <MessageSquare className="h-2 w-2 sm:h-3.5 sm:w-3.5 text-gray-600" />
                                   </div>
                                   <span className="font-semibold text-gray-700">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
                                 </div>
@@ -1309,32 +1392,38 @@ export default function EnquiryWall() {
                               <button 
                                 type="button"
                                 disabled
-                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-4 border-black text-white cursor-not-allowed transition-all duration-200 rounded-lg sm:rounded-xl"
+                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 sm:border-4 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
                                 style={{ backgroundColor: '#022c22' }}
                               >
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
                               isDealClosed(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-lg sm:rounded-xl" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
                                   Deal Closed
                                 </Button>
                               ) : isEnquiryOutdated(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-lg sm:rounded-xl" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
                                   Expired
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold bg-black hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg sm:rounded-xl border-4 border-black"
+                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                Sell
-                                <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2" />
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-xl" />
+                                <span className="relative z-10 flex items-center">
+                                  Sell
+                                  <ArrowRight className="h-2 w-2 sm:h-3.5 sm:w-3.5 ml-1 sm:ml-2" />
+                                </span>
                               </Button>
                               )
                             ) : (
                               <Link to="/signin">
-                                <Button className="w-full h-7 sm:h-10 text-[9px] sm:text-xs font-bold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-lg sm:rounded-xl" variant="outline">
+                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md sm:rounded-xl" variant="outline">
                                   Sign In to Respond
                                 </Button>
                               </Link>
