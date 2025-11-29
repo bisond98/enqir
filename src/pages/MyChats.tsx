@@ -644,7 +644,9 @@ export default function MyChats() {
                       <p className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
                         isDisabled ? 'text-gray-400' : 'text-gray-600'
                       }`}>
-                        {chat.lastMessage?.text || chat.lastMessage || "No messages yet"}
+                        {typeof chat.lastMessage === 'string' 
+                          ? chat.lastMessage 
+                          : (chat.lastMessage?.text || "No messages yet")}
                       </p>
                       
                       {/* Timestamp */}
