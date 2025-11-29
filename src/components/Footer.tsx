@@ -89,15 +89,19 @@ export default function Footer() {
               </h4>
               
               {/* Mobile: Single row with text links */}
-              <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 sm:hidden">
-                {footerSections.map((section) => (
-                  <Link
-                    key={section.id}
-                    to={section.link}
-                    className="text-[10px] text-muted-foreground hover:text-pal-blue transition-colors px-2 py-1 rounded relative after:content-[''] after:absolute after:right-[-6px] after:top-1/2 after:transform after:-translate-y-1/2 after:w-[1px] after:h-3 after:bg-border last:after:hidden"
-                  >
-                    {section.title}
-                  </Link>
+              <div className="flex justify-center items-center flex-wrap sm:hidden w-full gap-x-1 gap-y-1">
+                {footerSections.map((section, index) => (
+                  <span key={section.id} className="flex items-center">
+                    <Link
+                      to={section.link}
+                      className="text-[10px] text-muted-foreground hover:text-pal-blue transition-colors px-1.5 py-0.5 whitespace-nowrap"
+                    >
+                      {section.title}
+                    </Link>
+                    {index < footerSections.length - 1 && (
+                      <span className="text-border/60 mx-1.5 text-[8px]">|</span>
+                    )}
+                  </span>
                 ))}
               </div>
               
@@ -107,10 +111,10 @@ export default function Footer() {
                   <Link
                     key={section.id}
                     to={section.link}
-                    className="group text-left p-2 sm:p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 border border-transparent hover:border-pal-blue/20"
+                    className="group text-left p-2 sm:p-3 rounded-lg hover:bg-muted/30 transition-all duration-200 border border-transparent hover:border-pal-blue/20 flex items-center"
                   >
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-pal-blue/10 rounded-md flex items-center justify-center group-hover:bg-pal-blue/20 transition-colors">
+                    <div className="flex items-center space-x-2 w-full">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-pal-blue/10 rounded-md flex items-center justify-center group-hover:bg-pal-blue/20 transition-colors flex-shrink-0">
                         <section.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-pal-blue" />
                       </div>
                       <span className="text-xs sm:text-sm font-medium text-foreground group-hover:text-pal-blue transition-colors leading-tight">
@@ -134,7 +138,7 @@ export default function Footer() {
               </div>
               
               {/* Navigation Links */}
-              <div className="flex items-center justify-center sm:justify-end space-x-4 sm:space-x-6">
+              <div className="hidden sm:flex items-center justify-center sm:justify-end space-x-4 sm:space-x-6">
                 <Link to="/" className="text-[10px] sm:text-sm text-muted-foreground hover:text-foreground transition-colors relative after:content-[''] after:absolute after:right-[-12px] after:top-1/2 after:transform after:-translate-y-1/2 after:w-[1px] after:h-3 after:bg-border">
                   Home
                 </Link>

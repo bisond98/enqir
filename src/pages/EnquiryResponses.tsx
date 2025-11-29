@@ -840,7 +840,7 @@ const EnquiryResponses = () => {
           senderId: 'system',
           senderName: 'System',
           senderType: 'system',
-          message: 'User blocked',
+          message: 'blocked',
           isSystemMessage: true,
           blockedBy: user.uid,
           blockedUser: userToBlock.id,
@@ -888,7 +888,7 @@ const EnquiryResponses = () => {
           senderId: 'system',
           senderName: 'System',
           senderType: 'system',
-          message: 'User unblocked',
+          message: 'unblocked',
           isSystemMessage: true,
           unblockedBy: user.uid,
           unblockedUser: otherUserId,
@@ -2827,7 +2827,7 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[600px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
+                <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
                   <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-2 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
@@ -3015,10 +3015,10 @@ const EnquiryResponses = () => {
                             return (
                               <div
                                 key={message.id || `message-${index}`}
-                                className="flex justify-center my-2 sm:my-3"
+                                className="flex justify-center my-1.5 sm:my-2 lg:my-3"
                               >
-                                <div className="bg-red-500 border-2 border-red-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg shadow-md">
-                                  <p className="text-xs sm:text-sm font-bold text-center">{message.message || 'User blocked'}</p>
+                                <div className="bg-red-500 border-2 border-red-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 rounded-lg shadow-md">
+                                  <p className="text-[10px] sm:text-xs lg:text-sm font-bold text-center">{message.message || 'blocked'}</p>
                                 </div>
                               </div>
                             );
