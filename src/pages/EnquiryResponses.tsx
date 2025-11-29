@@ -3681,7 +3681,7 @@ const EnquiryResponses = () => {
                               }
                             }}
                             disabled={!canUserChat(selectedResponse) || isBlocked}
-                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
+                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
                               (!canUserChat(selectedResponse) || isBlocked) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}
