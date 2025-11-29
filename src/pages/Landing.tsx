@@ -1632,16 +1632,24 @@ const Landing = () => {
 
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
-            <Link to="/post-enquiry" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-black hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:min-w-[220px] lg:border-4 lg:border-black">
-              <span className="text-xs sm:text-base">Post Your Need</span>
-              <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
+            <Link to="/post-enquiry" className="w-full sm:w-auto group">
+            <button className="w-full sm:w-auto border-4 border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-2 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="text-xs sm:text-base relative z-10">Post Your Need</span>
+              <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
             </button>
           </Link>
-          <Link to="/enquiries" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-black font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-4 border-black hover:border-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl lg:min-w-[220px]">
-              <span className="text-xs sm:text-base">Show All Enquiries</span>
-              <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
+          <Link to="/enquiries" className="w-full sm:w-auto group">
+            <button className="w-full sm:w-auto border-4 border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-2 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="text-xs sm:text-base relative z-10">Show All Enquiries</span>
+              <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
             </Link>
             {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
@@ -1671,7 +1679,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-4 border-r-0 border-black rounded-l-lg sm:rounded-l-2xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-4 border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -1680,17 +1688,23 @@ const Landing = () => {
                       paddingLeft: '2.75rem'
                     }}
                   />
+                  {/* Physical button depth effect for input */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
                   
                 </div>
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-black hover:bg-gray-900 text-white font-semibold h-11 sm:h-12 px-3 sm:px-3 rounded-r-lg sm:rounded-r-lg rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[44px] sm:min-w-[52px] border-4 border-l-0 border-black"
+                className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 sm:h-12 px-3 sm:px-3 rounded-r-xl sm:rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] sm:min-w-[52px] border-4 border-l-0 border-black relative overflow-hidden"
               >
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 {isSearching ? (
-                  <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
                 ) : (
-                  <Search className="h-3 w-3 sm:h-5 sm:w-5" />
+                  <Search className="h-3 w-3 sm:h-5 sm:w-5 relative z-10" />
                 )}
               </button>
               </div>
@@ -2268,13 +2282,17 @@ const Landing = () => {
 
             {/* Show All Enquiries Button */}
             <div className="text-center mt-4">
-              <Link to="/enquiries">
+              <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-medium border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200"
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
-                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                  Show All Enquiries
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4 relative z-10" />
+                  <span className="relative z-10">Show All Enquiries</span>
                 </Button>
               </Link>
             </div>
@@ -2289,14 +2307,22 @@ const Landing = () => {
                 </p>
                 
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
-                  <Link to="/dashboard">
-                    <button className="bg-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
-                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Link to="/dashboard" className="group">
+                    <button className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
                     </button>
                   </Link>
-                  <Link to="/post-enquiry">
-                    <button className="bg-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14">
-                      <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Link to="/post-enquiry" className="group">
+                    <button className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                      <FileText className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
                     </button>
                   </Link>
                 </div>
@@ -2403,10 +2429,14 @@ const Landing = () => {
                 <div className="text-center">
                 <Link
                   to="/enquiries"
-                    className="inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white font-semibold rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-gray-400/20 hover:scale-105 active:scale-100 border border-gray-700/50"
+                    className="group inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
-                  <span className="text-sm sm:text-base">Explore All Categories</span>
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <span className="text-sm sm:text-base relative z-10">Explore All Categories</span>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform relative z-10" />
                 </Link>
                 </div>
               </div>
