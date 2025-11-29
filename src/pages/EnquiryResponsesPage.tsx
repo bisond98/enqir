@@ -531,9 +531,9 @@ const EnquiryResponsesPage = () => {
         <div className="space-y-2.5 sm:space-y-6">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
-              <div key={response.id} className="border-2 sm:border-4 border-blue-300 rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                {/* Card Header - Compact gray background */}
-                <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700">
+              <div key={response.id} className="border-4 border-black rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                {/* Card Header - Solid black background */}
+                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-black">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                       <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
@@ -667,9 +667,10 @@ const EnquiryResponsesPage = () => {
                     <span>Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString() : 'N/A'}</span>
                   </div>
                   <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-xs font-black shadow-md hover:shadow-lg transition-all duration-200"
+                    className="w-full sm:w-auto border-2 border-black !bg-[#16a34a] hover:!bg-[#22c55e] !text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-xs font-black shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Start Chat

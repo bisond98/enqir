@@ -2656,7 +2656,7 @@ const EnquiryResponses = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 py-4 sm:py-6 lg:py-8">
           {/* Professional Header - Matching Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
@@ -2749,7 +2749,7 @@ const EnquiryResponses = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
             {/* Responses List */}
             <div className="lg:col-span-1 order-2 lg:order-1">
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 mb-2 sm:mb-3 lg:mb-4">Approved Responses</h3>
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5">Approved Responses</h3>
               {approvedResponses.length === 0 ? (
                 <Card className="p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg rounded-2xl">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
@@ -2764,34 +2764,34 @@ const EnquiryResponses = () => {
                   {getVisibleResponses().map((response, index) => (
                     <Card
                       key={response.id}
-                      className={`cursor-pointer border-2 border-black shadow-lg transition-all duration-300 min-touch rounded-lg bg-white hover:shadow-xl ${
+                      className={`cursor-pointer border-2 border-black shadow-lg transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white hover:shadow-xl ${
                         selectedResponse?.id === response.id
                           ? 'ring-4 ring-black bg-gray-50'
                           : ''
                       }`}
                       onClick={() => handleResponseClick(response)}
                     >
-                      <CardContent className="p-3 sm:p-4 pointer-events-none">
-                        <div className="flex items-start justify-between mb-2 sm:mb-3">
-                          <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+                      <CardContent className="p-3.5 sm:p-4 lg:p-5 pointer-events-none">
+                        <div className="flex items-start justify-between mb-2.5 sm:mb-3 lg:mb-3.5">
+                          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-2">
                             {user?.uid === enquiry?.userId && (
-                              <Badge variant="outline" className="text-xs font-medium border-2 border-black">
+                              <Badge variant="outline" className="text-xs sm:text-sm font-medium border-2 border-black">
                                 Response #{index + 1}
                               </Badge>
                             )}
-                            <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base">{response.title}</h4>
+                            <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg">{response.title}</h4>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             {response.isIdentityVerified && (
-                              <Badge className="bg-emerald-100 text-emerald-800 text-xs border-2 border-emerald-300">
-                                <Shield className="h-3 w-3 mr-1" />
+                              <Badge className="bg-emerald-100 text-emerald-800 text-xs sm:text-sm border-2 border-emerald-300">
+                                <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                                 Verified
                               </Badge>
                             )}
                           </div>
                         </div>
-                        <p className="text-black font-medium text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{response.message}</p>
-                        <div className="flex items-center justify-between text-xs sm:text-sm text-black font-medium">
+                        <p className="text-black font-medium text-xs sm:text-sm lg:text-base mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
+                        <div className="flex items-center justify-between text-xs sm:text-sm lg:text-base text-black font-medium">
                           <span className="font-semibold text-emerald-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
                         </div>
@@ -2827,19 +2827,19 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-2 border-black shadow-sm h-[600px] sm:h-[500px] lg:h-[600px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
-                  <CardHeader className="pb-2 sm:pb-3 border-b-2 border-black bg-slate-50/50 p-3 sm:p-4 overflow-visible relative">
+                <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[600px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
+                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-2 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
-                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-white" />
+                      <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-xs sm:text-sm lg:text-base font-bold text-black">Chat</h2>
-                            <span className="text-xs text-black font-medium">with</span>
+                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-black">Chat</h2>
+                            <span className="text-xs sm:text-sm text-black font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2849,12 +2849,12 @@ const EnquiryResponses = () => {
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
                                 (userProfiles[enquiry?.userId]?.isProfileVerified || false)
                               }
-                              className="text-xs"
+                              className="text-xs sm:text-sm"
                             />
                             {enquiry && (
                               <Badge 
                                 variant={enquiry.status === 'live' ? 'default' : 'secondary'}
-                                className="text-[10px] sm:text-xs h-4 lg:h-5 px-1.5 lg:px-2 flex-shrink-0"
+                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0"
                               >
                                 {enquiry.status === 'live' ? 'Live' : 'Ended'}
                               </Badge>
@@ -2864,7 +2864,7 @@ const EnquiryResponses = () => {
                       </div>
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
-                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap relative" style={{ overflow: 'visible' }}>
+                      <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap relative" style={{ overflow: 'visible' }}>
                         {/* Call Feature - Coming Soon Badge */}
                         {canUserChat(selectedResponse) && (
                           <div className="relative" style={{ zIndex: showDesktopCallPopup || showMobileCallPopup ? 10000 : 'auto' }}>
@@ -2872,10 +2872,10 @@ const EnquiryResponses = () => {
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-400 text-gray-600 cursor-pointer"
+                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-400 text-gray-600 cursor-pointer min-touch"
                               title="Call feature coming soon"
                             >
-                              <Phone className="h-4 w-4 text-gray-700" />
+                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-gray-700" />
                             </Button>
                             
                             {/* Coming Soon Tooltip/Badge - Desktop */}
@@ -2918,7 +2918,7 @@ const EnquiryResponses = () => {
                             variant="outline"
                             size="sm"
                             disabled={enquiry.status === 'deal_closed' || enquiry.dealClosed === true}
-                            className={`text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 transition-colors duration-200 flex-shrink-0 whitespace-nowrap ${
+                            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch ${
                               enquiry.status === 'deal_closed' || enquiry.dealClosed === true
                                 ? 'text-gray-400 border-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
                                 : 'text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 border-gray-800'
@@ -2933,7 +2933,7 @@ const EnquiryResponses = () => {
                           onClick={handleEndChatClick}
                           variant="outline"
                           size="sm"
-                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
                         >
                           End Chat
                         </Button>
@@ -2944,7 +2944,7 @@ const EnquiryResponses = () => {
                             onClick={unblockUser}
                             variant="outline"
                             size="sm"
-                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
                           >
                             Unblock User
                           </Button>
@@ -2953,7 +2953,7 @@ const EnquiryResponses = () => {
                             onClick={handleBlockUserClick}
                             variant="outline"
                             size="sm"
-                            className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1.5 h-8 sm:h-9 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap"
+                            className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
                           >
                             Block User
                           </Button>
@@ -2964,29 +2964,29 @@ const EnquiryResponses = () => {
                           variant="ghost"
                           size="sm"
                           onClick={closeChat}
-                          className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-md transition-colors duration-200 flex-shrink-0"
+                          className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5" />
                         </Button>
                       </div>
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="pt-2 border-t-2 border-gray-800">
-                      <div className="flex items-center justify-between">
+                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-2 border-gray-800">
+                      <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-xs lg:text-sm font-bold text-black truncate">
+                          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black truncate">
                             {enquiry.title}
                             {enquiry.isUrgent && (
-                              <Badge variant="destructive" className="ml-1 lg:ml-2 text-xs h-3 lg:h-4 px-1">
+                              <Badge variant="destructive" className="ml-1.5 sm:ml-2 lg:ml-2.5 text-xs sm:text-sm h-4 sm:h-5 lg:h-5 px-1.5 sm:px-2">
                                 Urgent
                               </Badge>
                             )}
                           </h3>
-                          <p className="hidden sm:block text-xs text-black font-medium truncate">{enquiry.description}</p>
+                          <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-black font-medium truncate mt-0.5">{enquiry.description}</p>
                         </div>
-                        <div className="text-right ml-2 lg:ml-3 flex-shrink-0">
-                          <div className="text-xs lg:text-sm font-semibold text-emerald-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                        <div className="text-right ml-2 sm:ml-3 lg:ml-4 flex-shrink-0">
+                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-emerald-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -2996,19 +2996,19 @@ const EnquiryResponses = () => {
 
                   <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40">
                     {chatMessages.length === 0 ? (
-                      <div className="text-center py-8 sm:py-12 lg:py-16">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4">
-                          <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-slate-500" />
+                      <div className="text-center py-10 sm:py-14 lg:py-16">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-5">
+                          <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-slate-500" />
                         </div>
-                        <h4 className="text-xs sm:text-sm lg:text-base font-bold text-black mb-1 lg:mb-2">Start chatting</h4>
+                        <h4 className="text-sm sm:text-base lg:text-lg font-bold text-black mb-2 sm:mb-2.5 lg:mb-3">Start chatting</h4>
                         {user?.uid !== selectedResponse?.sellerId && (
-                          <p className="text-black font-medium text-xs sm:text-sm max-w-sm mx-auto px-3 sm:px-4">
+                          <p className="text-black font-medium text-xs sm:text-sm lg:text-base max-w-sm mx-auto px-3 sm:px-4 lg:px-5">
                             Begin discussing details and negotiating with this seller
                           </p>
                         )}
                       </div>
                     ) : (
-                      <div className="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 lg:py-4 space-y-1 sm:space-y-1.5 lg:space-y-2">
+                      <div className="px-3 sm:px-4 lg:px-5 py-3 sm:py-4 lg:py-5 space-y-2 sm:space-y-2.5 lg:space-y-3">
                         {chatMessages.map((message, index) => {
                           // System messages (like "User blocked" / "User unblocked")
                           if (message.isSystemMessage || message.senderId === 'system') {
@@ -3030,7 +3030,7 @@ const EnquiryResponses = () => {
                               className={`flex ${message.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
                             >
                               <div
-                                className={`max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] px-2 sm:px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-lg relative ${
+                                className={`max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative ${
                                   message.senderId === user?.uid
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-blue-500 text-white'
@@ -3038,7 +3038,7 @@ const EnquiryResponses = () => {
                               >
                                 {/* Message Content */}
                                 {message.message && (
-                                  <p className="text-xs lg:text-sm leading-relaxed break-words text-white font-medium">{message.message}</p>
+                                  <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-white font-medium">{message.message}</p>
                                 )}
                               
                               {/* Attachments */}
@@ -3140,39 +3140,35 @@ const EnquiryResponses = () => {
 
                                       
                                       {attachment.type.startsWith('audio/') && (
-                                        <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200">
-                                          <div className="flex-shrink-0">
-                                            <Mic className="h-6 w-6 text-gray-800" />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-black">Voice Message</p>
-                                            <p className="text-xs text-black font-medium">{formatFileSize(attachment.size)}</p>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <audio
-                                              src={(attachment as any).base64}
-                                              controls
-                                              preload="metadata"
-                                              className="h-8 w-32"
-                                              style={{ 
-                                                backgroundColor: 'transparent',
-                                                border: 'none',
-                                                outline: 'none'
-                                              }}
-                                              onError={(e) => {
-                                                console.error('Audio error:', e);
-                                                const audio = e.target as HTMLAudioElement;
-                                                console.log('Audio failed to load:', audio.src);
-                                              }}
-                                              onLoadStart={() => console.log('Audio loading started')}
-                                              onCanPlay={() => console.log('Audio can play')}
-                                            />
+                                        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 sm:py-1.5 bg-white/10 backdrop-blur-sm rounded-full border-2 border-white/20 max-w-[200px] sm:max-w-[240px]">
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              const audio = new Audio((attachment as any).base64);
+                                              audio.play().catch(err => console.error('Audio play error:', err));
+                                            }}
+                                            className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 flex items-center justify-center transition-colors min-touch"
+                                          >
+                                            <Mic className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
+                                          </button>
+                                          <div className="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2">
+                                            <div className="flex-1 h-0.5 sm:h-1 bg-white/20 rounded-full overflow-hidden">
+                                              <div className="h-full bg-white/70 rounded-full" style={{ width: '60%' }}></div>
+                                            </div>
+                                            <span className="text-[8px] sm:text-[9px] text-white/80 font-medium whitespace-nowrap tabular-nums">
+                                              {(() => {
+                                                const estimatedSeconds = Math.round((attachment.size || 0) / 1000);
+                                                const minutes = Math.floor(estimatedSeconds / 60);
+                                                const secs = estimatedSeconds % 60;
+                                                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+                                              })()}
+                                            </span>
                                           </div>
                                         </div>
                                       )}
                                       
                                       {!attachment.type.startsWith('image/') && !attachment.type.startsWith('audio/') && (
-                                        <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg border border-slate-200">
+                                        <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg border-2 border-slate-200">
                                           <div className="flex-shrink-0">
                                             <File className="h-6 w-6 text-slate-600" />
                                           </div>
@@ -3211,24 +3207,24 @@ const EnquiryResponses = () => {
                               )}
                               
                               {/* Message Meta - Mobile Responsive */}
-                              <div className="flex items-center justify-end space-x-1 mt-1">
-                                <span className={`text-[7px] sm:text-[8px] font-medium text-black`}>
+                              <div className="flex items-center justify-end space-x-1.5 sm:space-x-2 mt-1.5 sm:mt-2">
+                                <span className={`text-[9px] sm:text-[10px] lg:text-xs font-medium text-white/90`}>
                                   {formatDate(message.timestamp)}
                                 </span>
                                 {message.senderId === user?.uid && (
-                                  <div className="ml-1">
-                                    <CheckCircle className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-white" />
+                                  <div className="ml-0.5 sm:ml-1">
+                                    <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                                   </div>
                                 )}
                               </div>
                               
                               {/* Sender Name - Mobile Responsive */}
                               {message.senderId !== user?.uid && (
-                                <div className="mt-1">
+                                <div className="mt-1.5 sm:mt-2">
                                   <VerifiedUser 
                                     name={message.senderName}
                                     isVerified={userProfiles[message.senderId]?.isProfileVerified || false}
-                                    className="text-xs"
+                                    className="text-xs sm:text-sm"
                                   />
                                 </div>
                               )}
@@ -3266,7 +3262,7 @@ const EnquiryResponses = () => {
 
                   <div className="border-t-2 border-gray-800 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
-                    <div className="p-3 sm:p-4">
+                    <div className="p-2.5 sm:p-3 lg:p-4">
                       {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
                       <Dialog open={showMicrophonePrompt && microphonePermission !== 'granted'} onOpenChange={setShowMicrophonePrompt}>
                         <DialogContent className="sm:max-w-lg max-w-[95vw] p-0 gap-0 border-0 bg-transparent shadow-2xl">
@@ -3280,45 +3276,45 @@ const EnquiryResponses = () => {
                         </DialogContent>
                       </Dialog>
                       {/* Smart Suggestions - Mobile Responsive */}
-                      <div className="flex items-center space-x-2 sm:space-x-2 mb-3 sm:mb-4 overflow-x-auto pb-3">
+                      <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 mb-2.5 sm:mb-3 lg:mb-4 overflow-x-auto pb-2.5 sm:pb-3 lg:pb-4">
                         {user?.uid === selectedResponse?.sellerId ? (
                           // SELLER Suggestions - Mobile Responsive
                           <>
                             <button
                               onClick={() => setNewMessage("Payment: 50% advance, 50% on delivery")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium min-touch"
                             >
-                              💳 Payment
+                              Payment
                             </button>
                             <button
                               onClick={() => setNewMessage("Delivery: 3-5 days")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
-                              ⏰ Delivery
+                              Delivery
                             </button>
                             <button
                               onClick={() => setNewMessage("Bulk discounts available")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
-                              📦 Bulk
+                              Bulk
                             </button>
                             <button
                               onClick={() => setNewMessage("Quality guarantee included")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
-                              ✅ Quality
+                              Quality
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
-                              🤝 Meetup
+                              Meetup
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
                             >
-                              🧪 Samples
+                              Samples
                             </button>
                           </>
                         ) : (
@@ -3327,51 +3323,51 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Can you provide more details about pricing?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 border-2 border-black rounded-md hover:bg-blue-100 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-blue-50 text-blue-700 border-[3px] border-black rounded-md hover:bg-blue-100 transition-colors duration-200 font-medium min-touch"
                             >
-                              💰 Pricing
+                              Pricing
                             </button>
                             <button
                               onClick={() => setNewMessage("What's the delivery timeline?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-green-50 text-green-700 border-2 border-black rounded-md hover:bg-green-100 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-green-50 text-green-700 border-[3px] border-black rounded-md hover:bg-green-100 transition-colors duration-200 font-medium min-touch"
                             >
-                              ⏰ Timeline
+                              Timeline
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you share more images?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-gray-50 text-gray-700 border-2 border-black rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gray-50 text-gray-700 border-[3px] border-black rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium min-touch"
                             >
-                              🖼️ Images
+                              Images
                             </button>
                             <button
                               onClick={() => setNewMessage("What are the payment terms?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-emerald-50 text-emerald-700 border-2 border-black rounded-md hover:bg-emerald-100 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-emerald-50 text-emerald-700 border-[3px] border-black rounded-md hover:bg-emerald-100 transition-colors duration-200 font-medium min-touch"
                             >
-                              💳 Terms
+                              Terms
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we meet in person to discuss?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 border border-orange-200 rounded-md hover:bg-orange-100 hover:border-orange-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 border-2 border-orange-200 rounded-md hover:bg-orange-100 hover:border-orange-300 transition-colors duration-200 font-medium"
                             >
-                              🤝 Meetup
+                              Meetup
                             </button>
                             <button
                               onClick={() => setNewMessage("Do you have samples I can check?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-pink-50 text-pink-700 border border-pink-200 rounded-md hover:bg-pink-100 hover:border-pink-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-pink-50 text-pink-700 border-2 border-pink-200 rounded-md hover:bg-pink-100 hover:border-pink-300 transition-colors duration-200 font-medium"
                             >
-                              🧪 Samples
+                              Samples
                             </button>
                             <button
                               onClick={() => setNewMessage("What's your best price for this?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md hover:bg-yellow-100 hover:border-yellow-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-yellow-50 text-yellow-700 border-2 border-yellow-200 rounded-md hover:bg-yellow-100 hover:border-yellow-300 transition-colors duration-200 font-medium"
                             >
-                              💵 Best Price
+                              Best Price
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you provide references or reviews?")}
-                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md hover:bg-indigo-100 hover:border-indigo-300 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm bg-indigo-50 text-indigo-700 border-2 border-indigo-200 rounded-md hover:bg-indigo-100 hover:border-indigo-300 transition-colors duration-200 font-medium"
                             >
-                              ⭐ Reviews
+                              Reviews
                             </button>
                           </>
                         )}
@@ -3469,38 +3465,38 @@ const EnquiryResponses = () => {
 
                       {/* Voice Recording UI */}
                       {isRecording && (
-                        <div className="mb-3 p-4 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl shadow-sm">
+                        <div className="mb-3 sm:mb-3.5 lg:mb-4 p-3.5 sm:p-4 lg:p-5 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-xl sm:rounded-2xl shadow-sm">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-5">
                               <div className="relative">
-                                <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                                <div className="absolute inset-0 w-4 h-4 bg-red-500 rounded-full animate-ping opacity-75"></div>
+                                <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-red-500 rounded-full animate-pulse"></div>
+                                <div className="absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-red-500 rounded-full animate-ping opacity-75"></div>
                               </div>
                               <div>
-                                <span className="text-sm font-semibold text-red-700">Recording...</span>
-                                <div className="text-lg text-red-600 font-mono font-bold">{formatRecordingTime(recordingTime)}</div>
+                                <span className="text-sm sm:text-base lg:text-lg font-semibold text-red-700">Recording...</span>
+                                <div className="text-lg sm:text-xl lg:text-2xl text-red-600 font-mono font-bold">{formatRecordingTime(recordingTime)}</div>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 sm:space-x-2.5">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={cancelRecording}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-100 rounded-full p-2"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-100 rounded-full p-2 sm:p-2.5 lg:p-3 min-touch"
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={stopRecording}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-100 rounded-full p-2"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-100 rounded-full p-2 sm:p-2.5 lg:p-3 min-touch"
                               >
-                                <Square className="h-4 w-4" />
+                                <Square className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5" />
                               </Button>
                             </div>
                           </div>
-                          <div className="mt-2 text-xs text-red-500 text-center">
+                          <div className="mt-2.5 sm:mt-3 lg:mt-3.5 text-xs sm:text-sm lg:text-base text-red-500 text-center font-medium">
                             Hold to record, release to send
                           </div>
                         </div>
@@ -3508,19 +3504,19 @@ const EnquiryResponses = () => {
 
                       {/* Voice Message Preview */}
                       {audioBlob && !isRecording && (
-                        <div className="mb-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div className="relative">
-                                <Mic className="h-6 w-6 text-blue-600" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                        <div className="mb-2 sm:mb-3 lg:mb-4 p-1.5 sm:p-2.5 lg:p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-[3px] border-blue-200 rounded-md sm:rounded-lg lg:rounded-2xl shadow-sm">
+                          <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                            <div className="flex items-center space-x-1.5 sm:space-x-2.5 lg:space-x-5 min-w-0 flex-1">
+                              <div className="relative flex-shrink-0">
+                                <Mic className="h-4 w-4 sm:h-6 sm:w-6 lg:h-9 lg:w-9 text-blue-600" />
+                                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-3 sm:h-3 lg:w-4.5 lg:h-4.5 bg-blue-500 rounded-full animate-pulse"></div>
                               </div>
-                              <div>
-                                <p className="text-sm font-semibold text-blue-700">Voice Message</p>
-                                <p className="text-lg text-blue-600 font-mono font-bold">{formatRecordingTime(recordingTime)}</p>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] sm:text-xs lg:text-lg font-semibold text-blue-700 truncate">Voice Message</p>
+                                <p className="text-xs sm:text-base lg:text-2xl text-blue-600 font-mono font-bold">{formatRecordingTime(recordingTime)}</p>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1 sm:space-x-1.5 lg:space-x-2.5 flex-shrink-0">
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -3528,31 +3524,31 @@ const EnquiryResponses = () => {
                                   setAudioBlob(null);
                                   setRecordingTime(0);
                                 }}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full p-2"
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full p-1 sm:p-1.5 lg:p-3 min-touch h-6 w-6 sm:h-8 sm:w-8 lg:h-11 lg:w-11"
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5.5 lg:w-5.5" />
                               </Button>
                               <Button
                                 onClick={sendVoiceMessage}
                                 disabled={sendingVoice}
-                                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 rounded-full p-2"
+                                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 rounded-full p-1 sm:p-1.5 lg:p-3 min-touch h-6 w-6 sm:h-8 sm:w-8 lg:h-11 lg:w-11"
                               >
                                 {sendingVoice ? (
-                                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  <div className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5.5 lg:w-5.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 ) : (
-                                  <Send className="h-4 w-4" />
+                                  <Send className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5.5 lg:w-5.5" />
                                 )}
                               </Button>
                             </div>
                           </div>
-                          <div className="mt-2 text-xs text-blue-500 text-center">
+                          <div className="mt-1 sm:mt-2 lg:mt-3.5 text-[9px] sm:text-[10px] lg:text-base text-blue-500 text-center font-medium">
                             Tap to send voice message
                           </div>
                         </div>
                       )}
 
                       {/* Simple Chat Input */}
-                      <div className="flex items-end space-x-2 border border-gray-800 rounded-lg p-2">
+                      <div className="flex items-end space-x-2 sm:space-x-2.5 lg:space-x-3 border-2 border-gray-800 rounded-lg sm:rounded-xl p-2 sm:p-2.5 lg:p-3">
                         {/* Voice Recording Button */}
                         {!isRecording && !audioBlob && (
                           <Button
@@ -3591,7 +3587,7 @@ const EnquiryResponses = () => {
                                 stopRecording();
                               }
                             }}
-                            className={`h-9 w-9 lg:h-10 lg:w-10 p-0 transition-all duration-150 ${
+                            className={`h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 transition-all duration-150 min-touch ${
                               !canUserChat(selectedResponse) || isBlocked
                                 ? 'md:text-red-600 md:hover:text-red-700 md:hover:bg-red-50 md:active:bg-red-100 md:active:scale-95 text-slate-300 cursor-not-allowed'
                                 : isButtonPressed 
@@ -3599,7 +3595,7 @@ const EnquiryResponses = () => {
                                   : 'text-red-600 hover:text-red-700 hover:bg-red-50 active:bg-red-100 active:scale-95'
                             }`}
                           >
-                            <Mic className="h-4 w-4" />
+                            <Mic className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                           </Button>
                         )}
 
@@ -3610,13 +3606,13 @@ const EnquiryResponses = () => {
                             size="sm"
                             onClick={() => canUserChat(selectedResponse) && !isBlocked && setShowAttachmentOptions(!showAttachmentOptions)}
                             disabled={!canUserChat(selectedResponse) || isBlocked}
-                            className={`h-9 w-9 lg:h-10 lg:w-10 p-0 ${
+                            className={`h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 min-touch ${
                               (canUserChat(selectedResponse) && !isBlocked)
                                 ? 'text-slate-600 hover:text-blue-600 hover:bg-blue-50' 
                                 : 'md:text-slate-600 md:hover:text-blue-600 md:hover:bg-blue-50 text-slate-300 cursor-not-allowed'
                             }`}
                           >
-                            <Paperclip className="h-4 w-4" />
+                            <Paperclip className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                           </Button>
                           
                           {/* Attachment Options Dropdown */}
@@ -3685,11 +3681,11 @@ const EnquiryResponses = () => {
                               }
                             }}
                             disabled={!canUserChat(selectedResponse) || isBlocked}
-                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg px-3 py-2 pr-12 text-sm min-touch placeholder:text-xs placeholder:text-gray-500 ${
+                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
                               (!canUserChat(selectedResponse) || isBlocked) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}
-                            style={{ minHeight: '50px', maxHeight: '100px' }}
+                            style={{ minHeight: '52px', maxHeight: '120px' }}
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey && canUserChat(selectedResponse)) {
                                 e.preventDefault();
@@ -3729,16 +3725,16 @@ const EnquiryResponses = () => {
                             }
                           }}
                           disabled={!canUserChat(selectedResponse) || isBlocked || ((!newMessage.trim() && attachments.length === 0) || Object.values(uploadingFiles).some(uploading => uploading))}
-                          className={`h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 p-0 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed min-touch border-2 border-gray-800 ${
+                          className={`h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 rounded-lg sm:rounded-xl disabled:opacity-50 disabled:cursor-not-allowed min-touch border-2 border-gray-800 ${
                             (canUserChat(selectedResponse) && !isBlocked)
                               ? 'bg-slate-600 hover:bg-slate-700 text-white' 
                               : 'md:bg-slate-600 md:hover:bg-slate-700 md:text-white bg-slate-300 text-slate-500'
                           }`}
                         >
                           {Object.values(uploadingFiles).some(uploading => uploading) ? (
-                            <div className="h-3.5 w-3.5 lg:h-4 lg:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <div className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           ) : (
-                            <Send className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                            <Send className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                           )}
                         </Button>
                       </div>

@@ -1379,8 +1379,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 lg:max-w-full ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
-                                : 'bg-white border border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
+                                : 'bg-white border-[6px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1649,7 +1649,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border border-black bg-black hover:bg-gray-900 text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
+                                  className="w-full sm:flex-none flex-shrink-0 border border-black bg-[#022c22] hover:bg-[#064e3b] text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px]"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
                                   <span className="tracking-tight whitespace-nowrap">View Responses</span>
@@ -1857,9 +1857,18 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-black shadow-sm'
-                              : 'bg-white border-4 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
+                              : 'bg-white border-[6px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (!isEnquiryDeleted && !isEnquiryExpired && !isDealClosed) {
+                              navigate('/my-responses', {
+                                state: { highlightSubmissionId: submission.id }
+                              });
+                            }
+                          }}
                         >
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 rounded-t-xl sm:rounded-t-2xl lg:rounded-t-xl xl:rounded-t-2xl ${
@@ -2001,7 +2010,12 @@ const Dashboard = () => {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                onClick={(e) => { e.stopPropagation(); navigate('/my-responses'); }}
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  navigate('/my-responses', {
+                                    state: { highlightSubmissionId: submission.id }
+                                  });
+                                }}
                                   className="flex-1 sm:flex-none border border-black bg-white text-black hover:bg-gray-50 hover:border-black hover:text-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
@@ -2141,8 +2155,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isExpired 
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
-                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
+                              : 'bg-white border-[6px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header */}

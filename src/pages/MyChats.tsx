@@ -36,6 +36,7 @@ export default function MyChats() {
   });
   
   // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
+  // Exclude disabled/expired chats from unread counts
   const buyerUnreadCount = allChats
     .filter(chat => chat.isBuyerChat === true && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
@@ -49,8 +50,9 @@ export default function MyChats() {
     localStorage.setItem('chatsViewMode', mode);
   };
 
-  // Filter chats based on view mode
+  // Filter chats based on view mode (show all chats including disabled ones)
   const chats = allChats.filter(chat => {
+    // Filter by view mode (don't exclude disabled chats - show them as disabled)
     if (viewMode === 'buyer') {
       return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
     } else {
@@ -297,10 +299,10 @@ export default function MyChats() {
         
         const threadsWithUnread = new Map<string, boolean>();
         
-        // Create a map of existing chat threads for quick lookup
+        // Create a map of existing chat threads for quick lookup (exclude disabled/expired chats)
         const existingThreads = new Map<string, ChatThread>();
         allChats.forEach(chat => {
-          if (chat.enquiryId && chat.sellerId) {
+          if (chat.enquiryId && chat.sellerId && !chat.isDisabled) {
             const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
             existingThreads.set(threadKey, chat);
           }
@@ -464,17 +466,25 @@ export default function MyChats() {
 
   // Helper function to get disabled status text
   const getDisabledStatusText = (chat: ChatThread) => {
-    if (!chat.isDisabled || !chat.enquiryData) return '';
+    if (!chat.isDisabled) return '';
     
+    // Check if enquiry data exists (if not, it's deleted)
     if (!chat.enquiryData) return 'Deleted';
-    if (chat.enquiryData.status === 'deal_closed' || chat.enquiryData.dealClosed) return 'Deal Closed';
-    if (chat.enquiryData.status === 'rejected') return 'Rejected';
-    if (chat.enquiryData.status === 'completed') return 'Completed';
+    
+    // Check for deal closed
+    if (chat.enquiryData.status === 'deal_closed' || chat.enquiryData.dealClosed === true) return 'Deal Closed';
+    
+    // Check for expired (deadline passed)
     if (chat.enquiryData.deadline) {
       const now = new Date();
       const deadline = chat.enquiryData.deadline?.toDate ? chat.enquiryData.deadline.toDate() : new Date(chat.enquiryData.deadline);
       if (deadline < now) return 'Expired';
     }
+    
+    // Check for rejected or completed
+    if (chat.enquiryData.status === 'rejected') return 'Rejected';
+    if (chat.enquiryData.status === 'completed') return 'Completed';
+    
     return 'Closed';
   };
 
@@ -493,7 +503,7 @@ export default function MyChats() {
                       Your Chats
                     </h1>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600">
+                  <p className="text-[10px] sm:text-sm text-gray-600">
                     See all conversations you're currently having with buyers and sellers.
                   </p>
             

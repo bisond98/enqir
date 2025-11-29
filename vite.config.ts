@@ -13,6 +13,10 @@ export default defineConfig(({ mode }) => ({
     },
     watch: {
       usePolling: true,
+      // Prevent file watching from reverting changes
+      ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
+      // Don't clear screen on file changes (prevents confusion)
+      clearScreen: false,
     },
     headers: {
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

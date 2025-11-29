@@ -1117,13 +1117,13 @@ const Profile = () => {
                         <div className="flex items-center gap-3 sm:gap-4">
                           {/* Animated Spinner */}
                           <div className="relative flex-shrink-0">
-                            <div 
+                        <div 
                               className="h-8 w-8 sm:h-10 sm:w-10 border-4 border-blue-200 border-t-blue-600 rounded-full flex-shrink-0"
-                              style={{
+                          style={{
                                 animation: 'spin 0.8s linear infinite',
                                 WebkitAnimation: 'spin 0.8s linear infinite'
-                              }}
-                            ></div>
+                          }}
+                        ></div>
                             <div 
                               className="absolute inset-0 h-8 w-8 sm:h-10 sm:w-10 border-4 border-transparent border-r-purple-500 rounded-full opacity-50"
                               style={{

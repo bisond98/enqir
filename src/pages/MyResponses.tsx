@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Rocket, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Eye, Shield, ImageIcon } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
@@ -50,14 +50,50 @@ interface Enquiry {
 const MyResponses = () => {
   const { user, isProfileVerified } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [enquiries, setEnquiries] = useState<{ [key: string]: Enquiry }>({});
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [highlightSubmissionId, setHighlightSubmissionId] = useState<string | null>(null);
+  const highlightedSubmissionRef = useRef<HTMLDivElement | null>(null);
 
+  // Read highlight from navigation state
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    const state = location.state as any;
+    if (state && typeof state.highlightSubmissionId === 'string') {
+      setHighlightSubmissionId(state.highlightSubmissionId);
+    } else {
+      // Only scroll to top if no highlight
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
+  // Scroll highlighted submission into view once data & ref are ready
+  useEffect(() => {
+    if (highlightSubmissionId && highlightedSubmissionRef.current && sellerSubmissions.length > 0 && !loading) {
+      // Use requestAnimationFrame for smoother scroll
+      const scrollToHighlight = () => {
+        if (highlightedSubmissionRef.current) {
+          const element = highlightedSubmissionRef.current;
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - (window.innerHeight / 2) + (element.offsetHeight / 2);
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      };
+      
+      // Wait for DOM to be fully rendered
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(scrollToHighlight);
+        });
+      }, 500);
+    }
+  }, [highlightSubmissionId, sellerSubmissions, loading]);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -424,10 +460,12 @@ const MyResponses = () => {
                 const enquiry = enquiries[submission.enquiryId];
                 const isEnquiryDeleted = !enquiry; // Enquiry is deleted if it doesn't exist in enquiries object
                 const isExpired = isEnquiryExpired(submission.enquiryId);
+                const isHighlighted = highlightSubmissionId === submission.id;
                 return (
-                  <Card key={submission.id} className={`border border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
-                    {/* Card Header - Compact gray background */}
-                    <div className={`bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
+                  <div key={submission.id} ref={isHighlighted ? highlightedSubmissionRef : undefined}>
+                  <Card className={`border-[6px] border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
+                    {/* Card Header - Solid black background */}
+                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
                           {isExpired || isEnquiryDeleted ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
@@ -467,7 +505,7 @@ const MyResponses = () => {
                     <CardContent className="p-2 sm:p-4 space-y-2 sm:space-y-3">
 
                       {/* Response Information Group */}
-                      <div className="space-y-1.5 sm:space-y-2 pb-2 border-b border-gray-200">
+                      <div className="space-y-1.5 sm:space-y-2 pb-2 border-b border-black">
                         {/* Response Title */}
                         <p className="text-[10px] sm:text-sm text-gray-900 leading-snug line-clamp-2 font-bold">{submission.title}</p>
                         
@@ -495,7 +533,7 @@ const MyResponses = () => {
 
                       {/* Additional Notes */}
                       {submission.notes && (
-                        <div className="p-2.5 sm:p-3 md:p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div className="p-2.5 sm:p-3 md:p-4 bg-slate-50 border border-black rounded-lg">
                           <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-slate-800 mb-1 sm:mb-1.5 md:mb-2">Additional Notes:</h4>
                           <p className="text-[11px] sm:text-xs md:text-sm text-slate-700 leading-relaxed">{submission.notes}</p>
                         </div>
@@ -503,7 +541,7 @@ const MyResponses = () => {
 
                       {/* Enquiry Context - Budget & Category Group */}
                       {enquiry && (
-                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded border border-gray-200 shadow-sm">
+                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded border-x border-b border-black shadow-sm">
                           <div className="flex items-center space-x-1.5">
                             <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center">
                               <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
@@ -538,7 +576,7 @@ const MyResponses = () => {
                               variant="outline" 
                               size="sm" 
                               disabled={isExpired || isEnquiryDeleted}
-                              className="w-full border border-black hover:border-black text-blue-700 hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
+                              className="w-full border border-black hover:border-black text-black hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
                               onClick={(e) => {
                                 if (isExpired || isEnquiryDeleted) {
                                   e.preventDefault();
@@ -554,22 +592,17 @@ const MyResponses = () => {
                       )}
 
                       {/* Timestamps */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[10px] sm:text-[11px] md:text-xs text-slate-500 pt-2 border-t border-slate-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[10px] sm:text-[11px] md:text-xs text-slate-500 pt-2 border-t border-black">
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
                           <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
                         </div>
-                        {submission.updatedAt && submission.updatedAt !== submission.createdAt && (
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-emerald-500 rounded-full flex-shrink-0"></span>
-                            <span className="text-slate-600">Updated: {formatDate(submission.updatedAt)}</span>
-                          </div>
-                        )}
+                        {/* Updated timestamp intentionally hidden as requested */}
                       </div>
 
                       {/* Status-specific Actions */}
                       {!isExpired && !isEnquiryDeleted && (
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-slate-200">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-black">
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
                             {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
@@ -639,6 +672,7 @@ const MyResponses = () => {
                       )}
                     </CardContent>
                   </Card>
+                  </div>
                 );
               })}
               {sortedSubmissions.length > 7 && (

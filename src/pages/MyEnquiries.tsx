@@ -137,10 +137,6 @@ const MyEnquiries = () => {
     loadEnquiries();
   }, [user]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   // Read highlight from navigation state or query parameter (from dashboard deep-link)
   useEffect(() => {
     let highlight: string | null = null;
@@ -157,24 +153,37 @@ const MyEnquiries = () => {
 
     if (highlight) {
       setHighlightEnquiryId(highlight);
+    } else {
+      // Only scroll to top if no highlight
+      window.scrollTo(0, 0);
     }
   }, [location]);
 
   // Scroll highlighted enquiry into view once data & ref are ready
   useEffect(() => {
-    if (highlightEnquiryId && highlightedEnquiryRef.current) {
-      const node = highlightedEnquiryRef.current;
-      // Small delay to ensure layout & animations settle before scrolling
-      setTimeout(() => {
-        if (node) {
-          node.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
+    if (highlightEnquiryId && highlightedEnquiryRef.current && enquiries.length > 0 && !loading) {
+      // Use requestAnimationFrame for smoother scroll
+      const scrollToHighlight = () => {
+        if (highlightedEnquiryRef.current) {
+          const element = highlightedEnquiryRef.current;
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - (window.innerHeight / 2) + (element.offsetHeight / 2);
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
           });
         }
-      }, 300);
+      };
+      
+      // Wait for DOM to be fully rendered
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(scrollToHighlight);
+        });
+      }, 500);
     }
-  }, [highlightEnquiryId, enquiries]);
+  }, [highlightEnquiryId, enquiries, loading]);
   
   // Fetch user payment plan
   useEffect(() => {
@@ -397,7 +406,7 @@ const MyEnquiries = () => {
   const getStatusMessage = (enquiry: Enquiry) => {
     switch (enquiry.status) {
       case 'live':
-        return 'Your enquiry is live.';
+        return '';
       case 'pending':
         return 'Your enquiry is under admin review';
       case 'rejected':
@@ -525,8 +534,8 @@ const MyEnquiries = () => {
                           <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-blue-600 mb-1 sm:mb-1.5 tracking-tight">{totalCount}</div>
-                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Total Enquiries</p>
+                      <div className="text-base sm:text-lg lg:text-xl font-black text-blue-600 mb-1 sm:mb-1.5 tracking-tight">{totalCount}</div>
+                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Total Enquiries</p>
                     </Card>
                   </motion.div>
                   
@@ -541,8 +550,8 @@ const MyEnquiries = () => {
                           <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-emerald-600 mb-1 sm:mb-1.5 tracking-tight">{liveCount}</div>
-                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Live</p>
+                      <div className="text-base sm:text-lg lg:text-xl font-black text-emerald-600 mb-1 sm:mb-1.5 tracking-tight">{liveCount}</div>
+                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Live</p>
                     </Card>
                   </motion.div>
                   
@@ -557,8 +566,8 @@ const MyEnquiries = () => {
                           <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-amber-600 mb-1 sm:mb-1.5 tracking-tight">{pendingCount}</div>
-                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Pending</p>
+                      <div className="text-base sm:text-lg lg:text-xl font-black text-amber-600 mb-1 sm:mb-1.5 tracking-tight">{pendingCount}</div>
+                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Pending</p>
                     </Card>
                   </motion.div>
                   
@@ -573,8 +582,8 @@ const MyEnquiries = () => {
                           <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                         </div>
                       </div>
-                      <div className="text-lg sm:text-xl lg:text-2xl font-black text-gray-600 mb-1 sm:mb-1.5 tracking-tight">{completedCount}</div>
-                      <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-700 font-bold uppercase tracking-wide">Completed</p>
+                      <div className="text-base sm:text-lg lg:text-xl font-black text-gray-600 mb-1 sm:mb-1.5 tracking-tight">{completedCount}</div>
+                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Completed</p>
                     </Card>
                   </motion.div>
                 </>
@@ -649,9 +658,11 @@ const MyEnquiries = () => {
                                 {enquiry.title}
                               </h3>
                               {/* Status Message as Subheading - Aligned with title */}
-                              <div className="mt-0.5 sm:mt-0.5 lg:mt-0.5 xl:mt-0.5">
-                                <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-300 font-medium opacity-95">{getStatusMessage(enquiry)}</span>
-                              </div>
+                              {getStatusMessage(enquiry) && (
+                                <div className="mt-0.5 sm:mt-0.5 lg:mt-0.5 xl:mt-0.5">
+                                  <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-300 font-medium opacity-95">{getStatusMessage(enquiry)}</span>
+                                </div>
+                              )}
                             </div>
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
@@ -873,14 +884,18 @@ const MyEnquiries = () => {
                         <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 pt-2.5 sm:pt-3 lg:pt-2.5 xl:pt-3 border-t-2 border-gray-200/60">
                           {/* Admin Notes */}
                           {enquiry.adminNotes && (
-                            <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
+                            <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-white border border-black rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
                               <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                                 <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6 lg:h-6 xl:w-7 xl:h-7 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                                   <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-white" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-gray-900 mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
-                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">{enquiry.adminNotes}</p>
+                                  <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-black mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
+                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">
+                                    {enquiry.adminNotes.toLowerCase().includes('auto-approved by ai') 
+                                      ? 'Great to have you here!' 
+                                      : enquiry.adminNotes}
+                                  </p>
                                 </div>
                               </div>
                             </div>
@@ -892,12 +907,6 @@ const MyEnquiries = () => {
                               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
                               <span className="font-semibold">Created: {formatDate(enquiry.createdAt)}</span>
                             </span>
-                            {enquiry.approvedAt && (
-                              <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-green-50/80 border border-green-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-green-700 font-semibold">
-                                <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
-                                <span>Approved: {formatDate(enquiry.approvedAt)}</span>
-                              </span>
-                            )}
                             {enquiry.rejectedAt && (
                               <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50/80 border border-red-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-red-700 font-semibold">
                                 <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
@@ -946,7 +955,7 @@ const MyEnquiries = () => {
                           
                           {enquiry.status === 'live' && !isExpired && (
                             <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-shrink-0">
-                              <Button variant="outline" size="sm" className="border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-emerald-700 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
+                              <Button variant="outline" size="sm" className="border-2 border-black hover:border-black bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/chats:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap tracking-tight">View Chats</span>
                               </Button>
@@ -962,7 +971,7 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-none border-2 border-gray-800 hover:border-gray-900 bg-white text-red-700 hover:bg-red-50 hover:text-red-800 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
+                            className="w-full sm:flex-none border-2 border-black hover:border-black bg-white hover:bg-red-50 text-[#4d0012] hover:text-[#33000c] text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
                           >
                             <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight">Delete Enquiry</span>

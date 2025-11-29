@@ -1871,14 +1871,14 @@ export default function PostEnquiry() {
                                         isDisabled ? 'opacity-50' : ''
                                       }`}
                                       onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
-                                    >
-                                      <Checkbox
-                                        id={`mobile-${cat.value}`}
-                                        checked={isSelected}
-                                        disabled={isDisabled}
-                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                      >
+                                        <Checkbox
+                                          id={`mobile-${cat.value}`}
+                                          checked={isSelected}
+                                          disabled={isDisabled}
+                                          onCheckedChange={() => handleCategoryToggle(cat.value)}
                                         className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
-                                      />
+                                        />
                                       <Label
                                         htmlFor={`mobile-${cat.value}`}
                                         className={`text-base flex-1 cursor-pointer ${
@@ -1956,14 +1956,14 @@ export default function PostEnquiry() {
                                     className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
-                                  >
-                                    <Checkbox
-                                      id={cat.value}
-                                      checked={isSelected}
-                                      disabled={isDisabled}
-                                      onCheckedChange={() => handleCategoryToggle(cat.value)}
+                                    >
+                                      <Checkbox
+                                        id={cat.value}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
                                       className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
-                                    />
+                                      />
                                     <Label
                                       htmlFor={cat.value}
                                       className={`text-sm sm:text-sm flex-1 cursor-pointer ${
@@ -2412,221 +2412,221 @@ export default function PostEnquiry() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
                           <div className="space-y-2.5 w-full">
                             <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
-                              ID Document Type
-                            </Label>
+                          ID Document Type
+                        </Label>
                             <Select value={govIdType} onValueChange={(value) => {
                               setGovIdType(value);
                               if (govIdNumber && value) {
                                 validateIdNumber(govIdNumber, value);
-                              } else {
+                          } else {
                                 setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                              }
-                              setIdVerificationResult(null);
-                            }} disabled={verifyingId}>
+                          }
+                          setIdVerificationResult(null);
+                        }} disabled={verifyingId}>
                               <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black w-full" disabled={verifyingId}>
-                                <SelectValue placeholder="Select ID Type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                                <SelectItem value="pan">PAN Card</SelectItem>
-                                <SelectItem value="passport">Passport</SelectItem>
-                                <SelectItem value="driving_license">Driving License</SelectItem>
-                                <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <SelectValue placeholder="Select ID Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                            <SelectItem value="pan">PAN Card</SelectItem>
+                            <SelectItem value="passport">Passport</SelectItem>
+                            <SelectItem value="driving_license">Driving License</SelectItem>
+                            <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                          </SelectContent>
+                        </Select>
                             {errors.govIdType && (
-                              <span className="text-xs text-red-500 flex items-center">
-                                <X className="h-3 w-3 mr-1" />
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
                                 {errors.govIdType}
-                              </span>
-                            )}
-                          </div>
-                          
+                          </span>
+                        )}
+                      </div>
+                      
                           <div className="space-y-2.5 w-full">
                             <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
-                              ID Number
-                            </Label>
-                            <Input
+                          ID Number
+                        </Label>
+                        <Input
                               id="govIdNumber"
                               placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
                               value={govIdNumber}
-                              onChange={(e) => {
-                                let value = e.target.value.toUpperCase();
-                                
-                                // Auto-format Aadhaar: add space after every 4 digits
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            
+                            // Auto-format Aadhaar: add space after every 4 digits
                                 if (govIdType === 'aadhaar') {
-                                  // Remove all spaces first
-                                  const digitsOnly = value.replace(/\s/g, '');
-                                  // Add space after every 4 digits
-                                  value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                                }
-                                
+                              // Remove all spaces first
+                              const digitsOnly = value.replace(/\s/g, '');
+                              // Add space after every 4 digits
+                              value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                            }
+                            
                                 setGovIdNumber(value);
                                 // Clear verification result when user changes the ID number
-                                setIdVerificationResult(null);
+                            setIdVerificationResult(null);
                                 // Clear any existing errors for ID number
                                 setErrors(prev => ({ ...prev, govIdNumber: "" }));
                                 // Validate the new value
                                 if (govIdType) {
                                   validateIdNumber(value, govIdType);
                                 }
-                              }}
+                          }}
                               className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black w-full"
-                              disabled={verifyingId}
-                            />
+                          disabled={verifyingId}
+                        />
                             {errors.govIdNumber && !idVerificationResult && (
-                              <span className="text-xs text-red-500 flex items-center">
-                                <X className="h-3 w-3 mr-1" />
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
                                 {errors.govIdNumber}
-                              </span>
-                            )}
-                            {/* ID Verification Status */}
-                            {verifyingId && (
+                          </span>
+                        )}
+                        {/* ID Verification Status */}
+                        {verifyingId && (
                               <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
-                                {totalElapsedSeconds >= 120 ? (
-                                  <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
-                                ) : (
-                                  <>
-                                    <span className="text-xs sm:text-sm font-medium text-white">Verifying</span>
-                                    <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-none">
-                                      <span className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
-                                        {Math.floor(verificationCountdown / 60)}:{(verificationCountdown % 60).toString().padStart(2, '0')}
-                                      </span>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                            {idVerificationResult && !verifyingId && (
-                              <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                                idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                {idVerificationResult.matches ? (
-                                  <>
-                                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                    <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                    <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
-                                  </>
-                                )}
-                              </div>
+                            {totalElapsedSeconds >= 120 ? (
+                              <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
+                            ) : (
+                              <>
+                                <span className="text-xs sm:text-sm font-medium text-white">Verifying</span>
+                                <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-none">
+                                  <span className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
+                                    {Math.floor(verificationCountdown / 60)}:{(verificationCountdown % 60).toString().padStart(2, '0')}
+                                  </span>
+                                </div>
+                              </>
                             )}
                           </div>
-                        </div>
-                        
+                        )}
+                        {idVerificationResult && !verifyingId && (
+                          <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                            idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {idVerificationResult.matches ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
                         {/* ID Upload - Single Upload Button */}
-                        <div className="space-y-2.5">
-                          <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
-                            ID Document
-                          </Label>
-                          
+                    <div className="space-y-2.5">
+                      <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        ID Document
+                      </Label>
+                      
                           {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
                           {!(idFrontImage || idFrontUrl) && (
                             <div className="mb-3 sm:mb-2">
-                              <input
-                                type="file"
-                                id="idFront"
-                                accept="image/*"
-                                disabled={verifyingId}
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  setIdFrontImage(file);
-                                  setIdErrors(prev => ({ ...prev, idFront: "" }));
-                                  setIdVerificationResult(null);
-                                  
-                                  try {
-                                    const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                    setIdFrontUrl(uploadedUrl);
+                        <input
+                          type="file"
+                          id="idFront"
+                          accept="image/*"
+                          disabled={verifyingId}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setIdFrontImage(file);
+                            setIdErrors(prev => ({ ...prev, idFront: "" }));
+                            setIdVerificationResult(null);
+                            
+                            try {
+                              const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                              setIdFrontUrl(uploadedUrl);
                                     // Keep backward compatibility with govIdUrl
                                     if (!govIdUrl) setGovIdUrl(uploadedUrl);
-                                  } catch (error) {
-                                    console.error('Error uploading ID:', error);
-                                    toast({
-                                      title: "Upload Failed",
-                                      description: "Failed to upload image. Please try again.",
-                                      variant: "destructive",
-                                    });
-                                  }
-                                }}
-                                className="hidden"
-                              />
-                              
+                            } catch (error) {
+                              console.error('Error uploading ID:', error);
+                              toast({
+                                title: "Upload Failed",
+                                description: "Failed to upload image. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        
                               {/* Upload Button - Full Width with Black Border */}
-                              <label
-                                htmlFor="idFront"
+                        <label
+                          htmlFor="idFront"
                                 className={`w-full h-14 border-2 border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
-                                  verifyingId
-                                    ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                            verifyingId
+                              ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                                     : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
-                                }`}
-                                onClick={(e) => {
-                                  if (verifyingId) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Upload className="h-5 w-5 text-slate-600" />
-                                  <span className="text-sm text-slate-700 font-semibold">Upload</span>
-                                </div>
-                              </label>
-                            </div>
+                          }`}
+                          onClick={(e) => {
+                            if (verifyingId) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Upload className="h-5 w-5 text-slate-600" />
+                            <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                          </div>
+                        </label>
+                          </div>
                           )}
-                          
+                      
                           {/* Image Upload Status - Text Only (Black Background) */}
-                          {(idFrontImage || idFrontUrl) && (
+                      {(idFrontImage || idFrontUrl) && (
                             <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
                               <div className="flex items-center gap-2 sm:gap-2.5">
                                 <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
                                 <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setIdFrontImage(null);
-                                  setIdFrontUrl("");
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIdFrontImage(null);
+                              setIdFrontUrl("");
                                   if (govIdUrl === idFrontUrl) setGovIdUrl("");
-                                  setIdVerificationResult(null);
-                                }}
+                              setIdVerificationResult(null);
+                            }}
                                 className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                 style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
-                                disabled={verifyingId}
-                                aria-label="Remove image"
-                              >
+                            disabled={verifyingId}
+                            aria-label="Remove image"
+                          >
                                 <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                              </button>
-                            </div>
-                          )}
+                          </button>
                         </div>
-                        
+                      )}
+                    </div>
+                    
                         {/* Upload ID for Trust Badge Button */}
                         {(idFrontImage || idFrontUrl) && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches) && (
-                          <div className="mt-4 sm:mt-5">
-                            <Button
-                              type="button"
-                              onClick={async () => {
+                      <div className="mt-4 sm:mt-5">
+                        <Button
+                          type="button"
+                          onClick={async () => {
                                 if (!govIdType) {
-                                  toast({
-                                    title: "ID Type Required",
-                                    description: "Please select an ID document type.",
-                                    variant: "destructive",
-                                  });
-                                  return;
-                                }
-                                
+                              toast({
+                                title: "ID Type Required",
+                                description: "Please select an ID document type.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
                                 if (!govIdNumber || govIdNumber.trim() === '') {
-                                  toast({
-                                    title: "ID Number Required",
-                                    description: "Please enter your ID number.",
-                                    variant: "destructive",
-                                  });
-                                  return;
-                                }
-                                
+                              toast({
+                                title: "ID Number Required",
+                                description: "Please enter your ID number.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
                                 setVerifyingId(true);
                                 setVerificationCountdown(60);
                                 setErrors(prev => ({ ...prev, govIdNumber: "" }));
@@ -2641,89 +2641,89 @@ export default function PostEnquiry() {
                                     });
                                   }
                                 }, 200);
-                                
-                                try {
-                                  // Upload image if not already uploaded
-                                  let frontImageUrl: string | null = null;
-                                  
-                                  if (idFrontImage && !idFrontUrl) {
-                                    frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
-                                    setIdFrontUrl(frontImageUrl);
-                                  } else {
-                                    frontImageUrl = idFrontUrl || null;
-                                  }
-                                  
+                            
+                            try {
+                              // Upload image if not already uploaded
+                              let frontImageUrl: string | null = null;
+                              
+                              if (idFrontImage && !idFrontUrl) {
+                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
+                                setIdFrontUrl(frontImageUrl);
+                              } else {
+                                frontImageUrl = idFrontUrl || null;
+                              }
+                              
                                   if (frontImageUrl && !govIdUrl) setGovIdUrl(frontImageUrl);
                                   
-                                  if (!frontImageUrl) {
-                                    toast({
-                                      title: "Upload Error",
-                                      description: "Failed to upload ID image. Please try again.",
-                                      variant: "destructive",
-                                    });
-                                    setVerifyingId(false);
-                                    return;
-                                  }
-                                  
-                                  const verification = await verifyIdNumberMatch(
-                                    frontImageUrl,
+                              if (!frontImageUrl) {
+                                toast({
+                                  title: "Upload Error",
+                                  description: "Failed to upload ID image. Please try again.",
+                                  variant: "destructive",
+                                });
+                                setVerifyingId(false);
+                                return;
+                              }
+                              
+                              const verification = await verifyIdNumberMatch(
+                                frontImageUrl,
                                     govIdNumber,
                                     govIdType
-                                  );
-                                  
-                                  setIdVerificationResult(verification);
-                                  
-                                  if (!verification.matches) {
+                              );
+                              
+                              setIdVerificationResult(verification);
+                              
+                              if (!verification.matches) {
                                     setErrors(prev => ({ 
-                                      ...prev, 
+                                  ...prev, 
                                       govIdNumber: verification.error || 'ID number does not match the image(s)' 
-                                    }));
-                                    toast({
-                                      title: "ID Verification Failed",
+                                }));
+                                toast({
+                                  title: "ID Verification Failed",
                                       description: verification.error || "ID number does not match the uploaded image(s).",
-                                      variant: "destructive",
-                                    });
-                                  } else {
+                                  variant: "destructive",
+                                });
+                              } else {
                                     setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                    toast({
-                                      title: "Verification Successful",
+                                toast({
+                                  title: "Verification Successful",
                                       description: "Your ID has been verified!",
-                                    });
-                                  }
-                                } catch (error) {
-                                  console.error('Error verifying ID:', error);
-                                  toast({
-                                    title: "Verification Error",
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error verifying ID:', error);
+                              toast({
+                                title: "Verification Error",
                                     description: "Failed to verify ID number. Please try again.",
-                                    variant: "destructive",
-                                  });
-                                } finally {
-                                  setVerifyingId(false);
-                                }
-                              }}
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setVerifyingId(false);
+                            }
+                          }}
                               disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                              className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {verifyingId ? (
-                                <>
-                                  <div 
-                                    className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
-                                    style={{
-                                      animation: 'spin 1s linear infinite',
-                                      WebkitAnimation: 'spin 1s linear infinite'
-                                    }}
-                                  ></div>
-                                  Verifying ID...
-                                </>
-                              ) : (
-                                <>
-                                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                          className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {verifyingId ? (
+                            <>
+                              <div 
+                                className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
+                                style={{
+                                  animation: 'spin 1s linear infinite',
+                                  WebkitAnimation: 'spin 1s linear infinite'
+                                }}
+                              ></div>
+                              Verifying ID...
+                            </>
+                          ) : (
+                            <>
+                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                   Upload ID for Trust Badge
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        )}
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
                       </>
                     )}
                   </div>
@@ -3076,10 +3076,10 @@ export default function PostEnquiry() {
                 >
                   {paymentLoading ? 'Processing...' : 'Pay Now'}
                 </button>
-              </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
     </Layout>
   );

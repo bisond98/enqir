@@ -1990,55 +1990,55 @@ const SellerResponse = () => {
                           {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
                           {!(idFrontImage || idFrontUrl) && (
                             <div className="mb-3 sm:mb-2">
-                              <input
-                                type="file"
-                                id="idFront"
-                                accept="image/*"
-                                disabled={verifyingId}
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  setIdFrontImage(file);
-                                  setIdErrors(prev => ({ ...prev, idFront: "" }));
-                                  setIdVerificationResult(null);
-                                  
-                                  try {
-                                    const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                    setIdFrontUrl(uploadedUrl);
-                                    // Keep backward compatibility with govIdUrl
-                                    if (!govIdUrl) setGovIdUrl(uploadedUrl);
-                                  } catch (error) {
-                                    console.error('Error uploading ID:', error);
-                                    toast({
-                                      title: "Upload Failed",
-                                      description: "Failed to upload image. Please try again.",
-                                      variant: "destructive",
-                                    });
-                                  }
-                                }}
-                                className="hidden"
-                              />
-                              
+                            <input
+                              type="file"
+                              id="idFront"
+                              accept="image/*"
+                              disabled={verifyingId}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setIdFrontImage(file);
+                                setIdErrors(prev => ({ ...prev, idFront: "" }));
+                                setIdVerificationResult(null);
+                                
+                                try {
+                                  const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                                  setIdFrontUrl(uploadedUrl);
+                                  // Keep backward compatibility with govIdUrl
+                                  if (!govIdUrl) setGovIdUrl(uploadedUrl);
+                                } catch (error) {
+                                  console.error('Error uploading ID:', error);
+                                  toast({
+                                    title: "Upload Failed",
+                                    description: "Failed to upload image. Please try again.",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }}
+                              className="hidden"
+                            />
+                            
                               {/* Upload Button - Full Width */}
-                              <label
-                                htmlFor="idFront"
+                            <label
+                              htmlFor="idFront"
                                 className={`w-full h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
-                                  verifyingId
-                                    ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                verifyingId
+                                  ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                                     : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
-                                }`}
-                                onClick={(e) => {
-                                  if (verifyingId) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Upload className="h-5 w-5 text-slate-600" />
-                                  <span className="text-sm text-slate-700 font-semibold">Upload</span>
-                                </div>
-                              </label>
-                            </div>
+                              }`}
+                              onClick={(e) => {
+                                if (verifyingId) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Upload className="h-5 w-5 text-slate-600" />
+                                <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                              </div>
+                            </label>
+                              </div>
                           )}
                           
                           {/* Image Upload Status - Text Only */}
