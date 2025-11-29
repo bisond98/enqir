@@ -520,7 +520,7 @@ export default function MyChats() {
                       
                       {/* Animated Background Slider - Physical button pressed effect */}
                       <motion.div 
-                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-emerald-600 to-green-700 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
+                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-black to-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
                           viewMode === 'buyer' ? 'left-1.5 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1.5 sm:left-1/2 sm:right-2'
                         }`}
                         style={{ width: 'calc(50% - 3px)' }}
