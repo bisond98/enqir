@@ -7,6 +7,7 @@ import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs } f
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Clock, ShoppingCart, UserCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatThread {
   id: string;
@@ -507,68 +508,119 @@ export default function MyChats() {
                     See all conversations you're currently having with buyers and sellers.
                   </p>
             
-                  {/* Toggle Button - Similar to Dashboard */}
+                  {/* Toggle Button - Physical Button Design */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5">
-              <div className="relative inline-flex items-center bg-white border border-black rounded-full p-0.5 sm:p-1 shadow-lg">
-                {/* Animated Background Slider */}
-                <div 
-                  className={`absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-full bg-green-800 transition-all duration-300 ease-in-out ${
-                    viewMode === 'buyer' ? 'left-0.5 right-1/2 sm:left-1 sm:right-1/2' : 'left-1/2 right-0.5 sm:left-1/2 sm:right-1'
-                  }`}
-                  style={{ width: 'calc(50% - 2px)' }}
-                />
-                
-                {/* Buyer Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleToggleView('buyer');
-                  }}
-                  className={`relative z-10 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-2.5 rounded-full font-bold text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1 sm:gap-2 min-w-[70px] sm:min-w-[100px] lg:min-w-[120px] justify-center ${
-                    viewMode === 'buyer'
-                      ? 'text-white'
-                      : 'text-black hover:text-black'
-                  }`}
-                >
-                  <div className="relative flex items-center justify-center">
-                    <ShoppingCart className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 transition-transform duration-300 ${viewMode === 'buyer' ? 'scale-110' : 'scale-100'}`} />
-                    {buyerUnreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-xl px-1">
-                        {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
-                      </span>
-                    )}
+                    <motion.div 
+                      className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
+                      
+                      {/* Animated Background Slider - Physical button pressed effect */}
+                      <motion.div 
+                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-emerald-600 to-green-700 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
+                          viewMode === 'buyer' ? 'left-1.5 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1.5 sm:left-1/2 sm:right-2'
+                        }`}
+                        style={{ width: 'calc(50% - 3px)' }}
+                        layout
+                      >
+                        {/* Button highlight */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-xl pointer-events-none" />
+                      </motion.div>
+                      
+                      {/* Buyer Button */}
+                      <motion.button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleView('buyer');
+                        }}
+                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
+                          viewMode === 'buyer'
+                            ? 'text-white drop-shadow-lg'
+                            : 'text-gray-800 hover:text-black'
+                        }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95, y: 2 }}
+                      >
+                        <motion.div 
+                          className="relative flex items-center justify-center"
+                          animate={viewMode === 'buyer' ? {
+                            rotate: [0, -10, 10, 0],
+                            scale: [1, 1.1, 1]
+                          } : {}}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <ShoppingCart className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'buyer' ? 'drop-shadow-md' : ''}`} />
+                          {buyerUnreadCount > 0 && (
+                            <motion.span 
+                              className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] sm:text-[10px] font-black rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_4px_rgba(0,0,0,0.3)] px-1"
+                              animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 10, -10, 0]
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
+                            </motion.span>
+                          )}
+                        </motion.div>
+                        <span className="whitespace-nowrap relative z-10">{viewMode === 'buyer' ? 'Buy' : 'Buy'}</span>
+                      </motion.button>
+                      
+                      {/* Seller Button */}
+                      <motion.button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleView('seller');
+                        }}
+                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
+                          viewMode === 'seller'
+                            ? 'text-white drop-shadow-lg'
+                            : 'text-gray-800 hover:text-black'
+                        }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95, y: 2 }}
+                      >
+                        <motion.div 
+                          className="relative flex items-center justify-center"
+                          animate={viewMode === 'seller' ? {
+                            rotate: [0, -10, 10, 0],
+                            scale: [1, 1.1, 1]
+                          } : {}}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <UserCheck className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'seller' ? 'drop-shadow-md' : ''}`} />
+                          {sellerUnreadCount > 0 && (
+                            <motion.span 
+                              className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] sm:text-[10px] font-black rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_4px_rgba(0,0,0,0.3)] px-1"
+                              animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 10, -10, 0]
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
+                            </motion.span>
+                          )}
+                        </motion.div>
+                        <span className="whitespace-nowrap relative z-10">{viewMode === 'seller' ? 'Sell' : 'Sell'}</span>
+                      </motion.button>
+                    </motion.div>
                   </div>
-                  <span className="whitespace-nowrap">Buy</span>
-                </button>
-                
-                {/* Seller Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleToggleView('seller');
-                  }}
-                  className={`relative z-10 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-2.5 rounded-full font-bold text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1 sm:gap-2 min-w-[70px] sm:min-w-[100px] lg:min-w-[120px] justify-center ${
-                    viewMode === 'seller'
-                      ? 'text-white'
-                      : 'text-black hover:text-black'
-                  }`}
-                >
-                  <div className="relative flex items-center justify-center">
-                    <UserCheck className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 transition-transform duration-300 ${viewMode === 'seller' ? 'scale-110' : 'scale-100'}`} />
-                    {sellerUnreadCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-xl px-1">
-                        {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
-                      </span>
-                    )}
-                  </div>
-                  <span className="whitespace-nowrap">Sell</span>
-                </button>
-              </div>
-            </div>
                 </div>
               </div>
             </div>
@@ -577,13 +629,13 @@ export default function MyChats() {
           {loading ? (
             <p className="text-sm text-gray-500">Loading chats…</p>
           ) : chats.length === 0 ? (
-            <Card className="border border-black bg-white shadow-md p-4 sm:p-6 text-center">
+            <Card className="border-2 border-black bg-gradient-to-br from-white to-gray-50 shadow-lg p-4 sm:p-6 text-center">
               <div className="flex flex-col items-center gap-2">
-                <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
-                <p className="text-sm sm:text-base text-gray-700 font-medium">
+                <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600" />
+                <p className="text-base sm:text-lg text-black font-bold">
                   No chats yet
                 </p>
-                <p className="text-xs sm:text-sm text-gray-500">
+                <p className="text-[10px] sm:text-xs text-gray-900 font-medium">
                   {viewMode === 'buyer' 
                     ? "Start posting enquiries to begin chatting with sellers."
                     : "Start responding to enquiries to begin chatting with buyers."}
@@ -592,93 +644,367 @@ export default function MyChats() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-              {chats.map((chat) => {
+              {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
                 
                 return (
-                  <Card
+                  <motion.div
                     key={chat.id}
-                    className={`border-4 border-black bg-white shadow-md transition-all duration-200 ${
-                      isDisabled 
-                        ? 'opacity-60 grayscale cursor-not-allowed' 
-                        : 'hover:shadow-lg cursor-pointer group'
-                    }`}
-                    onClick={() => !isDisabled && openChat(chat)}
+                    initial={{ 
+                      opacity: 0, 
+                      y: 50, 
+                      scale: 0.8,
+                      rotateX: -15,
+                      rotateY: 10
+                    }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0, 
+                      scale: 1,
+                      rotateX: 0,
+                      rotateY: 0
+                    }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 15,
+                      delay: index * 0.08,
+                      duration: 0.6
+                    }}
+                    whileHover={!isDisabled ? { 
+                      y: -8,
+                      scale: 1.05,
+                      rotateY: 5,
+                      rotateX: 2,
+                      transition: { 
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20
+                      }
+                    } : {}}
+                    whileTap={!isDisabled ? { 
+                      scale: 0.95,
+                      rotateY: -2,
+                      transition: { duration: 0.1 }
+                    } : {}}
+                    style={{ perspective: 1000 }}
                   >
-                    {/* Clickable tile with enquiry heading */}
-                    <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col h-full">
-                      {/* Chat avatar – rounded, WhatsApp-style green bubble */}
-                      <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 relative">
-                        <div className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
-                          isDisabled ? 'bg-gray-400' : 'bg-[#16a34a]'
-                        } flex items-center justify-center border-2 border-black shadow-sm ${
-                          isDisabled ? '' : 'group-hover:scale-110'
-                        } transition-transform`}>
-                          <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                        </div>
-                        {!isDisabled && (chat.unreadCount || 0) > 0 && (
-                          <span className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-red-500 text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20">
-                            1
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Enquiry heading as tile title */}
-                      <h3 className={`text-xs sm:text-sm lg:text-base font-black mb-1.5 sm:mb-2 lg:mb-3 text-center line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem] ${
-                        isDisabled ? 'text-gray-500' : 'text-black'
-                      }`}>
-                        {chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`}
-                      </h3>
-                      
-                      {/* Status badge for disabled chats */}
-                      {isDisabled && statusText && (
-                        <div className="flex justify-center mb-1.5 sm:mb-2">
-                          <span className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 py-0.5 bg-gray-200 text-gray-600 rounded border border-gray-300 font-semibold">
-                            {statusText}
-                          </span>
-                        </div>
+                    <Card
+                      className={`border-4 border-black bg-gradient-to-br from-white via-white to-gray-50 shadow-lg transition-all duration-300 relative overflow-hidden ${
+                        isDisabled 
+                          ? 'opacity-60 grayscale cursor-not-allowed' 
+                          : 'hover:shadow-2xl cursor-pointer group'
+                      }`}
+                      onClick={() => !isDisabled && openChat(chat)}
+                    >
+                      {/* Animated background gradient */}
+                      {!isDisabled && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 via-green-50/10 to-transparent opacity-0 group-hover:opacity-100"
+                          transition={{ duration: 0.4 }}
+                        />
                       )}
                       
-                      {/* Last message preview */}
-                      <p className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
-                        isDisabled ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {typeof chat.lastMessage === 'string' 
-                          ? chat.lastMessage 
-                          : (chat.lastMessage?.text || "No messages yet")}
-                      </p>
+                      {/* Clickable tile with enquiry heading */}
+                      <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col h-full relative z-10">
+                        {/* Chat avatar – rounded, WhatsApp-style green bubble with creative animation */}
+                        <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 relative">
+                          {/* Glowing ring effect */}
+                          {!isDisabled && (
+                            <motion.div
+                              className="absolute inset-0 rounded-full bg-emerald-400/30 blur-xl"
+                              animate={{
+                                scale: [1, 1.3, 1],
+                                opacity: [0.3, 0.6, 0.3],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          )}
+                          
+                          <motion.div 
+                            className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
+                              isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
+                            } flex items-center justify-center border-2 border-black shadow-lg relative overflow-hidden`}
+                            animate={!isDisabled ? {
+                              rotate: [0, 360],
+                              scale: [1, 1.1, 1],
+                            } : {}}
+                            transition={{
+                              rotate: {
+                                duration: 8,
+                                repeat: Infinity,
+                                ease: "linear"
+                              },
+                              scale: {
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }
+                            }}
+                            whileHover={!isDisabled ? {
+                              scale: 1.2,
+                              rotate: [0, 180, 360],
+                              transition: { duration: 0.6 }
+                            } : {}}
+                          >
+                            {/* Shimmer effect */}
+                            {!isDisabled && (
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                animate={{
+                                  x: ['-100%', '100%'],
+                                }}
+                                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 1,
+                  ease: "easeInOut"
+                }}
+                              />
+                            )}
+                            
+                            <motion.div
+                              animate={!isDisabled ? {
+                                y: [0, -5, 0],
+                                rotate: [0, 10, -10, 0],
+                              } : {}}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                              whileHover={!isDisabled ? {
+                                scale: 1.2,
+                                rotate: 360,
+                                transition: { duration: 0.5 }
+                              } : {}}
+                            >
+                              <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white relative z-10" />
+                            </motion.div>
+                          </motion.div>
+                          
+                          {!isDisabled && (chat.unreadCount || 0) > 0 && (
+                            <motion.span 
+                              className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20"
+                              animate={{
+                                scale: [1, 1.3, 1],
+                                rotate: [0, 10, -10, 0],
+                              }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                              whileHover={{
+                                scale: 1.4,
+                                rotate: 360,
+                                transition: { duration: 0.3 }
+                              }}
+                            >
+                              1
+                            </motion.span>
+                          )}
+                        </div>
                       
-                      {/* Timestamp */}
-                      <div className={`flex items-center justify-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4 ${
-                        isDisabled ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                        <span className="truncate">{formatTime(chat.updatedAt)}</span>
+                        {/* Enquiry heading as tile title */}
+                        <motion.h3 
+                          className={`text-xs sm:text-sm lg:text-base font-black mb-1.5 sm:mb-2 lg:mb-3 text-center line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem] ${
+                            isDisabled ? 'text-gray-500' : 'text-black'
+                          }`}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 + index * 0.05 }}
+                          whileHover={!isDisabled ? { 
+                            scale: 1.08,
+                            x: [0, 3, -3, 0],
+                            transition: { duration: 0.3 }
+                          } : {}}
+                        >
+                          {chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`}
+                        </motion.h3>
+                        
+                        {/* Status badge for disabled chats */}
+                        {isDisabled && statusText && (
+                          <motion.div 
+                            className="flex justify-center mb-1.5 sm:mb-2"
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ 
+                              type: "spring",
+                              delay: 0.3,
+                              stiffness: 200
+                            }}
+                          >
+                            <span className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 py-0.5 bg-gray-200 text-gray-600 rounded border border-gray-300 font-semibold">
+                              {statusText}
+                            </span>
+                          </motion.div>
+                        )}
+                        
+                        {/* Last message preview with typing effect */}
+                        <motion.p 
+                          className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
+                            isDisabled ? 'text-gray-400' : 'text-gray-600'
+                          }`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ 
+                            delay: 0.25 + index * 0.05,
+                            type: "spring",
+                            stiffness: 100
+                          }}
+                          whileHover={!isDisabled ? {
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                          } : {}}
+                        >
+                          {typeof chat.lastMessage === 'string' 
+                            ? chat.lastMessage 
+                            : (chat.lastMessage?.text || "No messages yet")}
+                        </motion.p>
+                        
+                        {/* Timestamp with creative animation */}
+                        <motion.div 
+                          className={`flex items-center justify-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4 ${
+                            isDisabled ? 'text-gray-400' : 'text-gray-500'
+                          }`}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ 
+                            delay: 0.3 + index * 0.05,
+                            type: "spring",
+                            stiffness: 150
+                          }}
+                        >
+                          <motion.div
+                            animate={!isDisabled ? {
+                              rotate: [0, 360],
+                              scale: [1, 1.2, 1],
+                            } : {}}
+                            transition={{
+                              rotate: {
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: "linear"
+                              },
+                              scale: {
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }
+                            }}
+                            whileHover={!isDisabled ? {
+                              rotate: 180,
+                              scale: 1.3,
+                              transition: { duration: 0.3 }
+                            } : {}}
+                          >
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          </motion.div>
+                          <motion.span 
+                            className="truncate"
+                            animate={!isDisabled ? {
+                              opacity: [1, 0.7, 1],
+                            } : {}}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            {formatTime(chat.updatedAt)}
+                          </motion.span>
+                        </motion.div>
+                        
+                        {/* Open Chat button with creative effects */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.35 + index * 0.05 }}
+                          whileHover={!isDisabled ? { 
+                            scale: 1.08,
+                            y: -2,
+                            transition: { 
+                              type: "spring",
+                              stiffness: 400
+                            }
+                          } : {}}
+                          whileTap={!isDisabled ? { 
+                            scale: 0.92,
+                            transition: { duration: 0.1 }
+                          } : {}}
+                        >
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isDisabled}
+                            className={`w-full border-2 border-black text-[9px] sm:text-[10px] lg:text-xs font-bold py-1.5 sm:py-2 relative overflow-hidden ${
+                              isDisabled
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400'
+                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-lg hover:shadow-xl'
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isDisabled) {
+                                openChat(chat);
+                              }
+                            }}
+                          >
+                            {/* Shimmer effect on button */}
+                            {!isDisabled && (
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                animate={{
+                                  x: ['-100%', '100%'],
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  repeatDelay: 2,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            )}
+                            
+                            <motion.span
+                              className="flex items-center justify-center relative z-10"
+                              animate={!isDisabled ? {
+                                x: [0, 3, -3, 0],
+                              } : {}}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                              whileHover={!isDisabled ? {
+                                x: [0, 5, -5, 0],
+                                transition: { duration: 0.3 }
+                              } : {}}
+                            >
+                              <motion.div
+                                animate={!isDisabled ? {
+                                  rotate: [0, 15, -15, 0],
+                                } : {}}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5" />
+                              </motion.div>
+                            </motion.span>
+                            <span className="relative z-10">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
+                          </Button>
+                        </motion.div>
                       </div>
-                      
-                      {/* Open Chat button */}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={isDisabled}
-                        className={`w-full border-2 border-black text-[9px] sm:text-[10px] lg:text-xs font-bold py-1.5 sm:py-2 ${
-                          isDisabled
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400'
-                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isDisabled) {
-                            openChat(chat);
-                          }
-                        }}
-                      >
-                        <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5" />
-                        {isDisabled ? 'Chat Closed' : 'Open Chat'}
-                      </Button>
-                    </div>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>

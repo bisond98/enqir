@@ -1187,53 +1187,86 @@ const Dashboard = () => {
                       Dashboard
                     </h2>
                   </div>
-                  {/* Creative Toggle Button */}
+                  {/* Creative Toggle Button - Physical Button Design */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5">
-                    <div className="relative inline-flex items-center bg-white border border-black rounded-full p-0.5 sm:p-1 shadow-lg">
-                      {/* Animated Background Slider */}
-                      <div 
-                        className={`absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-full bg-green-800 transition-all duration-300 ease-in-out ${
-                          viewMode === 'buyer' ? 'left-0.5 right-1/2 sm:left-1 sm:right-1/2' : 'left-1/2 right-0.5 sm:left-1/2 sm:right-1'
+                    <motion.div 
+                      className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
+                      
+                      {/* Animated Background Slider - Physical button pressed effect */}
+                      <motion.div 
+                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-emerald-600 to-green-700 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
+                          viewMode === 'buyer' ? 'left-1.5 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1.5 sm:left-1/2 sm:right-2'
                         }`}
-                        style={{ width: 'calc(50% - 2px)' }}
-                      />
+                        style={{ width: 'calc(50% - 3px)' }}
+                        layout
+                      >
+                        {/* Button highlight */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-xl pointer-events-none" />
+                      </motion.div>
                       
                       {/* Buyer Button */}
-                      <button
+                      <motion.button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleToggleView('buyer');
                         }}
-                        className={`relative z-10 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-2.5 rounded-full font-bold text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1 sm:gap-2 min-w-[70px] sm:min-w-[100px] lg:min-w-[120px] justify-center ${
+                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
                           viewMode === 'buyer'
-                            ? 'text-white'
-                            : 'text-black hover:text-black'
+                            ? 'text-white drop-shadow-lg'
+                            : 'text-gray-800 hover:text-black'
                         }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95, y: 2 }}
                       >
-                        <ShoppingCart className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 transition-transform duration-300 ${viewMode === 'buyer' ? 'scale-110' : 'scale-100'}`} />
-                        <span className="whitespace-nowrap">Buy</span>
-                      </button>
+                        <motion.div 
+                          className="relative flex items-center justify-center"
+                          animate={viewMode === 'buyer' ? {
+                            rotate: [0, -10, 10, 0],
+                            scale: [1, 1.1, 1]
+                          } : {}}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <ShoppingCart className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'buyer' ? 'drop-shadow-md' : ''}`} />
+                        </motion.div>
+                        <span className="whitespace-nowrap relative z-10">{viewMode === 'buyer' ? 'Buy' : 'Buy'}</span>
+                      </motion.button>
                       
                       {/* Seller Button */}
-                      <button
+                      <motion.button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleToggleView('seller');
                         }}
-                        className={`relative z-10 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-2.5 rounded-full font-bold text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1 sm:gap-2 min-w-[70px] sm:min-w-[100px] lg:min-w-[120px] justify-center ${
+                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
                           viewMode === 'seller'
-                            ? 'text-white'
-                            : 'text-black hover:text-black'
+                            ? 'text-white drop-shadow-lg'
+                            : 'text-gray-800 hover:text-black'
                         }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95, y: 2 }}
                       >
-                        <UserCheck className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 transition-transform duration-300 ${viewMode === 'seller' ? 'scale-110' : 'scale-100'}`} />
-                        <span className="whitespace-nowrap">Sell</span>
-                      </button>
-                    </div>
+                        <motion.div 
+                          className="relative flex items-center justify-center"
+                          animate={viewMode === 'seller' ? {
+                            rotate: [0, -10, 10, 0],
+                            scale: [1, 1.1, 1]
+                          } : {}}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <UserCheck className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'seller' ? 'drop-shadow-md' : ''}`} />
+                        </motion.div>
+                        <span className="whitespace-nowrap relative z-10">{viewMode === 'seller' ? 'Sell' : 'Sell'}</span>
+                      </motion.button>
+                    </motion.div>
                   </div>
                 </div>
               </div>
