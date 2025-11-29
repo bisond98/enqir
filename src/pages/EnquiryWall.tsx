@@ -1,3 +1,6 @@
+// 🛡️ PROTECTED FILE - Mobile optimizations, centered descriptions, card styling
+// Last Updated: Mobile card optimizations and list view description centering
+// DO NOT REVERT: All mobile-specific optimizations are intentional
 import { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -1206,8 +1209,10 @@ export default function EnquiryWall() {
                                 </div>
                               </div>
                               
-                              {/* Description - Centered in list view */}
-                              <p className="text-[10px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-3 flex-1 mt-12 sm:mt-4">
+                              {/* Description - Centered in list view for short descriptions */}
+                              <p className={`text-[10px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-3 flex-1 mt-12 sm:mt-4 ${
+                                enquiry.description && enquiry.description.trim().length > 0 && enquiry.description.trim().length < 55 ? 'text-center' : ''
+                              }`}>
                                 {enquiry.description}
                               </p>
                             </div>
