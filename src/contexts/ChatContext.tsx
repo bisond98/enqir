@@ -1,0 +1,321 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "./AuthContext";
+import { db } from "@/firebase";
+import { collection, query, where, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
+
+interface ChatThread {
+  id: string;
+  enquiryId?: string;
+  participants: string[];
+  lastMessage?: string | { text?: string; senderId?: string; timestamp?: any };
+  updatedAt?: any;
+  sellerId?: string;
+  enquiryTitle?: string;
+  isBuyerChat?: boolean;
+  enquiryData?: any;
+  isDisabled?: boolean;
+  unreadCount?: number;
+}
+
+interface ChatContextType {
+  allChats: ChatThread[];
+  loading: boolean;
+  refreshChats: () => Promise<void>;
+}
+
+const ChatContext = createContext<ChatContextType | undefined>(undefined);
+
+export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  const [allChats, setAllChats] = useState<ChatThread[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadActiveChats = async () => {
+    if (!user?.uid) {
+      setAllChats([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const chatThreadMap = new Map<string, ChatThread>();
+
+      // 1. Load all chat messages where user has sent or received messages
+      const chatMessagesQuery = query(collection(db, "chatMessages"));
+      const chatMessagesSnapshot = await getDocs(chatMessagesQuery);
+      
+      // Process messages to find chats where user is involved
+      // First pass: Collect all unique enquiry IDs and build thread map
+      const enquiryIds = new Set<string>();
+      const messageThreadData = new Map<string, { enquiryId: string; sellerId: string; senderId: string; messageData: any }>();
+      
+      chatMessagesSnapshot.forEach((messageDoc) => {
+        const messageData = messageDoc.data();
+        const enquiryId = messageData.enquiryId;
+        const sellerId = messageData.sellerId;
+        const senderId = messageData.senderId;
+        
+        if (!enquiryId || !sellerId) return;
+        
+        const threadKey = `${enquiryId}_${sellerId}`;
+        enquiryIds.add(enquiryId);
+        
+        // Track message data for this thread (keep latest)
+        const existing = messageThreadData.get(threadKey);
+        const messageTime = messageData.timestamp?.toDate ? messageData.timestamp.toDate().getTime() : 
+                          (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+        const existingTime = existing?.messageData.timestamp?.toDate ? existing.messageData.timestamp.toDate().getTime() : 
+                           (existing?.messageData.timestamp ? new Date(existing.messageData.timestamp).getTime() : 0);
+        
+        if (!existing || messageTime > existingTime) {
+          messageThreadData.set(threadKey, { enquiryId, sellerId, senderId, messageData });
+        }
+      });
+
+      // Batch fetch all enquiries at once
+      const enquiryPromises = Array.from(enquiryIds).map(enquiryId => 
+        getDoc(doc(db, "enquiries", enquiryId)).catch(() => null)
+      );
+      const enquiryDocs = await Promise.all(enquiryPromises);
+      
+      // Create enquiry data map
+      const enquiryDataMap = new Map<string, any>();
+      enquiryDocs.forEach((enquiryDoc, index) => {
+        if (enquiryDoc?.exists()) {
+          const enquiryId = Array.from(enquiryIds)[index];
+          enquiryDataMap.set(enquiryId, enquiryDoc.data());
+        }
+      });
+
+      // Second pass: Build chat threads from collected data
+      messageThreadData.forEach((threadInfo, threadKey) => {
+        const enquiryData = enquiryDataMap.get(threadInfo.enquiryId);
+        if (!enquiryData) return; // Enquiry deleted
+        
+        const buyerId = enquiryData.userId;
+        const { sellerId, senderId, messageData } = threadInfo;
+        
+        // User is involved if they're the buyer OR the seller OR the sender
+        const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid) || (senderId === user.uid);
+        
+        if (isUserInvolved) {
+          const isBuyerChat = buyerId === user.uid; // true if user is buyer (posted enquiry)
+          
+          if (!chatThreadMap.has(threadKey)) {
+            chatThreadMap.set(threadKey, {
+              id: threadKey,
+              enquiryId: threadInfo.enquiryId,
+              sellerId: sellerId,
+              enquiryTitle: enquiryData.title || "Untitled Enquiry",
+              enquiryData: enquiryData, // Store enquiry data for status checking
+              participants: [buyerId, sellerId],
+              updatedAt: messageData.timestamp || messageData.createdAt,
+              lastMessage: {
+                text: messageData.text || messageData.message || "",
+                senderId: senderId,
+                timestamp: messageData.timestamp
+              },
+              isBuyerChat: isBuyerChat
+            });
+          } else {
+            // Update with latest message if this one is newer
+            const existingThread = chatThreadMap.get(threadKey)!;
+            const messageTime = messageData.timestamp?.toDate ? messageData.timestamp.toDate().getTime() : 
+                              (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+            const existingTime = existingThread.updatedAt?.toDate ? existingThread.updatedAt.toDate().getTime() : 
+                               (existingThread.updatedAt ? new Date(existingThread.updatedAt).getTime() : 0);
+            
+            if (messageTime > existingTime) {
+              existingThread.updatedAt = messageData.timestamp || messageData.createdAt;
+              existingThread.lastMessage = {
+                text: messageData.text || messageData.message || "",
+                senderId: senderId,
+                timestamp: messageData.timestamp
+              };
+            }
+          }
+        }
+      });
+
+      // 2. Also check the 'chats' collection for any additional threads with messages
+      try {
+        const chatsQuery = query(
+          collection(db, "chats"),
+          where("participants", "array-contains", user.uid)
+        );
+        const chatsSnapshot = await getDocs(chatsQuery);
+        
+        // Process chats collection with async to get enquiry data
+        const chatPromises: Promise<void>[] = [];
+        
+        chatsSnapshot.forEach((chatDoc) => {
+          const chatData = chatDoc.data();
+          if (!chatData.enquiryId || !chatData.sellerId) return;
+          
+          const threadKey = `${chatData.enquiryId}_${chatData.sellerId}`;
+          
+          // Get enquiry to determine if user is buyer
+          const promise = getDoc(doc(db, "enquiries", chatData.enquiryId)).then((enquiryDoc) => {
+            if (!enquiryDoc.exists()) return;
+            
+            const enquiryData = enquiryDoc.data();
+            const buyerId = enquiryData.userId;
+            const isBuyerChat = buyerId === user.uid;
+            
+            if (!chatThreadMap.has(threadKey)) {
+              // Only add if there's a lastMessage (indicating actual chat activity)
+              if (chatData.lastMessage) {
+                chatThreadMap.set(threadKey, {
+                  id: chatDoc.id,
+                  enquiryId: chatData.enquiryId,
+                  sellerId: chatData.sellerId,
+                  enquiryTitle: chatData.enquiryTitle || enquiryData.title || "Loading...",
+                  enquiryData: enquiryData, // Store enquiry data for status checking
+                  participants: chatData.participants || [],
+                  updatedAt: chatData.updatedAt,
+                  lastMessage: chatData.lastMessage,
+                  isBuyerChat: isBuyerChat
+                });
+              }
+            } else {
+              // Update existing thread with last message from chats collection if newer
+              const existingThread = chatThreadMap.get(threadKey)!;
+              if (chatData.lastMessage && chatData.updatedAt) {
+                const chatTime = chatData.updatedAt?.toDate ? chatData.updatedAt.toDate().getTime() : 
+                               (chatData.updatedAt ? new Date(chatData.updatedAt).getTime() : 0);
+                const existingTime = existingThread.updatedAt?.toDate ? existingThread.updatedAt.toDate().getTime() : 
+                                   (existingThread.updatedAt ? new Date(existingThread.updatedAt).getTime() : 0);
+                
+                if (chatTime > existingTime) {
+                  existingThread.lastMessage = chatData.lastMessage;
+                  existingThread.updatedAt = chatData.updatedAt;
+                }
+              }
+            }
+          }).catch(err => {
+            console.error("Error fetching enquiry for chat:", err);
+          });
+          
+          chatPromises.push(promise);
+        });
+        
+        // Wait for all chat processing to complete
+        await Promise.all(chatPromises);
+      } catch (err) {
+        console.warn("Error loading chats collection:", err);
+      }
+
+      // Convert map to array and fetch missing enquiry titles and data
+      const threads = Array.from(chatThreadMap.values());
+      
+      const enrichedThreads = await Promise.all(
+        threads.map(async (thread) => {
+          if (thread.enquiryId) {
+            // Only fetch if we don't already have enquiryData
+            if (!thread.enquiryData) {
+              try {
+                const enquiryDoc = await getDoc(doc(db, "enquiries", thread.enquiryId));
+                if (enquiryDoc.exists()) {
+                  thread.enquiryData = enquiryDoc.data();
+                  thread.enquiryTitle = thread.enquiryData.title || "Untitled Enquiry";
+                } else {
+                  // Enquiry deleted
+                  thread.enquiryTitle = "Enquiry Not Found";
+                  thread.isDisabled = true;
+                }
+              } catch (err) {
+                console.error("Error fetching enquiry data:", err);
+                if (!thread.enquiryTitle) {
+                  thread.enquiryTitle = "Loading...";
+                }
+              }
+            }
+            
+            // Check if chat should be disabled (using existing or newly fetched enquiryData)
+            if (thread.enquiryData) {
+              const enquiryData = thread.enquiryData;
+              
+              // 1. Check if deal is closed
+              if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) {
+                thread.isDisabled = true;
+              }
+              // 2. Check if enquiry is expired
+              else if (enquiryData.deadline) {
+                const now = new Date();
+                const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+                if (deadline < now) {
+                  thread.isDisabled = true;
+                }
+              }
+              // 3. Check if enquiry is rejected or completed
+              else if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') {
+                thread.isDisabled = true;
+              }
+            } else if (!thread.enquiryData && thread.enquiryId) {
+              // If we couldn't fetch enquiry data, mark as disabled (likely deleted)
+              thread.isDisabled = true;
+            }
+          }
+          return thread;
+        })
+      );
+
+      // Sort by updatedAt (most recent first)
+      enrichedThreads.sort((a, b) => {
+        const aTime = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : (a.updatedAt ? new Date(a.updatedAt).getTime() : 0);
+        const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : (b.updatedAt ? new Date(b.updatedAt).getTime() : 0);
+        return bTime - aTime;
+      });
+
+      setAllChats(enrichedThreads);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading active chats:", error);
+      setAllChats([]);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadActiveChats();
+    
+    // Set up real-time listener for chat messages to refresh
+    if (!user?.uid) return;
+    
+    let timeoutId: NodeJS.Timeout;
+    
+    const unsubscribe = onSnapshot(
+      query(collection(db, "chatMessages")),
+      () => {
+        // Debounce refresh to avoid too frequent updates
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          loadActiveChats();
+        }, 500);
+      },
+      (error) => {
+        console.error("Error listening to chat messages:", error);
+      }
+    );
+
+    return () => {
+      clearTimeout(timeoutId);
+      unsubscribe();
+    };
+  }, [user?.uid]);
+
+  return (
+    <ChatContext.Provider value={{ allChats, loading, refreshChats: loadActiveChats }}>
+      {children}
+    </ChatContext.Provider>
+  );
+};
+
+export const useChats = () => {
+  const context = useContext(ChatContext);
+  if (context === undefined) {
+    throw new Error("useChats must be used within a ChatProvider");
+  }
+  return context;
+};
+

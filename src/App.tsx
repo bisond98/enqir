@@ -15,6 +15,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import { ChatProvider } from "./contexts/ChatContext";
 import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
@@ -106,7 +107,8 @@ const App = () => {
         <TooltipProvider>
           <ConditionalAuthProvider>
             <NotificationProvider>
-              <UsageProvider>
+              <ChatProvider>
+                <UsageProvider>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -147,8 +149,9 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-            </UsageProvider>
-          </NotificationProvider>
+                </UsageProvider>
+              </ChatProvider>
+            </NotificationProvider>
         </ConditionalAuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
