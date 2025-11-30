@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
@@ -26,8 +27,9 @@ interface ChatThread {
 export default function MyChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [allChats, setAllChats] = useState<ChatThread[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { allChats: preloadedChats, loading: chatsLoading, refreshChats } = useChats();
+  const [allChats, setAllChats] = useState<ChatThread[]>(preloadedChats);
+  const [loading, setLoading] = useState(chatsLoading);
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
@@ -61,236 +63,22 @@ export default function MyChats() {
     }
   });
 
+  // Use preloaded chats from context
   useEffect(() => {
-    if (!user) {
+    if (preloadedChats && preloadedChats.length > 0) {
+      setAllChats(preloadedChats);
       setLoading(false);
-      return;
+    } else {
+      setLoading(chatsLoading);
     }
+  }, [preloadedChats, chatsLoading]);
 
-    const loadActiveChats = async () => {
-      try {
-        const chatThreadMap = new Map<string, ChatThread>();
-
-        // 1. Load all chat messages where user has sent or received messages
-        const chatMessagesQuery = query(
-          collection(db, "chatMessages")
-        );
-        
-        const chatMessagesSnapshot = await getDocs(chatMessagesQuery);
-        
-        // Process messages to find chats where user is involved
-        const messagePromises: Promise<void>[] = [];
-        
-        chatMessagesSnapshot.forEach((messageDoc) => {
-          const messageData = messageDoc.data();
-          const enquiryId = messageData.enquiryId;
-          const sellerId = messageData.sellerId;
-          const senderId = messageData.senderId;
-          
-          if (!enquiryId || !sellerId) return;
-          
-          // Check if user is involved in this chat
-          const promise = getDoc(doc(db, "enquiries", enquiryId)).then(async (enquiryDoc) => {
-            if (!enquiryDoc.exists()) return;
-            
-            const enquiryData = enquiryDoc.data();
-            const buyerId = enquiryData.userId;
-            
-            // User is involved if they're the buyer OR the seller OR the sender
-            const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid) || (senderId === user.uid);
-            
-            if (isUserInvolved) {
-              const threadKey = `${enquiryId}_${sellerId}`;
-              const isBuyerChat = buyerId === user.uid; // true if user is buyer (posted enquiry)
-              
-              if (!chatThreadMap.has(threadKey)) {
-                chatThreadMap.set(threadKey, {
-                  id: threadKey,
-                  enquiryId: enquiryId,
-                  sellerId: sellerId,
-                  enquiryTitle: enquiryData.title || "Untitled Enquiry",
-                  enquiryData: enquiryData, // Store enquiry data for status checking
-                  participants: [buyerId, sellerId],
-                  updatedAt: messageData.timestamp || messageData.createdAt,
-                  lastMessage: {
-                    text: messageData.text || messageData.message || "",
-                    senderId: senderId,
-                    timestamp: messageData.timestamp
-                  },
-                  isBuyerChat: isBuyerChat
-                });
-              } else {
-                // Update with latest message if this one is newer
-                const existingThread = chatThreadMap.get(threadKey)!;
-                const messageTime = messageData.timestamp?.toDate ? messageData.timestamp.toDate().getTime() : 
-                                  (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
-                const existingTime = existingThread.updatedAt?.toDate ? existingThread.updatedAt.toDate().getTime() : 
-                                   (existingThread.updatedAt ? new Date(existingThread.updatedAt).getTime() : 0);
-                
-                if (messageTime > existingTime) {
-                  existingThread.updatedAt = messageData.timestamp || messageData.createdAt;
-                  existingThread.lastMessage = {
-                    text: messageData.text || messageData.message || "",
-                    senderId: senderId,
-                    timestamp: messageData.timestamp
-                  };
-                }
-              }
-            }
-          }).catch(err => {
-            console.error("Error processing message:", err);
-          });
-          
-          messagePromises.push(promise);
-        });
-
-        // Wait for all message processing to complete
-        await Promise.all(messagePromises);
-
-        // 2. Also check the 'chats' collection for any additional threads with messages
-        try {
-          const chatsQuery = query(
-            collection(db, "chats"),
-            where("participants", "array-contains", user.uid)
-          );
-          const chatsSnapshot = await getDocs(chatsQuery);
-          
-          // Process chats collection with async to get enquiry data
-          const chatPromises: Promise<void>[] = [];
-          
-          chatsSnapshot.forEach((chatDoc) => {
-            const chatData = chatDoc.data();
-            if (!chatData.enquiryId || !chatData.sellerId) return;
-            
-            const threadKey = `${chatData.enquiryId}_${chatData.sellerId}`;
-            
-            // Get enquiry to determine if user is buyer
-            const promise = getDoc(doc(db, "enquiries", chatData.enquiryId)).then((enquiryDoc) => {
-              if (!enquiryDoc.exists()) return;
-              
-              const enquiryData = enquiryDoc.data();
-              const buyerId = enquiryData.userId;
-              const isBuyerChat = buyerId === user.uid;
-              
-              if (!chatThreadMap.has(threadKey)) {
-                // Only add if there's a lastMessage (indicating actual chat activity)
-                if (chatData.lastMessage) {
-                  chatThreadMap.set(threadKey, {
-                    id: chatDoc.id,
-                    enquiryId: chatData.enquiryId,
-                    sellerId: chatData.sellerId,
-                    enquiryTitle: chatData.enquiryTitle || enquiryData.title || "Loading...",
-                    enquiryData: enquiryData, // Store enquiry data for status checking
-                    participants: chatData.participants || [],
-                    updatedAt: chatData.updatedAt,
-                    lastMessage: chatData.lastMessage,
-                    isBuyerChat: isBuyerChat
-                  });
-                }
-              } else {
-                // Update existing thread with last message from chats collection if newer
-                const existingThread = chatThreadMap.get(threadKey)!;
-                if (chatData.lastMessage && chatData.updatedAt) {
-                  const chatTime = chatData.updatedAt?.toDate ? chatData.updatedAt.toDate().getTime() : 
-                                 (chatData.updatedAt ? new Date(chatData.updatedAt).getTime() : 0);
-                  const existingTime = existingThread.updatedAt?.toDate ? existingThread.updatedAt.toDate().getTime() : 
-                                     (existingThread.updatedAt ? new Date(existingThread.updatedAt).getTime() : 0);
-                  
-                  if (chatTime > existingTime) {
-                    existingThread.lastMessage = chatData.lastMessage;
-                    existingThread.updatedAt = chatData.updatedAt;
-                  }
-                }
-              }
-            }).catch(err => {
-              console.error("Error fetching enquiry for chat:", err);
-            });
-            
-            chatPromises.push(promise);
-          });
-          
-          // Wait for all chat processing to complete
-          await Promise.all(chatPromises);
-        } catch (err) {
-          console.warn("Error loading chats collection:", err);
-        }
-
-        // Convert map to array and fetch missing enquiry titles and data
-        const threads = Array.from(chatThreadMap.values());
-        
-        const enrichedThreads = await Promise.all(
-          threads.map(async (thread) => {
-            if (thread.enquiryId) {
-              // Only fetch if we don't already have enquiryData
-              if (!thread.enquiryData) {
-                try {
-                  const enquiryDoc = await getDoc(doc(db, "enquiries", thread.enquiryId));
-                  if (enquiryDoc.exists()) {
-                    thread.enquiryData = enquiryDoc.data();
-                    thread.enquiryTitle = thread.enquiryData.title || "Untitled Enquiry";
-                  } else {
-                    // Enquiry deleted
-                    thread.enquiryTitle = "Enquiry Not Found";
-                    thread.isDisabled = true;
-                  }
-                } catch (err) {
-                  console.error("Error fetching enquiry data:", err);
-                  if (!thread.enquiryTitle) {
-                    thread.enquiryTitle = "Loading...";
-                  }
-                }
-              }
-              
-              // Check if chat should be disabled (using existing or newly fetched enquiryData)
-              if (thread.enquiryData) {
-                const enquiryData = thread.enquiryData;
-                
-                // 1. Check if deal is closed
-                if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) {
-                  thread.isDisabled = true;
-                }
-                // 2. Check if enquiry is expired
-                else if (enquiryData.deadline) {
-                  const now = new Date();
-                  const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
-                  if (deadline < now) {
-                    thread.isDisabled = true;
-                  }
-                }
-                // 3. Check if enquiry is rejected or completed
-                else if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') {
-                  thread.isDisabled = true;
-                }
-              } else if (!thread.enquiryData && thread.enquiryId) {
-                // If we couldn't fetch enquiry data, mark as disabled (likely deleted)
-                thread.isDisabled = true;
-              }
-            }
-            return thread;
-          })
-        );
-
-        // Sort by updatedAt (most recent first)
-        enrichedThreads.sort((a, b) => {
-          const aTime = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : (a.updatedAt ? new Date(a.updatedAt).getTime() : 0);
-          const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : (b.updatedAt ? new Date(b.updatedAt).getTime() : 0);
-          return bTime - aTime;
-        });
-
-        setAllChats(enrichedThreads);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading active chats:", error);
-        setLoading(false);
-      }
-    };
-
-    loadActiveChats();
-  }, [user]);
-
-  // Real-time listener for unread message counts
+  // Real-time listener for unread message counts - Optimized
   useEffect(() => {
     if (!user?.uid || allChats.length === 0) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let isMounted = true;
 
     const updateUnreadCounts = async () => {
       try {
@@ -298,40 +86,37 @@ export default function MyChats() {
         const chatMessagesQuery = query(collection(db, "chatMessages"));
         const snapshot = await getDocs(chatMessagesQuery);
         
-        const threadsWithUnread = new Map<string, boolean>();
+        const threadsWithUnread = new Set<string>();
         
-        // Create a map of existing chat threads for quick lookup (exclude disabled/expired chats)
-        const existingThreads = new Map<string, ChatThread>();
+        // Create a set of existing chat thread keys for quick lookup (exclude disabled/expired chats)
+        const existingThreadKeys = new Set<string>();
         allChats.forEach(chat => {
           if (chat.enquiryId && chat.sellerId && !chat.isDisabled) {
             const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
-            existingThreads.set(threadKey, chat);
+            existingThreadKeys.add(threadKey);
           }
         });
         
         // Process all messages to find threads with unread messages
-        for (const docSnap of snapshot.docs) {
+        snapshot.docs.forEach((docSnap) => {
           const messageData = docSnap.data();
           const enquiryId = messageData.enquiryId;
           const sellerId = messageData.sellerId;
           const senderId = messageData.senderId;
           
-          if (!enquiryId || !sellerId || !senderId) continue;
-          
-          // Skip system messages and messages from current user
-          if (messageData.isSystemMessage || senderId === user.uid) continue;
+          if (!enquiryId || !sellerId || !senderId) return;
+          if (messageData.isSystemMessage || senderId === user.uid) return;
           
           const threadKey = `${enquiryId}_${sellerId}`;
           
           // Only process if this thread exists in our chats
-          if (!existingThreads.has(threadKey)) continue;
+          if (!existingThreadKeys.has(threadKey)) return;
+          
+          // If already marked as unread, skip further processing
+          if (threadsWithUnread.has(threadKey)) return;
           
           const readKey = `chat_read_${user.uid}_${threadKey}`;
-          
-          // Check if user has viewed this chat
           const lastViewedTime = localStorage.getItem(readKey);
-          
-          let isUnread = false;
           
           if (lastViewedTime) {
             // Only count messages that arrived after last view
@@ -341,19 +126,15 @@ export default function MyChats() {
             const viewedTime = parseInt(lastViewedTime, 10);
             
             if (messageTime > viewedTime) {
-              // Message arrived after last view - mark as unread
-              isUnread = true;
+              threadsWithUnread.add(threadKey);
             }
           } else {
             // Never viewed - all messages are unread
-            isUnread = true;
+            threadsWithUnread.add(threadKey);
           }
-          
-          // Mark thread as unread if any message is unread
-          if (isUnread) {
-            threadsWithUnread.set(threadKey, true);
-          }
-        }
+        });
+        
+        if (!isMounted) return;
         
         // Update chats with unread status (1 if has unread, 0 if not)
         setAllChats(prevChats => {
@@ -361,7 +142,7 @@ export default function MyChats() {
             const threadKey = chat.enquiryId && chat.sellerId 
               ? `${chat.enquiryId}_${chat.sellerId}` 
               : chat.id;
-            const hasUnread = threadsWithUnread.get(threadKey) || false;
+            const hasUnread = threadsWithUnread.has(threadKey);
             return {
               ...chat,
               unreadCount: hasUnread ? 1 : 0
@@ -381,14 +162,22 @@ export default function MyChats() {
       }
     };
 
+    // Debounced update function
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        updateUnreadCounts();
+      }, 200); // 200ms debounce
+    };
+
     // Initial count
     updateUnreadCounts();
     
-    // Set up real-time listener
+    // Set up real-time listener (with debouncing)
     const unsubscribe = onSnapshot(
       query(collection(db, "chatMessages")),
       () => {
-        updateUnreadCounts();
+        debouncedUpdate();
       },
       (error) => {
         console.error("Error listening to chat messages for unread counts:", error);
@@ -397,12 +186,14 @@ export default function MyChats() {
 
     // Listen for chat viewed events
     const handleChatViewed = () => {
-      updateUnreadCounts();
+      debouncedUpdate();
     };
     
     window.addEventListener('chatViewed', handleChatViewed);
 
     return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
       unsubscribe();
       window.removeEventListener('chatViewed', handleChatViewed);
     };

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useChats } from "@/contexts/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -29,6 +30,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
+  // Get preloaded chats from context (will be empty array if not available)
+  let preloadedChatsContext: { allChats: any[] } | null = null;
+  try {
+    preloadedChatsContext = useChats();
+  } catch {
+    // ChatProvider not available yet, will use fallback method
+    preloadedChatsContext = null;
+  }
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
@@ -39,115 +48,198 @@ export default function Layout({ children, showNavigation = true }: { children: 
     setMounted(true);
   }, []);
 
-  // Count unread chat messages
+  // Count unread chat messages - Optimized version
   useEffect(() => {
     if (!user?.uid) {
       setUnreadChatCount(0);
       return;
     }
 
+    let timeoutId: NodeJS.Timeout;
+    let isMounted = true;
+
     const countUnreadChats = async () => {
       try {
-        // Get all chat messages
+        // OPTIMIZATION: Use preloaded chat data if available (much faster!)
+        // Get fresh preloaded chats from context (may have updated since component render)
+        const currentPreloadedChats = preloadedChatsContext?.allChats || [];
+        
+        if (currentPreloadedChats && currentPreloadedChats.length > 0) {
+          // Filter to only active, non-disabled chats
+          const activeThreads = currentPreloadedChats.filter(chat => 
+            chat.enquiryId && 
+            chat.sellerId && 
+            !chat.isDisabled
+          );
+          
+          // Create set of thread keys for quick lookup
+          const threadKeys = new Set(
+            activeThreads.map(chat => `${chat.enquiryId}_${chat.sellerId}`)
+          );
+          
+          // Only fetch messages for these specific threads (much smaller query)
+          const chatMessagesQuery = query(collection(db, "chatMessages"));
+          const snapshot = await getDocs(chatMessagesQuery);
+          
+          const threadsWithUnread = new Set<string>();
+          
+          // Process only messages from user's threads
+          snapshot.docs.forEach((docSnap) => {
+            const messageData = docSnap.data();
+            const enquiryId = messageData.enquiryId;
+            const sellerId = messageData.sellerId;
+            const senderId = messageData.senderId;
+            
+            if (!enquiryId || !sellerId || !senderId) return;
+            if (messageData.isSystemMessage) return;
+            if (senderId === user.uid) return; // Skip own messages
+            
+            const threadKey = `${enquiryId}_${sellerId}`;
+            
+            // Only check threads we know the user is involved in
+            if (!threadKeys.has(threadKey)) return;
+            
+            // Check if already marked as unread
+            if (threadsWithUnread.has(threadKey)) return;
+            
+            const readKey = `chat_read_${user.uid}_${threadKey}`;
+            const lastViewedTime = localStorage.getItem(readKey);
+            
+            const messageTime = messageData.timestamp?.toDate 
+              ? messageData.timestamp.toDate().getTime() 
+              : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+            
+            if (lastViewedTime) {
+              const viewedTime = parseInt(lastViewedTime, 10);
+              if (messageTime > viewedTime) {
+                threadsWithUnread.add(threadKey);
+              }
+            } else {
+              // Never viewed - mark as unread
+              threadsWithUnread.add(threadKey);
+            }
+          });
+          
+          if (isMounted) {
+            setUnreadChatCount(threadsWithUnread.size);
+          }
+          return; // Exit early - we used preloaded data!
+        }
+        
+        // FALLBACK: Original method if preloaded data not available yet
+        // Get all chat messages (filtered client-side for performance)
         const chatMessagesQuery = query(collection(db, "chatMessages"));
         const snapshot = await getDocs(chatMessagesQuery);
         
-        const activeChatThreads = new Set<string>();
+        // First pass: Filter messages and collect unique enquiry IDs
+        const messageThreads = new Map<string, { enquiryId: string; sellerId: string; timestamp: number }>();
+        const enquiryIds = new Set<string>();
         
-        // Process all messages
-        for (const docSnap of snapshot.docs) {
+        snapshot.docs.forEach((docSnap) => {
           const messageData = docSnap.data();
           const enquiryId = messageData.enquiryId;
           const sellerId = messageData.sellerId;
           const senderId = messageData.senderId;
           
-          if (!enquiryId || !sellerId || !senderId) continue;
-          
-          // Skip system messages
-          if (messageData.isSystemMessage) continue;
-          
-          // Only count messages from other users
-          if (senderId === user.uid) continue;
+          if (!enquiryId || !sellerId || !senderId) return;
+          if (messageData.isSystemMessage) return;
+          if (senderId === user.uid) return; // Skip own messages
           
           const threadKey = `${enquiryId}_${sellerId}`;
+          const messageTime = messageData.timestamp?.toDate 
+            ? messageData.timestamp.toDate().getTime() 
+            : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
           
-          // Check if user is involved in this chat (buyer or seller)
-          try {
-            const enquiryDoc = await getDoc(doc(db, "enquiries", enquiryId));
-            
-            if (!enquiryDoc.exists()) {
-              // Enquiry deleted - skip this chat
-              continue;
-            }
-            
-            const enquiryData = enquiryDoc.data();
-            const buyerId = enquiryData.userId;
-            
-            // Check if user is involved (buyer or seller)
-            const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
-            
-            if (!isUserInvolved) continue;
-            
-            // Check if deal is closed
-            if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) {
-              continue; // Deal closed - skip this chat
-            }
-            
-            // Check if enquiry is expired
-            if (enquiryData.deadline) {
-              const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
-              const now = new Date();
-              if (deadline < now) {
-                continue; // Enquiry expired - skip this chat
-              }
-            }
-            
-            // Check if enquiry status would close the chat (rejected, completed, etc.)
-            if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') {
-              continue; // Enquiry in closed state - skip this chat
-            }
-            
-            // Check if user has viewed this chat
-            const readKey = `chat_read_${user.uid}_${threadKey}`;
-            const lastViewedTime = localStorage.getItem(readKey);
-            
-            if (lastViewedTime) {
-              // Only count messages that arrived after last view
-              const messageTime = messageData.timestamp?.toDate 
-                ? messageData.timestamp.toDate().getTime() 
-                : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
-              const viewedTime = parseInt(lastViewedTime, 10);
-              
-              if (messageTime <= viewedTime) {
-                continue; // Message was already viewed - skip
-              }
-            }
-            // If no lastViewedTime, treat as unread (continue to add to activeChatThreads)
-            
-            // This is an active chat with unread message
-            activeChatThreads.add(threadKey);
-          } catch (error) {
-            console.error("Error checking enquiry:", error);
-            continue; // Skip if we can't verify the enquiry
+          // Check if user has viewed this chat
+          const readKey = `chat_read_${user.uid}_${threadKey}`;
+          const lastViewedTime = localStorage.getItem(readKey);
+          
+          if (lastViewedTime) {
+            const viewedTime = parseInt(lastViewedTime, 10);
+            if (messageTime <= viewedTime) return; // Already viewed
           }
-        }
+          
+          // Track the latest message for this thread
+          const existing = messageThreads.get(threadKey);
+          if (!existing || messageTime > existing.timestamp) {
+            messageThreads.set(threadKey, { enquiryId, sellerId, timestamp: messageTime });
+            enquiryIds.add(enquiryId);
+          }
+        });
         
-        // Count unique active chat threads with unread messages
-        setUnreadChatCount(activeChatThreads.size);
+        if (!isMounted) return;
+        
+        // Batch fetch all enquiries at once
+        const enquiryPromises = Array.from(enquiryIds).map(enquiryId => 
+          getDoc(doc(db, "enquiries", enquiryId)).catch(() => null)
+        );
+        const enquiryDocs = await Promise.all(enquiryPromises);
+        
+        if (!isMounted) return;
+        
+        // Create enquiry data map
+        const enquiryDataMap = new Map<string, any>();
+        enquiryDocs.forEach((enquiryDoc, index) => {
+          if (enquiryDoc?.exists()) {
+            const enquiryId = Array.from(enquiryIds)[index];
+            enquiryDataMap.set(enquiryId, enquiryDoc.data());
+          }
+        });
+        
+        // Second pass: Filter threads by user involvement and enquiry status
+        const activeChatThreads = new Set<string>();
+        const now = new Date();
+        
+        messageThreads.forEach((thread, threadKey) => {
+          const enquiryData = enquiryDataMap.get(thread.enquiryId);
+          if (!enquiryData) return; // Enquiry deleted
+          
+          const buyerId = enquiryData.userId;
+          const isUserInvolved = (buyerId === user.uid) || (thread.sellerId === user.uid);
+          if (!isUserInvolved) return;
+          
+          // Check if deal is closed
+          if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
+          
+          // Check if enquiry is expired
+          if (enquiryData.deadline) {
+            const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+            if (deadline < now) return;
+          }
+          
+          // Check if enquiry status would close the chat
+          if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
+          
+          activeChatThreads.add(threadKey);
+        });
+        
+        if (isMounted) {
+          setUnreadChatCount(activeChatThreads.size);
+        }
       } catch (error) {
         console.error("Error counting unread chats:", error);
-        setUnreadChatCount(0);
+        if (isMounted) {
+          setUnreadChatCount(0);
+        }
       }
+    };
+
+    // Debounced count function to avoid too frequent updates
+    const debouncedCount = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        countUnreadChats();
+      }, 300); // 300ms debounce
     };
 
     // Initial count
     countUnreadChats();
     
-    // Set up real-time listener for chat messages
+    // Set up real-time listener for chat messages (with debouncing)
     const unsubscribe = onSnapshot(
       query(collection(db, "chatMessages")),
       () => {
-        countUnreadChats();
+        debouncedCount();
       },
       (error) => {
         console.error("Error listening to chat messages:", error);
@@ -156,16 +248,18 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
     // Listen for chat viewed events
     const handleChatViewed = () => {
-      countUnreadChats();
+      debouncedCount();
     };
     
     window.addEventListener('chatViewed', handleChatViewed);
 
     return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
       unsubscribe();
       window.removeEventListener('chatViewed', handleChatViewed);
     };
-  }, [user?.uid]);
+  }, [user?.uid, preloadedChatsContext?.allChats]);
 
   // PRO PLAN - KEPT FOR FUTURE UPDATES
   // const [proRemainingCount, setProRemainingCount] = useState<number>(0);
