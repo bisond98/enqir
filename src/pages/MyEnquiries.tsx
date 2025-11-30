@@ -495,10 +495,14 @@ const MyEnquiries = () => {
           {/* Professional Post New Enquiry Button */}
           <div className="flex justify-center mb-6 sm:mb-10 lg:mb-12">
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-                <Button variant="outline" className="w-full sm:w-auto !bg-black hover:!bg-gray-900 !text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg font-black shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black hover:border-black flex items-center justify-center gap-2 sm:gap-3">
-                <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <span>We wish — but only legal needs.</span>
-              </Button>
+              <button className="w-full sm:w-auto border-4 border-black bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black py-2.5 sm:py-3 px-4 sm:px-6 lg:px-8 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden text-sm sm:text-base lg:text-lg">
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 flex-shrink-0 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+                <span className="relative z-10">We wish — but only legal needs.</span>
+              </button>
             </Link>
           </div>
 
@@ -528,14 +532,20 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
                   >
-                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
-                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                          <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                    <Card className="group p-1.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border-2 sm:border-4 border-black bg-white hover:bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 relative cursor-default">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-center mb-1 sm:mb-2 lg:mb-2.5">
+                          <div className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                            <TrendingUp className="h-2 w-2 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                          </div>
                         </div>
+                        <div className="text-xs sm:text-lg lg:text-xl font-black text-black mb-0.5 sm:mb-1.5 tracking-tight">{totalCount}</div>
+                        <p className="text-[7px] sm:text-[9px] lg:text-[10px] text-black font-black uppercase tracking-wide">Total Enquiries</p>
                       </div>
-                      <div className="text-base sm:text-lg lg:text-xl font-black text-blue-600 mb-1 sm:mb-1.5 tracking-tight">{totalCount}</div>
-                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Total Enquiries</p>
                     </Card>
                   </motion.div>
                   
@@ -544,14 +554,20 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.2 }}
                   >
-                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
-                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                          <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                    <Card className="group p-1.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border-2 sm:border-4 border-black bg-white hover:bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 relative cursor-default">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-center mb-1 sm:mb-2 lg:mb-2.5">
+                          <div className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                            <CheckCircle className="h-2 w-2 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                          </div>
                         </div>
+                        <div className="text-xs sm:text-lg lg:text-xl font-black text-black mb-0.5 sm:mb-1.5 tracking-tight">{liveCount}</div>
+                        <p className="text-[7px] sm:text-[9px] lg:text-[10px] text-black font-black uppercase tracking-wide">Live</p>
                       </div>
-                      <div className="text-base sm:text-lg lg:text-xl font-black text-emerald-600 mb-1 sm:mb-1.5 tracking-tight">{liveCount}</div>
-                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Live</p>
                     </Card>
                   </motion.div>
                   
@@ -560,14 +576,20 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.3 }}
                   >
-                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
-                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-amber-600 to-amber-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                          <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                    <Card className="group p-1.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border-2 sm:border-4 border-black bg-white hover:bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 relative cursor-default">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-center mb-1 sm:mb-2 lg:mb-2.5">
+                          <div className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-amber-600 to-amber-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                            <Clock className="h-2 w-2 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                          </div>
                         </div>
+                        <div className="text-xs sm:text-lg lg:text-xl font-black text-black mb-0.5 sm:mb-1.5 tracking-tight">{pendingCount}</div>
+                        <p className="text-[7px] sm:text-[9px] lg:text-[10px] text-black font-black uppercase tracking-wide">Pending</p>
                       </div>
-                      <div className="text-base sm:text-lg lg:text-xl font-black text-amber-600 mb-1 sm:mb-1.5 tracking-tight">{pendingCount}</div>
-                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Pending</p>
                     </Card>
                   </motion.div>
                   
@@ -576,14 +598,20 @@ const MyEnquiries = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.4 }}
                   >
-                    <Card className="group p-2.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border border-black shadow-md hover:shadow-lg transition-all duration-300 bg-white rounded-lg sm:rounded-xl overflow-hidden cursor-default">
-                      <div className="flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-2.5">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                          <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                    <Card className="group p-1.5 sm:p-3 lg:p-3.5 xl:p-4 text-center border-2 sm:border-4 border-black bg-white hover:bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 relative cursor-default">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-center mb-1 sm:mb-2 lg:mb-2.5">
+                          <div className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-md sm:rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                            <Star className="h-2 w-2 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                          </div>
                         </div>
+                        <div className="text-xs sm:text-lg lg:text-xl font-black text-black mb-0.5 sm:mb-1.5 tracking-tight">{completedCount}</div>
+                        <p className="text-[7px] sm:text-[9px] lg:text-[10px] text-black font-black uppercase tracking-wide">Completed</p>
                       </div>
-                      <div className="text-base sm:text-lg lg:text-xl font-black text-gray-600 mb-1 sm:mb-1.5 tracking-tight">{completedCount}</div>
-                      <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-700 font-bold uppercase tracking-wide">Completed</p>
                     </Card>
                   </motion.div>
                 </>
@@ -867,15 +895,18 @@ const MyEnquiries = () => {
                             );
                             return upgradeOptions.length > 0;
                           })() && !isExpired && (
-                            <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5 border-t-2 border-blue-200/60">
-                              <Button
+                            <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5">
+                              <button
                                 onClick={() => handleUpgradeClick(enquiry)}
-                                className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:via-blue-700 hover:to-blue-800 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2.5 lg:py-2 xl:py-2.5 font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-gray-800 hover:border-gray-900"
-                                size="sm"
+                                className="w-full border-2 sm:border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/upgrade"
                               >
-                                <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 flex-shrink-0" />
-                                Upgrade to Premium
-                              </Button>
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform duration-200 relative z-10" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">Upgrade to Premium</span>
+                              </button>
                             </div>
                           )}
                         </div>
@@ -918,65 +949,83 @@ const MyEnquiries = () => {
 
                         {/* Premium Action Buttons - Perfectly Aligned */}
                         <div 
-                          className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
+                          className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:flex lg:items-stretch lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                           }}
                         >
                           {isExpired ? (
-                            <Button variant="outline" size="sm" disabled className="flex-shrink-0 border-2 border-gray-800 text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                              <span className="whitespace-nowrap">View Details</span>
-                            </Button>
+                            <button disabled className="flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black rounded-lg sm:rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden">
+                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10" />
+                              <span className="whitespace-nowrap relative z-10">View Details</span>
+                            </button>
                           ) : (
-                            <Link to={`/enquiry/${enquiry.id}`} className="flex-shrink-0">
-                              <Button variant="outline" size="sm" className="border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/btn">
-                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/btn:scale-110 transition-transform" />
-                                <span className="whitespace-nowrap tracking-tight">View Details</span>
-                              </Button>
+                            <Link to={`/enquiry/${enquiry.id}`} className="flex-shrink-0 lg:flex-1 group/btn">
+                              <button className="flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">View Details</span>
+                              </button>
                             </Link>
                           )}
                           
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <button 
                             disabled={isExpired}
-                            className="flex-shrink-0 border-2 border-gray-800 hover:border-gray-900 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/responses"
+                            className="flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
                               }
                             }}
                           >
-                            <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/responses:scale-110 transition-transform" />
-                            <span className="whitespace-nowrap tracking-tight">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
-                          </Button>
+                            {/* Physical button depth effect */}
+                            {!isExpired && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                              </>
+                            )}
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10" />
+                            <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
+                          </button>
                           
                           {enquiry.status === 'live' && !isExpired && (
-                            <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-shrink-0">
-                              <Button variant="outline" size="sm" className="border-2 border-black hover:border-black bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group/chats">
-                                <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/chats:scale-110 transition-transform" />
-                                <span className="whitespace-nowrap tracking-tight">View Chats</span>
-                              </Button>
+                            <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-shrink-0 lg:flex-1 group/chats">
+                              <button className="flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
+                              </button>
                             </Link>
                           )}
                           
-                          <Button
-                            variant="outline"
-                            size="sm"
+                          <button
                             onClick={() => {
                               if (!isExpired) {
                                 deleteEnquiry(enquiry.id);
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-none border-2 border-black hover:border-black bg-white hover:bg-red-50 text-[#4d0012] hover:text-[#33000c] text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-2 sm:py-2 lg:py-1.5 xl:py-2 px-3 sm:px-4 lg:px-3 xl:px-3.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group/delete"
+                            className="w-full sm:flex-none lg:flex-1 border-2 sm:border-4 border-black bg-white hover:bg-red-50 text-[#4d0012] hover:text-[#33000c] font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
                           >
-                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
-                            <span className="hidden sm:inline whitespace-nowrap tracking-tight">Delete Enquiry</span>
-                            <span className="sm:hidden whitespace-nowrap tracking-tight">Delete</span>
-                          </Button>
+                            {/* Physical button depth effect */}
+                            {!isExpired && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                              </>
+                            )}
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10" />
+                            <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>
+                            <span className="sm:hidden whitespace-nowrap tracking-tight relative z-10">Delete</span>
+                          </button>
                         </div>
                       </div>
                     </div>
