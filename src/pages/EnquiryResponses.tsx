@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -21,6 +21,13 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
 import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 interface Enquiry {
@@ -2764,35 +2771,44 @@ const EnquiryResponses = () => {
                   {getVisibleResponses().map((response, index) => (
                     <Card
                       key={response.id}
-                      className={`cursor-pointer border-2 border-black shadow-lg transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white hover:shadow-xl ${
+                      className={`cursor-pointer border-2 sm:border-4 border-black transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-hidden group/card ${
                         selectedResponse?.id === response.id
-                          ? 'ring-4 ring-black bg-gray-50'
-                          : ''
+                          ? 'ring-4 ring-black bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                          : 'shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
                       }`}
                       onClick={() => handleResponseClick(response)}
                     >
-                      <CardContent className="p-3.5 sm:p-4 lg:p-5 pointer-events-none">
+                      {/* Physical button depth effect */}
+                      {selectedResponse?.id !== response.id && (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                        </>
+                      )}
+                      <CardContent className="p-3.5 sm:p-4 lg:p-5 pointer-events-none relative z-10">
                         <div className="flex items-start justify-between mb-2.5 sm:mb-3 lg:mb-3.5">
-                          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-2">
+                          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 mr-2">
                             {user?.uid === enquiry?.userId && (
-                              <Badge variant="outline" className="text-xs sm:text-sm font-medium border-2 border-black">
-                                Response #{index + 1}
+                              <Badge variant="outline" className="text-[8px] sm:text-xs font-black bg-gradient-to-b from-blue-600 to-blue-700 text-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg whitespace-nowrap flex-shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                                <span className="relative z-10">Response #{index + 1}</span>
                               </Badge>
                             )}
                             <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg">{response.title}</h4>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             {response.isIdentityVerified && (
-                              <Badge className="bg-emerald-100 text-emerald-800 text-xs sm:text-sm border-2 border-emerald-300">
-                                <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
-                                Verified
-                              </Badge>
+                              <div className="flex items-center gap-0.5 sm:gap-1">
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                                <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
+                              </div>
                             )}
                           </div>
                         </div>
                         <p className="text-black font-medium text-xs sm:text-sm lg:text-base mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-between text-xs sm:text-sm lg:text-base text-black font-medium">
-                          <span className="font-semibold text-emerald-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
+                          <span className="font-semibold text-blue-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
                         </div>
                       </CardContent>
@@ -2829,6 +2845,18 @@ const EnquiryResponses = () => {
                 <>
                 <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
                   <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-4 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
+                    {/* Close Button - Top Right Corner (Mobile Only) */}
+                    <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={closeChat}
+                        className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                      >
+                        <X className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                      </Button>
+                    </div>
+                    
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
@@ -2854,7 +2882,7 @@ const EnquiryResponses = () => {
                             {enquiry && (
                               <Badge 
                                 variant={enquiry.status === 'live' ? 'default' : 'secondary'}
-                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0"
+                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0 border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                               >
                                 {enquiry.status === 'live' ? 'Live' : 'Ended'}
                               </Badge>
@@ -2865,6 +2893,20 @@ const EnquiryResponses = () => {
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
                       <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap relative" style={{ overflow: 'visible' }}>
+                        {/* Response Number Badge - Top Right */}
+                        {selectedResponse && (() => {
+                          const visibleResponses = getVisibleResponses();
+                          const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
+                          const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
+                          return responseNumber ? (
+                            <div className="flex items-center justify-center border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-2.5 py-1.5 bg-gradient-to-b from-blue-600 to-blue-700 text-white flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">#Response {responseNumber}</span>
+                            </div>
+                          ) : null;
+                        })()}
+                        
                         {/* Call Feature - Coming Soon Badge */}
                         {canUserChat(selectedResponse) && (
                           <div className="relative" style={{ zIndex: showDesktopCallPopup || showMobileCallPopup ? 10000 : 'auto' }}>
@@ -2872,7 +2914,7 @@ const EnquiryResponses = () => {
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 border-2 border-gray-400 text-gray-600 cursor-pointer min-touch"
+                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-gray-600 cursor-pointer min-touch"
                               title="Call feature coming soon"
                             >
                               <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-gray-700" />
@@ -2911,63 +2953,135 @@ const EnquiryResponses = () => {
                           </div>
                         )}
                         
-                        {/* Deal Closed - Only for buyers */}
-                        {enquiry && user?.uid === enquiry.userId && (
-                          <Button
-                            onClick={handleCloseDealClick}
-                            variant="outline"
-                            size="sm"
-                            disabled={enquiry.status === 'deal_closed' || enquiry.dealClosed === true}
-                            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch ${
-                              enquiry.status === 'deal_closed' || enquiry.dealClosed === true
-                                ? 'text-gray-400 border-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                : 'text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 border-gray-800'
-                            }`}
-                          >
-                            Deal Closed
-                          </Button>
-                        )}
+                        {/* Settings Menu - Mobile Only (in flex container) */}
+                        <div className="lg:hidden">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                              >
+                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 sm:w-48 bg-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg shadow-lg p-1.5 sm:p-2">
+                              {/* Deal Closed - Only for buyers */}
+                              {enquiry && user?.uid === enquiry.userId && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={handleCloseDealClick}
+                                    disabled={enquiry.status === 'deal_closed' || enquiry.dealClosed === true}
+                                    className={`text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer min-touch relative overflow-hidden ${
+                                      enquiry.status === 'deal_closed' || enquiry.dealClosed === true
+                                        ? 'text-gray-400 cursor-not-allowed opacity-50'
+                                        : 'text-slate-600 hover:text-green-700 hover:bg-green-50'
+                                    }`}
+                                  >
+                                    <span className="relative z-10">Deal Closed</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator className="my-1 sm:my-1.5 bg-gray-300" />
+                                </>
+                              )}
+                              
+                              {/* End Chat - For both buyers and sellers */}
+                              <DropdownMenuItem
+                                onClick={handleEndChatClick}
+                                className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-orange-700 hover:bg-orange-50 relative overflow-hidden"
+                              >
+                                <span className="relative z-10">End Chat</span>
+                              </DropdownMenuItem>
+                              
+                              {/* Block/Unblock User - For both buyers and sellers */}
+                              <DropdownMenuSeparator className="my-1 sm:my-1.5 bg-gray-300" />
+                              {isBlocked ? (
+                                <DropdownMenuItem
+                                  onClick={unblockUser}
+                                  className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-green-700 hover:bg-green-50 relative overflow-hidden"
+                                >
+                                  <span className="relative z-10">Unblock User</span>
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={handleBlockUserClick}
+                                  className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-red-700 hover:bg-red-50 relative overflow-hidden"
+                                >
+                                  <span className="relative z-10">Block User</span>
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                         
-                        {/* End Chat - For both buyers and sellers */}
-                        <Button
-                          onClick={handleEndChatClick}
-                          variant="outline"
-                          size="sm"
-                          className="text-slate-600 hover:text-orange-700 hover:border-orange-300 hover:bg-orange-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
-                        >
-                          End Chat
-                        </Button>
-                        
-                        {/* Block/Unblock User - For both buyers and sellers */}
-                        {isBlocked ? (
-                          <Button
-                            onClick={unblockUser}
-                            variant="outline"
-                            size="sm"
-                            className="text-slate-600 hover:text-green-700 hover:border-green-300 hover:bg-green-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
-                          >
-                            Unblock User
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={handleBlockUserClick}
-                            variant="outline"
-                            size="sm"
-                            className="text-slate-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50 text-xs sm:text-sm font-medium px-2.5 sm:px-3 lg:px-4 py-2 h-9 sm:h-10 lg:h-11 rounded-md border-2 border-gray-800 hover:border-gray-900 transition-colors duration-200 flex-shrink-0 whitespace-nowrap min-touch"
-                          >
-                            Block User
-                          </Button>
-                        )}
-                        
-                        {/* Close Chat Window - For both */}
+                        {/* Close Chat Window - Desktop Only */}
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={closeChat}
-                          className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                          className="hidden lg:flex text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                         >
-                          <X className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5" />
+                          <X className="h-5.5 w-5.5" />
                         </Button>
+                        
+                        {/* Settings Menu - Desktop Only (aligned with close button) */}
+                        <div className="hidden lg:block">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                              >
+                                <Settings className="h-5 w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 bg-white border-4 border-black rounded-lg shadow-lg p-2">
+                              {/* Deal Closed - Only for buyers */}
+                              {enquiry && user?.uid === enquiry.userId && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={handleCloseDealClick}
+                                    disabled={enquiry.status === 'deal_closed' || enquiry.dealClosed === true}
+                                    className={`text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch relative overflow-hidden ${
+                                      enquiry.status === 'deal_closed' || enquiry.dealClosed === true
+                                        ? 'text-gray-400 cursor-not-allowed opacity-50'
+                                        : 'text-slate-600 hover:text-green-700 hover:bg-green-50'
+                                    }`}
+                                  >
+                                    <span className="relative z-10">Deal Closed</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator className="my-1.5 bg-gray-300" />
+                                </>
+                              )}
+                              
+                              {/* End Chat - For both buyers and sellers */}
+                              <DropdownMenuItem
+                                onClick={handleEndChatClick}
+                                className="text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-orange-700 hover:bg-orange-50 relative overflow-hidden"
+                              >
+                                <span className="relative z-10">End Chat</span>
+                              </DropdownMenuItem>
+                              
+                              {/* Block/Unblock User - For both buyers and sellers */}
+                              <DropdownMenuSeparator className="my-1.5 bg-gray-300" />
+                              {isBlocked ? (
+                                <DropdownMenuItem
+                                  onClick={unblockUser}
+                                  className="text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-green-700 hover:bg-green-50 relative overflow-hidden"
+                                >
+                                  <span className="relative z-10">Unblock User</span>
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={handleBlockUserClick}
+                                  className="text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-red-700 hover:bg-red-50 relative overflow-hidden"
+                                >
+                                  <span className="relative z-10">Block User</span>
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                     </div>
                     
@@ -2986,7 +3100,7 @@ const EnquiryResponses = () => {
                           <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-black font-medium truncate mt-0.5">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 sm:ml-3 lg:ml-4 flex-shrink-0">
-                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-emerald-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-blue-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -3038,7 +3152,15 @@ const EnquiryResponses = () => {
                               >
                                 {/* Message Content */}
                                 {message.message && (
-                                  <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-white font-medium">{message.message}</p>
+                                  <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-white font-medium">
+                                    {message.message.split(/(₹?\d+(?:,\d+)*(?:\.\d+)?)/g).map((part, i) => {
+                                      // Check if part is a number (with or without ₹)
+                                      if (/^₹?\d+(?:,\d+)*(?:\.\d+)?$/.test(part)) {
+                                        return <span key={i} className="text-blue-100 font-bold bg-blue-800/50 px-1 rounded">{part}</span>;
+                                      }
+                                      return <span key={i}>{part}</span>;
+                                    })}
+                                  </p>
                                 )}
                               
                               {/* Attachments */}
@@ -3282,39 +3404,51 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Payment: 50% advance, 50% on delivery")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/payment"
                             >
-                              Payment
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/payment:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Payment</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Delivery: 3-5 days")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/delivery"
                             >
-                              Delivery
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delivery:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Delivery</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Bulk discounts available")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bulk"
                             >
-                              Bulk
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bulk:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Bulk</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Quality guarantee included")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-2 border-gray-800 rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/quality"
                             >
-                              Quality
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/quality:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Quality</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-[3px] border-black rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup"
                             >
-                              Meetup
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Meetup</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-white text-black border-[3px] border-black rounded-md hover:bg-gray-50 hover:border-gray-900 transition-colors duration-200 font-medium"
+                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples"
                             >
-                              Samples
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Samples</span>
                             </button>
                           </>
                         ) : (
@@ -3323,51 +3457,67 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Can you provide more details about pricing?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-blue-50 text-blue-700 border-[3px] border-black rounded-md hover:bg-blue-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/pricing"
                             >
-                              Pricing
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/pricing:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Pricing</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What's the delivery timeline?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-green-50 text-green-700 border-[3px] border-black rounded-md hover:bg-green-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/timeline"
                             >
-                              Timeline
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/timeline:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Timeline</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you share more images?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gray-50 text-gray-700 border-[3px] border-black rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/images"
                             >
-                              Images
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/images:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Images</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What are the payment terms?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-emerald-50 text-emerald-700 border-[3px] border-black rounded-md hover:bg-emerald-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/terms"
                             >
-                              Terms
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/terms:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Terms</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we meet in person to discuss?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-orange-50 text-orange-700 border-[3px] border-black rounded-md hover:bg-orange-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup2"
                             >
-                              Meetup
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup2:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Meetup</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Do you have samples I can check?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-pink-50 text-pink-700 border-[3px] border-black rounded-md hover:bg-pink-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples2"
                             >
-                              Samples
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples2:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Samples</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What's your best price for this?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-yellow-50 text-yellow-700 border-[3px] border-black rounded-md hover:bg-yellow-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bestprice"
                             >
-                              Best Price
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bestprice:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Best Price</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you provide references or reviews?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-indigo-50 text-indigo-700 border-[3px] border-black rounded-md hover:bg-indigo-100 transition-colors duration-200 font-medium min-touch"
+                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/reviews"
                             >
-                              Reviews
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/reviews:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Reviews</span>
                             </button>
                           </>
                         )}
