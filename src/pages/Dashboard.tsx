@@ -1287,17 +1287,17 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[120px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-12 sm:pb-16 lg:pb-14 xl:pb-16">
-                <div className="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+                <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
-                  <div className="text-center w-full flex items-center justify-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
+                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
+                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
                   </div>
                   
                   {/* Content Card - Black Background */}
-                  <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
+                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
-                      <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                      <p className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
                         Track your needs; We won't be tracking you.
                       </p>
                     </div>
@@ -1421,8 +1421,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
-                                : 'bg-white border-[6px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
+                                : 'bg-white border-2 border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1796,17 +1796,17 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[120px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-12 sm:pb-16 lg:pb-14 xl:pb-16">
-                <div className="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+                <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
-                  <div className="text-center w-full flex items-center justify-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Responses</h2>
+                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
+                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Responses</h2>
                   </div>
                   
                   {/* Content Card - Black Background */}
-                  <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
+                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
-                      <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                      <p className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
                         Track your sales; We won't be tracking you.
                       </p>
                     </div>
