@@ -1370,7 +1370,7 @@ const Dashboard = () => {
                       </Button>
                   </div>
                   ) : (
-                    <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+                    <div className="space-y-3 sm:space-y-4 lg:space-y-5">
                       {(() => {
                         const now = new Date();
                         const isExpired = (e: Enquiry) => {
@@ -1419,7 +1419,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 lg:max-w-full ${
+                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full ${
                               expiredFlag
                                 ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
                                 : 'bg-white border-[6px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
@@ -1435,7 +1435,7 @@ const Dashboard = () => {
                             }}
                           >
                             {/* Premium Header with Sophisticated Design */}
-                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-5 sm:px-6 lg:px-3.5 xl:px-4 py-4 sm:py-5 lg:py-2.5 xl:py-3 ${
+                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
                               {/* Elegant pattern overlay */}
@@ -1450,7 +1450,7 @@ const Dashboard = () => {
                                   <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3 mb-2.5 lg:mb-2 xl:mb-2">
                                     <h5 className={`text-sm sm:text-lg lg:text-xs xl:text-sm font-bold leading-snug tracking-tight truncate ${
                                       expiredFlag ? 'text-gray-400' : 'text-white drop-shadow-sm'
-                                    }`}>
+                                    } hidden`}>
                                   {enquiry.title}
                                 </h5>
                                     {/* Show verified badge if: 
@@ -1491,31 +1491,33 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-5 overflow-visible">
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-4 sm:p-5 lg:p-4 xl:p-5 overflow-visible">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
-                              {/* Desktop: Enquiry Details Section - Compact Horizontal Layout */}
-                              <div className="hidden lg:block relative z-10 mb-2.5 xl:mb-3">
-                                <div className="space-y-2 xl:space-y-2.5">
-                                  {/* Description - Compact */}
-                                  <div className="flex items-start gap-2 xl:gap-2.5 px-2.5 xl:px-3 py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg xl:rounded-lg">
-                                    <MessageSquare className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                                    <div className="flex-1 min-w-0">
-                                      <span className="text-[10px] xl:text-[10px] text-gray-600 font-medium">Description: </span>
-                                      <span className="text-[10px] xl:text-[10px] text-gray-700 line-clamp-2">
-                                        {enquiry.description || 'No description provided'}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Budget, Location, Category - Horizontal Row */}
-                                  <div className="flex items-center gap-2 xl:gap-2.5 flex-wrap">
+                              {/* Enquiry Title - Moved from header to top left of card */}
+                              <div className="relative z-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5">
+                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-bold leading-snug tracking-tight ${
+                                  expiredFlag ? 'text-gray-500' : 'text-gray-900'
+                                }`}>
+                                  {enquiry.title}
+                                </h5>
+                              </div>
+                              
+                              {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
+                              <div className="block relative z-10 mb-2 sm:mb-2.5 xl:mb-2.5 w-full">
+                                <div className="w-full">
+                                  {/* Budget, Location, Category - Horizontal Row, full width on mobile */}
+                                  <div className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 flex-wrap sm:flex-nowrap w-full">
                                     {/* Budget */}
                                     {enquiry.budget && (
-                                      <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-1.5 xl:py-2 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/60 rounded-lg xl:rounded-lg">
-                                        <span className="text-sm xl:text-base font-extrabold text-green-700">₹</span>
-                                        <span className="text-xs xl:text-sm font-bold text-gray-900">
+                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/budget">
+                                        {/* Physical button depth effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                        {/* Shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/budget:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
+                                        <span className="text-sm sm:text-sm xl:text-base font-extrabold text-black relative z-10">₹</span>
+                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black relative z-10">
                                           {enquiry.budget.toLocaleString('en-IN')}
                                         </span>
                                       </div>
@@ -1523,9 +1525,13 @@ const Dashboard = () => {
                                     
                                     {/* Location */}
                                     {enquiry.location && (
-                                      <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-1.5 xl:py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/60 rounded-lg xl:rounded-lg">
-                                        <MapPin className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-blue-600" />
-                                        <span className="text-xs xl:text-sm font-bold text-gray-900 truncate max-w-[120px] xl:max-w-[150px]">
+                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/location">
+                                        {/* Physical button depth effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                        {/* Shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
+                                        <MapPin className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0 relative z-10" />
+                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black truncate relative z-10">
                                           {enquiry.location}
                                         </span>
                                       </div>
@@ -1533,10 +1539,14 @@ const Dashboard = () => {
                                     
                                     {/* Category */}
                                     {enquiry.category && (
-                                      <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-1.5 xl:py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200/60 rounded-lg xl:rounded-lg">
-                                        <Tag className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-purple-600" />
-                                        <span className="text-xs xl:text-sm font-bold text-gray-900 capitalize">
-                                          {enquiry.category.replace('-', ' ')}
+                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/category">
+                                        {/* Physical button depth effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                        {/* Shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/category:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
+                                        <Tag className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0 relative z-10" />
+                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black capitalize relative z-10 whitespace-nowrap truncate max-w-[8ch]">
+                                          {enquiry.category.replace('-', ' ').slice(0, 8)}
                                         </span>
                                       </div>
                                     )}
@@ -1670,6 +1680,38 @@ const Dashboard = () => {
                                     </div>
                                   )}
 
+                              {/* Plan Notice - Show plan-specific seller limit, positioned above response button */}
+                              {(() => {
+                                const planId = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
+                                let planText = '';
+                                
+                                switch (planId) {
+                                  case 'free':
+                                    planText = 'With Free Plan Meet Only 2 Different Sellers';
+                                    break;
+                                  case 'basic':
+                                    planText = 'With Basic Plan Meet Only 5 Different Sellers';
+                                    break;
+                                  case 'standard':
+                                    planText = 'With Standard Plan Meet Only 10 Different Sellers';
+                                    break;
+                                  case 'premium':
+                                  case 'pro':
+                                    planText = 'With Premium Plan Meet Unlimited Sellers';
+                                    break;
+                                  default:
+                                    planText = 'With Free Plan Meet Only 2 Different Sellers';
+                                }
+                                
+                                return (
+                                  <div className="relative z-10 mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1">
+                                    <p className="text-[7px] sm:text-[8px] lg:text-[8px] xl:text-[9px] font-bold text-gray-700 text-center">
+                                      {planText}
+                                    </p>
+                                  </div>
+                                );
+                              })()}
+
                               {/* Premium Action Buttons - Perfectly Aligned */}
                               <div 
                                 className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap"
@@ -1691,7 +1733,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
+                                  className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale hover:bg-gray-50"
                               >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -1946,9 +1988,6 @@ const Dashboard = () => {
                             
                             <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
-                                <h5 className="text-xs sm:text-base lg:text-xs xl:text-sm font-black text-white truncate leading-snug tracking-tight">
-                                {submission.title}
-                              </h5>
                                 {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
                                   <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
                                     <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
@@ -2013,28 +2052,23 @@ const Dashboard = () => {
                                 ) : (
                                   <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold backdrop-blur-sm shadow-sm ${
                                     submission.status === 'approved'
-                                      ? 'bg-green-900/80 text-green-50 border-green-800/90'
+                                      ? 'bg-transparent text-black border-black'
                                       : 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-300/60'
                                   }`}>
                                     <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-full flex-shrink-0 ${
-                                      submission.status === 'approved' ? 'bg-green-800/80' : 'bg-amber-500/20'
+                                      submission.status === 'approved' ? 'bg-transparent' : 'bg-amber-500/20'
                                     }`}>
                                       {submission.status === 'approved' ? (
-                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-green-50" />
+                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-black" />
                                       ) : (
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
                                       )}
                                     </div>
-                                    <span className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-black ${
-                                      submission.status === 'approved' ? 'text-green-50' : 'text-amber-900'
+                                    <span className={`text-sm sm:text-base lg:text-sm xl:text-base font-black ${
+                                      submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
-                                {submission.status === 'approved' ? 'Live Response' : 'Under Review'}
+                                {submission.title}
                               </span>
-                              {submission.status === 'approved' && (
-                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-green-50 font-black ml-0.5 sm:ml-1">
-                                  (Ready for chat)
-                                </span>
-                                    )}
                                   </div>
                               )}
                             </div>
@@ -2052,7 +2086,7 @@ const Dashboard = () => {
                             {/* Submission Time */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
                                 <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-400 flex-shrink-0" />
-                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-bold">
+                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500 font-medium">
                                 Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
                                 </span>
                             </div>
@@ -2064,10 +2098,14 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="flex-1 sm:flex-none border border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
+                                    className="flex-1 sm:flex-none border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 whitespace-nowrap relative overflow-hidden group/chat"
                                 >
-                                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                                  Chat
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10" />
+                                  <span className="relative z-10">Chat</span>
                                 </Button>
                               )}
                               
