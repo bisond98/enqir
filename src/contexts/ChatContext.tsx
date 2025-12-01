@@ -205,6 +205,137 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.warn("Error loading chats collection:", err);
       }
 
+      // 3. Load enquiries with approved responses that are ready to chat
+      // (even if no chat messages exist yet)
+      // NOTE: These won't affect notification counts since they have no messages
+      try {
+        // For buyers: Get enquiries they posted with approved responses
+        const buyerEnquiriesQuery = query(
+          collection(db, "enquiries"),
+          where("userId", "==", user.uid)
+        );
+        const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
+        
+        const buyerEnquiryPromises: Promise<void>[] = [];
+        buyerEnquiriesSnapshot.forEach((enquiryDoc) => {
+          const enquiryData = enquiryDoc.data();
+          const enquiryId = enquiryDoc.id;
+          
+          // Check if enquiry is still active (not expired, closed, etc.)
+          const now = new Date();
+          const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+          const isExpired = deadline && deadline < now;
+          const isClosed = enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true;
+          const isRejected = enquiryData.status === 'rejected' || enquiryData.status === 'completed';
+          
+          if (isExpired || isClosed || isRejected) return;
+          
+          // Get approved responses for this enquiry
+          const promise = getDocs(
+            query(
+              collection(db, "sellerSubmissions"),
+              where("enquiryId", "==", enquiryId),
+              where("status", "==", "approved")
+            )
+          ).then((responsesSnapshot) => {
+            responsesSnapshot.forEach((responseDoc) => {
+              const responseData = responseDoc.data();
+              const sellerId = responseData.sellerId;
+              if (!sellerId) return;
+              
+              const threadKey = `${enquiryId}_${sellerId}`;
+              
+              // Only add if chat doesn't already exist (no messages yet)
+              if (!chatThreadMap.has(threadKey)) {
+                chatThreadMap.set(threadKey, {
+                  id: threadKey,
+                  enquiryId: enquiryId,
+                  sellerId: sellerId,
+                  enquiryTitle: enquiryData.title || "Untitled Enquiry",
+                  enquiryData: enquiryData,
+                  participants: [enquiryData.userId, sellerId],
+                  updatedAt: responseData.createdAt || responseData.updatedAt,
+                  lastMessage: {
+                    text: "Ready to chat - Click to start conversation",
+                    senderId: sellerId,
+                    timestamp: responseData.createdAt || responseData.updatedAt
+                  },
+                  isBuyerChat: true, // User is the buyer
+                  unreadCount: 0 // Explicitly set to 0 - no unread messages for ready-to-chat items
+                });
+              }
+            });
+          }).catch(err => {
+            console.error("Error fetching responses for enquiry:", err);
+          });
+          
+          buyerEnquiryPromises.push(promise);
+        });
+        
+        // For sellers: Get approved responses they submitted
+        const sellerResponsesQuery = query(
+          collection(db, "sellerSubmissions"),
+          where("sellerId", "==", user.uid),
+          where("status", "==", "approved")
+        );
+        const sellerResponsesSnapshot = await getDocs(sellerResponsesQuery);
+        
+        const sellerResponsePromises: Promise<void>[] = [];
+        sellerResponsesSnapshot.forEach((responseDoc) => {
+          const responseData = responseDoc.data();
+          const enquiryId = responseData.enquiryId;
+          if (!enquiryId) return;
+          
+          // Get enquiry data
+          const promise = getDoc(doc(db, "enquiries", enquiryId)).then((enquiryDoc) => {
+            if (!enquiryDoc.exists()) return;
+            
+            const enquiryData = enquiryDoc.data();
+            
+            // Check if enquiry is still active
+            const now = new Date();
+            const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+            const isExpired = deadline && deadline < now;
+            const isClosed = enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true;
+            const isRejected = enquiryData.status === 'rejected' || enquiryData.status === 'completed';
+            
+            if (isExpired || isClosed || isRejected) return;
+            
+            const sellerId = user.uid;
+            const threadKey = `${enquiryId}_${sellerId}`;
+            
+            // Only add if chat doesn't already exist (no messages yet)
+            if (!chatThreadMap.has(threadKey)) {
+              chatThreadMap.set(threadKey, {
+                id: threadKey,
+                enquiryId: enquiryId,
+                sellerId: sellerId,
+                enquiryTitle: enquiryData.title || "Untitled Enquiry",
+                enquiryData: enquiryData,
+                participants: [enquiryData.userId, sellerId],
+                updatedAt: responseData.createdAt || responseData.updatedAt,
+                lastMessage: {
+                  text: "Ready to chat - Click to start conversation",
+                  senderId: sellerId,
+                  timestamp: responseData.createdAt || responseData.updatedAt
+                },
+                isBuyerChat: false, // User is the seller
+                unreadCount: 0 // Explicitly set to 0 - no unread messages for ready-to-chat items
+              });
+            }
+          }).catch(err => {
+            console.error("Error fetching enquiry for response:", err);
+          });
+          
+          sellerResponsePromises.push(promise);
+        });
+        
+        // Wait for all new promises to complete
+        await Promise.all([...buyerEnquiryPromises, ...sellerResponsePromises]);
+      } catch (err) {
+        console.warn("Error loading ready-to-chat enquiries:", err);
+      }
+
       // Convert map to array and fetch missing enquiry titles and data
       const threads = Array.from(chatThreadMap.values());
       
@@ -279,28 +410,48 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     loadActiveChats();
     
-    // Set up real-time listener for chat messages to refresh
+    // Set up real-time listeners for chat messages and seller submissions to refresh
     if (!user?.uid) return;
     
     let timeoutId: NodeJS.Timeout;
     
-    const unsubscribe = onSnapshot(
+    const refreshChats = () => {
+      // Debounce refresh to avoid too frequent updates
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        loadActiveChats();
+      }, 500);
+    };
+    
+    // Listen to chat messages changes
+    const unsubscribeChatMessages = onSnapshot(
       query(collection(db, "chatMessages")),
       () => {
-        // Debounce refresh to avoid too frequent updates
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          loadActiveChats();
-        }, 500);
+        refreshChats();
       },
       (error) => {
         console.error("Error listening to chat messages:", error);
       }
     );
 
+    // Listen to seller submissions changes (for new approved responses / ready-to-chat items)
+    const unsubscribeSellerSubmissions = onSnapshot(
+      query(
+        collection(db, "sellerSubmissions"),
+        where("status", "==", "approved")
+      ),
+      () => {
+        refreshChats();
+      },
+      (error) => {
+        console.error("Error listening to seller submissions:", error);
+      }
+    );
+
     return () => {
       clearTimeout(timeoutId);
-      unsubscribe();
+      unsubscribeChatMessages();
+      unsubscribeSellerSubmissions();
     };
   }, [user?.uid]);
 
