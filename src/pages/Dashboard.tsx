@@ -1505,55 +1505,7 @@ const Dashboard = () => {
                               </div>
                               
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
-                              <div className="block relative z-10 mb-2 sm:mb-2.5 xl:mb-2.5 w-full">
-                                <div className="w-full">
-                                  {/* Budget, Location, Category - Horizontal Row, full width on mobile */}
-                                  <div className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 flex-wrap sm:flex-nowrap w-full">
-                                    {/* Budget */}
-                                    {enquiry.budget && (
-                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/budget">
-                                        {/* Physical button depth effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                        {/* Shimmer effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/budget:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
-                                        <span className="text-sm sm:text-sm xl:text-base font-extrabold text-black relative z-10">₹</span>
-                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black relative z-10">
-                                          {enquiry.budget.toLocaleString('en-IN')}
-                                        </span>
-                                      </div>
-                                    )}
-                                    
-                                    {/* Location */}
-                                    {enquiry.location && (
-                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/location">
-                                        {/* Physical button depth effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                        {/* Shimmer effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
-                                        <MapPin className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0 relative z-10" />
-                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black truncate relative z-10">
-                                          {enquiry.location}
-                                        </span>
-                                      </div>
-                                    )}
-                                    
-                                    {/* Category */}
-                                    {enquiry.category && (
-                                      <div className="flex items-center gap-1.5 sm:gap-1.5 xl:gap-2 px-2.5 sm:px-3 xl:px-3 py-1.5 sm:py-2 xl:py-2 bg-gradient-to-b from-gray-200 to-gray-300 border-2 sm:border-2 xl:border-2 border-black rounded-lg sm:rounded-lg xl:rounded-lg flex-1 min-w-0 w-full sm:w-auto shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/category">
-                                        {/* Physical button depth effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                        {/* Shimmer effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/category:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
-                                        <Tag className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0 relative z-10" />
-                                        <span className="text-xs sm:text-xs xl:text-sm font-bold text-black capitalize relative z-10 whitespace-nowrap truncate max-w-[8ch]">
-                                          {enquiry.category.replace('-', ' ').slice(0, 8)}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              
+
                               {/* Deadline Badge - Premium Design */}
                               {(() => {
                                 const deadline = enquiry.deadline;
