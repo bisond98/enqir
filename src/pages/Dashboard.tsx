@@ -1287,35 +1287,41 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
-                {/* Header Section with Title - Centered */}
-                <div className="text-center w-full">
-                  <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
-                </div>
-                
-                {/* Content Card - Black Background */}
-                <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
-                  <div className="text-center">
-                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
-                      Track your needs; nobody is here to do that.
-                    </p>
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[120px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-12 sm:pb-16 lg:pb-14 xl:pb-16">
+                <div className="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                  {/* Header Section with Title - Centered */}
+                  <div className="text-center w-full flex items-center justify-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10">
+                    <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
+                  </div>
+                  
+                  {/* Content Card - Black Background */}
+                  <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
+                    <div className="text-center">
+                      <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                        Track your needs; We won't be tracking you.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
-                {/* Professional Stats Grid */}
+                {/* Professional Stats Grid - Physical Button Design */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-4">
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{allEnquiriesForStats.length || enquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Total</p>
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{allEnquiriesForStats.length || enquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Total</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{(() => {
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{(() => {
                         const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
                         const now = new Date();
                         return allEnqs.filter(e => {
@@ -1329,14 +1335,16 @@ const Dashboard = () => {
                           return true;
                         }).length;
                       })()}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Active</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Active</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{savedEnquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Saved</p>
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{savedEnquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Saved</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -1379,6 +1387,7 @@ const Dashboard = () => {
                         const ordered = [...active, ...expired];
                         return ordered.map((enquiry) => {
                         const allResponses = enquiryResponses[enquiry.id] || [];
+                        const responseCount = enquiry.responses || allResponses.length || 0;
                         const visibleResponses = getVisibleResponses(enquiry.id);
                         const lockedResponses = getLockedResponses(enquiry.id);
                         const remainingCount = getRemainingResponseCount(enquiry.id);
@@ -1466,15 +1475,15 @@ const Dashboard = () => {
                             </div>
                             
                                 {/* Premium Plan Badge */}
-                                <Badge className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-3 sm:px-4 lg:px-3 xl:px-4 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 rounded-xl shadow-lg border backdrop-blur-md ${
+                                <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
                                   enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
                                     ? 'bg-white/15 text-gray-100 border-white/20' 
                                     : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
                                 } flex-shrink-0`}>
                                   {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                                    <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
+                                    <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
                                   ) : null}
-                                  <span className="text-[10px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
+                                  <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
                                     {planInfo.name}
                                   </span>
                                 </Badge>
@@ -1482,7 +1491,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-5 overflow-visible lg:min-h-[280px] xl:min-h-[300px]">
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-4 xl:p-5 overflow-visible">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
@@ -1575,7 +1584,7 @@ const Dashboard = () => {
 
                               {/* Response Metrics - Premium Card Design with Perfect Alignment - Only show to enquiry owner */}
                               {user && user.uid === enquiry.userId && (
-                                <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative">
+                                <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative invisible">
                                   {/* Desktop: Add padding-right only if deadline exists */}
                                   <div className={`flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-2 xl:gap-2.5 ${
                                     enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-0 xl:pr-0' : ''
@@ -1689,7 +1698,9 @@ const Dashboard = () => {
                                   {/* Shimmer effect */}
                                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">View Responses</span>
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">
+                                    {responseCount} {responseCount === 1 ? 'Response' : 'Responses'}
+                                  </span>
                               </Button>
                               
                                 {/* Premium Upgrade Button - Mobile/Tablet Only (Desktop version is in Response Metrics) */}
@@ -1791,49 +1802,57 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
-                {/* Header Section with Title */}
-                <div className="text-center mb-4 sm:mb-6">
-                  <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Your Responses</h2>
-                </div>
-                
-                {/* Content Card - Black Background */}
-                <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4">
-                  <div className="text-center">
-                    <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
-                      Track your sales. You need money, right?
-                    </p>
+              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[120px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-12 sm:pb-16 lg:pb-14 xl:pb-16">
+                <div className="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                  {/* Header Section with Title - Centered */}
+                  <div className="text-center w-full flex items-center justify-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10">
+                    <h2 className="text-xl sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Responses</h2>
+                  </div>
+                  
+                  {/* Content Card - Black Background */}
+                  <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-3 xl:p-4 w-full">
+                    <div className="text-center">
+                      <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                        Track your sales; We won't be tracking you.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
-                {/* Professional Stats Grid with Gradients */}
+                {/* Professional Stats Grid with Gradients - Physical Button Design */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Approved</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Approved</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Pending</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Pending</p>
                     </CardContent>
                   </Card>
                   
-                  <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-                    <CardContent className="p-2 sm:p-3 text-center">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">
+                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
+                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Rejected</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Rejected</p>
                     </CardContent>
                   </Card>
                 </div>
