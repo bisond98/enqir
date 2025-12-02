@@ -1,7 +1,7 @@
 // 🛡️ PROTECTED FILE - Mobile optimizations, centered descriptions, card styling
 // Last Updated: Mobile card optimizations and list view description centering
 // DO NOT REVERT: All mobile-specific optimizations are intentional
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
@@ -17,6 +17,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import { AISearchService } from "@/services/ai/aiSearchService";
 import { formatIndianCurrency } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { debounce } from "@/utils/performance";
 
 interface Enquiry {
   id: string;
@@ -115,7 +116,7 @@ export default function EnquiryWall() {
     }
   }, [showSuggestions]);
 
-  // Load enquiries with real-time updates
+  // Load enquiries with real-time updates (with error handling)
   useEffect(() => {
     setLoading(true);
     
@@ -315,29 +316,54 @@ export default function EnquiryWall() {
     };
   }, []);
 
-  // Fetch user profiles for all enquiry owners to show trust badges
+  // Fetch user profiles for all enquiry owners to show trust badges (optimized with batching)
   useEffect(() => {
     if (enquiries.length === 0) return;
 
+    let isMounted = true;
+
     const fetchUserProfiles = async () => {
-      const profiles: {[key: string]: any} = {};
-      const userIds = [...new Set(enquiries.map(enquiry => enquiry.userId))];
-      
-      for (const userId of userIds) {
-        try {
-          const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
-          if (profileDoc.exists()) {
-            profiles[userId] = profileDoc.data();
+      try {
+        const profiles: {[key: string]: any} = {};
+        const userIds = [...new Set(enquiries.map(enquiry => enquiry.userId))];
+        
+        // Batch fetch profiles for better performance
+        const profilePromises = userIds.map(async (userId) => {
+          try {
+            const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+            if (profileDoc.exists()) {
+              return { userId, data: profileDoc.data() };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error fetching user profile for ${userId}:`, error);
+            return null;
           }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
+        });
+        
+        const results = await Promise.all(profilePromises);
+        
+        if (isMounted) {
+          results.forEach((result) => {
+            if (result) {
+              profiles[result.userId] = result.data;
+            }
+          });
+          setUserProfiles(profiles);
+        }
+      } catch (error) {
+        console.error('Error fetching user profiles:', error);
+        if (isMounted) {
+          setUserProfiles({});
         }
       }
-      
-      setUserProfiles(profiles);
     };
 
     fetchUserProfiles();
+
+    return () => {
+      isMounted = false;
+    };
   }, [enquiries]);
 
   // AI-powered search function
@@ -429,24 +455,31 @@ export default function EnquiryWall() {
     return Array.from(suggestionsSet).slice(0, 5);
   };
 
-  // Handle search input with AI suggestions
-  const handleSearchChange = async (value: string) => {
+  // Debounced search handler for better performance
+  const debouncedSearch = useCallback(
+    debounce(async (value: string) => {
+      if (value.trim()) {
+        // Generate suggestions from actual enquiry data
+        const suggestions = generateSuggestions(value);
+        setSearchSuggestions(suggestions);
+        setShowSuggestions(suggestions.length > 0);
+        
+        // Perform AI search
+        await handleAISearch(value);
+      } else {
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+        setAiSearchResults(null);
+      }
+    }, 300),
+    []
+  );
+
+  // Handle search input with AI suggestions (optimized with debouncing)
+  const handleSearchChange = useCallback(async (value: string) => {
     setSearchTerm(value);
-    
-    if (value.trim()) {
-      // Generate suggestions from actual enquiry data
-      const suggestions = generateSuggestions(value);
-      setSearchSuggestions(suggestions);
-      setShowSuggestions(suggestions.length > 0);
-      
-      // Perform AI search
-      await handleAISearch(value);
-    } else {
-      setSearchSuggestions([]);
-      setShowSuggestions(false);
-      setAiSearchResults(null);
-    }
-  };
+    debouncedSearch(value);
+  }, [debouncedSearch]);
 
   // Find matching category for a suggestion
   const findMatchingCategory = (suggestion: string): string | null => {
@@ -567,8 +600,8 @@ export default function EnquiryWall() {
     }
   };
 
-  // Get final results - AI search completely overrides original search
-  const finalResults = (() => {
+  // Get final results - AI search completely overrides original search (memoized for performance)
+  const finalResults = useMemo(() => {
     let results: Enquiry[] = [];
     
     // If AI search is active, use AI results only
@@ -589,7 +622,7 @@ export default function EnquiryWall() {
     
     // Sort: User's enquiries in selected category first, then others
     if (selectedCategory !== "all") {
-      return results.sort((a, b) => {
+      return [...results].sort((a, b) => {
         // Check if enquiry matches the selected category
         const aMatchesCategory = a.category === selectedCategory || 
           (a.categories && a.categories.includes(selectedCategory));
@@ -616,40 +649,47 @@ export default function EnquiryWall() {
     }
     
     return results;
-  })();
+  }, [aiSearchResults, enquiries, searchTerm, selectedCategory, authUser]);
 
-  // Deduplicate final results by ID to prevent duplicates
-  const filteredEnquiries = Array.from(
-    new Map(finalResults.map(enquiry => [enquiry.id, enquiry])).values()
-  );
+  // Memoize filtered enquiries for better performance
+  const filteredEnquiries = useMemo(() => {
+    return Array.from(
+      new Map(finalResults.map(enquiry => [enquiry.id, enquiry])).values()
+    );
+  }, [finalResults]);
 
   // Check if we need to show "no enquiries in category" message and fallback to all
-  const showCategoryFallback = filteredEnquiries.length === 0 && selectedCategory !== "all" && !aiSearchResults;
+  const showCategoryFallback = useMemo(() => {
+    return filteredEnquiries.length === 0 && selectedCategory !== "all" && !aiSearchResults;
+  }, [filteredEnquiries.length, selectedCategory, aiSearchResults]);
   
   // If no enquiries in selected category, show all enquiries as fallback
-  const displayEnquiries = showCategoryFallback ? enquiries : filteredEnquiries;
+  const displayEnquiries = useMemo(() => {
+    return showCategoryFallback ? enquiries : filteredEnquiries;
+  }, [showCategoryFallback, enquiries, filteredEnquiries]);
 
-  const isOwnEnquiry = (enquiry: Enquiry) => {
+  // Memoize helper functions for better performance
+  const isOwnEnquiry = useCallback((enquiry: Enquiry) => {
     return authUser && enquiry.userId === authUser.uid;
-  };
+  }, [authUser]);
 
   // Helper to check if an enquiry is expired (uses currentTime state for real-time updates)
-  const isEnquiryOutdated = (enquiry: Enquiry) => {
+  const isEnquiryOutdated = useCallback((enquiry: Enquiry) => {
     if (!enquiry.deadline) return false;
     const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
     return currentTime > deadline;
-  };
+  }, [currentTime]);
 
   // Helper to check if an enquiry is deal closed (case-insensitive)
-  const isDealClosed = (enquiry: Enquiry) => {
+  const isDealClosed = useCallback((enquiry: Enquiry) => {
     const status = (enquiry.status || '').toLowerCase().trim();
     return status === 'deal_closed' || enquiry.dealClosed === true;
-  };
+  }, []);
 
   // Helper to check if an enquiry is disabled (expired or deal closed)
-  const isEnquiryDisabled = (enquiry: Enquiry) => {
+  const isEnquiryDisabled = useCallback((enquiry: Enquiry) => {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
-  };
+  }, [isEnquiryOutdated, isDealClosed]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 

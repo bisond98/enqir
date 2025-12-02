@@ -2538,8 +2538,8 @@ const EnquiryResponses = () => {
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight">
-                      Responses
+                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                      Chat
                     </h1>
                   </div>
                 </div>
@@ -2547,12 +2547,7 @@ const EnquiryResponses = () => {
                 {/* Content Card - White Background */}
                 <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                   <div className="text-center">
-                    <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                      <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                        Chat
-                      </h2>
-                    </div>
-                    <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                    <div className="space-y-3 sm:space-y-4">
                       {/* Title Row */}
                       <div className="flex items-center justify-center gap-3">
                         <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight">
@@ -2570,7 +2565,7 @@ const EnquiryResponses = () => {
                       <div className="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap">
                         <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5">
                           <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
-                          <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
+                          <span className="text-[8px] sm:text-[9px] text-black font-medium capitalize">{enquiry.category}</span>
                         </div>
                       </div>
                       
@@ -2688,15 +2683,19 @@ const EnquiryResponses = () => {
                 </div>
               </div>
               
+              {/* Chat Heading in Black Header */}
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    Chat
+                  </h1>
+                </div>
+              </div>
+              
               {/* Content Card - White Background */}
               <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Chat
-                    </h2>
-                  </div>
-                  <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                  <div className="space-y-3 sm:space-y-4">
                     {/* Title Row with Response Count Badge */}
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight truncate flex-1 min-w-0">
@@ -2714,7 +2713,7 @@ const EnquiryResponses = () => {
                     <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center">
                       <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5">
                         <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
-                        <span className="text-xs sm:text-sm text-black font-medium capitalize">{enquiry.category}</span>
+                        <span className="text-[8px] sm:text-[9px] text-black font-medium capitalize">{enquiry.category}</span>
                       </div>
                       {enquiry.isUrgent && (
                         <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5 bg-red-50">
@@ -2844,14 +2843,14 @@ const EnquiryResponses = () => {
                 // Always show chat box for sellers, but with different behavior
                 <>
                 <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
-                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-4 border-black bg-slate-50/50 p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
+                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-4 border-black bg-black p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={closeChat}
-                        className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                        className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                       >
                         <X className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                       </Button>
@@ -2861,13 +2860,13 @@ const EnquiryResponses = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-white" />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-black">Chat</h2>
-                            <span className="text-xs sm:text-sm text-black font-medium">with</span>
+                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-white">Chat</h2>
+                            <span className="text-xs sm:text-sm text-white font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2877,12 +2876,12 @@ const EnquiryResponses = () => {
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
                                 (userProfiles[enquiry?.userId]?.isProfileVerified || false)
                               }
-                              className="text-xs sm:text-sm"
+                              className="text-xs sm:text-sm text-white"
                             />
                             {enquiry && (
                               <Badge 
                                 variant={enquiry.status === 'live' ? 'default' : 'secondary'}
-                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0 border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0 border-2 sm:border-4 border-white rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.5)] sm:shadow-[0_4px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)] active:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden bg-white text-black"
                               >
                                 {enquiry.status === 'live' ? 'Live' : 'Ended'}
                               </Badge>
@@ -2899,7 +2898,7 @@ const EnquiryResponses = () => {
                           const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
                           const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
                           return responseNumber ? (
-                            <div className="flex items-center justify-center border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-2.5 py-1.5 bg-gradient-to-b from-blue-600 to-blue-700 text-white flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
+                            <div className="flex items-center justify-center border-2 sm:border-4 border-white rounded-md sm:rounded-lg px-2.5 py-1.5 bg-white text-black flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.3)] sm:shadow-[0_4px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
                               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
                               <span className="relative z-10">#Response {responseNumber}</span>
@@ -2914,10 +2913,10 @@ const EnquiryResponses = () => {
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-gray-600 cursor-pointer min-touch"
+                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-white hover:text-white hover:bg-white/10 cursor-pointer min-touch"
                               title="Call feature coming soon"
                             >
-                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-gray-700" />
+                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-white" />
                             </Button>
                             
                             {/* Coming Soon Tooltip/Badge - Desktop */}
@@ -2960,9 +2959,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-white" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 sm:w-48 bg-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg shadow-lg p-1.5 sm:p-2">
@@ -3018,9 +3017,9 @@ const EnquiryResponses = () => {
                           variant="ghost"
                           size="sm"
                           onClick={closeChat}
-                          className="hidden lg:flex text-slate-400 hover:text-slate-600 hover:bg-slate-100 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                          className="hidden lg:flex text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                         >
-                          <X className="h-5.5 w-5.5" />
+                          <X className="h-5.5 w-5.5 text-white" />
                         </Button>
                         
                         {/* Settings Menu - Desktop Only (aligned with close button) */}
@@ -3030,9 +3029,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-slate-600 hover:text-slate-700 hover:bg-slate-100 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-5 w-5" />
+                                <Settings className="h-5 w-5 text-white" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48 bg-white border-4 border-black rounded-lg shadow-lg p-2">
@@ -3086,7 +3085,7 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-4 border-gray-800">
+                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-4 border-white bg-white -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black truncate">
@@ -3100,7 +3099,7 @@ const EnquiryResponses = () => {
                           <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-black font-medium truncate mt-0.5">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 sm:ml-3 lg:ml-4 flex-shrink-0">
-                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-blue-600">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-black">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -4254,4 +4253,3 @@ const EnquiryResponses = () => {
 };
 
 export default EnquiryResponses;
-

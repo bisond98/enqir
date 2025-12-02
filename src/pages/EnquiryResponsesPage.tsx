@@ -414,7 +414,9 @@ const EnquiryResponsesPage = () => {
         {/* Header with black background */}
         <div className="mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 border-black">
           <div className="bg-black px-3 py-3 sm:px-6 sm:py-6">
-            <h2 className="text-lg sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">Responses to "{enquiry.title}"</h2>
+            <h2 className="text-lg sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">
+              <span className="text-xs sm:text-base">Responses to</span> "{enquiry.title}"
+            </h2>
             <p className="text-gray-200 mb-0 sm:mb-6 text-[10px] sm:text-base font-medium">View and manage responses from sellers for this enquiry</p>
           </div>
         </div>
@@ -427,9 +429,13 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-white hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/amount"
                 >
-                  <div className="flex items-center justify-between w-full gap-2">
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/amount:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <div className="flex items-center justify-between w-full gap-2 relative z-10">
                     <div className="flex items-center gap-2">
                       <ArrowUpDown className="h-4 w-4 text-black" />
                       <span className="font-black text-xs sm:text-sm text-black">Amount</span>
@@ -479,9 +485,13 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-white hover:bg-gray-50 transition-all duration-200"
+                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/date"
                 >
-                  <div className="flex items-center justify-between w-full gap-2">
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/date:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <div className="flex items-center justify-between w-full gap-2 relative z-10">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-black" />
                       <span className="font-black text-xs sm:text-sm text-black">Date</span>
@@ -531,7 +541,11 @@ const EnquiryResponsesPage = () => {
         <div className="space-y-2.5 sm:space-y-6">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
-              <div key={response.id} className="border-4 border-black rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <div key={response.id} className="border-4 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:scale-[1.01] active:scale-[0.99] relative group/card">
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                 {/* Card Header - Solid black background */}
                 <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-black">
                   <div className="flex items-center justify-between gap-2">
@@ -551,7 +565,7 @@ const EnquiryResponsesPage = () => {
                 </div>
                 
                 {/* Card Content - Compact white background */}
-                <div className="p-2.5 sm:p-6 space-y-2.5 sm:space-y-4">
+                <div className="p-2.5 sm:p-6 space-y-2.5 sm:space-y-4 relative z-10">
                 
                 {/* Seller Info & Price Group */}
                 <div className="space-y-2 pb-2 border-b border-gray-200">
@@ -670,10 +684,14 @@ const EnquiryResponsesPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-2 border-black !bg-[#16a34a] hover:!bg-[#22c55e] !text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-xs font-black shadow-md hover:shadow-lg transition-all duration-200"
+                    className="w-full sm:w-auto border-4 border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-xs font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/startchat"
                   >
-                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    Start Chat
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
+                    <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
                 </div>
                 </div>

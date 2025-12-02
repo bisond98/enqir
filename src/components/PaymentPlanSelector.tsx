@@ -265,11 +265,11 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
 
   return (
     <div className={`space-y-2.5 sm:space-y-3 md:space-y-4 w-full pb-8 sm:pb-10 md:pb-12 ${className}`}>
-      <div className="text-center mb-2.5 sm:mb-4 md:mb-5">
-        <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-1.5 md:mb-2">
+      <div className="text-center mb-3 sm:mb-4 md:mb-5 min-h-[60px] sm:min-h-0 hidden">
+        <h3 className="hidden text-base sm:text-lg md:text-xl lg:text-2xl font-black text-black mb-2 sm:mb-2.5 md:mb-3">
           {isUpgrade ? 'Upgrade Your Plan' : 'Choose Your Plan'}
         </h3>
-        <p className="text-[11px] sm:text-xs md:text-sm text-gray-600 leading-relaxed">
+        <p className="hidden text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed font-semibold">
           {isUpgrade 
             ? 'Unlock premium responses' 
             : 'Your call — upgrade enquiries anytime from the dashboard.'
@@ -281,18 +281,22 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         {availablePlans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative transition-all duration-200 overflow-hidden ${
+            className={`relative transition-all duration-200 overflow-hidden group/plan ${
               selectedPlan === plan.id
-                ? 'ring-2 ring-black shadow-lg border-2 border-black'
-                : 'hover:shadow-md'
+                ? 'border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                : 'border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
             } ${
               plan.isPopular 
-                ? 'border border-black bg-blue-50/30' 
-                : 'border border-black'
-            } ${squareCards ? 'rounded-none' : ''}`}
+                ? 'bg-gradient-to-br from-blue-50 via-white to-blue-50/50' 
+                : 'bg-gradient-to-br from-white via-white to-gray-50'
+            } ${squareCards ? 'rounded-none' : 'rounded-xl sm:rounded-2xl'} hover:scale-[1.02] active:scale-[0.98]`}
           >
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none" />
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/plan:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
             {/* Card Header */}
-            <div className="bg-black px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center">
+            <div className="bg-black px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 h-auto min-h-[50px] sm:min-h-[52px] md:min-h-[48px] flex items-center relative z-10">
               <div className="flex items-center justify-between w-full gap-1.5 sm:gap-2">
                 <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                   <div className="flex-shrink-0">
@@ -317,7 +321,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             </div>
             
             {/* Card Content */}
-            <CardContent className="p-3 sm:p-3 md:p-4">
+            <CardContent className="p-3 sm:p-3 md:p-4 relative z-10">
               {/* Description */}
               <div className="mb-3 sm:mb-2.5 md:mb-2 text-center">
                 <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed font-black">{plan.description}</p>
@@ -334,17 +338,15 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               </div>
 
               {/* Select Button */}
-              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t border-black">
+              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t-2 border-black">
                 <Button
                   type="button"
                   size="sm"
-                  className={`w-full h-9 sm:h-8 text-xs sm:text-sm font-medium min-h-[44px] sm:min-h-[32px] ${
+                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-2 sm:border-4 border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
                     selectedPlan === plan.id
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                      : plan.isPopular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-black'
-                  } px-3 sm:px-4`}
+                      ? 'bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                      : 'bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                  } px-3 sm:px-4 rounded-lg sm:rounded-xl`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -352,7 +354,11 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                     handlePlanSelect(plan);
                   }}
                 >
-                  {selectedPlan === plan.id ? '✓ Selected' : 'Select'}
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/select:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <span className="relative z-10">{selectedPlan === plan.id ? '✓ Selected' : 'Select'}</span>
                 </Button>
               </div>
             </CardContent>
@@ -371,7 +377,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               <Button
                 size="sm"
                 disabled={isProcessingPayment}
-                className="h-11 sm:h-10 md:h-9 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                className="h-12 sm:h-11 md:h-10 text-sm sm:text-base md:text-lg font-black bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] md:min-h-[40px] border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-200 rounded-xl sm:rounded-2xl mx-auto disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group/upgrade hover:scale-105 active:scale-95"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (user && !isProcessingPayment) {
@@ -380,13 +386,17 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                   }
                 }}
               >
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
                 {isProcessingPayment ? (
-                  <span className="flex items-center justify-center gap-2">
+                  <span className="flex items-center justify-center gap-2 relative z-10">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Opening Razorpay...</span>
                   </span>
                 ) : (
-                  'Upgrade Now'
+                  <span className="relative z-10">Upgrade Now</span>
                 )}
               </Button>
             </div>

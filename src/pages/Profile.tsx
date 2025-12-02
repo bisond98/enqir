@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
@@ -691,17 +691,21 @@ const Profile = () => {
   return (
     <Layout>
       <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        {/* Profile Header - Matching Dashboard Style */}
+        {/* Profile Header - Matching Chat Page Size */}
         <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
           <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-            {/* Header Section with Title */}
+            {/* Spacer Section to Match Chat Page Back Button Space */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10"></div>
+              </div>
+            </div>
+            
+            {/* Profile Heading in Black Header */}
             <div className="text-center mb-4 sm:mb-6">
               <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight">
-                  {fullName || authUser.displayName || "Profile"}
-                  {isProfileVerified && (
-                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                  )}
+                <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                  Profile
                 </h1>
               </div>
             </div>
@@ -710,8 +714,11 @@ const Profile = () => {
             <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                  <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                    Profile
+                  <h2 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-black tracking-tight inline-flex items-center gap-2 sm:gap-3">
+                    {fullName || authUser.displayName || "User"}
+                    {isProfileVerified && (
+                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-black" />
+                    )}
                   </h2>
                 </div>
                 <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
@@ -798,10 +805,14 @@ const Profile = () => {
                 <Button 
                   onClick={handleEditProfile}
                   variant="outline"
-                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 !bg-white !text-black !border-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black active:!bg-white"
+                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/edit rounded-lg sm:rounded-xl"
                 >
-                  <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black" />
-                  Edit
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/edit:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black relative z-10" />
+                  <span className="relative z-10">Edit</span>
                 </Button>
               ) : null}
             </div>
@@ -1428,32 +1439,36 @@ const Profile = () => {
                     verifyingId ||
                     (idErrors.idNumber && idErrors.idNumber.length > 0)
                   }
-                  className="w-full h-8 sm:h-10 text-xs sm:text-sm"
+                  className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                 >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                   {verifyingId ? (
                     <>
                       <div 
-                        className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
+                        className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0 relative z-10"
                         style={{
                           animation: 'spin 1s linear infinite',
                           WebkitAnimation: 'spin 1s linear infinite'
                         }}
                       ></div>
-                      Verifying...
+                      <span className="relative z-10">Verifying...</span>
                     </>
                   ) : isUploading ? (
                     <>
-                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      Uploading...
+                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 relative z-10" />
+                      <span className="relative z-10">Uploading...</span>
                     </>
                   ) : (idVerificationResult && idVerificationResult.matches) ? (
                     <>
-                      Get Trust Badge
+                      <span className="relative z-10">Get Trust Badge</span>
                     </>
                   ) : (
                     <>
-                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      Verify
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 relative z-10" />
+                      <span className="relative z-10">Verify</span>
                     </>
                   )}
                 </Button>
@@ -1466,16 +1481,20 @@ const Profile = () => {
               <Button
                 onClick={handleIdUpload}
                 disabled={isUploading}
-                className="w-full h-8 sm:h-10 text-xs sm:text-sm mt-4"
+                className="w-full h-8 sm:h-10 text-xs sm:text-sm mt-4 bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
               >
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 {isUploading ? (
                   <>
-                    <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    Uploading...
+                    <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 relative z-10" />
+                    <span className="relative z-10">Uploading...</span>
                   </>
                 ) : (
                   <>
-                    Get Trust Badge
+                    <span className="relative z-10">Get Trust Badge</span>
                   </>
                 )}
               </Button>

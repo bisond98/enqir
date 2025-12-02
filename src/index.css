@@ -204,14 +204,65 @@
     will-change: auto;
   }
   
-  /* Performance: Smooth scrolling */
+  /* Performance: Smooth scrolling with optimization */
   html {
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
   
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
+    }
+  }
+  
+  /* Global performance optimizations */
+  * {
+    /* Improve rendering performance */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Optimize all interactive elements for touch */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Minimum touch target size for mobile (44x44px) */
+  @media (max-width: 768px) {
+    button,
+    a,
+    [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* Optimize scroll performance */
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+  
+  /* Reduce layout shifts */
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Optimize animations */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
   

@@ -805,8 +805,12 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="p-4 sm:p-5 lg:p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center gap-3 sm:gap-3">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/budget">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/budget:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
@@ -817,8 +821,12 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center gap-3 sm:gap-3">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
@@ -829,8 +837,12 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center gap-3 sm:gap-3">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/category">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/category:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Tag className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
@@ -843,8 +855,12 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center gap-3 sm:gap-3">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/deadline">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/deadline:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
@@ -862,8 +878,12 @@ const EnquiryDetail = () => {
                     </div>
                     
                     {enquiry.createdAt && (
-                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-sm hover:shadow-md transition-all duration-200">
-                        <div className="flex items-center gap-3 sm:gap-3">
+                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/posted:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                        <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                           <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                             <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                           </div>
@@ -954,9 +974,13 @@ const EnquiryDetail = () => {
                         <Button
                           onClick={() => navigate('/dashboard')}
                           variant="outline"
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200"
+                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/viewdashboard"
                         >
-                          View Dashboard
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewdashboard:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                          <span className="relative z-10">View Dashboard</span>
                         </Button>
                         
                         {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
@@ -983,11 +1007,15 @@ const EnquiryDetail = () => {
                           <div className="pt-3">
                             <Button
                               onClick={handleUpgradeClick}
-                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-semibold shadow-md hover:shadow-lg transition-all duration-200 rounded-xl min-h-[44px]"
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 rounded-xl min-h-[44px] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/upgrade border-4 border-black"
                               size="sm"
                             >
-                              <Crown className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5" />
-                              Upgrade to Premium
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <Crown className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1.5 relative z-10" />
+                              <span className="relative z-10">Upgrade to Premium</span>
                             </Button>
                           </div>
                         )}
@@ -1017,23 +1045,31 @@ const EnquiryDetail = () => {
                       <Button
                         variant="outline"
                         onClick={handleSave}
-                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold transition-all duration-200 ${
+                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/save ${
                           savedEnquiries.includes(enquiry.id) 
-                            ? 'bg-black text-white hover:bg-gray-900' 
-                            : 'bg-white text-black hover:bg-gray-50'
+                            ? 'bg-gradient-to-b from-black to-gray-900 text-white hover:from-gray-900 hover:to-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]' 
+                            : 'bg-gradient-to-b from-white to-gray-50 text-black hover:from-gray-50 hover:to-gray-100 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]'
                         }`}
                       >
-                        <Bookmark className={`h-4 w-4 mr-1.5 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
-                        {savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}
+                        {/* Physical button depth effect */}
+                        <div className={`absolute inset-0 bg-gradient-to-b ${savedEnquiries.includes(enquiry.id) ? 'from-white/30' : 'from-white/20'} to-transparent rounded-xl pointer-events-none`} />
+                        {/* Shimmer effect */}
+                        <div className={`absolute inset-0 bg-gradient-to-r from-transparent ${savedEnquiries.includes(enquiry.id) ? 'via-white/30' : 'via-white/20'} to-transparent -translate-x-full group-hover/save:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl`} />
+                        <Bookmark className={`h-4 w-4 mr-1.5 relative z-10 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                        <span className="relative z-10">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                       </Button>
                       
                       <Button 
                         variant="outline" 
-                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-semibold bg-white text-black hover:bg-gray-50 transition-all duration-200"
+                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/share"
                         onClick={handleShare}
                       >
-                        <Share2 className="h-4 w-4 mr-1.5" />
-                        Share
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/share:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                        <Share2 className="h-4 w-4 mr-1.5 relative z-10" />
+                        <span className="relative z-10">Share</span>
                       </Button>
                     </div>
                   </div>

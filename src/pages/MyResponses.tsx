@@ -576,7 +576,7 @@ const MyResponses = () => {
                               variant="outline" 
                               size="sm" 
                               disabled={isExpired || isEnquiryDeleted}
-                              className="w-full border border-black hover:border-black text-black hover:bg-blue-50 text-[9px] sm:text-xs font-black h-7 sm:h-8"
+                              className="w-full border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black text-[9px] sm:text-xs font-black h-7 sm:h-8 rounded-lg sm:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/viewenquiry"
                               onClick={(e) => {
                                 if (isExpired || isEnquiryDeleted) {
                                   e.preventDefault();
@@ -584,8 +584,12 @@ const MyResponses = () => {
                                 }
                               }}
                             >
-                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5" />
-                              View Enquiry
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewenquiry:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 flex-shrink-0 group-hover/viewenquiry:scale-110 transition-transform duration-200 relative z-10" />
+                              <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
                             </Button>
                           </Link>
                         </div>
@@ -619,7 +623,7 @@ const MyResponses = () => {
                                   variant="outline" 
                                   size="sm" 
                                   disabled={isExpired || isEnquiryDeleted}
-                                  className="w-full sm:w-auto border border-black hover:border-black bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white text-xs sm:text-sm h-9 sm:h-10"
+                                  className="w-full sm:w-auto border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs sm:text-sm h-9 sm:h-10 rounded-lg sm:rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/chatavailable"
                                   onClick={(e) => {
                                     if (isExpired || isEnquiryDeleted) {
                                       e.preventDefault();
@@ -627,8 +631,12 @@ const MyResponses = () => {
                                     }
                                   }}
                                 >
-                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white" />
-                                Chat Available
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chatavailable:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white flex-shrink-0 group-hover/chatavailable:scale-110 transition-transform duration-200 relative z-10" />
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">Chat Available</span>
                               </Button>
                             </Link>
                           )}

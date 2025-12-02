@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -284,20 +284,33 @@ export default function MyChats() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Professional Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16">
+          {/* Professional Header - Matching Profile/Dashboard Style */}
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
+              {/* Spacer Section to Match Profile Page */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10"></div>
+                </div>
+              </div>
+              
+              {/* Your Chats Heading in Black Header */}
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    Your Chats
+                  </h1>
+                </div>
+              </div>
+              
               {/* Content Card - White Background */}
               <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
                   <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Your Chats
-                    </h1>
+                    <p className="text-[10px] sm:text-xs text-slate-600 text-center font-medium">
+                      See all conversations you're currently having with buyers and sellers.
+                    </p>
                   </div>
-                  <p className="text-[10px] sm:text-sm text-gray-600">
-                    See all conversations you're currently having with buyers and sellers.
-                  </p>
             
                   {/* Toggle Button - Physical Button Design */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5">
@@ -482,13 +495,20 @@ export default function MyChats() {
                     style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-4 border-black bg-gradient-to-br from-white via-white to-gray-50 shadow-lg transition-all duration-300 relative overflow-hidden ${
+                      className={`border-4 border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
                         isDisabled 
-                          ? 'opacity-60 grayscale cursor-not-allowed' 
-                          : 'hover:shadow-2xl cursor-pointer group'
+                          ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
+                          : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
                       }`}
                       onClick={() => !isDisabled && openChat(chat)}
                     >
+                      {/* Physical button depth effect */}
+                      {!isDisabled && (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                        </>
+                      )}
                       {/* Animated background gradient */}
                       {!isDisabled && (
                         <motion.div
@@ -734,10 +754,10 @@ export default function MyChats() {
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
-                            className={`w-full border-2 border-black text-[9px] sm:text-[10px] lg:text-xs font-bold py-1.5 sm:py-2 relative overflow-hidden ${
+                            className={`w-full border-4 border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-lg sm:rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                               isDisabled
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400'
-                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-lg hover:shadow-xl'
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -746,20 +766,13 @@ export default function MyChats() {
                               }
                             }}
                           >
+                            {/* Physical button depth effect */}
+                            {!isDisabled && (
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                            )}
                             {/* Shimmer effect on button */}
                             {!isDisabled && (
-                              <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                                animate={{
-                                  x: ['-100%', '100%'],
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  repeat: Infinity,
-                                  repeatDelay: 2,
-                                  ease: "easeInOut"
-                                }}
-                              />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/openchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                             )}
                             
                             <motion.span
@@ -787,10 +800,10 @@ export default function MyChats() {
                                   ease: "easeInOut"
                                 }}
                               >
-                                <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5" />
+                                <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 group-hover/openchat:scale-110 transition-transform duration-200 relative z-10" />
                               </motion.div>
                             </motion.span>
-                            <span className="relative z-10">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
+                            <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
                           </Button>
                         </motion.div>
                       </div>
@@ -800,10 +813,29 @@ export default function MyChats() {
               })}
             </div>
           )}
+          
+          {/* Show All Chats Button - After Cards */}
+          <div className="flex justify-center items-center mt-6 sm:mt-8">
+            <Button
+              onClick={() => navigate('/all-chats')}
+              className="border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black hover:from-gray-50 hover:to-gray-100 text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/allchats"
+            >
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/allchats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+              <span className="relative z-10 flex items-center gap-2">
+                Show All Chats
+                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
     </Layout>
   );
 }
+
+
 
 

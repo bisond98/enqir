@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
+import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, MessageCircle, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -371,7 +371,7 @@ const MyEnquiries = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'live':
-        return <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-800" />;
+        return null; // Only show Live badge, no green tick
       case 'pending':
         return <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />;
       case 'rejected':
@@ -385,21 +385,21 @@ const MyEnquiries = () => {
 
   const getResponseLimitText = (planId: string) => {
     const plan = PAYMENT_PLANS.find(p => p.id === planId);
-    if (!plan) return 'Shows 2 responses';
+    if (!plan) return 'Connect With 2 Different Sellers';
     
     switch (planId) {
       case 'free':
-        return 'Shows 2 responses';
+        return 'Connect With 2 Different Sellers';
       case 'basic':
-        return 'Shows 5 responses';
+        return 'Connect With 5 Different Sellers';
       case 'standard':
-        return 'Shows 10 responses';
+        return 'Connect With 10 Different Sellers';
       case 'premium':
-        return 'Shows unlimited responses';
+        return 'Connect With Unlimited Sellers';
       case 'pro':
-        return 'Shows unlimited responses';
+        return 'Connect With Unlimited Sellers';
       default:
-        return 'Shows 2 responses';
+        return 'Connect With 2 Different Sellers';
     }
   };
 
@@ -490,20 +490,6 @@ const MyEnquiries = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Professional Post New Enquiry Button */}
-          <div className="flex justify-center mb-6 sm:mb-10 lg:mb-12">
-            <Link to="/post-enquiry" className="w-full sm:w-auto group">
-              <button className="w-full sm:w-auto border-4 border-black bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black py-2.5 sm:py-3 px-4 sm:px-6 lg:px-8 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden text-sm sm:text-base lg:text-lg">
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                <Plus className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 flex-shrink-0 group-hover:scale-110 transition-transform duration-200 relative z-10" />
-                <span className="relative z-10">We wish — but only legal needs.</span>
-              </button>
-            </Link>
           </div>
 
           {/* Professional Stats Summary with Animations */}
@@ -662,8 +648,8 @@ const MyEnquiries = () => {
                 >
                   <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-visible transition-all duration-300 ${
                     isExpired
-                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-800 shadow-sm'
-                      : 'bg-white border-2 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
+                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-4 border-gray-800 shadow-sm'
+                      : 'bg-white border-4 border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                   }`}>
                     {/* Premium Header with Sophisticated Design */}
                     <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
@@ -676,22 +662,9 @@ const MyEnquiries = () => {
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                       
                       <div className="relative flex items-start justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
-                        {/* Title Section with Better Typography */}
+                        {/* Title Section - Removed, moved to card content */}
                         <div className="flex-1 min-w-0 pr-1.5 sm:pr-2 lg:pr-1.5 xl:pr-2">
                           <div className="flex items-start gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
-                            <div className="flex-1 min-w-0">
-                              <h3 className={`text-xs sm:text-sm lg:text-xs xl:text-sm font-bold leading-tight tracking-tight ${
-                                isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
-                              }`}>
-                                {enquiry.title}
-                              </h3>
-                              {/* Status Message as Subheading - Aligned with title */}
-                              {getStatusMessage(enquiry) && (
-                                <div className="mt-0.5 sm:mt-0.5 lg:mt-0.5 xl:mt-0.5">
-                                  <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-300 font-medium opacity-95">{getStatusMessage(enquiry)}</span>
-                                </div>
-                              )}
-                            </div>
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
@@ -790,6 +763,21 @@ const MyEnquiries = () => {
                       })()}
 
                       <div className="relative space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
+                        {/* Enquiry Heading - Moved from header */}
+                        <div className="mb-2 sm:mb-3 lg:mb-2 xl:mb-3">
+                          <h3 className={`text-sm sm:text-base lg:text-sm xl:text-base font-bold leading-tight tracking-tight ${
+                            isExpired ? 'text-gray-400' : 'text-black'
+                          }`}>
+                            {enquiry.title}
+                          </h3>
+                          {/* Status Message as Subheading */}
+                          {getStatusMessage(enquiry) && (
+                            <div className="mt-1 sm:mt-1 lg:mt-0.5 xl:mt-1">
+                              <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500 font-medium">{getStatusMessage(enquiry)}</span>
+                            </div>
+                          )}
+                        </div>
+                        
                         {/* Enquiry Information Group */}
                         <div className="space-y-2 sm:space-y-2.5 lg:space-y-2 pb-3 sm:pb-3.5 lg:pb-2.5 xl:pb-3 border-b-2 border-gray-200/60">
                           {/* Deadline Timer - Desktop only, mobile shows badge */}
@@ -802,29 +790,18 @@ const MyEnquiries = () => {
                             </div>
                           )}
                           
-                          {/* Description */}
-                          <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
-                            {enquiry.isUrgent && (
+                          {/* Urgent Badge */}
+                          {enquiry.isUrgent && (
+                            <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                               <Badge variant="destructive" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 flex-shrink-0">
                                 <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1" />
                                 Urgent
                               </Badge>
-                            )}
-                            <p className={`text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-900 leading-snug line-clamp-2 font-semibold flex-1 ${enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-28 xl:pr-32' : ''}`}>
-                              {enquiry.description}
-                            </p>
-                          </div>
+                            </div>
+                          )}
                           
-                          {/* Stats & Category */}
+                          {/* Category */}
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 pt-1.5 sm:pt-2 lg:pt-1.5 xl:pt-2">
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-sm">
-                              <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-blue-600 flex-shrink-0" />
-                              <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-bold">{enquiry.responses || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-sm">
-                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-600 flex-shrink-0" />
-                              <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 font-bold">{enquiry.views || 0}</span>
-                            </div>
                             <Badge variant="outline" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold border-2 border-gray-300/80 text-gray-800 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white shadow-sm">
                               {enquiry.category}
                             </Badge>
@@ -913,25 +890,7 @@ const MyEnquiries = () => {
 
                         {/* Timestamps & Admin Notes Group */}
                         <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 pt-2.5 sm:pt-3 lg:pt-2.5 xl:pt-3 border-t-2 border-gray-200/60">
-                          {/* Admin Notes */}
-                          {enquiry.adminNotes && (
-                            <div className="p-3 sm:p-3.5 lg:p-3 xl:p-3.5 bg-white border border-black rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-sm">
-                              <div className="flex items-start gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
-                                <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6 lg:h-6 xl:w-7 xl:h-7 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                                  <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-white" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold text-black mb-1 sm:mb-1.5 lg:mb-1 xl:mb-1.5">Admin Notes:</h4>
-                                  <p className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-700 leading-snug">
-                                    {enquiry.adminNotes.toLowerCase().includes('auto-approved by ai') 
-                                      ? 'Great to have you here!' 
-                                      : enquiry.adminNotes}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          
+                          {/* Admin Notes - Hidden */}
                           {/* Timestamps */}
                           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
                             <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
@@ -949,7 +908,7 @@ const MyEnquiries = () => {
 
                         {/* Premium Action Buttons - Perfectly Aligned */}
                         <div 
-                          className="flex flex-wrap items-center gap-2.5 sm:gap-3 lg:flex lg:items-stretch lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
+                          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-3 sm:pt-3.5 lg:pt-3 xl:pt-3.5 border-t-2 border-gray-200/60 relative z-10"
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -961,8 +920,8 @@ const MyEnquiries = () => {
                               <span className="whitespace-nowrap relative z-10">View Details</span>
                             </button>
                           ) : (
-                            <Link to={`/enquiry/${enquiry.id}`} className="flex-shrink-0 lg:flex-1 group/btn">
-                              <button className="flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                            <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-shrink-0 lg:flex-1 group/btn">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                                 {/* Physical button depth effect */}
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                 {/* Shimmer effect */}
@@ -975,7 +934,7 @@ const MyEnquiries = () => {
                           
                           <button 
                             disabled={isExpired}
-                            className="flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
@@ -989,18 +948,18 @@ const MyEnquiries = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                               </>
                             )}
-                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10" />
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-600" />
                             <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
                           </button>
                           
                           {enquiry.status === 'live' && !isExpired && (
-                            <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-shrink-0 lg:flex-1 group/chats">
-                              <button className="flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                            <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-shrink-0 lg:flex-1 group/chats">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                 {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                                <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10 text-green-600" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
                               </button>
                             </Link>
@@ -1013,7 +972,7 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-none lg:flex-1 border-2 sm:border-4 border-black bg-white hover:bg-red-50 text-[#4d0012] hover:text-[#33000c] font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
                           >
                             {/* Physical button depth effect */}
                             {!isExpired && (
@@ -1022,7 +981,7 @@ const MyEnquiries = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                               </>
                             )}
-                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10" />
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-red-600" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>
                             <span className="sm:hidden whitespace-nowrap tracking-tight relative z-10">Delete</span>
                           </button>
@@ -1039,18 +998,23 @@ const MyEnquiries = () => {
       {/* Payment Plan Selector Modal */}
       {showPaymentSelector && selectedEnquiryForUpgrade && (
         <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-5xl w-[calc(100vw-2rem)] sm:w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 mx-auto">
-            <DialogHeader className="mb-4 sm:mb-6 md:mb-8">
-              <DialogTitle className="text-sm sm:text-base md:text-lg font-bold text-center mb-1.5 sm:mb-2 md:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
-                <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" />
-                <span className="break-words">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
+          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+            
+            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
+              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
+                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
+                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
+                </div>
+                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
               </DialogTitle>
-              <DialogDescription className="text-center text-[11px] sm:text-xs md:text-sm text-slate-600 leading-relaxed">
-                Select a plan to unlock premium responses
+              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
+                Upgrade to unlock more curated, verified sellers.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="mt-2 sm:mt-3 md:mt-4">
+            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={selectedEnquiryForUpgrade.id}

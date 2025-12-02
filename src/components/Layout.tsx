@@ -21,6 +21,7 @@ import { lazy, Suspense } from "react";
 import { collection, query, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import { usePerformanceOptimizations } from "@/hooks/use-performance";
 
 // Lazy load Mobile AI Controller to improve performance
 const MobileAIController = lazy(() => import("./MobileAIController"));
@@ -30,6 +31,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
+  
+  // Apply performance optimizations
+  usePerformanceOptimizations();
   // Get preloaded chats from context (will be empty array if not available)
   let preloadedChatsContext: { allChats: any[] } | null = null;
   try {

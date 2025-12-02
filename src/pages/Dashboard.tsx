@@ -1156,36 +1156,43 @@ const Dashboard = () => {
           {/* Professional Welcome Header */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Header Section with Title */}
+              {/* Spacer Section to Match Profile Page */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10"></div>
+                </div>
+              </div>
+              
+              {/* Dashboard Heading in Black Header */}
               <div className="text-center mb-4 sm:mb-6">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                  <h1 className="mb-2 sm:mb-3 lg:mb-4">
-                    <VerifiedUser 
-                      name={userProfile?.fullName || 'User'}
-                      isVerified={userProfile?.isProfileVerified || false}
-                          className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-black text-white inline-flex items-center gap-2 sm:gap-3 justify-center tracking-tight"
-                    />
+                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    Dashboard
                   </h1>
-                  <Button
-                    onClick={handleRefresh}
-                    disabled={refreshing}
-                    variant="outline"
-                    size="sm"
-                        className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 border-white hover:border-gray-200 bg-white/10 hover:bg-white/20"
-                    title="Refresh Dashboard Data"
-                  >
-                        <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-white ${refreshing ? 'animate-spin' : ''}`} />
-                  </Button>
                 </div>
               </div>
               
               {/* Content Card - White Background */}
               <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Dashboard
+                  <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-black tracking-tight inline-flex items-center gap-2 sm:gap-3">
+                      <VerifiedUser 
+                        name={userProfile?.fullName || ''}
+                        isVerified={userProfile?.isProfileVerified || false}
+                        className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-black"
+                      />
                     </h2>
+                    <Button
+                      onClick={handleRefresh}
+                      disabled={refreshing}
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 border-black hover:border-gray-700 bg-white hover:bg-gray-50"
+                      title="Refresh Dashboard Data"
+                    >
+                      <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-4 lg:w-4 text-black ${refreshing ? 'animate-spin' : ''}`} />
+                    </Button>
                   </div>
                   {/* Creative Toggle Button - Physical Button Design */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5">
