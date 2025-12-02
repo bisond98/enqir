@@ -317,20 +317,20 @@ const AIChatbot: React.FC = () => {
                             <span className="text-sm font-semibold text-gray-700">Assistant</span>
                           </div>
                         )}
-                        <div className="text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap text-gray-800">
+                        <div className={`text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap ${message.sender === 'user' ? 'text-white' : 'text-gray-800'}`}>
                           {message.text.split('\n').map((line, lineIndex) => {
                             // Handle bullet points
                             if (line.trim().startsWith('•')) {
                               return (
                                 <div key={lineIndex} className="flex items-start gap-2 mb-1.5">
-                                  <span className="text-gray-800 mt-1.5 flex-shrink-0">•</span>
+                                  <span className={`${message.sender === 'user' ? 'text-white' : 'text-gray-800'} mt-1.5 flex-shrink-0`}>•</span>
                                   <span className="flex-1">{line.trim().substring(1).trim()}</span>
                                 </div>
                               );
                             }
                             // Handle regular lines
                             return (
-                              <p key={lineIndex} className={lineIndex === 0 ? 'font-medium text-gray-900 mb-2' : 'mb-1.5'}>
+                              <p key={lineIndex} className={`${lineIndex === 0 ? 'font-medium mb-2' : 'mb-1.5'} ${message.sender === 'user' ? 'text-white' : 'text-gray-900'}`}>
                                 {line || '\u00A0'}
                               </p>
                             );
@@ -412,6 +412,7 @@ const AIChatbot: React.FC = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
                     className="w-full px-4 py-3 pr-12 text-sm border border-gray-200 rounded-2xl sm:rounded-3xl focus:border-gray-800 focus:ring-2 focus:ring-gray-200 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    style={{ fontSize: '16px' }}
                     disabled={isLoading}
                   />
                   {inputText.trim() && (
@@ -428,7 +429,7 @@ const AIChatbot: React.FC = () => {
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : (
-                    <Send className="h-4 w-4" />
+                    <Send className="h-4 w-4 text-white" />
                   )}
                 </button>
               </div>
