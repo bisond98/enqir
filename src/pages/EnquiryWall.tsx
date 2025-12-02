@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
@@ -52,8 +52,13 @@ export default function EnquiryWall() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  // Scroll sound effect refs
+  const categoriesScrollRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const lastScrollTopRef = useRef<number>(0);
+  const lastSoundTimeRef = useRef<number>(0);
   
   // AI Search states
   const [aiSearchResults, setAiSearchResults] = useState<{
@@ -115,6 +120,139 @@ export default function EnquiryWall() {
       };
     }
   }, [showSuggestions]);
+
+  // Initialize audio context for scroll sound (mobile & desktop compatible)
+  useEffect(() => {
+    // Create audio context immediately (will be resumed on user interaction)
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+    } catch (error) {
+      console.log('Audio context creation failed:', error);
+    }
+    
+    // Resume audio context on first user interaction (required for autoplay restrictions)
+    const resumeAudio = async () => {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        try {
+          await audioContextRef.current.resume();
+        } catch (error) {
+          console.log('Audio context resume failed:', error);
+        }
+      }
+      document.removeEventListener('touchstart', resumeAudio);
+      document.removeEventListener('mousedown', resumeAudio);
+      document.removeEventListener('click', resumeAudio);
+      document.removeEventListener('scroll', resumeAudio, true);
+    };
+    
+    // Try to resume on various user interactions
+    document.addEventListener('touchstart', resumeAudio, { passive: true, once: true });
+    document.addEventListener('mousedown', resumeAudio, { passive: true, once: true });
+    document.addEventListener('click', resumeAudio, { passive: true, once: true });
+    document.addEventListener('scroll', resumeAudio, { passive: true, once: true, capture: true });
+    
+    return () => {
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
+      }
+      document.removeEventListener('touchstart', resumeAudio);
+      document.removeEventListener('mousedown', resumeAudio);
+      document.removeEventListener('click', resumeAudio);
+      document.removeEventListener('scroll', resumeAudio, true);
+    };
+  }, []);
+
+  // iPhone-style tick sound function
+  const playTickSound = useCallback(async () => {
+    if (!audioContextRef.current) return;
+    
+    const audioContext = audioContextRef.current;
+    const now = Date.now();
+    const SOUND_COOLDOWN = 50; // Minimum ms between sounds
+    
+    // Throttle sounds to prevent too many
+    if (now - lastSoundTimeRef.current < SOUND_COOLDOWN) {
+      return;
+    }
+    
+    try {
+      // Resume context if suspended (required for some browsers)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
+      // Create a short, sharp click sound like iPhone timer
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // iPhone timer uses a short, sharp click - make it more audible
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime); // Higher pitch for click
+      oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.03);
+      
+      // Quick attack and decay - short but audible sound
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.002); // Quick attack, louder
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03); // Quick decay
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.03); // Slightly longer for better audibility
+      
+      lastSoundTimeRef.current = now;
+    } catch (error) {
+      // Silently fail if audio can't play (e.g., autoplay restrictions)
+      console.log('Sound playback failed:', error);
+    }
+  }, []);
+
+  // Add scroll sound effect to categories box (mobile & desktop)
+  useEffect(() => {
+    const scrollContainer = categoriesScrollRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const currentScrollTop = scrollContainer.scrollTop;
+      const scrollDelta = Math.abs(currentScrollTop - lastScrollTopRef.current);
+      
+      // Only play sound if scrolled enough (prevents sounds on tiny movements)
+      if (scrollDelta > 2) {
+        // Try to resume audio context if needed
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume().catch(() => {});
+        }
+        playTickSound();
+        lastScrollTopRef.current = currentScrollTop;
+      } else {
+        lastScrollTopRef.current = currentScrollTop;
+      }
+    };
+
+    // Works for both touch scrolling (mobile) and mouse wheel/trackpad (desktop)
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Also listen for wheel events on desktop for better responsiveness
+    const handleWheel = () => {
+      // Trigger scroll handler after a small delay to let scroll position update
+      setTimeout(() => {
+        handleScroll();
+      }, 10);
+    };
+    
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: true });
+    
+    // Initialize scroll position
+    lastScrollTopRef.current = scrollContainer.scrollTop;
+    
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+      scrollContainer.removeEventListener('wheel', handleWheel);
+    };
+  }, [playTickSound]);
 
   // Load enquiries with real-time updates (with error handling)
   useEffect(() => {
@@ -701,6 +839,30 @@ export default function EnquiryWall() {
     });
   };
 
+  // Format deadline as simple text (e.g., "13d 16h left")
+  const formatDeadlineText = useCallback((deadline: any) => {
+    if (!deadline) return '';
+    
+    const deadlineDate = deadline.toDate ? deadline.toDate() : new Date(deadline);
+    const diff = deadlineDate.getTime() - currentTime.getTime();
+    
+    if (diff <= 0) return 'Expired';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    if (days > 0) {
+      return `${days}d ${hours}h left`;
+    } else if (hours > 0) {
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      return `${hours}h ${minutes}m left`;
+    } else {
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      return `${minutes}m ${seconds}s left`;
+    }
+  }, [currentTime]);
+
   if (loading) {
     return <LoadingAnimation message="Loading enquiries" />;
   }
@@ -715,39 +877,37 @@ export default function EnquiryWall() {
           msTextSizeAdjust: '100%'
         }}
       >
-        <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
-          {/* Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4 -mx-1 sm:mx-0">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden w-full">
-              {/* Spacer Section to Match Dashboard/Profile */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10"></div>
-                </div>
+        {/* Header - Matching Seller Form Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Live Enquiries Heading in Black Header */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
-                    Live Enquiries
-                  </h1>
-                </div>
-              </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                    <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                      respect the tastebuds
-                    </p>
-                  </div>
+            </div>
+            
+            {/* Live Enquiries Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Live Enquiries
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    respect the tastebuds
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
           {/* Search and Filters */}
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
@@ -767,7 +927,7 @@ export default function EnquiryWall() {
                   }}
                   onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border-2 border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200 bg-white shadow-sm placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal"
+                  className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200 bg-white shadow-sm placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
@@ -857,37 +1017,22 @@ export default function EnquiryWall() {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              {/* Categories Box - Expandable */}
+              {/* Categories Box - Scrollable */}
               <div className="w-full">
-                <div className="bg-white border-2 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
+                <div className="bg-white border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <h3 className="text-xs sm:text-sm md:text-base font-black text-black">Categories</h3>
-                    <button
-                      onClick={() => setShowAllCategories(!showAllCategories)}
-                      className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black text-white bg-black border-2 border-black rounded-lg sm:rounded-xl hover:bg-gray-900 active:bg-gray-800 transition-all duration-200 flex-shrink-0"
-                    >
-                      {showAllCategories ? (
-                        <>
-                          <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
-                          <span>Show Less</span>
-                        </>
-                      ) : (
-                        <>
-                          <Filter className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
-                          <span>Show More</span>
-                        </>
-                      )}
-                    </button>
                   </div>
                   
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      maxHeight: showAllCategories ? '2000px' : '100px',
-                      overflow: showAllCategories ? 'visible' : 'hidden'
+                  <div
+                    ref={categoriesScrollRef}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3 overflow-y-auto pr-3 sm:pr-4 md:pr-5 categories-scroll"
+                    style={{
+                      maxHeight: '120px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#000 #f3f4f6',
+                      WebkitOverflowScrolling: 'touch'
                     }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3"
                   >
                     {(() => {
                       const allCategories = [
@@ -997,7 +1142,7 @@ export default function EnquiryWall() {
                         </button>
                       ));
                     })()}
-                  </motion.div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1161,6 +1306,7 @@ export default function EnquiryWall() {
                           </div>
                         </div>
                       </div>
+                      
 
                       {viewMode === 'list' ? (
                         <>
@@ -1179,9 +1325,12 @@ export default function EnquiryWall() {
                               
                               {/* "before [date]" below title, right aligned */}
                               {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="flex justify-end mt-0.5 sm:mt-1">
+                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
                                   <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                     before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
+                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                    {formatDeadlineText(enquiry.deadline)}
                                   </span>
                                 </div>
                               )}
@@ -1229,9 +1378,12 @@ export default function EnquiryWall() {
                               
                               {/* "before [date]" below title, right aligned */}
                               {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="flex justify-end mt-0.5 sm:mt-1">
+                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
                                   <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                     before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
+                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                    {formatDeadlineText(enquiry.deadline)}
                                   </span>
                                 </div>
                               )}
@@ -1271,36 +1423,31 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1.5 sm:gap-2.5 bg-gray-50 rounded-md sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black shadow-sm">
-                                  <span className="font-black text-black text-base sm:text-2xl">₹</span>
-                                  <span className="truncate font-black text-gray-900 text-sm sm:text-xl">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
+                                  <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1.5 sm:gap-2.5 px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black rounded-md sm:rounded-lg">
-                                  <div className="flex items-center justify-center w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full bg-gray-100 flex-shrink-0">
-                                    <MapPin className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-gray-600" />
+                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-2 sm:border-4 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
+                                    <MapPin className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-gray-600" />
                                   </div>
-                                  <span className="truncate text-[9px] sm:text-sm font-semibold text-gray-700">{enquiry.location}</span>
+                                  <span className="truncate text-[10px] sm:text-sm md:text-base font-semibold text-gray-700 relative z-10">{enquiry.location}</span>
                                 </div>
                               )}
                             </div>
                             
-                            {/* Deadline Timer and Category - Side by side on desktop */}
+                            {/* Category */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
                               <div>
-                                <Badge variant="secondary" className="text-[8px] sm:text-xs px-1.5 sm:px-3.5 py-0.5 sm:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold shadow-sm">
-                                  {enquiry.category.replace('-', ' ')}
+                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-2 sm:border-4 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                                 </Badge>
                               </div>
-                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="ml-auto">
-                                  <CountdownTimer
-                                    deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                    className="text-[7px] sm:text-[9px] md:text-[10px]"
-                                  />
-                                </div>
-                              )}
                             </div>
                           </div>
                         </CardHeader>
@@ -1314,35 +1461,28 @@ export default function EnquiryWall() {
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-0.5 sm:gap-1.5 bg-gray-50 rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black flex-shrink-0">
-                                  <span className="font-black text-black text-sm sm:text-lg md:text-2xl">₹</span>
-                                  <span className="font-black text-gray-900 text-xs sm:text-sm md:text-lg whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <span className="font-black text-black text-sm sm:text-xl md:text-2xl relative z-10">₹</span>
+                                  <span className="font-black text-gray-900 text-xs sm:text-lg md:text-xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-0.5 sm:gap-1.5 text-gray-700 border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 flex-shrink-0">
-                                  <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0">
-                                    <MapPin className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-gray-600" />
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-gray-700 border-2 sm:border-4 border-black rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
+                                    <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-600" />
                                   </div>
-                                  <span className="text-[9px] sm:text-xs md:text-base font-semibold whitespace-nowrap">{enquiry.location}</span>
+                                  <span className="text-[10px] sm:text-xs md:text-sm font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
                                 </div>
                               )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[8px] sm:text-[10px] md:text-sm px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold flex-shrink-0 whitespace-nowrap">
-                                {enquiry.category.replace('-', ' ')}
+                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-2 sm:border-4 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
                             </div>
-                            
-                            {/* Deadline Timer - Right Aligned */}
-                            {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                              <div className="ml-auto rounded px-0 py-0 bg-white mt-2 sm:mt-3 flex-shrink-0">
-                                <CountdownTimer
-                                  deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                  className="text-[3px] sm:text-[8px] md:text-[10px]"
-                                />
-                              </div>
-                            )}
                             
                             {/* Right: Action Button */}
                             <div className="flex-shrink-0 w-full sm:w-auto mt-1 sm:mt-0">

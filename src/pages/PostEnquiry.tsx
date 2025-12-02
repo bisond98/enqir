@@ -1722,47 +1722,46 @@ export default function PostEnquiry() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-6 sm:py-8 lg:py-10">
-        <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8">
-          {/* Header - Matching Profile/Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Spacer Section to Match Profile Page */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    onClick={() => window.history.back()}
-                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                  >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </Button>
-                </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Header - Matching Live Enquiries - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Post Enquiry Heading in Black Header */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
-                    Post Enquiry
-                  </h1>
-                </div>
-              </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <p className="text-xs sm:text-sm lg:text-base text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                      What in the f***n world are you looking for?
-                    </p>
-                  </div>
+            </div>
+            
+            {/* Post Enquiry Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Post Enquiry
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    What in the f***n world are you looking for?
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
             <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
