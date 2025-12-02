@@ -713,24 +713,34 @@ export default function EnquiryWall() {
           msTextSizeAdjust: '100%'
         }}
       >
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
           {/* Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Spacer to match Post Enquiry back button spacing */}
-              <div className="mb-1 sm:mb-2 -mt-2 sm:-mt-4"></div>
+          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4 -mx-1 sm:mx-0">
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden w-full">
+              {/* Spacer Section to Match Dashboard/Profile */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10"></div>
+                </div>
+              </div>
+              
+              {/* Live Enquiries Heading in Black Header */}
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    Live Enquiries
+                  </h1>
+                </div>
+              </div>
               
               {/* Content Card - White Background */}
-              <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Live Enquiries
-                    </h2>
+                  <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                    <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                      respect the tastebuds
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    respect the tastebuds
-                  </p>
                 </div>
               </div>
             </div>
@@ -866,7 +876,7 @@ export default function EnquiryWall() {
                       className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
                         selectedCategory === category.value
                           ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                          : 'bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
+                          : 'bg-white hover:bg-gray-50 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
                       }`}
                     >
                       {/* Physical button depth effect */}
@@ -978,7 +988,7 @@ export default function EnquiryWall() {
                         className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
                           selectedCategory === category.value
                             ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                            : 'bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
+                            : 'bg-white hover:bg-gray-50 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
                         }`}
                       >
                         {/* Physical button depth effect */}
@@ -1030,7 +1040,7 @@ export default function EnquiryWall() {
               {displayEnquiries.length} enquiries
             </h3>
             <motion.div 
-              className="relative inline-flex items-center bg-white border-4 border-black rounded-xl p-1 sm:p-2 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+              className="relative inline-flex items-center bg-white border-2 border-black rounded-xl p-1 sm:p-2 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -1039,7 +1049,7 @@ export default function EnquiryWall() {
               
               {/* Animated Background Slider */}
               <motion.div 
-                className={`absolute top-1 bottom-1 sm:top-2 sm:bottom-2 rounded-lg bg-gradient-to-b from-black to-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
+                className={`absolute top-1 bottom-1 sm:top-2 sm:bottom-2 rounded-lg bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
                   viewMode === 'grid' ? 'left-1 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1 sm:left-1/2 sm:right-2'
                 }`}
                 style={{ width: 'calc(50% - 2px)' }}
@@ -1224,62 +1234,91 @@ export default function EnquiryWall() {
                           {/* First Half - Top: Title and Description */}
                           <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
                             <div className="space-y-1.5 sm:space-y-3">
-                              {/* Title Row */}
-                              <div className="flex items-start justify-between gap-1.5 sm:gap-3">
-                                <div className="flex items-start gap-1 sm:gap-2.5 flex-1 min-w-0">
-                                  <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-2 flex-1 text-black text-center ${
-                                    isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
-                                  }`}>
-                                    {enquiry.title}
-                                  </h3>
+                              {/* Need Label */}
+                              <span className="text-[8px] sm:text-[10px] text-gray-900 font-bold tracking-wide">Need</span>
+                              
+                              {/* Title */}
+                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black ${
+                                isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
+                              }`}>
+                                {enquiry.title}
+                              </h3>
+                              
+                              {/* "before [date]" below title, right aligned */}
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
+                                <div className="flex justify-end mt-0.5 sm:mt-1">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
                                 </div>
-                                <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
-                                  {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
-                                      <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
-                                      Urgent
-                                    </Badge>
-                                  )}
-                                  {isDealClosed(enquiry) && (
-                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
-                                  )}
-                                  {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
-                                  )}
-                                </div>
+                              )}
+                              
+                              {/* Badges Row */}
+                              <div className="flex items-center gap-0.5 sm:gap-2 flex-wrap">
+                                {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
+                                  <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
+                                    <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
+                                    Urgent
+                                  </Badge>
+                                )}
+                                {isDealClosed(enquiry) && (
+                                  <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
+                                )}
+                                {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
+                                  <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
+                                )}
                               </div>
                               
-                              {/* Description - Centered in list view for short descriptions */}
-                              <p className={`text-[10px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-3 flex-1 mt-12 sm:mt-4 ${
-                                enquiry.description && enquiry.description.trim().length > 0 && enquiry.description.trim().length < 55 ? 'text-center' : ''
-                              }`}>
-                                {enquiry.description}
-                              </p>
+                              {/* Description - Centered between "before [date]" and budget section */}
+                              {enquiry.description && (
+                                <div className="flex justify-center my-2 sm:my-3">
+                                  <p className="text-[7px] sm:text-[8px] text-gray-600 leading-tight line-clamp-2 text-center max-w-full">
+                                    {enquiry.description}
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </CardHeader>
                         </>
                       ) : (
                         <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
-                            {/* Title with Verification Badge - Mobile Optimized */}
-                              <div className="flex items-center justify-between gap-1 sm:gap-2 mb-1.5 sm:mb-3">
-                              <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
-                                <h3 className={`text-base sm:text-xl lg:text-2xl font-black tracking-tight leading-tight line-clamp-1 truncate flex-1 text-black text-center ${
-                                  isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
-                                }`}>
-                                  {enquiry.title}
-                                </h3>
-                                {/* Show verified badge if: 
-                                    1. User has profile-level verification (applies to all enquiries), OR
-                                    2. This specific enquiry has ID images (enquiry-specific verification) */}
-                                {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                            {/* Need Label */}
+                            <span className="text-[8px] sm:text-[10px] text-gray-500 font-semibold tracking-wide">Need</span>
+                            
+                            {/* Title */}
+                            <div className="mb-1.5 sm:mb-3">
+                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black ${
+                                isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
+                              }`}>
+                                {enquiry.title}
+                              </h3>
+                              
+                              {/* "before [date]" below title, right aligned */}
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
+                                <div className="flex justify-end mt-0.5 sm:mt-1">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
+                                </div>
+                              )}
+                              
+                              {/* Show verified badge if: 
+                                  1. User has profile-level verification (applies to all enquiries), OR
+                                  2. This specific enquiry has ID images (enquiry-specific verification) */}
+                              {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
                                   <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
                                     <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
                                   </div>
-                                )}
-                              </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Badges */}
+                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                               {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                                 <Badge className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
                                   <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
@@ -1293,6 +1332,15 @@ export default function EnquiryWall() {
                                 <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
                               )}
                             </div>
+                            
+                            {/* Description - Centered between "before [date]" and budget section */}
+                            {enquiry.description && (
+                              <div className="flex justify-center my-2 sm:my-3">
+                                <p className="text-[7px] sm:text-[8px] text-gray-600 leading-tight line-clamp-2 text-center max-w-full">
+                                  {enquiry.description}
+                                </p>
+                              </div>
+                            )}
                             
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
@@ -1334,7 +1382,8 @@ export default function EnquiryWall() {
                       
                       <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
-                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
+                          <>
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
                             <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0">
                               {/* Budget */}
@@ -1368,7 +1417,7 @@ export default function EnquiryWall() {
                             
                             {/* Deadline Timer - Right Aligned */}
                             {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                              <div className="ml-auto rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white">
+                              <div className="ml-auto rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white mt-2 sm:mt-3">
                                 <CountdownTimer
                                   deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
                                   className="text-[8px] sm:text-[10px] md:text-sm"
@@ -1383,7 +1432,7 @@ export default function EnquiryWall() {
                                   type="button"
                                   disabled
                                   className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 sm:border-4 border-black text-white rounded-md sm:rounded-xl cursor-not-allowed"
-                                  style={{ backgroundColor: '#022c22' }}
+                                  style={{ backgroundColor: '#000000' }}
                                 >
                                   Your Enquiry
                                 </button>
@@ -1420,6 +1469,7 @@ export default function EnquiryWall() {
                               )}
                             </div>
                           </div>
+                          </>
                         ) : (
                           <div className="space-y-1.5 sm:space-y-2.5">
                             {isOwnEnquiry(enquiry) && (

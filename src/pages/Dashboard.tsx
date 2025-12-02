@@ -1141,24 +1141,20 @@ const Dashboard = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-0 sm:pt-2 pb-2 sm:pb-8">
-          {/* Back Button */}
-          <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
-              className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
-            >
-              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
-          </div>
-          
           {/* Professional Welcome Header */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Spacer Section to Match Profile Page */}
+              {/* Spacer Section with Back Button */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
                   <div className="w-10 h-10"></div>
                 </div>
               </div>
@@ -2318,7 +2314,7 @@ const Dashboard = () => {
                           Quick Actions
                         </h2>
                       </div>
-                      <p className="text-xs sm:text-base lg:text-sm text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                      <p className="text-[10px] sm:text-xs text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
                         in case you changed your mind
                       </p>
                     </div>
@@ -2328,13 +2324,13 @@ const Dashboard = () => {
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-300 hover:to-gray-400 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                  <button className="w-full h-full border-4 border-black bg-black text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:bg-gray-900 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10" />
-                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Make a wish</span>
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
+                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10 text-white">Make a wish</span>
                   </button>
                 </Link>
                 

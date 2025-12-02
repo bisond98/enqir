@@ -1212,16 +1212,13 @@ const SellerResponse = () => {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5">
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900 mb-5 text-center">
                     You've Already Submitted an Offer
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-5">
-                    You have already submitted an offer for this enquiry
-                  </p>
                   
                   {/* Offer Details */}
                   <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-5 text-left">
-                    <h4 className="text-xs sm:text-sm font-semibold text-gray-800 mb-3">Your Submitted Offer</h4>
+                    <h4 className="text-[10px] sm:text-xs font-medium text-gray-600 mb-3 text-center">Your Submitted Offer</h4>
                     <div className="space-y-2 text-xs sm:text-sm text-gray-700">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Price:</span>

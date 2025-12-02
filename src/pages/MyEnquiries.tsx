@@ -837,15 +837,15 @@ const MyEnquiries = () => {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Plan</div>
-                                <div className="text-xs sm:text-sm lg:text-xs xl:text-sm font-black text-gray-900 truncate">
+                                <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-black text-gray-900 whitespace-nowrap">
                                   {enquiry.selectedPlanId ? (
                                     enquiry.selectedPlanId === 'free' ? 'Free' :
-                                    enquiry.selectedPlanId === 'basic' ? 'Basic (₹99)' :
-                                    enquiry.selectedPlanId === 'standard' ? 'Standard (₹199)' :
-                                    enquiry.selectedPlanId === 'premium' ? 'Premium (₹499)' :
-                                    enquiry.selectedPlanId === 'pro' ? 'Pro (₹1,499)' : 'Paid'
+                                    enquiry.selectedPlanId === 'basic' ? 'Basic' :
+                                    enquiry.selectedPlanId === 'standard' ? 'Standard' :
+                                    enquiry.selectedPlanId === 'premium' ? 'Premium' :
+                                    enquiry.selectedPlanId === 'pro' ? 'Pro' : 'Paid'
                                   ) : (
-                                    enquiry.isPremium ? 'Premium (Legacy)' : 'Free'
+                                    enquiry.isPremium ? 'Premium' : 'Free'
                                   )}
                                 </div>
                               </div>
