@@ -1725,32 +1725,40 @@ export default function PostEnquiry() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-6 sm:py-8 lg:py-10">
         <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8">
-          {/* Header - Matching Dashboard Style */}
+          {/* Header - Matching Profile/Dashboard Style */}
           <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
             <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Back Button */}
-              <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => window.history.back()}
-                  className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
+              {/* Spacer Section to Match Profile Page */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={() => window.history.back()}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Post Enquiry Heading in Black Header */}
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    Post Enquiry
+                  </h1>
+                </div>
               </div>
               
               {/* Content Card - White Background */}
               <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
                   <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Post Enquiry
-                    </h2>
+                    <p className="text-xs sm:text-sm lg:text-base text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                      What in the f***n world are you looking for?
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    What in the f***n world are you looking for?
-                  </p>
                 </div>
               </div>
             </div>
@@ -1794,7 +1802,7 @@ export default function PostEnquiry() {
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="title" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {category === "jobs" ? "Job Title" : "From a 4 a.m. tea Spot to a piece of the moon."}
                     </Label>
@@ -1803,7 +1811,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1812,7 +1820,7 @@ export default function PostEnquiry() {
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2 sm:space-y-2.5">
-                      <Label className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <Label className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Choose Categories
                       </Label>
@@ -1826,7 +1834,7 @@ export default function PostEnquiry() {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-4 rounded-xl transition-all duration-200 text-base font-medium ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-2 rounded-xl transition-all duration-200 text-base font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -1909,7 +1917,7 @@ export default function PostEnquiry() {
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-4 rounded-xl transition-all duration-200 font-medium ${
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-2 rounded-xl transition-all duration-200 font-medium ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -1988,8 +1996,8 @@ export default function PostEnquiry() {
                       </div>
                       
                       {selectedCategories.length === 0 && (
-                        <p className="text-[10px] sm:text-xs text-amber-600 flex items-center gap-1.5 font-medium">
-                          <span>⚠️</span>
+                        <p className="text-[10px] sm:text-xs text-black flex items-center gap-1.5 font-medium">
+                          <span className="text-black">⚠️</span>
                           Select at least one category
                         </p>
                       )}
@@ -1998,7 +2006,7 @@ export default function PostEnquiry() {
 
                   {/* Description - Enhanced Professional Textarea */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="description" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
@@ -2008,7 +2016,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
+                      className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -2029,12 +2037,19 @@ export default function PostEnquiry() {
                         <div key={index} className="relative">
                           <label
                             htmlFor={`reference-image-${index}`}
-                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
                               referenceImageUrls[index]
                                 ? 'border-green-300 bg-green-50 hover:border-green-400'
-                                : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'
+                                : 'bg-black hover:bg-gray-900 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]'
                             } ${loading || idUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
+                            {/* Physical button depth effect */}
+                            {!referenceImageUrls[index] && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              </>
+                            )}
                             <input
                               id={`reference-image-${index}`}
                               type="file"
@@ -2078,8 +2093,8 @@ export default function PostEnquiry() {
                                   </>
                                 ) : (
                                   <>
-                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500 mb-1.5 sm:mb-2" />
-                                    <p className="text-[10px] sm:text-xs text-slate-700 font-semibold text-center">Add Image</p>
+                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-white mb-1.5 sm:mb-2 relative z-10" />
+                                    <p className="text-[10px] sm:text-xs text-white font-black text-center relative z-10">Add Image</p>
                                   </>
                                 )}
                               </div>
@@ -2093,7 +2108,7 @@ export default function PostEnquiry() {
                   {/* Budget & Location - Enhanced Side by Side Layout */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="budget" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
@@ -2114,14 +2129,14 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                        className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
                         style={{ fontSize: '16px' }}
                         required
                       />
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="location" className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Location
                       </Label>
@@ -2133,7 +2148,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border-4 border-black focus:border-black focus:ring-2 focus:ring-black rounded-xl transition-all duration-200 min-touch pl-4 pr-4 bg-white hover:border-black"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2173,16 +2188,16 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="notes" className="text-xs sm:text-sm font-semibold text-slate-800">
+                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-semibold text-slate-800">
                         Notes <span className="text-slate-500 font-normal">(Optional)</span>
                       </Label>
                       <Textarea
                         id="notes"
                         placeholder="Additional requirements or preferences..."
+                        className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
-                        className="border-4 border-black focus:border-black focus:ring-2 focus:ring-black resize-none text-base rounded-xl transition-all duration-200 min-touch pl-4 pr-4 py-3 bg-white hover:border-black"
                         style={{ fontSize: '16px' }}
                       />
                     </div>
@@ -2471,7 +2486,7 @@ export default function PostEnquiry() {
                                   validateIdNumber(value, govIdType);
                                 }
                           }}
-                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black w-full"
+                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 w-full"
                           disabled={verifyingId}
                         />
                             {errors.govIdNumber && !idVerificationResult && (
@@ -2702,24 +2717,24 @@ export default function PostEnquiry() {
                             }
                           }}
                               disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                          className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-4 !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
                         >
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                           {verifyingId ? (
-                            <>
+                            <span className="flex items-center justify-center gap-2 relative z-10">
                               <div 
-                                className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
-                                style={{
-                                  animation: 'spin 1s linear infinite',
-                                  WebkitAnimation: 'spin 1s linear infinite'
-                                }}
+                                className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                               ></div>
-                              Verifying ID...
-                            </>
+                              <span className="text-white">Verifying ID...</span>
+                            </span>
                           ) : (
-                            <>
-                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                  Upload ID for Trust Badge
-                            </>
+                            <span className="flex items-center justify-center gap-2 relative z-10">
+                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                              <span className="text-white">Upload ID for Trust Badge</span>
+                            </span>
                           )}
                         </Button>
                       </div>
@@ -2770,27 +2785,31 @@ export default function PostEnquiry() {
                   )}
 
 
-                  {/* Submit Button - Enhanced Professional Design */}
+                  {/* Submit Button - Physical Switch Design */}
                   <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
                     <Button
                       type="submit"
                       disabled={loading || idUploadLoading || paymentLoading}
-                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border-2 border-black"
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-4 border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                     >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                       {paymentLoading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          <span>Opening Razorpay...</span>
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Loader2 className="h-5 w-5 animate-spin text-white" />
+                          <span className="text-white">Opening Razorpay...</span>
                         </span>
                       ) : loading ? (
-                        <div className="flex items-center justify-center space-x-3">
+                        <div className="flex items-center justify-center space-x-3 relative z-10">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Submitting...</span>
+                          <span className="text-white">Submitting...</span>
                         </div>
                       ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          <Send className="h-5 w-5" />
-                          Post Enquiry
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Send className="h-5 w-5 text-white" />
+                          <span className="text-white">Post Enquiry</span>
                         </span>
                       )}
                     </Button>
