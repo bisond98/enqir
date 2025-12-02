@@ -1658,8 +1658,9 @@ const Landing = () => {
                 - Search bar and button connected (gap-0, rounded corners adjusted)
                 - Placeholder text size matches "Show All Enquiries" (text-xs sm:text-base)
                 Last updated: Search bar styling and positioning finalized
+                - Hidden on mobile, visible on desktop (sm: and above)
             */}
-            <div className="w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
+            <div className="hidden sm:block w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
               <div className="flex gap-0">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
                   <Search className="absolute left-2.5 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
@@ -2077,7 +2078,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className={`${windowWidth < 640 ? 'p-2.5' : 'p-3 sm:p-4 lg:p-4'} flex-1 flex flex-col ${windowWidth < 640 ? 'overflow-y-auto' : 'overflow-visible'} ${windowWidth < 640 ? 'space-y-2' : 'space-y-2 sm:space-y-2.5'} ${windowWidth < 640 ? 'min-h-0' : 'min-h-0'} ${windowWidth >= 640 ? 'flex-grow' : ''}`}>
+                      <div className={`${windowWidth < 640 ? 'px-2.5 pt-2.5 pb-0' : 'p-3 sm:p-4 lg:p-4'} flex-1 flex flex-col ${windowWidth < 640 ? 'overflow-y-auto' : 'overflow-visible'} ${windowWidth < 640 ? 'space-y-2' : 'space-y-2 sm:space-y-2.5'} ${windowWidth < 640 ? 'min-h-0' : 'min-h-0'} ${windowWidth >= 640 ? 'flex-grow' : ''}`}>
                       {/* Title - Professional Typography */}
                       <h3 className={`${windowWidth < 640 ? 'text-xs leading-tight' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-2 sm:mb-2.5'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${windowWidth < 640 ? 'border-b border-black pb-1.5' : 'border-b-2 border-black pb-1.5 sm:pb-2'} ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2126,39 +2127,51 @@ const Landing = () => {
                       </div>
                       
                       {/* Primary Action Button - Professional Styling */}
-                      <div className={`mt-auto ${windowWidth < 640 ? 'pt-2' : 'pt-2 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''}`}>
+                      <div className={`mt-auto ${windowWidth < 640 ? 'pt-2 pb-0' : 'pt-2 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} ${windowWidth < 640 ? '-mb-0' : ''}`}>
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`} disabled>
-                                  ✅ Your Enquiry
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  <span className="relative z-10">✅ Your Enquiry</span>
                                 </button>
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`} disabled>
-                                  Expired
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  <span className="relative z-10">Expired</span>
                                 </button>
                               );
                             } else {
                               return (
                                 <button 
-                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-black hover:bg-gray-900 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-bold rounded-lg ${windowWidth < 640 ? 'border-2 border-black' : 'border-2 border-black'} shadow-md hover:shadow-lg transition-all duration-200 font-heading ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
-                                  Sell
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/10 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  {/* Shimmer effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
+                                  <span className="relative z-10">Sell</span>
                                 </button>
                               );
                             }
                           })()
                         ) : (
                           <button 
-                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-white text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-semibold rounded-lg ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} hover:bg-gray-50 hover:border-black transition-all duration-200 font-heading shadow-sm ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-white hover:bg-gray-50 text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                             onClick={() => navigate('/signin')}
                           >
-                            Sign In
+                            {/* Physical button depth effect */}
+                            <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                            {/* Shimmer effect */}
+                            <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
+                            <span className="relative z-10">Sign In</span>
                           </button>
                         )}
                       </div>
@@ -2306,6 +2319,57 @@ const Landing = () => {
                   Stay anonymous — let them be surprised!
                 </p>
                 
+                {/* Search Bar - Mobile Only */}
+                <div className="block sm:hidden w-full relative z-50 mb-4" style={{ zIndex: 50 }}>
+                  <div className="flex gap-0">
+                    <div className="relative flex-1" style={{ zIndex: 50 }}>
+                      <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black z-10 pointer-events-none" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Search enquiries..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setShowSearchSuggestions(true);
+                          updateSearchPosition();
+                        }}
+                        onFocus={() => {
+                          setShowSearchSuggestions(true);
+                          updateSearchPosition();
+                        }}
+                        onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+                        onKeyPress={handleKeyPress}
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-4 border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        style={{ 
+                          lineHeight: '1.5',
+                          paddingTop: '0.75rem',
+                          paddingBottom: '0.75rem',
+                          textAlign: 'center',
+                          paddingLeft: '2.75rem'
+                        }}
+                      />
+                      {/* Physical button depth effect for input */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
+                    </div>
+                    <button
+                      onClick={handleSearch}
+                      disabled={isSearching}
+                      className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-4 border-l-0 border-black relative overflow-hidden"
+                    >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                      {isSearching ? (
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
+                      ) : (
+                        <Search className="h-3 w-3 relative z-10" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
                   <Link to="/dashboard" className="group">
                     <button className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
@@ -2429,14 +2493,14 @@ const Landing = () => {
                 <div className="text-center">
                 <Link
                   to="/enquiries"
-                    className="group inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                    className="group inline-flex items-center gap-2 h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
                   {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                   {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                  <span className="text-sm sm:text-base relative z-10">Explore All Categories</span>
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform relative z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <span className="relative z-10">Explore All Categories</span>
+                    <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform relative z-10" />
                 </Link>
                 </div>
               </div>

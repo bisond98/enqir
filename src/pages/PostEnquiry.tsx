@@ -928,7 +928,6 @@ export default function PostEnquiry() {
     { value: "memorabilia", label: "Memorabilia", group: "Products" },
     { value: "non-profit-charity", label: "Non-Profit", group: "Professional" },
     { value: "pets", label: "Pets", group: "Lifestyle" },
-    { value: "professional-services", label: "Services", group: "Professional" },
     { value: "raw-materials-industrial", label: "Industrial", group: "Industrial" },
     { value: "real-estate", label: "Real Estate", group: "Professional" },
     { value: "real-estate-services", label: "Real Estate Services", group: "Professional" },

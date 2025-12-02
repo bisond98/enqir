@@ -487,6 +487,9 @@ export default function EnquiryWall() {
     
     // Check all available categories
     const allCategories = [
+      { value: 'business', label: 'Business' },
+      { value: 'personal', label: 'Personal' },
+      { value: 'service', label: 'Service' },
       { value: 'agriculture', label: 'Agriculture' },
       { value: 'antiques', label: 'Antiques' },
       { value: 'art', label: 'Art' },
@@ -522,7 +525,6 @@ export default function EnquiryWall() {
       { value: 'real-estate-services', label: 'Real Estate Services' },
       { value: 'renewable-energy', label: 'Renewable Energy' },
       { value: 'security', label: 'Security' },
-      { value: 'services', label: 'Services' },
       { value: 'sports', label: 'Sports' },
       { value: 'technology', label: 'Technology' },
       { value: 'thrift', label: 'Thrift' },
@@ -855,53 +857,44 @@ export default function EnquiryWall() {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              {/* Categories Grid - Professional Mobile Layout */}
+              {/* Categories Box - Expandable */}
               <div className="w-full">
-                {/* Mobile: First Row - Always Visible */}
-                <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start mb-2 sm:mb-0 lg:mb-3">
-                  {[
-                    { value: "all", label: "All" },
-                    { value: "business", label: "Business" },
-                    { value: "personal", label: "Personal" },
-                    { value: "service", label: "Service" },
-                    { value: "agriculture-farming", label: "Agriculture" },
-                    { value: "antiques", label: "Antiques" },
-                    { value: "art", label: "Art" },
-                    { value: "automobile", label: "Automobile" },
-                    { value: "books-publications", label: "Books" },
-                  ].map((category) => (
+                <div className="bg-white border-2 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 className="text-xs sm:text-sm md:text-base font-black text-black">Categories</h3>
                     <button
-                      key={category.value}
-                      onClick={() => handleCategorySelect(category.value)}
-                      className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm lg:text-base font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
-                        selectedCategory === category.value
-                          ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                          : 'bg-white hover:bg-gray-50 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                      }`}
+                      onClick={() => setShowAllCategories(!showAllCategories)}
+                      className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black text-white bg-black border-2 border-black rounded-lg sm:rounded-xl hover:bg-gray-900 active:bg-gray-800 transition-all duration-200 flex-shrink-0"
                     >
-                      {/* Physical button depth effect */}
-                      <div className={`absolute inset-0 bg-gradient-to-b ${
-                        selectedCategory === category.value
-                          ? 'from-white/10 to-transparent'
-                          : 'from-white/20 to-transparent'
-                      } rounded-xl sm:rounded-2xl pointer-events-none`} />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
-                      <span className="relative z-10">{category.label}</span>
+                      {showAllCategories ? (
+                        <>
+                          <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+                          <span>Show Less</span>
+                        </>
+                      ) : (
+                        <>
+                          <Filter className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+                          <span>Show More</span>
+                        </>
+                      )}
                     </button>
-                  ))}
-                </div>
-
-                {/* Mobile: Additional Categories - Expandable */}
-                <div className={`${showAllCategories ? 'block' : 'hidden sm:block'} transition-all duration-300`}>
-                  <div className="flex flex-wrap gap-2 sm:gap-2.5 lg:gap-4 xl:gap-5 justify-center sm:justify-start lg:justify-start lg:mt-0">
+                  </div>
+                  
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      maxHeight: showAllCategories ? '2000px' : '100px',
+                      overflow: showAllCategories ? 'visible' : 'hidden'
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3"
+                  >
                     {(() => {
                       const allCategories = [
-                        // Main categories at the top
+                        { value: "all", label: "All" },
                         { value: "business", label: "Business" },
                         { value: "personal", label: "Personal" },
                         { value: "service", label: "Service" },
-                        // Rest of categories
                         { value: "agriculture-farming", label: "Agriculture" },
                         { value: "antiques", label: "Antiques" },
                         { value: "art", label: "Art" },
@@ -932,7 +925,6 @@ export default function EnquiryWall() {
                         { value: "memorabilia", label: "Memorabilia" },
                         { value: "non-profit-charity", label: "Non-Profit" },
                         { value: "pets", label: "Pets" },
-                        { value: "professional-services", label: "Services" },
                         { value: "raw-materials-industrial", label: "Industrial" },
                         { value: "real-estate", label: "Real Estate" },
                         { value: "real-estate-services", label: "Real Estate Services" },
@@ -965,71 +957,48 @@ export default function EnquiryWall() {
                         { value: "other", label: "Other" }
                       ];
                       // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
-                      const mainCategories = allCategories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
-                      const otherCategories = allCategories.filter(cat => !['business', 'personal', 'service', 'other'].includes(cat.value));
+                      const mainCategories = allCategories.filter(cat => ['all', 'business', 'personal', 'service'].includes(cat.value));
+                      const otherCategories = allCategories.filter(cat => !['all', 'business', 'personal', 'service', 'other'].includes(cat.value));
                       const otherCategory = allCategories.find(cat => cat.value === 'other');
-                      return [
+                      const sortedCategories = [
                         ...mainCategories,
                         ...otherCategories.sort((a, b) => a.label.localeCompare(b.label)),
                         otherCategory
                       ].filter(Boolean);
-                    })().map((category) => (
-                      <button
-                        key={category.value}
-                        onClick={() => {
-                          setSelectedCategory(category.value);
-                          if (category.value === "all") {
-                            setSearchTerm("");
-                            setAiSearchResults(null);
-                            setSearchSuggestions([]);
-                            setShowSuggestions(false);
-                          }
-                        }}
-                        className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-xl sm:rounded-2xl transition-all duration-200 whitespace-nowrap min-touch relative overflow-hidden ${
-                          selectedCategory === category.value
-                            ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                            : 'bg-white hover:bg-gray-50 text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
-                        }`}
-                      >
-                        {/* Physical button depth effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-b ${
-                          selectedCategory === category.value
-                            ? 'from-white/10 to-transparent'
-                            : 'from-white/20 to-transparent'
-                        } rounded-xl sm:rounded-2xl pointer-events-none`} />
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
-                        <span className="relative z-10">{category.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                      
+                      return sortedCategories.map((category) => (
+                        <button
+                          key={category.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCategorySelect(category.value);
+                            if (category.value === "all") {
+                              setSearchTerm("");
+                              setAiSearchResults(null);
+                              setSearchSuggestions([]);
+                              setShowSuggestions(false);
+                            }
+                          }}
+                          className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex-shrink-0 ${
+                            selectedCategory === category.value
+                              ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] sm:hover:scale-105'
+                              : 'bg-white hover:bg-gray-50 text-black border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
+                          }`}
+                        >
+                          {/* Physical button depth effect */}
+                          <div className={`absolute inset-0 bg-gradient-to-b ${
+                            selectedCategory === category.value
+                              ? 'from-white/10 to-transparent'
+                              : 'from-white/20 to-transparent'
+                          } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full sm:hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl md:rounded-2xl" />
+                          <span className="relative z-10">{category.label}</span>
+                        </button>
+                      ));
+                    })()}
+                  </motion.div>
                 </div>
-              </div>
-              
-              {/* Mobile: Show More/Less toggle - Professional */}
-              <div className="text-center sm:hidden pt-2">
-                <button
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-black bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-4 border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 min-touch relative overflow-hidden"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    {showAllCategories ? (
-                      <>
-                        <X className="w-3.5 h-3.5" />
-                        Show Less
-                      </>
-                    ) : (
-                      <>
-                        <Filter className="w-3.5 h-3.5" />
-                        Show More (+38)
-                      </>
-                    )}
-                  </span>
-                </button>
               </div>
             </div>
           </div>
@@ -1039,76 +1008,40 @@ export default function EnquiryWall() {
             <h3 className="text-sm sm:text-xl font-semibold text-foreground">
               {displayEnquiries.length} enquiries
             </h3>
-            <motion.div 
-              className="relative inline-flex items-center bg-white border-2 border-black rounded-xl p-1 sm:p-2 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <div 
+              className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             >
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-              
-              {/* Animated Background Slider */}
-              <motion.div 
-                className={`absolute top-1 bottom-1 sm:top-2 sm:bottom-2 rounded-lg bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
-                  viewMode === 'grid' ? 'left-1 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1 sm:left-1/2 sm:right-2'
-                }`}
-                style={{ width: 'calc(50% - 2px)' }}
-                layout
-              >
-                {/* Button highlight */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-lg pointer-events-none" />
-              </motion.div>
-              
-              {/* Grid Button */}
-              <motion.button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className={`relative z-10 px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-sm transition-all duration-300 flex items-center gap-0.5 sm:gap-1.5 min-w-[60px] sm:min-w-[90px] justify-center ${
-                  viewMode === 'grid'
-                    ? 'text-white drop-shadow-lg'
-                    : 'text-black hover:text-black'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95, y: 2 }}
-              >
-                <motion.div 
-                  className="relative flex items-center justify-center"
-                  animate={viewMode === 'grid' ? {
-                    rotate: [0, -10, 10, 0],
-                    scale: [1, 1.1, 1]
-                  } : {}}
-                  transition={{ duration: 0.5 }}
+              {/* Track background */}
+              <div className="relative w-16 h-6 sm:w-20 sm:h-7 flex items-center">
+                {/* Icons on sides */}
+                <div className="absolute left-1.5 sm:left-2 z-10 flex items-center justify-center pointer-events-none">
+                  <Grid3X3 className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-colors duration-200 ${
+                    viewMode === 'grid' ? 'text-white' : 'text-gray-400'
+                  }`} />
+                </div>
+                <div className="absolute right-1.5 sm:right-2 z-10 flex items-center justify-center pointer-events-none">
+                  <List className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-colors duration-200 ${
+                    viewMode === 'list' ? 'text-white' : 'text-gray-400'
+                  }`} />
+                </div>
+                
+                {/* Sliding knob */}
+                <motion.div
+                  className="absolute top-0.5 sm:top-1 w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full shadow-md z-20 flex items-center justify-center"
+                  animate={{
+                    left: viewMode === 'grid' ? '0.125rem' : 'calc(100% - 1.5rem)',
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30
+                  }}
                 >
-                  <Grid3X3 className={`h-3 w-3 sm:h-4.5 sm:w-4.5 transition-all duration-300 ${viewMode === 'grid' ? 'drop-shadow-md' : ''}`} />
+                  <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-gray-300 rounded-full"></div>
                 </motion.div>
-                <span className="whitespace-nowrap relative z-10">Grid</span>
-              </motion.button>
-              
-              {/* List Button */}
-              <motion.button
-                type="button"
-                onClick={() => setViewMode('list')}
-                className={`relative z-10 px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-lg font-black text-[10px] sm:text-sm transition-all duration-300 flex items-center gap-0.5 sm:gap-1.5 min-w-[60px] sm:min-w-[90px] justify-center ${
-                  viewMode === 'list'
-                    ? 'text-white drop-shadow-lg'
-                    : 'text-black hover:text-black'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95, y: 2 }}
-              >
-                <motion.div 
-                  className="relative flex items-center justify-center"
-                  animate={viewMode === 'list' ? {
-                    rotate: [0, -10, 10, 0],
-                    scale: [1, 1.1, 1]
-                  } : {}}
-                  transition={{ duration: 0.5 }}
-                >
-                  <List className={`h-3 w-3 sm:h-4.5 sm:w-4.5 transition-all duration-300 ${viewMode === 'list' ? 'drop-shadow-md' : ''}`} />
-                </motion.div>
-                <span className="whitespace-nowrap relative z-10">List</span>
-              </motion.button>
-            </motion.div>
+              </div>
+            </div>
           </div>
 
           {/* Enquiries Grid/List */}
@@ -1238,7 +1171,7 @@ export default function EnquiryWall() {
                               <span className="text-[8px] sm:text-[10px] text-gray-900 font-bold tracking-wide">Need</span>
                               
                               {/* Title */}
-                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black ${
+                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
                                 isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                               }`}>
                                 {enquiry.title}
@@ -1288,7 +1221,7 @@ export default function EnquiryWall() {
                             
                             {/* Title */}
                             <div className="mb-1.5 sm:mb-3">
-                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black ${
+                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
                                 isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                               }`}>
                                 {enquiry.title}
@@ -1333,21 +1266,14 @@ export default function EnquiryWall() {
                               )}
                             </div>
                             
-                            {/* Description - Centered between "before [date]" and budget section */}
-                            {enquiry.description && (
-                              <div className="flex justify-center my-2 sm:my-3">
-                                <p className="text-[7px] sm:text-[8px] text-gray-600 leading-tight line-clamp-2 text-center max-w-full">
-                                  {enquiry.description}
-                                </p>
-                              </div>
-                            )}
+                            {/* Description - Hidden in grid view */}
                             
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1.5 sm:gap-2.5 bg-gray-50 rounded-md sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black shadow-sm">
-                                  <span className="font-black text-black text-sm sm:text-xl">₹</span>
-                                  <span className="truncate font-black text-gray-900 text-xs sm:text-lg">{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-black text-black text-base sm:text-2xl">₹</span>
+                                  <span className="truncate font-black text-gray-900 text-sm sm:text-xl">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
@@ -1371,7 +1297,7 @@ export default function EnquiryWall() {
                                 <div className="ml-auto">
                                   <CountdownTimer
                                     deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                    className="text-[9px] sm:text-sm"
+                                    className="text-[7px] sm:text-[9px] md:text-[10px]"
                                   />
                                 </div>
                               )}
@@ -1385,42 +1311,35 @@ export default function EnquiryWall() {
                           <>
                             <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
-                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0">
+                            <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-0.5 sm:gap-1.5 bg-gray-50 rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black">
-                                  <span className="font-black text-black text-xs sm:text-base md:text-xl">₹</span>
-                                  <span className="font-black text-gray-900 text-[9px] sm:text-xs md:text-base">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-0.5 sm:gap-1.5 bg-gray-50 rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black flex-shrink-0">
+                                  <span className="font-black text-black text-sm sm:text-lg md:text-2xl">₹</span>
+                                  <span className="font-black text-gray-900 text-xs sm:text-sm md:text-lg whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-0.5 sm:gap-1.5 text-gray-700 border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5">
+                                <div className="flex items-center gap-0.5 sm:gap-1.5 text-gray-700 border-2 sm:border-4 border-black rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 flex-shrink-0">
                                   <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0">
                                     <MapPin className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-gray-600" />
                                   </div>
-                                  <span className="text-[9px] sm:text-xs md:text-base font-semibold truncate max-w-[70px] sm:max-w-none">{enquiry.location}</span>
+                                  <span className="text-[9px] sm:text-xs md:text-base font-semibold whitespace-nowrap">{enquiry.location}</span>
                                 </div>
                               )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[8px] sm:text-[10px] md:text-sm px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold">
+                              <Badge variant="secondary" className="text-[8px] sm:text-[10px] md:text-sm px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 bg-gray-100 text-gray-700 border-2 sm:border-4 border-black font-semibold flex-shrink-0 whitespace-nowrap">
                                 {enquiry.category.replace('-', ' ')}
                               </Badge>
-                              {/* Response Count - Only show for own enquiries */}
-                              {isOwnEnquiry(enquiry) && (
-                                <div className="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[10px] md:text-xs text-gray-700 bg-white rounded-md px-1 sm:px-2 py-0.5 sm:py-1 border-2 sm:border-4 border-black">
-                                  <MessageSquare className="h-2 w-2 sm:h-3 sm:w-3 text-gray-600 flex-shrink-0" />
-                                  <span className="whitespace-nowrap font-semibold">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
-                                </div>
-                              )}
                             </div>
                             
                             {/* Deadline Timer - Right Aligned */}
                             {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                              <div className="ml-auto rounded-md sm:rounded-lg px-1 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white mt-2 sm:mt-3">
+                              <div className="ml-auto rounded px-0 py-0 bg-white mt-2 sm:mt-3 flex-shrink-0">
                                 <CountdownTimer
                                   deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                                  className="text-[8px] sm:text-[10px] md:text-sm"
+                                  className="text-[3px] sm:text-[8px] md:text-[10px]"
                                 />
                               </div>
                             )}
@@ -1472,16 +1391,7 @@ export default function EnquiryWall() {
                           </>
                         ) : (
                           <div className="space-y-1.5 sm:space-y-2.5">
-                            {isOwnEnquiry(enquiry) && (
-                              <div className="flex items-center justify-center text-[8px] sm:text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-gray-100 rounded-md sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-2 border-2 sm:border-4 border-black shadow-sm">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <div className="flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full bg-white shadow-sm">
-                                    <MessageSquare className="h-2 w-2 sm:h-3.5 sm:w-3.5 text-gray-600" />
-                                  </div>
-                                  <span className="font-semibold text-gray-700">{enquiry.responses || 0} {enquiry.responses === 1 ? 'response' : 'responses'}</span>
-                                </div>
-                              </div>
-                            )}
+                            {/* Response count - Hidden in grid view */}
                             
                             {isOwnEnquiry(enquiry) ? (
                               <button 
