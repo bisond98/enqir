@@ -324,7 +324,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             <CardContent className="p-3 sm:p-3 md:p-4 relative z-10">
               {/* Description */}
               <div className="mb-3 sm:mb-2.5 md:mb-2 text-center">
-                <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed font-black">{plan.description}</p>
+                <p className="text-[10px] sm:text-[10px] md:text-xs text-black leading-relaxed font-black">{plan.description}</p>
               </div>
 
               {/* Features - Optimized for Mobile */}
@@ -332,17 +332,17 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                 {plan.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2 sm:gap-1.5">
                     <Check className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-xs sm:text-xs md:text-sm text-gray-700 leading-relaxed flex-1 break-words">{feature}</span>
+                    <span className="text-[10px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed flex-1 break-words">{feature}</span>
                   </div>
                 ))}
               </div>
 
               {/* Select Button */}
-              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2 border-t-2 border-black">
+              <div className="mt-2.5 sm:mt-3 md:mt-2.5 pt-2.5 sm:pt-3 md:pt-2">
                 <Button
                   type="button"
                   size="sm"
-                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-2 sm:border-4 border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
+                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-2 sm:border-4 md:border-2 lg:border-2 border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
                     selectedPlan === plan.id
                       ? 'bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                       : 'bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
