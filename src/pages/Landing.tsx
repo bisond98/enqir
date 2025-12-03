@@ -793,81 +793,87 @@ const Landing = () => {
 
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
-    // Fetch all enquiries and filter client-side to ensure all 'live' enquiries are shown
-    // This ensures we catch all admin-approved enquiries regardless of query/index issues
-    const q = query(
-      collection(db, 'enquiries'),
-      orderBy('createdAt', 'desc')
-    );
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const items: any[] = [];
-      snap.forEach((doc) => {
-        const data = doc.data();
-        items.push({
-          id: doc.id,
-          ...data
+    // Optimized: Use getDocs for one-time fetch instead of onSnapshot for faster initial load
+    // Limit to 50 most recent enquiries since we only need 3 cards for display
+    const loadEnquiries = async () => {
+      try {
+        const q = query(
+          collection(db, 'enquiries'),
+          orderBy('createdAt', 'desc'),
+          limit(50) // Reduced limit for faster loading - we only need 3 cards
+        );
+        
+        const snap = await getDocs(q);
+        const items: any[] = [];
+        snap.forEach((doc) => {
+          const data = doc.data();
+          items.push({
+            id: doc.id,
+            ...data
+          });
         });
-      });
-      
-      console.log('📊 Landing: Total enquiries from query:', items.length);
-      
-      // Filter to only show enquiries with status='live' (admin accepted)
-      // Use case-insensitive check to catch any variations
-      const liveStatusItems = items.filter(e => {
-        const status = (e.status || '').toLowerCase().trim();
-        return status === 'live';
-      });
-      
-      console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
-      
-      // Deduplicate by ID first (in case same document appears multiple times)
-      const uniqueItems = Array.from(
-        new Map(liveStatusItems.map(e => [e.id, e])).values()
-      );
-      
-      // Filter out expired enquiries - only show live (not expired) enquiries
-      const now = new Date();
-      const liveEnquiries = uniqueItems.filter(enquiry => {
-        if (!enquiry.deadline) return true; // No deadline = live
-        try {
-          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate.getTime() >= now.getTime();
-        } catch {
-          return true; // If error, assume live
-        }
-      });
-      
-      console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
-      
-      // Sort live enquiries by createdAt (newest first)
-      liveEnquiries.sort((a, b) => {
-        try {
-          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return dateB.getTime() - dateA.getTime();
-        } catch {
-          return 0;
-        }
-      });
-      
-      // Set all live enquiries for count and search (includes expired for count/search)
-      setAllLiveEnquiries(uniqueItems);
-      
-      // Set display enquiries - only live (not expired) enquiries for the 3 cards
-      // Store all live enquiries for shuffling (not just first 3)
-      setPublicRecentEnquiries(liveEnquiries);
-      
-      // Set initial shuffled display (3 random from all live enquiries)
-      const initialShuffled = getRandomThree(liveEnquiries);
-      setShuffledEnquiries(initialShuffled);
-    }, (error) => {
-      console.error('Error loading enquiries:', error);
-      // Set empty arrays on error
-      setAllLiveEnquiries([]);
-      setPublicRecentEnquiries([]);
-      setShuffledEnquiries([]);
-    });
-    return () => unsubscribe();
+        
+        console.log('📊 Landing: Total enquiries from query:', items.length);
+        
+        // Filter to only show enquiries with status='live' (admin accepted)
+        // Use case-insensitive check to catch any variations
+        const liveStatusItems = items.filter(e => {
+          const status = (e.status || '').toLowerCase().trim();
+          return status === 'live';
+        });
+        
+        console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
+        
+        // Deduplicate by ID first (in case same document appears multiple times)
+        const uniqueItems = Array.from(
+          new Map(liveStatusItems.map(e => [e.id, e])).values()
+        );
+        
+        // Filter out expired enquiries - only show live (not expired) enquiries
+        const now = new Date();
+        const liveEnquiries = uniqueItems.filter(enquiry => {
+          if (!enquiry.deadline) return true; // No deadline = live
+          try {
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            return deadlineDate.getTime() >= now.getTime();
+          } catch {
+            return true; // If error, assume live
+          }
+        });
+        
+        console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
+        
+        // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
+        liveEnquiries.sort((a, b) => {
+          try {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          } catch {
+            return 0;
+          }
+        });
+        
+        // Set all live enquiries for count and search (includes expired for count/search)
+        setAllLiveEnquiries(uniqueItems);
+        
+        // Set display enquiries - only live (not expired) enquiries for the 3 cards
+        // Store all live enquiries for shuffling (not just first 3)
+        setPublicRecentEnquiries(liveEnquiries);
+        
+        // Set initial shuffled display (3 random from all live enquiries)
+        const initialShuffled = getRandomThree(liveEnquiries);
+        setShuffledEnquiries(initialShuffled);
+      } catch (error) {
+        console.error('Error loading enquiries:', error);
+        // Set empty arrays on error
+        setAllLiveEnquiries([]);
+        setPublicRecentEnquiries([]);
+        setShuffledEnquiries([]);
+      }
+    };
+    
+    loadEnquiries();
   }, []);
 
   // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
@@ -1633,7 +1639,7 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto border-4 border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-2 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-4 border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
@@ -1643,7 +1649,7 @@ const Landing = () => {
             </button>
           </Link>
           <Link to="/enquiries" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto border-4 border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-2 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-4 border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}

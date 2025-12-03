@@ -613,13 +613,13 @@ const EnquiryDetail = () => {
     }
     
     const variants = {
-      pending: 'bg-white text-black border-black',
-      rejected: 'bg-white text-black border-black',
-      completed: 'bg-white text-black border-black'
+      pending: 'bg-white text-black border-white',
+      rejected: 'bg-white text-black border-white',
+      completed: 'bg-white text-black border-white'
     };
     
     return (
-      <Badge className={`text-[8px] sm:text-[9px] rounded-full border-2 ${variants[status as keyof typeof variants] || 'bg-white text-black border-black'}`}>
+      <Badge className={`text-[8px] sm:text-[9px] rounded-full border-2 ${variants[status as keyof typeof variants] || 'bg-white text-black border-white'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -656,91 +656,96 @@ const EnquiryDetail = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-4 lg:px-6 py-5 sm:py-6">
-          {/* Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border-4 border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Back Button */}
-              <div className="mb-1 sm:mb-2 relative z-50 -mt-2 sm:-mt-4">
+        {/* Header - Matching Profile Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
                 <Button
                   variant="ghost"
+                  type="button"
                   onClick={() => navigate(-1)}
-                  className="p-2 sm:p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-50"
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </Button>
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border-4 border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  {/* Badges Row */}
-                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    {/* Show verified badge if: 
-                        1. User has profile-level verification (applies to all enquiries), OR
-                        2. This specific enquiry has ID images (enquiry-specific verification) */}
-                    {(userProfile?.isVerified || userProfile?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
-                      <div title="Verified Enquiry" className="flex-shrink-0">
-                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
-                      </div>
-                    )}
-                    {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                      <Badge className="bg-white text-black border-black border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
-                        <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                        Premium
-                      </Badge>
-                    )}
-                    {enquiry.isUrgent && (
-                      <Badge className="bg-white text-black border-black border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
-                        <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
-                        Urgent
-                      </Badge>
-                    )}
-                    {getStatusBadge(enquiry.status)}
-                  </div>
-                  
-                  {/* Main Title */}
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words max-w-full">
-                      {enquiry.title}
-                    </h2>
-                  </div>
-                  
-                  {/* Deadline Row - Creative Design */}
-                  {enquiry.deadline && (
-                    <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mb-2 sm:mb-3">
-                      <span className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-slate-600">before</span>
-                      <div className="inline-flex items-center gap-2 sm:gap-3 bg-slate-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 shadow-sm">
-                        {/* Countdown Timer with Icon */}
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-700" />
-                          <CountdownTimer 
-                            deadline={enquiry.deadline} 
-                            showIcon={false} 
-                            className="[&_*]:!text-slate-800 [&_*]:!border-slate-300 [&_*]:!bg-white [&_*]:!font-semibold" 
-                          />
-                        </div>
-                        
-                        {/* Date Separator and Display */}
-                        {formatDeadlineReadable(enquiry.deadline) && (
-                          <>
-                            <div className="hidden sm:block w-px h-4 sm:h-5 bg-slate-300"></div>
-                            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-slate-700">
-                              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-600" />
-                              <span>{formatDeadlineReadable(enquiry.deadline)}</span>
-                            </span>
-                          </>
-                        )}
-                      </div>
+            </div>
+            
+            {/* Enquiry Title Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center break-words max-w-full">
+                {enquiry.title}
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                {/* Badges Row */}
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-5">
+                  {/* Show verified badge if: 
+                      1. User has profile-level verification (applies to all enquiries), OR
+                      2. This specific enquiry has ID images (enquiry-specific verification) */}
+                  {(userProfile?.isVerified || userProfile?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                    <div title="Verified Enquiry" className="flex-shrink-0">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                     </div>
                   )}
+                  {user && user.uid === enquiry.userId && enquiry.isPremium && (
+                    <Badge className="bg-white text-black border-white border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
+                      <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
+                      Premium
+                    </Badge>
+                  )}
+                  {enquiry.isUrgent && (
+                    <Badge className="bg-white text-black border-white border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
+                      <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
+                      Urgent
+                    </Badge>
+                  )}
+                  {getStatusBadge(enquiry.status)}
                 </div>
+                
+                {/* Deadline Row - Creative Design */}
+                {enquiry.deadline && (
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                    <span className="text-[9px] sm:text-[10px] lg:text-xs font-normal text-gray-300">before</span>
+                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 shadow-sm">
+                      {/* Countdown Timer with Icon */}
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-300" />
+                        <CountdownTimer 
+                          deadline={enquiry.deadline} 
+                          showIcon={false} 
+                          className="[&_*]:!text-white [&_*]:!border-gray-600 [&_*]:!bg-gray-800 [&_*]:!font-semibold" 
+                        />
+                      </div>
+                      
+                      {/* Date Separator and Display */}
+                      {formatDeadlineReadable(enquiry.deadline) && (
+                        <>
+                          <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
+                          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
+                            <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
+                            <span>{formatDeadlineReadable(enquiry.deadline)}</span>
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-          
+        </div>
+
+        {/* Content - Inside Container */}
+        <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           {/* Enquiry Card - Professional Design */}
-          <Card className="border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white mb-5 sm:mb-6">
+          <Card className="border-0 shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white mb-5 sm:mb-6 w-full">
               {/* Card Content - Enhanced White Background */}
               <CardContent className="p-5 sm:p-5 lg:p-6">
                 <div className="space-y-4 sm:space-y-4">
