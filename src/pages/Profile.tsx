@@ -690,11 +690,11 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        {/* Profile Header - Matching Chat Page Size */}
-        <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-          <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-            {/* Spacer Section to Match Chat Page Back Button Space */}
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Seller Form Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10"></div>
@@ -702,26 +702,24 @@ const Profile = () => {
             </div>
             
             {/* Profile Heading in Black Header */}
-            <div className="text-center mb-4 sm:mb-6">
-              <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
-                  Profile
-                </h1>
-              </div>
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Profile
+              </h1>
             </div>
             
-            {/* Content Card - White Background */}
-            <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
-                <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                  <h2 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-black tracking-tight inline-flex items-center gap-2 sm:gap-3">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3">
                     {fullName || authUser.displayName || "User"}
                     {isProfileVerified && (
-                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-black" />
+                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                     )}
                   </h2>
                 </div>
-                <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xs sm:text-base lg:text-lg xl:text-xl text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                   {authUser.email}
                 </p>
               </div>
@@ -729,7 +727,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Profile Form */}
+        {/* Profile Form - Inside Container */}
+        <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+          {/* Profile Form */}
         <Card className="mt-6 sm:mt-8 border-4 border-black lg:min-h-[200px]">
           <CardHeader className="p-4 sm:p-6 lg:p-5 lg:pb-4">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
@@ -1509,6 +1509,7 @@ const Profile = () => {
           className="mt-4 sm:mt-6"
         />
 
+        </div>
       </div>
 
       {/* Remove Trust Badge Confirmation Dialog */}

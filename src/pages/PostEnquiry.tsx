@@ -1739,14 +1739,14 @@ export default function PostEnquiry() {
                 </Button>
                 <div className="w-10 h-10"></div>
               </div>
-            </div>
-            
+              </div>
+              
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
-                Post Enquiry
+                      Post Enquiry
               </h1>
-            </div>
+                  </div>
             
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
@@ -1756,10 +1756,10 @@ export default function PostEnquiry() {
                     What in the f***n world are you looking for?
                   </p>
                 </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           {/* Success Message - Enhanced Professional Design */}

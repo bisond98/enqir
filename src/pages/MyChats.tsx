@@ -282,154 +282,252 @@ export default function MyChats() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Professional Header - Matching Profile/Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Spacer Section to Match Profile Page */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10"></div>
-                </div>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Seller Form Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Your Chats Heading in Black Header */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
-                    Your Chats
-                  </h1>
-                </div>
-              </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <p className="text-[10px] sm:text-xs text-slate-600 text-center font-medium">
-                      See all conversations you're currently having with buyers and sellers.
-                    </p>
-                  </div>
+            </div>
             
-                  {/* Toggle Button - Physical Button Design */}
-                  <div className="flex justify-center items-center mt-4 sm:mt-5">
-                    <motion.div 
-                      className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
-                      
-                      {/* Animated Background Slider - Physical button pressed effect */}
-                      <motion.div 
-                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-black to-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out ${
-                          viewMode === 'buyer' ? 'left-1.5 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1.5 sm:left-1/2 sm:right-2'
-                        }`}
-                        style={{ width: 'calc(50% - 3px)' }}
-                        layout
+            {/* Your Chats Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Your Chats
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    See all conversations you're currently having with buyers and sellers.
+                  </p>
+                </div>
+            
+                  {/* Toggle - Creative Rotating Dial Design */}
+                  <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
+                    {/* Labels and Toggle Container */}
+                    <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
+                      {/* Buy Label with Animation */}
+                      <motion.div
+                        animate={{
+                          scale: viewMode === 'buyer' ? 1.1 : 1,
+                          opacity: viewMode === 'buyer' ? 1 : 0.5,
+                        }}
+                        transition={{ duration: 0.3 }}
                       >
-                        {/* Button highlight */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-xl pointer-events-none" />
+                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
+                          viewMode === 'buyer' ? 'text-white' : 'text-gray-400'
+                        }`}>
+                          Buy
+                        </span>
                       </motion.div>
                       
-                      {/* Buyer Button */}
-                      <motion.button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleToggleView('buyer');
-                        }}
-                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
-                          viewMode === 'buyer'
-                            ? 'text-white drop-shadow-lg'
-                            : 'text-gray-800 hover:text-black'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95, y: 2 }}
-                      >
+                      {/* Creative Rotating Dial Toggle */}
+                      <div className="relative inline-flex items-center">
+                        {/* Track Background with Animated Gradient */}
                         <motion.div 
-                          className="relative flex items-center justify-center"
-                          animate={viewMode === 'buyer' ? {
-                            rotate: [0, -10, 10, 0],
-                            scale: [1, 1.1, 1]
-                          } : {}}
+                          className="w-20 h-8 sm:w-28 sm:h-10 lg:w-32 lg:h-12 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full relative cursor-pointer overflow-hidden"
+                          animate={{
+                            background: viewMode === 'buyer' 
+                              ? 'linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd)' 
+                              : 'linear-gradient(to right, #10b981, #34d399, #6ee7b7)',
+                          }}
                           transition={{ duration: 0.5 }}
+                          onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const clickX = e.clientX - rect.left;
+                            const trackWidth = rect.width;
+                            const isLeftSide = clickX < trackWidth / 2;
+                            
+                            if (isLeftSide && viewMode !== 'buyer') {
+                              handleToggleView('buyer');
+                            } else if (!isLeftSide && viewMode !== 'seller') {
+                              handleToggleView('seller');
+                            }
+                          }}
                         >
-                          <ShoppingCart className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'buyer' ? 'drop-shadow-md' : ''}`} />
-                          {buyerUnreadCount > 0 && (
-                            <motion.span 
-                              className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] sm:text-[10px] font-black rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_4px_rgba(0,0,0,0.3)] px-1"
+                          {/* Animated Background Overlay */}
+                          <motion.div
+                            className="absolute inset-0 rounded-full"
+                            animate={{
+                              background: viewMode === 'buyer'
+                                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 197, 253, 0.2))'
+                                : 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(110, 231, 183, 0.2))',
+                            }}
+                            transition={{ duration: 0.5 }}
+                          />
+                          
+                          {/* Rotating Dial Knob */}
+                          <motion.button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleToggleView(viewMode === 'buyer' ? 'seller' : 'buyer');
+                            }}
+                            className="absolute top-1/2 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full cursor-pointer z-10"
+                            animate={{
+                              left: viewMode === 'buyer' ? '-8px' : 'calc(100% - 32px)',
+                              rotate: viewMode === 'buyer' ? [0, -15, 15, 0] : [0, 15, -15, 0],
+                            }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 25,
+                              rotate: { duration: 0.6 }
+                            }}
+                            whileHover={{ scale: 1.15, rotate: viewMode === 'buyer' ? -10 : 10 }}
+                            whileTap={{ scale: 0.85 }}
+                            style={{
+                              transform: 'translateY(-50%)',
+                            }}
+                          >
+                            {/* Outer Ring - Rotating */}
+                            <motion.div
+                              className="absolute inset-0 rounded-full border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                               animate={{
-                                scale: [1, 1.2, 1],
-                                rotate: [0, 10, -10, 0]
+                                rotate: viewMode === 'buyer' ? 0 : 360,
                               }}
                               transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
+                                duration: 0.8,
                                 ease: "easeInOut"
                               }}
                             >
-                              {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
-                            </motion.span>
-                          )}
+                              {/* Gear Notches */}
+                              {[...Array(12)].map((_, i) => (
+                                <div
+                                  key={i}
+                                  className="absolute top-0 left-1/2 w-0.5 h-2 sm:h-2.5 lg:h-3 bg-gray-400 rounded-full origin-bottom"
+                                  style={{
+                                    transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                                  }}
+                                />
+                              ))}
+                            </motion.div>
+                            
+                            {/* Inner Circle with 3D Effect */}
+                            <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
+                              {/* Center Dot */}
+                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 shadow-inner"></div>
+                              
+                              {/* Text Label - Rotating */}
+                              <motion.div
+                                className="absolute inset-0 flex items-center justify-center"
+                                animate={{
+                                  rotate: viewMode === 'buyer' ? 0 : 180,
+                                }}
+                                transition={{ duration: 0.6 }}
+                              >
+                                <span className="text-[7px] sm:text-[9px] lg:text-[11px] font-black text-gray-800 absolute">
+                                  {viewMode === 'buyer' ? 'B' : 'S'}
+                                </span>
+                              </motion.div>
+                            </div>
+                            
+                            {/* Shine Effect */}
+                            <motion.div
+                              className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent pointer-events-none"
+                              animate={{
+                                rotate: [0, 360],
+                              }}
+                              transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: "linear"
+                              }}
+                            />
+                            
+                            {/* Unread Badge - Buyer */}
+                            {viewMode === 'buyer' && buyerUnreadCount > 0 && (
+                              <motion.span 
+                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
+                                animate={{
+                                  scale: [1, 1.3, 1],
+                                  rotate: [0, 15, -15, 0]
+                                }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
+                              </motion.span>
+                            )}
+                            
+                            {/* Unread Badge - Seller */}
+                            {viewMode === 'seller' && sellerUnreadCount > 0 && (
+                              <motion.span 
+                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
+                                animate={{
+                                  scale: [1, 1.3, 1],
+                                  rotate: [0, 15, -15, 0]
+                                }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
+                              </motion.span>
+                            )}
+                          </motion.button>
+                          
+                          {/* Animated Particles on Toggle */}
+                          {[...Array(3)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute w-1 h-1 bg-white rounded-full opacity-60"
+                              animate={{
+                                x: viewMode === 'buyer' ? [0, 20, 0] : [0, -20, 0],
+                                y: [0, Math.sin(i) * 10, 0],
+                                opacity: [0.6, 0, 0.6],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                delay: i * 0.3,
+                                ease: "easeInOut"
+                              }}
+                              style={{
+                                left: '50%',
+                                top: '50%',
+                              }}
+                            />
+                          ))}
                         </motion.div>
-                        <span className="whitespace-nowrap relative z-10">{viewMode === 'buyer' ? 'Buy' : 'Buy'}</span>
-                      </motion.button>
+                      </div>
                       
-                      {/* Seller Button */}
-                      <motion.button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleToggleView('seller');
+                      {/* Sell Label with Animation */}
+                      <motion.div
+                        animate={{
+                          scale: viewMode === 'seller' ? 1.1 : 1,
+                          opacity: viewMode === 'seller' ? 1 : 0.5,
                         }}
-                        className={`relative z-10 px-3 py-1.5 sm:px-5 sm:py-2.5 lg:px-7 lg:py-3 rounded-xl font-black text-[10px] sm:text-xs lg:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-w-[75px] sm:min-w-[110px] lg:min-w-[130px] justify-center ${
-                          viewMode === 'seller'
-                            ? 'text-white drop-shadow-lg'
-                            : 'text-gray-800 hover:text-black'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95, y: 2 }}
+                        transition={{ duration: 0.3 }}
                       >
-                        <motion.div 
-                          className="relative flex items-center justify-center"
-                          animate={viewMode === 'seller' ? {
-                            rotate: [0, -10, 10, 0],
-                            scale: [1, 1.1, 1]
-                          } : {}}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <UserCheck className={`h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 lg:h-5.5 lg:w-5.5 transition-all duration-300 ${viewMode === 'seller' ? 'drop-shadow-md' : ''}`} />
-                          {sellerUnreadCount > 0 && (
-                            <motion.span 
-                              className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] sm:text-[10px] font-black rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_4px_rgba(0,0,0,0.3)] px-1"
-                              animate={{
-                                scale: [1, 1.2, 1],
-                                rotate: [0, 10, -10, 0]
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
-                            </motion.span>
-                          )}
-                        </motion.div>
-                        <span className="whitespace-nowrap relative z-10">{viewMode === 'seller' ? 'Sell' : 'Sell'}</span>
-                      </motion.button>
-                    </motion.div>
+                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
+                          viewMode === 'seller' ? 'text-white' : 'text-gray-400'
+                        }`}>
+                          Sell
+                        </span>
+                      </motion.div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+        {/* Content - Inside Container */}
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
           {loading ? (
             <p className="text-sm text-gray-500">Loading chats…</p>
           ) : chats.length === 0 ? (
@@ -835,6 +933,19 @@ export default function MyChats() {
     </Layout>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
