@@ -469,7 +469,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           {/* Header */}
           <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-normal tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Menu</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Menu</h2>
               <Button
                 variant="ghost"
                 size="sm"
@@ -622,23 +622,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
     <div className="flex flex-col">
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
-          <div className="flex h-14 sm:h-20 items-center justify-between gap-4 min-w-0">
-            {/* Logo - Direct Home Link (Desktop) */}
-            <Link 
-              to="/"
-              className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 active:outline-none"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
-            >
-              <div className="hidden sm:flex w-7 h-7 sm:w-10 sm:h-10 bg-black rounded-lg sm:rounded-xl items-center justify-center shadow-lg">
-              </div>
-              <span className="text-lg sm:text-2xl font-bold text-foreground hidden sm:block">Enqir<span className="text-sm">.in</span></span>
-            </Link>
-
+        <div className="max-w-4xl mx-auto pl-3 pr-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
+          <div className="relative flex h-14 sm:h-20 items-center justify-between gap-4 min-w-0">
             {/* Desktop Navigation */}
             {showNavigation && !isMobile && (
               <nav className="hidden md:flex items-center gap-2 md:gap-3">
-                {navigationItems.map((item) => {
+                {navigationItems.filter(item => 
+                  item.path !== "/" && item.path !== "/dashboard" && item.path !== "/profile"
+                ).map((item) => {
                   const Icon = item.icon;
                   return (
                     <motion.div
@@ -664,74 +655,97 @@ export default function Layout({ children, showNavigation = true }: { children: 
             )}
 
             {/* User Actions */}
-            <div className="flex items-center justify-end gap-2 md:gap-3 flex-shrink-0">
+            <div className="flex items-center justify-end gap-2 md:gap-3">
               {user ? (
-                <div className="flex items-center gap-2 md:gap-3">
-                  {/* Home Icon - Only show when not on home page */}
-                  {location.pathname !== "/" && (
-                    <Link to="/">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
-                        <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
+                <>
+                  {/* Desktop-only buttons */}
+                  <div className="hidden md:flex items-center gap-2 md:gap-3">
+                    {/* Home Icon - Only show when not on home page */}
+                    {location.pathname !== "/" && (
+                      <Link to="/">
+                        <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
+                          <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                          <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    <Link to="/dashboard">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                        <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
                       </Button>
                     </Link>
-                  )}
-                  
-                  {/* PRO BADGE - KEPT FOR FUTURE UPDATES */}
-                  {/* Pro Badge */}
-                  {/* {proRemainingCount > 0 && (
-                    <Badge className="bg-black text-white px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold flex items-center gap-1 sm:gap-1.5 shadow-md">
-                      <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline">Pro</span>
-                      <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-xs">{proRemainingCount}</span>
-                    </Badge>
-                  )} */}
-                  
-                  {/* Smart Notifications */}
-                  <SmartNotifications />
-                  
-                  <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
+                    <Link to="/profile">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                        <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
+                      </Button>
+                    </Link>
+                    {/* Settings button - hidden on mobile, visible on sm+ */}
+                    <Link to="/settings" className="hidden sm:inline-flex">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                        <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>
+                      </Button>
+                    </Link>
+                    <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                      <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline text-xs sm:text-sm">Log Out</span>
                     </Button>
-                  </Link>
-                  <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
-                    </Button>
-                  </Link>
-                  {/* Chats button – shows all user chats (mobile + desktop) */}
-                  <Link to="/my-chats">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black relative"
-                    >
-                      <div className="relative">
-                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
-                        {unreadChatCount > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                            {unreadChatCount > 9 ? '9+' : unreadChatCount}
-                          </span>
-                        )}
+                  </div>
+
+                  {/* Mobile: Smart Notifications, Chats, and Menu grouped together */}
+                  <div className="flex items-center gap-1 md:gap-3 absolute right-0 md:relative md:right-auto pr-3 sm:pr-0">
+                    {/* Smart Notifications */}
+                    <SmartNotifications />
+                    
+                    {/* Dashboard button - visible on mobile */}
+                    <Link to="/dashboard" className="md:hidden">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black">
+                        <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </Button>
+                    </Link>
+                    
+                    {/* Chats button – shows all user chats (mobile + desktop) */}
+                    <Link to="/my-chats">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black relative"
+                      >
+                        <div className="relative">
+                          <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
+                          {unreadChatCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                              {unreadChatCount > 9 ? '9+' : unreadChatCount}
+                            </span>
+                          )}
+                        </div>
+                        <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
+                      </Button>
+                    </Link>
+
+                    {/* Mobile Menu Button */}
+                    {showNavigation && (
+                      <div className="lg:hidden">
+                        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                          <SheetTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 hover:bg-muted/50"
+                              onClick={() => setMobileMenuOpen(true)}
+                            >
+                              <Menu className="h-4 w-4" />
+                            </Button>
+                          </SheetTrigger>
+                          <MobileNavigation />
+                        </Sheet>
                       </div>
-                      <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
-                    </Button>
-                  </Link>
-                  {/* Settings button - hidden on mobile, visible on sm+ */}
-                  <Link to="/settings" className="hidden sm:inline-flex">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                    <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                    <span className="hidden sm:inline text-xs sm:text-sm">Log Out</span>
-                  </Button>
-                </div>
+                    )}
+                  </div>
+                </>
               ) : (
                 <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
                   {/* Home Icon - Only show when not on home page */}
@@ -760,25 +774,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       Get Started
                     </Button>
                   </Link>
-                </div>
-              )}
-
-              {/* Mobile Menu Button */}
-              {showNavigation && (
-                <div className="lg:hidden">
-                  <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                    <SheetTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-9 w-9 p-0 hover:bg-black/10 rounded-lg transition-all duration-200 active:scale-95"
-                        onClick={() => setMobileMenuOpen(true)}
-                      >
-                        <Menu className="h-5 w-5 text-gray-800 font-bold" strokeWidth={2.5} />
-                      </Button>
-                    </SheetTrigger>
-                    <MobileNavigation />
-                  </Sheet>
                 </div>
               )}
             </div>
