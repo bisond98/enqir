@@ -1800,7 +1800,7 @@ export default function PostEnquiry() {
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {category === "jobs" ? "Job Title" : "From a 4 a.m. tea Spot to a piece of the moon."}
                     </Label>
@@ -1809,7 +1809,7 @@ export default function PostEnquiry() {
                       placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -1818,7 +1818,7 @@ export default function PostEnquiry() {
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2 sm:space-y-2.5">
-                      <Label className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
+                      <Label className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         <span>⚠️ Select at least one category</span>
                       </Label>
@@ -1840,7 +1840,7 @@ export default function PostEnquiry() {
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
-                                  <span className="text-xs text-slate-500">Select categories...</span>
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
                                 ) : (
                                   selectedCategories.map((catValue) => {
                                     const cat = categories.find(c => c.value === catValue);
@@ -1923,7 +1923,7 @@ export default function PostEnquiry() {
                             >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
-                                  <span className="text-xs text-slate-500">Select categories...</span>
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
                                 ) : (
                                   selectedCategories.map((catValue) => {
                                     const cat = categories.find(c => c.value === catValue);
@@ -1998,7 +1998,7 @@ export default function PostEnquiry() {
 
                   {/* Description - Enhanced Professional Textarea */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
+                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
@@ -2008,7 +2008,7 @@ export default function PostEnquiry() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={5}
-                      className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
+                      className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
                       style={{ fontSize: '16px' }}
                       required
                     />
@@ -2016,11 +2016,11 @@ export default function PostEnquiry() {
 
                   {/* Reference Images (Optional) - Professional Design */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <Label className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                       <Upload className="h-4 w-4 text-slate-500" />
                       Reference Images (Optional)
                     </Label>
-                    <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 leading-relaxed">
                       What if they end up misunderstanding you?
                     </p>
                     
@@ -2100,7 +2100,7 @@ export default function PostEnquiry() {
                   {/* Budget & Location - Enhanced Side by Side Layout */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
@@ -2121,14 +2121,14 @@ export default function PostEnquiry() {
                             setBudget('₹' + e.target.value);
                           }
                         }}
-                        className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
+                        className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
                         style={{ fontSize: '16px' }}
                         required
                       />
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
+                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Location
                       </Label>
@@ -2140,7 +2140,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2180,13 +2180,13 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-semibold text-slate-800">
+                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-normal text-slate-500">
                         Notes <span className="text-slate-500 font-normal">(Optional)</span>
                       </Label>
                       <Textarea
                         id="notes"
                         placeholder="Additional requirements or preferences..."
-                        className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400"
+                        className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={4}
@@ -2478,7 +2478,7 @@ export default function PostEnquiry() {
                                   validateIdNumber(value, govIdType);
                                 }
                           }}
-                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 w-full"
+                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px] w-full"
                           disabled={verifyingId}
                         />
                             {errors.govIdNumber && !idVerificationResult && (

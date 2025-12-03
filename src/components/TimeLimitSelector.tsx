@@ -456,7 +456,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-sm sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
@@ -474,7 +474,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-base sm:text-sm border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
               <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
               {value ? formatDeadline(deadline) : 'Set deadline'}
             </Button>
