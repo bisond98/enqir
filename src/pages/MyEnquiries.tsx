@@ -23,7 +23,7 @@ interface Enquiry {
   description: string;
   category: string;
   budget: number;
-  status: 'pending' | 'live' | 'rejected' | 'completed';
+  status: 'pending' | 'live' | 'rejected' | 'completed' | 'deal_closed';
   location?: string;
   userId: string;
   createdAt: any;
@@ -40,6 +40,9 @@ interface Enquiry {
   isPremium?: boolean;
   selectedPlanId?: string;
   selectedPlanPrice?: number;
+  dealClosed?: boolean;
+  dealClosedAt?: any;
+  dealClosedBy?: string;
 }
 
 const MyEnquiries = () => {
@@ -459,39 +462,46 @@ const MyEnquiries = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
-          {/* Professional Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Header Section with Back Button */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/dashboard')}
-                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                  >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </Button>
-                </div>
+        {/* Header - Matching Profile Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => navigate('/dashboard')}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-gray-800 rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Enquiries
-                    </h2>
-                  </div>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-medium">
+            </div>
+            
+            {/* My Enquiries Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                My Enquiries
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                     Track & Manage Your Enquiries
                   </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Content - Inside Container */}
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
           {/* Professional Stats Summary with Animations */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6 lg:mb-8">
             {(() => {
@@ -507,8 +517,8 @@ const MyEnquiries = () => {
               };
               
               const liveCount = enquiries.filter(e => e.status === 'live' && !isExpired(e)).length;
-              const pendingCount = enquiries.filter(e => e.status === 'pending' && !isExpired(e)).length;
-              const completedCount = enquiries.filter(e => e.status === 'completed' || isExpired(e)).length;
+              const pendingCount = enquiries.filter(e => e.status === 'pending').length;
+              const completedCount = enquiries.filter(e => e.dealClosed === true || e.status === 'deal_closed').length;
               const totalCount = enquiries.length;
               
               return (
