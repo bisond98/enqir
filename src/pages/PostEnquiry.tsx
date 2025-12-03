@@ -1744,7 +1744,7 @@ export default function PostEnquiry() {
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
-                      Post Enquiry
+                      Post Your Enquiry
               </h1>
                   </div>
             
@@ -1820,7 +1820,7 @@ export default function PostEnquiry() {
                     <div className="space-y-2 sm:space-y-2.5">
                       <Label className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
-                        Choose Categories
+                        <span>⚠️ Select at least one category</span>
                       </Label>
                     </div>
                     
@@ -1993,12 +1993,6 @@ export default function PostEnquiry() {
                         </Popover>
                       </div>
                       
-                      {selectedCategories.length === 0 && (
-                        <p className="text-[10px] sm:text-xs text-black flex items-center gap-1.5 font-medium">
-                          <span className="text-black">⚠️</span>
-                          Select at least one category
-                        </p>
-                      )}
                     </div>
                   </div>
 

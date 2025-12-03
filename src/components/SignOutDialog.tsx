@@ -37,10 +37,10 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
             <LogOut className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
           </div>
           <DialogTitle className="text-lg sm:text-lg font-semibold text-slate-900 text-center w-full">
-            Sign Out
+            Log Out
           </DialogTitle>
           <DialogDescription className="text-[10px] sm:text-sm text-slate-600 leading-tight text-center w-full px-2 sm:px-0">
-            You'll need to sign in again to access your account.
+            You'll need to log in again to access your account.
           </DialogDescription>
         </DialogHeader>
         
@@ -75,10 +75,10 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Signing out...</span>
+                <span>Logging out...</span>
               </div>
             ) : (
-              'Sign Out'
+              'Log Out'
             )}
           </Button>
         </DialogFooter>

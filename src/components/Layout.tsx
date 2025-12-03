@@ -469,7 +469,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           {/* Header */}
           <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Menu</h2>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-normal tracking-tighter leading-none font-heading drop-shadow-2xl text-white">Menu</h2>
               <Button
                 variant="ghost"
                 size="sm"
@@ -609,7 +609,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 className="w-full justify-start h-10 rounded-lg border-2 border-red-600 hover:bg-red-50 text-red-600 hover:text-red-700 font-medium text-sm"
               >
                 <LogOut className="h-4 w-4 mr-2.5" />
-                Sign Out
+                Log Out
               </Button>
             </div>
           )}
@@ -729,7 +729,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </Link>
                   <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
                     <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                    <span className="hidden sm:inline text-xs sm:text-sm">Sign Out</span>
+                    <span className="hidden sm:inline text-xs sm:text-sm">Log Out</span>
                   </Button>
                 </div>
               ) : (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -53,6 +54,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [isEmailLinkMode, setIsEmailLinkMode] = useState(false);
   const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   
   
   // Pre-fill email from URL parameter (from email verification)
@@ -60,7 +62,7 @@ const SignIn = () => {
     const emailParam = searchParams.get('email');
     if (emailParam) {
       setIdentifier(emailParam);
-      setSuccess("Email verified! Please sign in to continue.");
+      setSuccess("Email verified! Please log in to continue.");
     }
     
     // Check if we're completing an email link sign-in
@@ -71,7 +73,7 @@ const SignIn = () => {
         setIsEmailLinkMode(true);
         setPendingEmailLink(storedLink);
         setError("");
-        setSuccess("Please enter the email address you used to sign up to complete sign-in.");
+        setSuccess("Please enter the email address you used to sign up to complete log-in.");
       }
     }
   }, [searchParams]);
@@ -100,12 +102,12 @@ const SignIn = () => {
         setLoading(false);
         navigate("/");
       } else {
-        setError(result.error.message || "Sign in failed");
+        setError(result.error.message || "Log in failed");
         setLoading(false);
       }
     } catch (err: any) {
       console.error("❌ Sign in error:", err);
-      setError(err?.message || "An unexpected error occurred during sign in");
+      setError(err?.message || "An unexpected error occurred during log in");
       setLoading(false);
     }
   };
@@ -126,13 +128,11 @@ const SignIn = () => {
         return;
       }
       
-      // Construct full name from first and last name
-      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
-      
+      // Sign up without first/last name
       const result = await signUp(signUpIdentifier, signUpPassword, { 
-        full_name: fullName,
-        first_name: firstName.trim(),
-        last_name: lastName.trim()
+        full_name: '',
+        first_name: '',
+        last_name: ''
       });
       console.log("Sign up result:", result);
       
@@ -169,15 +169,15 @@ const SignIn = () => {
           {/* Clean Header Section */}
           <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center">
             {/* Main Heading */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-4 sm:mb-5 tracking-tight leading-tight">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span className="text-blue-600 font-black">Enqir</span>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>.in</span>
             </h1>
             
-            {/* Subtitle */}
-            <p className="text-xs sm:text-sm text-gray-600 px-2 sm:px-4 leading-relaxed max-w-md mx-auto">
-              Sign in to your account or create a new one
+            {/* Tagline */}
+            <p className="text-[10px] sm:text-xs text-gray-700 px-2 sm:px-4 leading-tight max-w-md mx-auto mb-4 sm:mb-5 font-medium whitespace-nowrap">
+              From Hobbies To Wants; From Necessities To Requirements
             </p>
           </div>
 
@@ -222,7 +222,7 @@ const SignIn = () => {
                     <p className="text-xs sm:text-sm text-green-800 leading-relaxed px-2 max-w-md mx-auto">
                       Check your inbox at{" "}
                       <span className="font-semibold text-green-900 break-all">{signUpIdentifier}</span>
-                      {" "}and click the link to sign in.
+                      {" "}and click the link to log in.
                     </p>
 
                     {/* Action Button */}
@@ -235,31 +235,49 @@ const SignIn = () => {
                         }}
                         className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                       >
-                        Got it, let me sign in
+                        Got it, let me log in
                       </Button>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Sign In / Sign Up Tabs */}
+              {/* Sign In / Sign Up Tabs - Physical Switch Design */}
               {!showVerificationSent && (
                 <>
-              <Tabs defaultValue="signin" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 h-12 sm:h-13 mb-7 sm:mb-9 bg-gray-50 rounded-xl p-1.5 border border-gray-200">
+              <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
+                    <TabsList className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-4 border-black rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-full h-auto grid grid-cols-2">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
+                      
+                      {/* Animated Background Slider - Behind text */}
+                      <motion.div 
+                        className={`absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-b from-black to-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.3)] transition-all duration-300 ease-in-out pointer-events-none z-[1] ${
+                          activeTab === 'signin' ? 'left-1.5 right-1/2 sm:left-2 sm:right-1/2' : 'left-1/2 right-1.5 sm:left-1/2 sm:right-2'
+                        }`}
+                        style={{ width: 'calc(50% - 3px)' }}
+                        layout
+                      >
+                        {/* Button highlight */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-xl pointer-events-none" />
+                      </motion.div>
+                      
+                      {/* Log In Button - Text with background for visibility */}
                       <TabsTrigger 
                         value="signin" 
-                        className="text-sm sm:text-base font-semibold rounded-lg transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-100"
+                        className="relative z-50 h-10 sm:h-11 rounded-xl font-black text-sm sm:text-base transition-all duration-300 data-[state=active]:text-white data-[state=active]:bg-black data-[state=active]:drop-shadow-lg data-[state=inactive]:text-gray-800 data-[state=inactive]:hover:text-black bg-transparent border-0"
                       >
-                        Sign In
+                        <span className="relative z-10">Log In</span>
                       </TabsTrigger>
+                      
+                      {/* Sign Up Button - Text with background for visibility */}
                       <TabsTrigger 
                         value="signup" 
-                        className="text-sm sm:text-base font-semibold rounded-lg transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-100"
+                        className="relative z-50 h-10 sm:h-11 rounded-xl font-black text-sm sm:text-base transition-all duration-300 data-[state=active]:text-white data-[state=active]:bg-black data-[state=active]:drop-shadow-lg data-[state=inactive]:text-gray-800 data-[state=inactive]:hover:text-black bg-transparent border-0"
                       >
-                        Sign Up
+                        <span className="relative z-10">Sign Up</span>
                       </TabsTrigger>
-                </TabsList>
+                    </TabsList>
 
                 {/* Sign In Form */}
                     <TabsContent value="signin" className="space-y-4 sm:space-y-5">
@@ -308,10 +326,10 @@ const SignIn = () => {
                           {loading ? (
                             <>
                               <div className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
-                              Signing in...
+                              Logging in...
                             </>
                           ) : (
-                            "Sign In"
+                            "Log In"
                           )}
                     </Button>
                   </form>
@@ -326,44 +344,6 @@ const SignIn = () => {
                 {/* Sign Up Form */}
                     <TabsContent value="signup" className="space-y-4 sm:space-y-5">
                       <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-5">
-                        {/* First Name and Last Name - Manual Entry */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-2.5">
-                            <Label htmlFor="firstName" className="text-xs sm:text-sm font-semibold text-gray-800">
-                              First Name *
-                            </Label>
-                      <div className="relative">
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
-                        <Input
-                                id="firstName"
-                          type="text"
-                                placeholder="First name"
-                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                          <div className="space-y-2.5">
-                            <Label htmlFor="lastName" className="text-xs sm:text-sm font-semibold text-gray-800">
-                              Last Name *
-                            </Label>
-                            <div className="relative">
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
-                        <Input
-                          id="lastName"
-                          type="text"
-                                placeholder="Last name"
-                                className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
-                          value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                required
-                        />
-                            </div>
-                      </div>
-                    </div>
-
                         <div className="space-y-2.5">
                           <Label htmlFor="signup-identifier" className="text-xs sm:text-sm font-semibold text-gray-800">
                             Email Address
@@ -421,7 +401,7 @@ const SignIn = () => {
                   <Separator className="my-4 sm:my-6" />
               
                   <div className="text-center">
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    <p className="text-[9px] sm:text-[10px] text-gray-600 leading-relaxed">
                   By continuing, you agree to our{" "}
                       <Link to="/terms-and-conditions" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
                     Terms of Service

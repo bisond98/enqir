@@ -387,13 +387,16 @@ const AIChatbot: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => handleQuickQuestion(question)}
-                      className="text-left p-2 sm:p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-800 rounded-xl sm:rounded-2xl transition-all duration-200 group disabled:opacity-50 hover:scale-[1.02] active:scale-100"
+                      className="text-left p-2.5 sm:p-3 bg-gradient-to-br from-white to-gray-50 hover:from-gray-100 hover:to-gray-200 border-2 border-gray-300 hover:border-black rounded-xl sm:rounded-2xl transition-all duration-300 group disabled:opacity-50 hover:scale-[1.03] active:scale-[0.98] shadow-sm hover:shadow-md relative overflow-hidden"
                       disabled={isLoading}
                     >
-                      <div className="flex items-center gap-1.5 sm:gap-2">
-                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full group-hover:bg-gray-900 group-hover:scale-125 transition-all duration-200 flex-shrink-0"></div>
-                        <span className="text-[10px] sm:text-xs font-medium text-gray-700 group-hover:text-gray-900 break-words flex-1 text-left leading-tight">{question}</span>
-                        <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
+                      {/* Background gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      <div className="flex items-center gap-1.5 sm:gap-2 relative z-10">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full group-hover:bg-gray-900 group-hover:scale-150 transition-all duration-300 flex-shrink-0 shadow-sm"></div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-gray-800 group-hover:text-black break-words flex-1 text-left leading-tight">{question}</span>
+                        <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 opacity-0 group-hover:opacity-100 group-hover:text-black transition-all duration-300 flex-shrink-0 group-hover:rotate-12" />
                       </div>
                     </button>
                   ))}
