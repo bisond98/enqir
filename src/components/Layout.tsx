@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -44,13 +44,28 @@ export default function Layout({ children, showNavigation = true }: { children: 
   }
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuOpenRef = useRef(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  
+  // Prevent rapid toggling of menu
+  const handleMenuOpenChange = useCallback((open: boolean) => {
+    // Only update if state actually changed and not in a rapid toggle
+    if (open !== menuOpenRef.current) {
+      menuOpenRef.current = open;
+      setMobileMenuOpen(open);
+    }
+  }, []);
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // Sync ref with state to prevent rapid toggling
+  useEffect(() => {
+    menuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
 
   // Count unread chat messages - Optimized version
   useEffect(() => {
@@ -463,8 +478,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   ];
 
   const MobileNavigation = () => (
-    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-      <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
+    <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
@@ -615,7 +629,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
           )}
         </div>
       </SheetContent>
-    </Sheet>
   );
 
   return (
@@ -729,17 +742,22 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     {/* Mobile Menu Button */}
                     {showNavigation && (
                       <div className="lg:hidden">
-                        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                          <SheetTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 w-8 p-0 hover:bg-muted/50"
-                              onClick={() => setMobileMenuOpen(true)}
-                            >
-                              <Menu className="h-4 w-4" />
-                            </Button>
-                          </SheetTrigger>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-muted/50"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!mobileMenuOpen) {
+                              setMobileMenuOpen(true);
+                              menuOpenRef.current = true;
+                            }
+                          }}
+                        >
+                          <Menu className="h-4 w-4" />
+                        </Button>
+                        <Sheet open={mobileMenuOpen} onOpenChange={handleMenuOpenChange}>
                           <MobileNavigation />
                         </Sheet>
                       </div>
