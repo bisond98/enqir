@@ -1329,21 +1329,29 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="card-premium overflow-hidden rounded-2xl">
-            <CardHeader className="bg-black border-b">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center">
-                  <Star className="h-6 w-6 text-white" />
+            <div className="w-full">
+              {/* Full-width header matching main header */}
+              <div className="bg-black text-white py-4 sm:py-6 -mx-1 sm:-mx-6 lg:-mx-8 px-1 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex items-center relative">
+                    {/* Icon on the left */}
+                    <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Star className="h-6 w-6 text-white" />
+                    </div>
+                    {/* Centered text content */}
+                    <div className="flex-1 flex flex-col items-center text-center">
+                      <h2 className="text-lg sm:text-2xl font-bold text-white">Your Offer</h2>
+                      <p className="text-[10px] sm:text-base text-gray-300">
+                        Your product, your rules, you're the king.
+                      </p>
+                    </div>
+                    {/* Spacer to balance the icon */}
+                    <div className="w-12 h-12 flex-shrink-0"></div>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg sm:text-2xl font-bold text-white">Your Offer</h2>
-              <p className="text-[10px] sm:text-base text-gray-300">
-                    Your product, your rules, you're the king.
-              </p>
-            </div>
               </div>
-            </CardHeader>
-            
+              
+              <Card className="card-premium overflow-hidden rounded-t-none rounded-2xl">
             <CardContent className="p-8">
               {errors.submit && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -2252,7 +2260,8 @@ const SellerResponse = () => {
               </div>
             </form>
             </CardContent>
-          </Card>
+              </Card>
+            </div>
           )}
         </div>
       </div>
