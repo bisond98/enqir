@@ -13,6 +13,7 @@ import {
   confirmPasswordReset as firebaseConfirmPasswordReset,
   updateProfile,
   deleteUser as firebaseDeleteUser,
+  reauthenticateWithCredential,
   User as FirebaseUser,
   RecaptchaVerifier,
   signInWithPhoneNumber,
@@ -39,7 +40,8 @@ interface AuthContextType {
   confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<{ error: any | null }>;
   verifyPhoneOTP: (otp: string, verificationId: string) => Promise<{ error: any | null }>;
   sendPhoneOTP: (phoneNumber: string) => Promise<{ error: any | null; verificationId?: string }>;
-  deleteAccount: () => Promise<{ error: any | null }>;
+  deleteAccount: (password: string) => Promise<{ error: any | null }>;
+  verifyPassword: (password: string) => Promise<{ error: any | null; isValid: boolean }>;
   closeWelcomePopup: () => void;
   clearAuthState: () => void;
 }
@@ -363,7 +365,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   };
 
-  const deleteAccount = async () => {
+  const verifyPassword = async (password: string) => {
+    try {
+      if (!auth.currentUser || !auth.currentUser.email) {
+        return { error: 'No user is currently signed in.', isValid: false };
+      }
+
+      const currentUser = auth.currentUser;
+      const credential = EmailAuthProvider.credential(currentUser.email, password);
+      
+      // Attempt to re-authenticate (this verifies the password)
+      await reauthenticateWithCredential(currentUser, credential);
+      
+      return { error: null, isValid: true };
+    } catch (error: any) {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        return { error: 'Incorrect password', isValid: false };
+      } else if (error.code === 'auth/too-many-requests') {
+        return { error: 'Too many failed attempts. Please try again later.', isValid: false };
+      }
+      return { error: error.message || 'Password verification failed', isValid: false };
+    }
+  };
+
+  const deleteAccount = async (password: string) => {
     try {
       if (!auth.currentUser) {
         throw new Error('No user is currently signed in.');
@@ -371,6 +396,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const currentUser = auth.currentUser;
       const userId = currentUser.uid;
+
+      // Re-authenticate user before deletion (required by Firebase for security)
+      if (!currentUser.email) {
+        throw new Error('User email is required for account deletion.');
+      }
+
+      try {
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
+      } catch (reauthError: any) {
+        if (reauthError.code === 'auth/wrong-password') {
+          throw new Error('Incorrect password. Please try again.');
+        } else if (reauthError.code === 'auth/invalid-credential') {
+          throw new Error('Invalid credentials. Please check your password.');
+        } else if (reauthError.code === 'auth/too-many-requests') {
+          throw new Error('Too many failed attempts. Please try again later.');
+        }
+        throw reauthError;
+      }
 
       // Delete user profile data
       try {
@@ -402,24 +446,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Continue with account deletion even if responses deletion fails
       }
 
-      // Delete the Firebase Auth user
+      // Delete the Firebase Auth user (this permanently removes the account)
+      // After this, the email/password combination will NEVER work again
       await firebaseDeleteUser(currentUser);
+
+      // Explicitly clear all local auth state to ensure immediate logout
+      clearAuthState();
+      
+      // Clear all local storage and session storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear email link sign-in flag if it exists
+      try {
+        window.localStorage.removeItem('signedInViaEmailLink');
+      } catch (e) {
+        // Ignore if already cleared
+      }
 
       toast({
         title: 'Account Deleted',
-        description: 'Your account and all associated data have been permanently deleted.',
+        description: 'Your account and all associated data have been permanently deleted. You have been logged out.',
       });
 
-      // Redirect to landing page
-      window.location.href = '/';
+      // Small delay before redirect to ensure all state is cleared
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
 
       return { error: null };
     } catch (error: any) {
       console.error('Error deleting account:', error);
       
       let errorMessage = 'Failed to delete account. Please try again.';
+      
+      // Handle specific error codes
       if (error.code === 'auth/requires-recent-login') {
         errorMessage = 'For security reasons, please sign in again before deleting your account.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password. Please check your password and try again.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = 'Invalid credentials. Please check your password and try again.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed attempts. Please try again later.';
+      } else if (error.code === 'auth/user-mismatch') {
+        errorMessage = 'User mismatch. Please sign in again and try deleting your account.';
+      } else if (error.code === 'auth/user-not-found') {
+        errorMessage = 'User not found. The account may have already been deleted.';
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -607,6 +680,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sendPhoneOTP,
       verifyPhoneOTP,
       deleteAccount,
+      verifyPassword,
       closeWelcomePopup,
       clearAuthState
     }}>

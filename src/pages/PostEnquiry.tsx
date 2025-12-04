@@ -2356,10 +2356,10 @@ export default function PostEnquiry() {
                     <div className="space-y-1 w-full">
                       <div className="flex items-start justify-between w-full">
                         <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 flex-1 min-w-0 pr-2">
-                          <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
-                            <span className="block">Trust</span>
-                            <span className="block">Badge</span>
-                          </h3>
+                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
+                          <span className="block">Trust</span>
+                          <span className="block">Badge</span>
+                        </h3>
                           <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
                             <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black flex items-center">
                               <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>

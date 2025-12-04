@@ -712,7 +712,7 @@ const Profile = () => {
             {/* Profile Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
-                Profile
+                    Profile
               </h1>
             </div>
             
@@ -737,7 +737,7 @@ const Profile = () => {
 
         {/* Profile Form - Inside Container */}
         <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-          {/* Profile Form */}
+        {/* Profile Form */}
         <Card className="mt-6 sm:mt-8 border-4 border-black lg:min-h-[200px]">
           <CardHeader className="p-4 sm:p-6 lg:p-5 lg:pb-4">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>

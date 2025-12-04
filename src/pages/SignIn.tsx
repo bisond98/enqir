@@ -21,19 +21,20 @@ const SignIn = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  // STRICT: Redirect if user is already signed in - check both AuthContext and Firebase directly
+  // STRICT: Redirect if user is already signed in AND verified - check both AuthContext and Firebase directly
   useEffect(() => {
-    // Check AuthContext user first
-    if (user && !authLoading) {
-      console.log('✅ SignIn: User already authenticated, redirecting to dashboard');
+    // Check AuthContext user first - only redirect if email is verified
+    if (user && !authLoading && user.emailVerified) {
+      console.log('✅ SignIn: User already authenticated and verified, redirecting to dashboard');
       navigate('/dashboard', { replace: true });
       return;
     }
     
     // Also check Firebase auth state directly for immediate detection on refresh
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser && !authLoading) {
-        console.log('✅ SignIn: Firebase user detected, redirecting to dashboard');
+      // Only redirect if user is verified
+      if (firebaseUser && firebaseUser.emailVerified && !authLoading) {
+        console.log('✅ SignIn: Firebase user detected and verified, redirecting to dashboard');
         navigate('/dashboard', { replace: true });
       }
     });
@@ -83,6 +84,35 @@ const SignIn = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
+  const getFriendlyErrorMessage = (error: any): string => {
+    if (!error || !error.code) {
+      return "An unexpected error occurred. Please try again.";
+    }
+
+    switch (error.code) {
+      case 'auth/invalid-credential':
+        return "Username and password do not match.";
+      case 'auth/user-not-found':
+        return "No account found with this email. Please sign up to create an account.";
+      case 'auth/wrong-password':
+        return "Incorrect password. Please try again or reset your password.";
+      case 'auth/too-many-requests':
+        return "Too many failed attempts. Please wait a few minutes and try again.";
+      case 'auth/network-request-failed':
+        return "Network error. Please check your internet connection and try again.";
+      case 'auth/user-disabled':
+        return "This account has been disabled. Please contact support.";
+      case 'auth/operation-not-allowed':
+        return "Sign-in method is not available. Please contact support.";
+      case 'auth/invalid-email':
+        return "Please enter a valid email address.";
+      case 'auth/weak-password':
+        return "Password is too weak. Please use a stronger password.";
+      default:
+        return error.message || "Sign in failed. Please try again.";
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -102,12 +132,15 @@ const SignIn = () => {
         setLoading(false);
         navigate("/");
       } else {
-        setError(result.error.message || "Log in failed");
+        // Use friendly error message instead of raw Firebase error
+        const friendlyMessage = getFriendlyErrorMessage(result.error);
+        setError(friendlyMessage);
         setLoading(false);
       }
     } catch (err: any) {
       console.error("❌ Sign in error:", err);
-      setError(err?.message || "An unexpected error occurred during log in");
+      const friendlyMessage = getFriendlyErrorMessage(err);
+      setError(friendlyMessage);
       setLoading(false);
     }
   };
@@ -142,12 +175,15 @@ const SignIn = () => {
         setSuccess("Account created successfully!");
         setError("");
       } else if (result.error) {
-        setError(result.error.message || "Sign up failed");
+        // Use friendly error message instead of raw Firebase error
+        const friendlyMessage = getFriendlyErrorMessage(result.error);
+        setError(friendlyMessage);
         setSuccess("");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Sign up error:", err);
-      setError("An unexpected error occurred during sign up");
+      const friendlyMessage = getFriendlyErrorMessage(err);
+      setError(friendlyMessage);
     } finally {
       setLoading(false);
     }

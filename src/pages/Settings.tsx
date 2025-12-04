@@ -10,7 +10,8 @@ import {
   Download,
   Trash2,
   Bell,
-  BellOff
+  BellOff,
+  Key
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -23,8 +24,9 @@ import { toast, updateNotificationPreferenceCache } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { user } = useUsage();
-  const { user: authUser, deleteAccount } = useAuth();
+  const { user: authUser, deleteAccount, sendPasswordResetEmail } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   
   const [privacy, setPrivacy] = useState({
     profileVisibility: 'public',
@@ -172,6 +174,57 @@ const Settings = () => {
                     }}
                     className="sm:ml-4 data-[state=checked]:bg-black data-[state=unchecked]:bg-gray-300"
                   />
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-4">
+                  <h3 className="text-sm sm:text-base font-medium text-black">Account Security</h3>
+                  <div className="space-y-3">
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center justify-center sm:justify-start w-full border-2 border-black"
+                      onClick={async () => {
+                        if (!authUser?.email) {
+                          toast({
+                            title: "Error",
+                            description: "Email address not found. Please contact support.",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+                        
+                        setIsResettingPassword(true);
+                        try {
+                          const result = await sendPasswordResetEmail(authUser.email);
+                          if (!result.error) {
+                            toast({
+                              title: "Password Reset Email Sent",
+                              description: `We've sent a password reset link to ${authUser.email}. Please check your inbox and spam folder.`,
+                            });
+                          } else {
+                            toast({
+                              title: "Error",
+                              description: result.error.message || "Failed to send password reset email. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error: any) {
+                          toast({
+                            title: "Error",
+                            description: error.message || "Failed to send password reset email. Please try again.",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsResettingPassword(false);
+                        }
+                      }}
+                      disabled={isResettingPassword}
+                    >
+                      <Key className="h-4 w-4 mr-2" />
+                      {isResettingPassword ? "Sending..." : "Reset Password"}
+                    </Button>
+                  </div>
                 </div>
                 
                 <Separator />

@@ -466,26 +466,26 @@ const MyEnquiries = () => {
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
                   type="button"
-                  onClick={() => navigate('/dashboard')}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
+                    onClick={() => navigate('/dashboard')}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
                 <div className="w-10 h-10"></div>
+                </div>
               </div>
-            </div>
-            
+              
             {/* My Enquiries Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
                 My Enquiries
               </h1>
-            </div>
+                  </div>
             
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
@@ -495,10 +495,10 @@ const MyEnquiries = () => {
                     Track & Manage Your Enquiries
                   </p>
                 </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         {/* Content - Inside Container */}
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">

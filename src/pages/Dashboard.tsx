@@ -1146,31 +1146,31 @@ const Dashboard = () => {
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
                   className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
+            >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
-                <Button
-                  onClick={handleRefresh}
-                  disabled={refreshing}
+            </Button>
+                  <Button
+                    onClick={handleRefresh}
+                    disabled={refreshing}
                   variant="ghost"
-                  size="sm"
+                    size="sm"
                   className="h-6 w-6 sm:h-7 sm:w-7 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 hover:bg-white/10 p-1"
-                  title="Refresh Dashboard Data"
-                >
+                    title="Refresh Dashboard Data"
+                  >
                   <RefreshCw className={`h-3 w-3 sm:h-3.5 sm:w-3.5 text-white ${refreshing ? 'animate-spin' : ''}`} />
-                </Button>
+                  </Button>
+                </div>
               </div>
-            </div>
-            
+              
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
-                Dashboard
+                      Dashboard
               </h1>
             </div>
             
@@ -1184,14 +1184,14 @@ const Dashboard = () => {
                       isVerified={userProfile?.isProfileVerified || false}
                       className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
                     />
-                  </h2>
-                </div>
+                    </h2>
+                  </div>
                   {/* Toggle - Creative Rotating Dial Design */}
                   <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
-                      <motion.div
+                    <motion.div 
                         animate={{
                           scale: viewMode === 'buyer' ? 1.1 : 1,
                           opacity: viewMode === 'buyer' ? 1 : 0.5,
@@ -1216,38 +1216,38 @@ const Dashboard = () => {
                               : 'linear-gradient(to right, #10b981, #34d399, #6ee7b7)',
                           }}
                           transition={{ duration: 0.5 }}
-                          onClick={(e) => {
+                        onClick={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
                             const clickX = e.clientX - rect.left;
                             const trackWidth = rect.width;
                             const isLeftSide = clickX < trackWidth / 2;
                             
                             if (isLeftSide && viewMode !== 'buyer') {
-                              handleToggleView('buyer');
+                          handleToggleView('buyer');
                             } else if (!isLeftSide && viewMode !== 'seller') {
                               handleToggleView('seller');
                             }
                           }}
                         >
                           {/* Animated Background Overlay */}
-                          <motion.div
+                        <motion.div 
                             className="absolute inset-0 rounded-full"
                             animate={{
                               background: viewMode === 'buyer'
                                 ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 197, 253, 0.2))'
                                 : 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(110, 231, 183, 0.2))',
                             }}
-                            transition={{ duration: 0.5 }}
+                          transition={{ duration: 0.5 }}
                           />
                           
                           {/* Rotating Dial Knob */}
-                          <motion.button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
+                      <motion.button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                               handleToggleView(viewMode === 'buyer' ? 'seller' : 'buyer');
-                            }}
+                        }}
                             className="absolute top-1/2 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full cursor-pointer z-10"
                             animate={{
                               left: viewMode === 'buyer' ? '-8px' : 'calc(100% - 32px)',
@@ -1264,9 +1264,9 @@ const Dashboard = () => {
                             style={{
                               transform: 'translateY(-50%)',
                             }}
-                          >
+                      >
                             {/* Outer Ring - Rotating */}
-                            <motion.div
+                        <motion.div 
                               className="absolute inset-0 rounded-full border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                               animate={{
                                 rotate: viewMode === 'buyer' ? 0 : 360,
@@ -1275,7 +1275,7 @@ const Dashboard = () => {
                                 duration: 0.8,
                                 ease: "easeInOut"
                               }}
-                            >
+                        >
                               {/* Gear Notches */}
                               {[...Array(12)].map((_, i) => (
                                 <div
@@ -1286,7 +1286,7 @@ const Dashboard = () => {
                                   }}
                                 />
                               ))}
-                            </motion.div>
+                        </motion.div>
                             
                             {/* Inner Circle with 3D Effect */}
                             <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
@@ -1319,7 +1319,7 @@ const Dashboard = () => {
                                 ease: "linear"
                               }}
                             />
-                          </motion.button>
+                      </motion.button>
                           
                           {/* Animated Particles on Toggle */}
                           {[...Array(3)].map((_, i) => (
@@ -1343,7 +1343,7 @@ const Dashboard = () => {
                               }}
                             />
                           ))}
-                        </motion.div>
+                    </motion.div>
                       </div>
                       
                       {/* Sell Label with Animation */}

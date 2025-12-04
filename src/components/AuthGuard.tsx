@@ -1,17 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { ArrowLeft } from 'lucide-react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const { user, isEmailVerified, resendConfirmation } = useAuth();
+  const { user, isEmailVerified, resendConfirmation, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const hasReloadedRef = useRef(false);
   const [isChecking, setIsChecking] = React.useState(false);
   const [forceUpdate, setForceUpdate] = React.useState(0);
@@ -73,6 +75,19 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
       <div className="w-full max-w-md">
         <Card className="shadow-lg">
           <CardContent className="p-3 sm:p-6">
+            {/* Back Button */}
+            <div className="mb-3 sm:mb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/signin')}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Back to Login</span>
+              </Button>
+            </div>
+            
             <div className="text-center space-y-2.5 sm:space-4">
               {/* Title */}
               <h3 className="text-sm sm:text-lg font-semibold leading-tight">

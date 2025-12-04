@@ -797,79 +797,79 @@ const Landing = () => {
     // Limit to 50 most recent enquiries since we only need 3 cards for display
     const loadEnquiries = async () => {
       try {
-        const q = query(
-          collection(db, 'enquiries'),
+    const q = query(
+      collection(db, 'enquiries'),
           orderBy('createdAt', 'desc'),
           limit(50) // Reduced limit for faster loading - we only need 3 cards
-        );
+    );
         
         const snap = await getDocs(q);
-        const items: any[] = [];
-        snap.forEach((doc) => {
-          const data = doc.data();
-          items.push({
-            id: doc.id,
-            ...data
-          });
+      const items: any[] = [];
+      snap.forEach((doc) => {
+        const data = doc.data();
+        items.push({
+          id: doc.id,
+          ...data
         });
-        
-        console.log('📊 Landing: Total enquiries from query:', items.length);
-        
-        // Filter to only show enquiries with status='live' (admin accepted)
-        // Use case-insensitive check to catch any variations
-        const liveStatusItems = items.filter(e => {
-          const status = (e.status || '').toLowerCase().trim();
-          return status === 'live';
-        });
-        
-        console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
-        
-        // Deduplicate by ID first (in case same document appears multiple times)
-        const uniqueItems = Array.from(
-          new Map(liveStatusItems.map(e => [e.id, e])).values()
-        );
-        
-        // Filter out expired enquiries - only show live (not expired) enquiries
-        const now = new Date();
-        const liveEnquiries = uniqueItems.filter(enquiry => {
-          if (!enquiry.deadline) return true; // No deadline = live
-          try {
-            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-            return deadlineDate.getTime() >= now.getTime();
-          } catch {
-            return true; // If error, assume live
-          }
-        });
-        
-        console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
-        
+      });
+      
+      console.log('📊 Landing: Total enquiries from query:', items.length);
+      
+      // Filter to only show enquiries with status='live' (admin accepted)
+      // Use case-insensitive check to catch any variations
+      const liveStatusItems = items.filter(e => {
+        const status = (e.status || '').toLowerCase().trim();
+        return status === 'live';
+      });
+      
+      console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
+      
+      // Deduplicate by ID first (in case same document appears multiple times)
+      const uniqueItems = Array.from(
+        new Map(liveStatusItems.map(e => [e.id, e])).values()
+      );
+      
+      // Filter out expired enquiries - only show live (not expired) enquiries
+      const now = new Date();
+      const liveEnquiries = uniqueItems.filter(enquiry => {
+        if (!enquiry.deadline) return true; // No deadline = live
+        try {
+          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+          return deadlineDate.getTime() >= now.getTime();
+        } catch {
+          return true; // If error, assume live
+        }
+      });
+      
+      console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
+      
         // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
-        liveEnquiries.sort((a, b) => {
-          try {
-            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-            return dateB.getTime() - dateA.getTime();
-          } catch {
-            return 0;
-          }
-        });
-        
-        // Set all live enquiries for count and search (includes expired for count/search)
-        setAllLiveEnquiries(uniqueItems);
-        
-        // Set display enquiries - only live (not expired) enquiries for the 3 cards
-        // Store all live enquiries for shuffling (not just first 3)
-        setPublicRecentEnquiries(liveEnquiries);
-        
-        // Set initial shuffled display (3 random from all live enquiries)
-        const initialShuffled = getRandomThree(liveEnquiries);
-        setShuffledEnquiries(initialShuffled);
+      liveEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      // Set all live enquiries for count and search (includes expired for count/search)
+      setAllLiveEnquiries(uniqueItems);
+      
+      // Set display enquiries - only live (not expired) enquiries for the 3 cards
+      // Store all live enquiries for shuffling (not just first 3)
+      setPublicRecentEnquiries(liveEnquiries);
+      
+      // Set initial shuffled display (3 random from all live enquiries)
+      const initialShuffled = getRandomThree(liveEnquiries);
+      setShuffledEnquiries(initialShuffled);
       } catch (error) {
-        console.error('Error loading enquiries:', error);
-        // Set empty arrays on error
-        setAllLiveEnquiries([]);
-        setPublicRecentEnquiries([]);
-        setShuffledEnquiries([]);
+      console.error('Error loading enquiries:', error);
+      // Set empty arrays on error
+      setAllLiveEnquiries([]);
+      setPublicRecentEnquiries([]);
+      setShuffledEnquiries([]);
       }
     };
     

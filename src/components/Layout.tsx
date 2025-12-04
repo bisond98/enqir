@@ -478,7 +478,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   ];
 
   const MobileNavigation = () => (
-    <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
+      <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
@@ -673,28 +673,28 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <>
                   {/* Desktop-only buttons */}
                   <div className="hidden md:flex items-center gap-2 md:gap-3">
-                    {/* Home Icon - Only show when not on home page */}
-                    {location.pathname !== "/" && (
-                      <Link to="/">
-                        <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
-                          <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                          <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
-                        </Button>
-                      </Link>
-                    )}
-                    
-                    <Link to="/dashboard">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                        <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
+                  {/* Home Icon - Only show when not on home page */}
+                  {location.pathname !== "/" && (
+                    <Link to="/">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
+                        <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
                       </Button>
                     </Link>
-                    <Link to="/profile">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                        <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
-                      </Button>
-                    </Link>
+                  )}
+                  
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
+                    </Button>
+                  </Link>
+                  <Link to="/profile">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
+                      <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
+                    </Button>
+                  </Link>
                     {/* Settings button - hidden on mobile, visible on sm+ */}
                     <Link to="/settings" className="hidden sm:inline-flex">
                       <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
@@ -720,24 +720,24 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       </Button>
                     </Link>
                     
-                    {/* Chats button – shows all user chats (mobile + desktop) */}
-                    <Link to="/my-chats">
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                  {/* Chats button – shows all user chats (mobile + desktop) */}
+                  <Link to="/my-chats">
+                    <Button
+                      variant="ghost"
+                      size="sm"
                         className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black relative"
-                      >
-                        <div className="relative">
-                          <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
-                          {unreadChatCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                              {unreadChatCount > 9 ? '9+' : unreadChatCount}
-                            </span>
-                          )}
-                        </div>
-                        <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
-                      </Button>
-                    </Link>
+                    >
+                      <div className="relative">
+                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
+                        {unreadChatCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                            {unreadChatCount > 9 ? '9+' : unreadChatCount}
+                          </span>
+                        )}
+                      </div>
+                      <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
+                    </Button>
+                  </Link>
 
                     {/* Mobile Menu Button */}
                     {showNavigation && (
@@ -756,11 +756,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           }}
                         >
                           <Menu className="h-4 w-4" />
-                        </Button>
+                    </Button>
                         <Sheet open={mobileMenuOpen} onOpenChange={handleMenuOpenChange}>
                           <MobileNavigation />
                         </Sheet>
-                      </div>
+                </div>
                     )}
                   </div>
                 </>
