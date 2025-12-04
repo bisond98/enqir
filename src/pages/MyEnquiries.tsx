@@ -64,6 +64,45 @@ const MyEnquiries = () => {
   const [highlightEnquiryId, setHighlightEnquiryId] = useState<string | null>(null);
   const highlightedEnquiryRef = useRef<HTMLDivElement | null>(null);
 
+  // State to force re-render when responses are viewed
+  const [, forceUpdate] = useState({});
+
+  // Helper function to check if enquiry has unread responses
+  const hasUnreadResponses = (enquiryId: string) => {
+    if (!user) return false;
+    
+    const responses = enquiryResponses[enquiryId] || [];
+    if (responses.length === 0) return false;
+
+    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+    const lastViewedTime = localStorage.getItem(viewedKey);
+
+    if (!lastViewedTime) return true; // Never viewed
+
+    const viewedTime = parseInt(lastViewedTime, 10);
+    
+    // Check if any response is newer than last viewed time
+    return responses.some(response => {
+      const responseTime = response.createdAt?.toDate
+        ? response.createdAt.toDate().getTime()
+        : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
+      return responseTime > viewedTime;
+    });
+  };
+
+  // Listen for response viewed events to update badges
+  useEffect(() => {
+    const handleResponseViewed = () => {
+      forceUpdate({}); // Force re-render to update badges
+    };
+
+    window.addEventListener('responseViewed', handleResponseViewed);
+
+    return () => {
+      window.removeEventListener('responseViewed', handleResponseViewed);
+    };
+  }, []);
+
   useEffect(() => {
     if (!user) return;
 
@@ -960,6 +999,11 @@ const MyEnquiries = () => {
                             )}
                             <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-600" />
                             <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
+                            {hasUnreadResponses(enquiry.id) && (
+                              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center z-20">
+                                !
+                              </span>
+                            )}
                           </button>
                           
                           {enquiry.status === 'live' && !isExpired && (

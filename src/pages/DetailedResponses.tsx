@@ -93,6 +93,18 @@ const DetailedResponses = () => {
     }
   };
 
+  // Mark responses as viewed when page loads
+  useEffect(() => {
+    if (!enquiryId || !user) return;
+
+    // Mark this enquiry's responses as viewed
+    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+    localStorage.setItem(viewedKey, Date.now().toString());
+
+    // Dispatch event to update unread counts
+    window.dispatchEvent(new Event('responseViewed'));
+  }, [enquiryId, user]);
+
   // Fetch enquiry data
   useEffect(() => {
     if (!enquiryId || !user) return;

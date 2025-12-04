@@ -31,6 +31,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
+  const [unreadResponseCount, setUnreadResponseCount] = useState(0);
   
   // Apply performance optimizations
   usePerformanceOptimizations();
@@ -302,6 +303,100 @@ export default function Layout({ children, showNavigation = true }: { children: 
       window.removeEventListener('chatViewed', handleChatViewed);
     };
   }, [user?.uid, preloadedChatsContext?.allChats]);
+
+  // Count unread responses - tracks new responses to user's enquiries
+  useEffect(() => {
+    if (!user?.uid) {
+      setUnreadResponseCount(0);
+      return;
+    }
+
+    let isMounted = true;
+
+    const countUnreadResponses = async () => {
+      try {
+        // Get user's enquiries
+        const enquiriesQuery = query(
+          collection(db, 'enquiries'),
+          where('userId', '==', user.uid)
+        );
+        const enquiriesSnapshot = await getDocs(enquiriesQuery);
+        const enquiryIds = enquiriesSnapshot.docs.map(doc => doc.id);
+
+        if (enquiryIds.length === 0) {
+          if (isMounted) setUnreadResponseCount(0);
+          return;
+        }
+
+        // Get responses for user's enquiries
+        const responsesQuery = query(
+          collection(db, 'sellerResponses'),
+          where('enquiryId', 'in', enquiryIds)
+        );
+        const responsesSnapshot = await getDocs(responsesQuery);
+
+        let unreadCount = 0;
+
+        responsesSnapshot.docs.forEach((doc) => {
+          const responseData = doc.data();
+          const enquiryId = responseData.enquiryId;
+          
+          if (!enquiryId) return;
+
+          // Check if response was viewed
+          const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+          const lastViewedTime = localStorage.getItem(viewedKey);
+
+          const responseTime = responseData.createdAt?.toDate
+            ? responseData.createdAt.toDate().getTime()
+            : (responseData.createdAt ? new Date(responseData.createdAt).getTime() : 0);
+
+          if (lastViewedTime) {
+            const viewedTime = parseInt(lastViewedTime, 10);
+            if (responseTime > viewedTime) {
+              unreadCount++;
+            }
+          } else {
+            // Never viewed this enquiry's responses
+            unreadCount++;
+          }
+        });
+
+        if (isMounted) {
+          setUnreadResponseCount(unreadCount);
+        }
+      } catch (error) {
+        console.error('Error counting unread responses:', error);
+      }
+    };
+
+    // Initial count
+    countUnreadResponses();
+
+    // Set up real-time listener for responses
+    const unsubscribe = onSnapshot(
+      query(collection(db, 'sellerResponses')),
+      () => {
+        countUnreadResponses();
+      },
+      (error) => {
+        console.error('Error listening to responses:', error);
+      }
+    );
+
+    // Listen for response viewed events
+    const handleResponseViewed = () => {
+      countUnreadResponses();
+    };
+
+    window.addEventListener('responseViewed', handleResponseViewed);
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+      window.removeEventListener('responseViewed', handleResponseViewed);
+    };
+  }, [user?.uid]);
 
   // PRO PLAN - KEPT FOR FUTURE UPDATES
   // const [proRemainingCount, setProRemainingCount] = useState<number>(0);
@@ -717,9 +812,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   {/* Desktop-only buttons */}
                   <div className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
                       <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
                       <span className="hidden lg:inline text-xs sm:text-sm truncate">Dashboard</span>
+                      {unreadResponseCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                          {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
+                        </span>
+                      )}
                     </Button>
                   </Link>
                   <Link to="/profile">
@@ -743,13 +843,25 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
                   {/* Mobile: Smart Notifications, Chats, and Menu grouped together */}
                   <div className="flex items-center gap-1 md:gap-3 absolute right-0 md:relative md:right-auto pr-3 sm:pr-0">
+                    {/* Home button - visible on mobile only */}
+                    <Link to="/" className="md:hidden">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black">
+                        <Home className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </Button>
+                    </Link>
+                    
                     {/* Smart Notifications */}
                     <SmartNotifications />
                     
                     {/* Dashboard button - visible on mobile */}
                     <Link to="/dashboard" className="md:hidden">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black">
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black relative">
                         <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        {unreadResponseCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                            {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
+                          </span>
+                        )}
                       </Button>
                     </Link>
                     

@@ -100,6 +100,7 @@ const Dashboard = () => {
   const [selectedEnquiryForUpgrade, setSelectedEnquiryForUpgrade] = useState<Enquiry | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
+  const [, forceUpdate] = useState({});
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dashboardViewMode');
@@ -983,6 +984,42 @@ const Dashboard = () => {
     setShowPaymentSelector(true);
   };
 
+  // Helper function to check if enquiry has unread responses
+  const hasUnreadResponses = (enquiryId: string) => {
+    if (!user) return false;
+    
+    const responses = enquiryResponses[enquiryId] || [];
+    if (responses.length === 0) return false;
+
+    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+    const lastViewedTime = localStorage.getItem(viewedKey);
+
+    if (!lastViewedTime) return true; // Never viewed
+
+    const viewedTime = parseInt(lastViewedTime, 10);
+    
+    // Check if any response is newer than last viewed time
+    return responses.some((response: any) => {
+      const responseTime = response.createdAt?.toDate
+        ? response.createdAt.toDate().getTime()
+        : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
+      return responseTime > viewedTime;
+    });
+  };
+
+  // Listen for response viewed events to update badges
+  useEffect(() => {
+    const handleResponseViewed = () => {
+      forceUpdate({}); // Force re-render to update badges
+    };
+
+    window.addEventListener('responseViewed', handleResponseViewed);
+
+    return () => {
+      window.removeEventListener('responseViewed', handleResponseViewed);
+    };
+  }, []);
+
   // Response limit functions based on payment plans
   const getVisibleResponses = (enquiryId: string) => {
     const responses = enquiryResponses[enquiryId] || [];
@@ -1570,19 +1607,36 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                                {/* Premium Plan Badge */}
-                                <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
-                                  enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                                    ? 'bg-white/15 text-gray-100 border-white/20' 
-                                    : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
-                                } flex-shrink-0`}>
-                                  {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                                    <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
-                                  ) : null}
-                                  <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
-                                    {planInfo.name}
-                                  </span>
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                  {/* Response Count Badge */}
+                                  {responseCount > 0 && (
+                                    <Badge className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-lg border relative ${
+                                      hasUnreadResponses(enquiry.id)
+                                        ? 'bg-red-500/90 text-white border-red-400'
+                                        : 'bg-green-500/20 text-green-100 border-green-400/40'
+                                    } flex-shrink-0`}>
+                                      <MessageSquare className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
+                                      <span className="text-[8px] sm:text-xs font-bold">{responseCount}</span>
+                                      {hasUnreadResponses(enquiry.id) && (
+                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                      )}
+                                    </Badge>
+                                  )}
+                                  
+                                  {/* Premium Plan Badge */}
+                                  <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
+                                    enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
+                                      ? 'bg-white/15 text-gray-100 border-white/20' 
+                                      : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                                  } flex-shrink-0`}>
+                                    {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                                      <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
+                                    ) : null}
+                                    <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
+                                      {planInfo.name}
+                                    </span>
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
                             
