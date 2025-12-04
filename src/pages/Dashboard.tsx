@@ -1607,36 +1607,19 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                                <div className="flex items-center gap-2">
-                                  {/* Response Count Badge */}
-                                  {responseCount > 0 && (
-                                    <Badge className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-lg border relative ${
-                                      hasUnreadResponses(enquiry.id)
-                                        ? 'bg-red-500/90 text-white border-red-400'
-                                        : 'bg-green-500/20 text-green-100 border-green-400/40'
-                                    } flex-shrink-0`}>
-                                      <MessageSquare className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
-                                      <span className="text-[8px] sm:text-xs font-bold">{responseCount}</span>
-                                      {hasUnreadResponses(enquiry.id) && (
-                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                                      )}
-                                    </Badge>
-                                  )}
-                                  
-                                  {/* Premium Plan Badge */}
-                                  <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
-                                    enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                                      ? 'bg-white/15 text-gray-100 border-white/20' 
-                                      : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
-                                  } flex-shrink-0`}>
-                                    {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                                      <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
-                                    ) : null}
-                                    <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
-                                      {planInfo.name}
-                                    </span>
-                                  </Badge>
-                                </div>
+                                {/* Premium Plan Badge */}
+                                <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
+                                  enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
+                                    ? 'bg-white/15 text-gray-100 border-white/20' 
+                                    : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                                } flex-shrink-0`}>
+                                  {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                                    <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
+                                  ) : null}
+                                  <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
+                                    {planInfo.name}
+                                  </span>
+                                </Badge>
                               </div>
                             </div>
                             
@@ -1696,27 +1679,40 @@ const Dashboard = () => {
 
                               {/* Response Metrics - Premium Card Design with Perfect Alignment - Only show to enquiry owner */}
                               {user && user.uid === enquiry.userId && (
-                                <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative invisible">
+                                <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3 relative">
                                   {/* Desktop: Add padding-right only if deadline exists */}
                                   <div className={`flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-2 xl:gap-2.5 ${
                                     enquiry.deadline ? 'pr-0 sm:pr-28 lg:pr-0 xl:pr-0' : ''
                                   }`}>
-                                    <div className={`flex items-center gap-2 sm:gap-2.5 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg font-bold shadow-md border-2 transition-all duration-200 ${
-                                      allResponses.length === 0 
-                                        ? 'bg-gradient-to-r from-black to-gray-900 text-white border-gray-700' 
-                                        : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
-                                    }`}>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/enquiry/${enquiry.id}/responses-page`);
+                                      }}
+                                      className={`flex items-center gap-2 sm:gap-2.5 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg font-bold shadow-md border-2 transition-all duration-200 hover:scale-105 active:scale-95 relative ${
+                                        allResponses.length === 0 
+                                          ? 'bg-gradient-to-r from-black to-gray-900 text-white border-gray-700' 
+                                          : hasUnreadResponses(enquiry.id)
+                                            ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-400'
+                                            : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300/60'
+                                      }`}
+                                    >
                                       <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-lg flex-shrink-0 ${
-                                        allResponses.length === 0 ? 'bg-white/20' : 'bg-green-500/20'
+                                        allResponses.length === 0 ? 'bg-white/20' : hasUnreadResponses(enquiry.id) ? 'bg-white/30' : 'bg-green-500/20'
                                       }`}>
                                         <MessageSquare className={`h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 ${
-                                          allResponses.length === 0 ? 'text-white' : 'text-green-600'
+                                          allResponses.length === 0 ? 'text-white' : hasUnreadResponses(enquiry.id) ? 'text-white' : 'text-green-600'
                                         }`} />
                                       </div>
                                       <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs font-bold tracking-tight whitespace-nowrap">
                                         {allResponses.length} {allResponses.length === 1 ? 'Response' : 'Responses'}
                                       </span>
-                                    </div>
+                                      {hasUnreadResponses(enquiry.id) && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
+                                          !
+                                        </span>
+                                      )}
+                                    </button>
                                   </div>
                                 </div>
                               )}
