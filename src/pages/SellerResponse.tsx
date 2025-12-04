@@ -1329,7 +1329,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="card-premium overflow-hidden border-4 border-black rounded-2xl">
+            <Card className="card-premium overflow-hidden rounded-2xl">
             <CardHeader className="bg-black border-b">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center">
