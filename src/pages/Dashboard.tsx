@@ -1756,6 +1756,9 @@ const Dashboard = () => {
                                     </div>
                                   )}
 
+                              {/* Spacer to maintain card height */}
+                              <div className="mb-4 sm:mb-5 lg:mb-2.5 xl:mb-3"></div>
+
                               {/* Plan Notice - Show plan-specific seller limit, positioned above response button */}
                               {(() => {
                                 const planId = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
