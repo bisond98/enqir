@@ -999,10 +999,10 @@ const MyEnquiries = () => {
                             )}
                             <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-600" />
                             <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
-                            {hasUnreadResponses(enquiry.id) && (
-                              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center z-20">
-                                !
-                              </span>
+                            {hasUnreadResponses(enquiry.id) && (enquiryResponses[enquiry.id]?.length || 0) > 0 && (
+                              <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
+                                {enquiryResponses[enquiry.id]?.length || 0}
+                              </div>
                             )}
                           </button>
                           
