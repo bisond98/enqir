@@ -1021,6 +1021,24 @@ const Dashboard = () => {
     };
   }, []);
 
+  // Also force update when page becomes visible (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 Dashboard: Page became visible, refreshing badges');
+        forceUpdate({}); // Force re-render when user comes back to page
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, []);
+
   // Response limit functions based on payment plans
   const getVisibleResponses = (enquiryId: string) => {
     const responses = enquiryResponses[enquiryId] || [];
