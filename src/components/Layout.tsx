@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +18,7 @@ import SignOutDialog from "./SignOutDialog";
 import { lazy, Suspense } from "react";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getProEnquiriesRemaining } from "@/services/paymentService";
-import { collection, query, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, query, getDocs, getDoc, doc, onSnapshot, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { usePerformanceOptimizations } from "@/hooks/use-performance";
@@ -49,39 +49,86 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const ignoreSheetCallbacksRef = useRef(false);
   
   // ULTIMATE FIX: Menu state handler - completely prevents loops
-  // Strategy: Ignore ALL Sheet callbacks for 600ms after we manually change state
-  // This prevents Sheet from triggering state changes after we set it
+  // Strategy: Multiple layers of protection to prevent any loop scenario
+  const lastMenuChangeRef = useRef<number>(0);
+  const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isTransitioningRef = useRef<boolean>(false);
+  
   const handleMenuOpenChange = useCallback((open: boolean) => {
-    // If we're ignoring callbacks (just set state manually), ignore this completely
-    if (ignoreSheetCallbacksRef.current) {
+    // LAYER 1: Block if currently transitioning
+    if (isTransitioningRef.current) {
+      console.log('⚠️ Menu: Blocked - transition in progress');
       return;
     }
     
-    // Only allow Sheet to close, never open (opening only via button)
-    if (open === true) {
-      return; // Ignore Sheet trying to open - only button can open
+    // LAYER 2: Prevent rapid state changes within 500ms (increased from 300ms)
+    const now = Date.now();
+    if (now - lastMenuChangeRef.current < 500) {
+      console.log('⚠️ Menu: Blocked - too rapid (within 500ms)');
+      return;
     }
     
-    // Allow Sheet to close (overlay click, close button, etc.)
-    setMobileMenuOpen(false);
+    // LAYER 3: If we're ignoring callbacks (manual state change), block completely
+    if (ignoreSheetCallbacksRef.current) {
+      console.log('⚠️ Menu: Blocked - manual state change in progress');
+      return;
+    }
+    
+    // LAYER 4: Only allow Sheet to close, NEVER open (opening only via button)
+    if (open === true) {
+      console.log('⚠️ Menu: Blocked - Sheet cannot open itself');
+      return;
+    }
+    
+    // LAYER 5: Check if already in desired state
+    setMobileMenuOpen((current) => {
+      if (current === open) {
+        console.log('⚠️ Menu: Already in desired state, no change needed');
+        return current;
+      }
+      
+      // Allow Sheet to close
+      console.log('✅ Menu: Closing via Sheet callback');
+      lastMenuChangeRef.current = now;
+      return false;
+    });
   }, []);
   
   const handleMenuButtonClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Ignore Sheet callbacks for 600ms after we change state
+    // Prevent multiple rapid clicks
+    if (isTransitioningRef.current) {
+      console.log('⚠️ Menu: Button blocked - transition in progress');
+      return;
+    }
+    
+    // Clear any existing timer
+    if (menuTimerRef.current) {
+      clearTimeout(menuTimerRef.current);
+    }
+    
+    // Mark as transitioning
+    isTransitioningRef.current = true;
+    
+    // Ignore Sheet callbacks for 800ms (increased from 600ms)
     ignoreSheetCallbacksRef.current = true;
     
     // Toggle menu
     setMobileMenuOpen((current) => {
+      console.log(`✅ Menu: Button toggling from ${current} to ${!current}`);
       return !current;
     });
     
-    // After 600ms, allow Sheet callbacks again
-    setTimeout(() => {
+    lastMenuChangeRef.current = Date.now();
+    
+    // After 800ms, allow Sheet callbacks again and clear transition flag
+    menuTimerRef.current = setTimeout(() => {
       ignoreSheetCallbacksRef.current = false;
-    }, 600);
+      isTransitioningRef.current = false;
+      console.log('✅ Menu: Re-enabled - ready for next action');
+    }, 800);
   }, []);
   
   const [searchTerm, setSearchTerm] = useState("");
@@ -324,80 +371,125 @@ export default function Layout({ children, showNavigation = true }: { children: 
         const enquiryIds = enquiriesSnapshot.docs.map(doc => doc.id);
 
         if (enquiryIds.length === 0) {
-          if (isMounted) setUnreadResponseCount(0);
+          if (isMounted) {
+            setUnreadResponseCount(0);
+            console.log('🔢 Header Badge: No enquiries, count = 0');
+          }
           return;
         }
 
-        // Get responses for user's enquiries
+        // Track enquiries with unread responses (similar to chat system)
+        const enquiriesWithUnread = new Set<string>();
+
+        // Get all responses for user's enquiries
         const responsesQuery = query(
-          collection(db, 'sellerResponses'),
-          where('enquiryId', 'in', enquiryIds)
+          collection(db, 'sellerSubmissions'),
+          where('enquiryId', 'in', enquiryIds),
+          where('status', '==', 'approved')
         );
         const responsesSnapshot = await getDocs(responsesQuery);
 
-        let unreadCount = 0;
-
+        // Check each response
         responsesSnapshot.docs.forEach((doc) => {
           const responseData = doc.data();
           const enquiryId = responseData.enquiryId;
           
           if (!enquiryId) return;
+          
+          // Skip if already marked as having unread
+          if (enquiriesWithUnread.has(enquiryId)) return;
 
-          // Check if response was viewed
           const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
           const lastViewedTime = localStorage.getItem(viewedKey);
-
+          
+          // Get response timestamp
           const responseTime = responseData.createdAt?.toDate
             ? responseData.createdAt.toDate().getTime()
             : (responseData.createdAt ? new Date(responseData.createdAt).getTime() : 0);
 
-          if (lastViewedTime) {
-            const viewedTime = parseInt(lastViewedTime, 10);
-            if (responseTime > viewedTime) {
-              unreadCount++;
-            }
+          if (!lastViewedTime) {
+            // Never viewed - mark enquiry as having unread
+            enquiriesWithUnread.add(enquiryId);
+            console.log(`🔴 Enquiry ${enquiryId}: Never viewed`);
           } else {
-            // Never viewed this enquiry's responses
-            unreadCount++;
+            const viewedTime = parseInt(lastViewedTime, 10);
+            // If response is newer than last view, mark as unread
+            if (responseTime > viewedTime) {
+              enquiriesWithUnread.add(enquiryId);
+              console.log(`🔴 Enquiry ${enquiryId}: Has new response (${new Date(responseTime).toISOString()} > ${new Date(viewedTime).toISOString()})`);
+            }
           }
         });
 
+        const totalUnread = enquiriesWithUnread.size;
         if (isMounted) {
-          setUnreadResponseCount(unreadCount);
+          setUnreadResponseCount(totalUnread);
+          console.log(`🔢 Header Badge: ${totalUnread} enquiries with unread responses`);
         }
       } catch (error) {
-        console.error('Error counting unread responses:', error);
+        console.error('❌ Error counting unread responses:', error);
       }
     };
 
     // Initial count
     countUnreadResponses();
 
-    // Set up real-time listener for responses
+    // Set up real-time listener for responses (using sellerSubmissions collection)
     const unsubscribe = onSnapshot(
-      query(collection(db, 'sellerResponses')),
+      query(collection(db, 'sellerSubmissions'), where('status', '==', 'approved')),
       () => {
+        console.log('🔄 Header Badge: New response detected, recounting...');
         countUnreadResponses();
       },
       (error) => {
-        console.error('Error listening to responses:', error);
+        console.error('❌ Error listening to responses:', error);
       }
     );
 
+    // Initial count on mount
+    countUnreadResponses();
+
     // Listen for response viewed events to update header badge in real-time
     const handleResponseViewed = (e?: any) => {
-      console.log('🔄 Layout: Response viewed event received', e?.detail);
+      const detail = e?.detail;
+      console.log(`🔄 Layout: Event received for enquiry ${detail?.enquiryId}`);
+      // Immediate recount - localStorage is synchronous so it's already updated
+      countUnreadResponses();
+    };
+    
+    // Listen for Dashboard updates
+    const handleDashboardUpdated = () => {
+      console.log('🔄 Layout: Dashboard updated, recounting badges');
+      countUnreadResponses();
+    };
+    
+    // Listen for route changes
+    const handleRouteChanged = () => {
+      console.log('🔄 Layout: Route changed, recounting badges');
       countUnreadResponses();
     };
 
     window.addEventListener('responseViewed', handleResponseViewed);
+    window.addEventListener('dashboardUpdated', handleDashboardUpdated);
+    window.addEventListener('routeChanged', handleRouteChanged);
 
     return () => {
       isMounted = false;
       unsubscribe();
       window.removeEventListener('responseViewed', handleResponseViewed);
+      window.removeEventListener('dashboardUpdated', handleDashboardUpdated);
+      window.removeEventListener('routeChanged', handleRouteChanged);
     };
   }, [user?.uid]);
+
+  // Recount badge immediately when route changes (especially to/from dashboard)
+  useEffect(() => {
+    if (user?.uid) {
+      console.log('🔄 Layout: Route changed to', location.pathname, '- recounting immediately');
+      // Trigger a recount by dispatching an event
+      window.dispatchEvent(new CustomEvent('routeChanged'));
+    }
+  }, [location.pathname, user?.uid]);
 
   // PRO PLAN - KEPT FOR FUTURE UPDATES
   // const [proRemainingCount, setProRemainingCount] = useState<number>(0);
@@ -595,7 +687,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
     { path: "/profile", label: "Profile", icon: User },
   ];
 
-  const MobileNavigation = () => (
+  const MobileNavigation = React.memo(() => (
       <SheetContent side="right" className="w-[320px] sm:w-[380px] md:w-[420px] p-0 bg-white [&>button]:hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -767,7 +859,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           </nav>
         </div>
       </SheetContent>
-  );
+  ));
 
   return (
     <div className="flex flex-col">
@@ -817,7 +909,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       <div className="relative">
                         <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
                         {unreadResponseCount > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                             {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
                           </span>
                         )}
@@ -862,7 +954,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         <div className="relative">
                           <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
                           {unreadResponseCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+                            <span className="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                               {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
                             </span>
                           )}
@@ -880,7 +972,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       <div className="relative">
                         <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
                         {unreadChatCount > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                          <span className="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                             {unreadChatCount > 9 ? '9+' : unreadChatCount}
                           </span>
                         )}

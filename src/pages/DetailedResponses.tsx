@@ -93,33 +93,24 @@ const DetailedResponses = () => {
     }
   };
 
-  // Mark responses as viewed AFTER responses are loaded
+  // Mark responses as viewed IMMEDIATELY when page loads
   useEffect(() => {
-    if (!enquiryId || !user || responses.length === 0) return;
+    if (!enquiryId || !user) return;
 
-    // Wait a bit to ensure responses are fully rendered
-    const timer = setTimeout(() => {
-      // Mark this enquiry's responses as viewed with current timestamp
-      const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
-      const now = Date.now();
-      localStorage.setItem(viewedKey, now.toString());
-      
-      console.log('✅ Marked responses as viewed for enquiry:', enquiryId, 'at timestamp:', now);
+    // Mark as viewed with future timestamp to ensure ALL current responses are marked as read
+    // This prevents timing issues where response timestamp might be very close to view time
+    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+    const now = Date.now();
+    const viewedTimestamp = now + 5000; // Add 5 seconds to ensure all current responses are older
+    localStorage.setItem(viewedKey, viewedTimestamp.toString());
+    
+    console.log(`✅ Marked enquiry ${enquiryId} as viewed at ${new Date(viewedTimestamp).toISOString()}`);
 
-      // Dispatch event to update unread counts in real-time
-      const event = new CustomEvent('responseViewed', { 
-        detail: { enquiryId, userId: user.uid, timestamp: now } 
-      });
-      window.dispatchEvent(event);
-      
-      // Also dispatch a general update event for all components
-      setTimeout(() => {
-        window.dispatchEvent(new Event('responseViewed'));
-      }, 100);
-    }, 500); // Wait 500ms to ensure responses are loaded
-
-    return () => clearTimeout(timer);
-  }, [enquiryId, user, responses.length]);
+    // Single event dispatch - components will handle their own updates
+    window.dispatchEvent(new CustomEvent('responseViewed', { 
+      detail: { enquiryId, userId: user.uid, timestamp: viewedTimestamp } 
+    }));
+  }, [enquiryId, user]);
 
   // Fetch enquiry data
   useEffect(() => {
@@ -412,13 +403,13 @@ const DetailedResponses = () => {
 
             {/* Payment Plan Selector - Only show for enquiry owner if not premium and not expired */}
             {!isEnquiryExpired && user && enquiry && user.uid === enquiry.userId && !enquiry.isPremium && (
-              <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl mb-3 sm:mb-6">
-                <CardContent className="p-3 sm:p-4 lg:p-6">
-                  <div className="text-center mb-3 sm:mb-4">
-                    <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1 sm:mb-2">
+              <Card className="border-2 border-blue-200 shadow-sm rounded-lg sm:rounded-xl mb-2 sm:mb-3">
+                <CardContent className="p-2 sm:p-3">
+                  <div className="text-center mb-2">
+                    <h3 className="text-[11px] sm:text-xs font-semibold text-gray-900 mb-0.5">
                       Unlock More Responses
                     </h3>
-                    <p className="text-[10px] sm:text-xs text-gray-600">
+                    <p className="text-[9px] sm:text-[10px] text-gray-600">
                       You're seeing {visibleResponses.length} of {responses.length} responses. Upgrade to see all.
                     </p>
                   </div>

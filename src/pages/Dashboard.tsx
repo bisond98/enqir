@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { NotificationContext } from "../contexts/NotificationContext";
@@ -77,6 +77,7 @@ interface SellerSubmission {
 
 const Dashboard = () => {
   const { user, isProfileVerified } = useAuth();
+  const location = useLocation();
   const { canPostEnquiry, incrementEnquiries, getRemainingEnquiries, usageStats, purchasePremiumEnquiry } = useUsage();
   const notificationContext = useContext(NotificationContext);
   const createNotification = notificationContext?.createNotification || (async () => {
@@ -994,37 +995,28 @@ const Dashboard = () => {
     const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
     const lastViewedTime = localStorage.getItem(viewedKey);
 
-    if (!lastViewedTime) {
-      console.log('📌 Never viewed:', enquiryId);
-      return true; // Never viewed
-    }
+    // Never viewed = has unread
+    if (!lastViewedTime) return true;
 
     const viewedTime = parseInt(lastViewedTime, 10);
+    if (isNaN(viewedTime)) return true; // Invalid timestamp = treat as unread
     
-    // Check if any response is newer than last viewed time
-    const hasUnread = responses.some((response: any) => {
+    // Check if ANY response is newer than viewed time
+    return responses.some((response: any) => {
       const responseTime = response.createdAt?.toDate
         ? response.createdAt.toDate().getTime()
         : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
-      const isNewer = responseTime > viewedTime;
-      if (isNewer) {
-        console.log('📌 Unread response found:', enquiryId, 'responseTime:', responseTime, 'viewedTime:', viewedTime);
-      }
-      return isNewer;
+      return responseTime > viewedTime;
     });
-    
-    if (!hasUnread) {
-      console.log('✅ All responses viewed:', enquiryId);
-    }
-    
-    return hasUnread;
   };
 
   // Listen for response viewed events to update badges in real-time
   useEffect(() => {
     const handleResponseViewed = (e?: any) => {
-      console.log('🔄 Dashboard: Response viewed event received', e?.detail);
-      forceUpdate({}); // Force re-render to update badges
+      const detail = e?.detail;
+      console.log(`🔄 Dashboard: Event received for enquiry ${detail?.enquiryId}`);
+      // Immediate update - localStorage is already updated
+      forceUpdate({});
     };
 
     window.addEventListener('responseViewed', handleResponseViewed);
@@ -1034,12 +1026,22 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Also force update when page becomes visible (user navigates back)
+  // Force immediate update when component mounts or becomes visible
+  useEffect(() => {
+    // Force update on mount to ensure badges are accurate
+    console.log('🔄 Dashboard: Component mounted/updated, refreshing badges');
+    forceUpdate({});
+    
+    // Also trigger header badge update
+    window.dispatchEvent(new CustomEvent('dashboardUpdated'));
+  }, [location.pathname]); // Re-check whenever route changes
+
+  // Force update when page becomes visible (user navigates back)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔄 Dashboard: Page became visible, refreshing badges');
-        forceUpdate({}); // Force re-render when user comes back to page
+        console.log('🔄 Dashboard: Page visible, refreshing badges');
+        forceUpdate({});
       }
     };
 

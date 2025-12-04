@@ -77,37 +77,28 @@ const MyEnquiries = () => {
     const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
     const lastViewedTime = localStorage.getItem(viewedKey);
 
-    if (!lastViewedTime) {
-      console.log('📌 MyEnquiries - Never viewed:', enquiryId);
-      return true; // Never viewed
-    }
+    // Never viewed = has unread
+    if (!lastViewedTime) return true;
 
     const viewedTime = parseInt(lastViewedTime, 10);
+    if (isNaN(viewedTime)) return true; // Invalid timestamp = treat as unread
     
-    // Check if any response is newer than last viewed time
-    const hasUnread = responses.some(response => {
+    // Check if ANY response is newer than viewed time
+    return responses.some(response => {
       const responseTime = response.createdAt?.toDate
         ? response.createdAt.toDate().getTime()
         : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
-      const isNewer = responseTime > viewedTime;
-      if (isNewer) {
-        console.log('📌 MyEnquiries - Unread response found:', enquiryId, 'responseTime:', responseTime, 'viewedTime:', viewedTime);
-      }
-      return isNewer;
+      return responseTime > viewedTime;
     });
-    
-    if (!hasUnread) {
-      console.log('✅ MyEnquiries - All responses viewed:', enquiryId);
-    }
-    
-    return hasUnread;
   };
 
   // Listen for response viewed events to update badges in real-time
   useEffect(() => {
     const handleResponseViewed = (e?: any) => {
-      console.log('🔄 MyEnquiries: Response viewed event received', e?.detail);
-      forceUpdate({}); // Force re-render to update badges
+      const detail = e?.detail;
+      console.log(`🔄 MyEnquiries: Event received for enquiry ${detail?.enquiryId}`);
+      // Immediate update - localStorage is already updated
+      forceUpdate({});
     };
 
     window.addEventListener('responseViewed', handleResponseViewed);
@@ -117,12 +108,19 @@ const MyEnquiries = () => {
     };
   }, []);
 
-  // Also force update when page becomes visible (user navigates back)
+  // Force immediate update when component mounts or becomes visible
+  useEffect(() => {
+    // Force update on mount to ensure badges are accurate
+    console.log('🔄 MyEnquiries: Component mounted/updated, refreshing badges');
+    forceUpdate({});
+  }, [location.pathname]); // Re-check whenever route changes
+
+  // Force update when page becomes visible (user navigates back)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔄 MyEnquiries: Page became visible, refreshing badges');
-        forceUpdate({}); // Force re-render when user comes back to page
+        console.log('🔄 MyEnquiries: Page visible, refreshing badges');
+        forceUpdate({});
       }
     };
 

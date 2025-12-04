@@ -403,24 +403,44 @@ const EnquiryResponsesPage = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
-        <div className="flex items-center mb-3 sm:mb-6">
-          <Button variant="ghost" onClick={() => navigate('/my-enquiries')} className="text-gray-700 hover:bg-gray-100 p-1.5 sm:p-2">
-            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-base">Back</span>
-          </Button>
-        </div>
-
-        {/* Header with black background */}
-        <div className="mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 border-black">
-          <div className="bg-black px-3 py-3 sm:px-6 sm:py-6">
-            <h2 className="text-lg sm:text-3xl font-black text-white mb-1 sm:mb-2 tracking-tight">
-              <span className="text-xs sm:text-base">Responses to</span> "{enquiry.title}"
-            </h2>
-            <p className="text-gray-200 mb-0 sm:mb-6 text-[10px] sm:text-base font-medium">View and manage responses from sellers for this enquiry</p>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Profile Page Style - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => navigate('/my-enquiries')}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
+              </div>
+            </div>
+            
+            {/* Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Responses to "{enquiry.title}"
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <p className="text-[9px] sm:text-[10px] lg:text-xs text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  View and manage responses from sellers for this enquiry
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-        
+
+      <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
         {/* Sorting Controls - Simple Design */}
         {visibleResponses.length > 1 && (
           <div className="mb-3 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -547,7 +567,7 @@ const EnquiryResponsesPage = () => {
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                 {/* Card Header - Solid black background */}
-                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-black">
+                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-black relative z-20">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                       <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
@@ -743,7 +763,7 @@ const EnquiryResponsesPage = () => {
                 <Crown className="h-5 w-5 sm:h-7 sm:w-7 text-blue-600 mr-2" />
                 <span className="text-sm sm:text-lg font-black text-gray-900">Unlock All Responses</span>
               </div>
-              <p className="text-gray-700 text-xs sm:text-base font-bold mb-2 sm:mb-3">
+              <p className="text-gray-700 text-[10px] sm:text-xs font-bold mb-2 sm:mb-3">
                 Only the first {responseLimit} responses are visible for your current plan.<br />
                 Upgrade to a higher plan to view all {responses.length} responses.
               </p>
@@ -772,6 +792,7 @@ const EnquiryResponsesPage = () => {
             </div>
           );
         })()}
+      </div>
       </div>
 
       {/* Fullscreen Image Modal */}
