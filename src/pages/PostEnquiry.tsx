@@ -1795,7 +1795,7 @@ export default function PostEnquiry() {
 
           {/* Main Form - Professional Enhanced Design (Border thickness matched with SellerResponse form) */}
           {!isSubmitted && (
-            <Card className="border-4 border-black shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
+            <Card className="shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
