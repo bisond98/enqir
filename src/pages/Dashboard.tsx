@@ -1473,22 +1473,22 @@ const Dashboard = () => {
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
-                {/* Professional Stats Grid - Physical Button Design */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-4">
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                {/* Professional Stats Grid - Circular Design */}
+                <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-4">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{allEnquiriesForStats.length || enquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Total</p>
-                    </CardContent>
-                  </Card>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{allEnquiriesForStats.length || enquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Total</p>
+                    </div>
+                  </div>
                   
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{(() => {
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{(() => {
                         const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
                         const now = new Date();
                         return allEnqs.filter(e => {
@@ -1502,18 +1502,18 @@ const Dashboard = () => {
                           return true;
                         }).length;
                       })()}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Active</p>
-                    </CardContent>
-                  </Card>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Active</p>
+                    </div>
+                  </div>
                   
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">{savedEnquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Saved</p>
-                    </CardContent>
-                  </Card>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{savedEnquiries.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Saved</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Professional Enquiry Cards Section */}
@@ -1964,40 +1964,51 @@ const Dashboard = () => {
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
-                {/* Professional Stats Grid with Gradients - Physical Button Design */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                {/* Professional Stats Grid - Circular Design */}
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                        {responsesReady ? responsesSummary.length : '—'}
+                      </h3>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Responses</p>
+                    </div>
+                  </div>
+                  
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Approved</p>
-                    </CardContent>
-                  </Card>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Approved</p>
+                    </div>
+                  </div>
                   
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Pending</p>
-                    </CardContent>
-                  </Card>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Pending</p>
+                    </div>
+                  </div>
                   
-                  <Card className="border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-xl sm:rounded-xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-gradient-to-b from-gray-200 to-gray-300 rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                    <CardContent className="p-2 sm:p-3 text-center relative z-10">
-                      <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-black mb-0.5 sm:mb-1">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
                       </h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs text-black font-black">Rejected</p>
-                    </CardContent>
-                  </Card>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Rejected</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Professional Submissions Section */}
@@ -2284,51 +2295,51 @@ const Dashboard = () => {
             </div>
             
             <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 relative z-10">
-              {/* Professional Stats Grid with Gradients */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-2.5 xl:gap-3 mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+              {/* Professional Stats Grid with Circular Design */}
+              <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                    {savedEnquiries.length}
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
+                      {savedEnquiries.length}
+                    </div>
+                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Total</div>
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Total</div>
-                </div>
                 </motion.div>
                 
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                    {savedEnquiries.filter(e => e.status === 'live').length}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
+                      {savedEnquiries.filter(e => e.status === 'live').length}
+                    </div>
+                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Active</div>
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Live</div>
-                </div>
                 </motion.div>
                 
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="group relative text-center p-3 sm:p-5 lg:p-3 xl:p-4 bg-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden"
+                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative">
-                    <div className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-black text-black mb-1 sm:mb-2 lg:mb-1 xl:mb-1.5 tracking-tight">
-                    {savedEnquiries.filter(e => e.status === 'completed').length}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
+                      {savedEnquiries.filter(e => e.status === 'completed').length}
+                    </div>
+                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Saved</div>
                   </div>
-                    <div className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-black font-bold uppercase tracking-wide">Completed</div>
-                </div>
                 </motion.div>
               </div>
 

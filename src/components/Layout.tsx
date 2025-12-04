@@ -865,8 +865,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
     <div className="flex flex-col">
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
-        <div className="max-w-4xl mx-auto pl-3 pr-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
-          <div className="relative flex h-14 sm:h-20 items-center justify-between gap-2 sm:gap-3 md:gap-4 min-w-0 overflow-hidden">
+        <div className="max-w-4xl mx-auto pl-3 pr-1 sm:pr-3 md:pr-6 lg:pr-8 safe-area-left safe-area-right">
+          <div className="relative flex h-14 sm:h-20 items-center justify-between gap-2 sm:gap-3 md:gap-4 min-w-0">
             {/* Desktop Navigation */}
             {showNavigation && !isMobile && (
               <nav className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
@@ -899,11 +899,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
             )}
 
             {/* User Actions */}
-            <div className="flex items-center justify-end gap-2 md:gap-3">
+            <div className="flex items-center justify-end gap-1.5 md:gap-2">
               {user ? (
                 <>
                   {/* Desktop-only buttons */}
-                  <div className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
+                  <div className="hidden md:flex items-center gap-1 md:gap-1.5 flex-shrink-0 overflow-hidden">
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
                       <div className="relative">
@@ -937,7 +937,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </div>
 
                   {/* Mobile: Smart Notifications, Chats, and Menu grouped together */}
-                  <div className="flex items-center gap-1 md:gap-3 absolute right-0 md:relative md:right-auto pr-3 sm:pr-0">
+                  <div className="flex items-center gap-1 md:gap-1.5 absolute right-0 md:relative md:right-auto pr-1 md:pr-0">
                     {/* Home button - visible on mobile only */}
                     <Link to="/" className="md:hidden">
                       <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black">
@@ -967,17 +967,17 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <Button
                       variant="ghost"
                       size="sm"
-                        className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black relative"
+                        className="flex items-center justify-center h-7 sm:h-8 md:h-8 px-2 sm:px-2.5 md:px-3 text-black hover:text-black md:border md:border-black relative"
                     >
                       <div className="relative">
-                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2 rounded-full" />
+                        <MessageCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 sm:mr-1.5 flex-shrink-0 rounded-full" />
                         {unreadChatCount > 0 && (
-                          <span className="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                          <span className="absolute -top-3 -right-3 md:-top-2 md:-right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                             {unreadChatCount > 9 ? '9+' : unreadChatCount}
                           </span>
                         )}
                       </div>
-                      <span className="hidden sm:inline text-xs sm:text-sm">Chats</span>
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Chats</span>
                     </Button>
                   </Link>
 

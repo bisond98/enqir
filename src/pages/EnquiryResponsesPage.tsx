@@ -561,13 +561,13 @@ const EnquiryResponsesPage = () => {
         <div className="space-y-2.5 sm:space-y-6">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
-              <div key={response.id} className="border-4 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:scale-[1.01] active:scale-[0.99] relative group/card">
+              <div key={response.id} className="border-2 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:scale-[1.01] active:scale-[0.99] relative group/card">
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                 {/* Card Header - Solid black background */}
-                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-2 border-black relative z-20">
+                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b border-black relative z-20">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                       <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
@@ -588,23 +588,22 @@ const EnquiryResponsesPage = () => {
                 <div className="p-2.5 sm:p-6 space-y-2.5 sm:space-y-4 relative z-10">
                 
                 {/* Seller Info & Price Group */}
-                <div className="space-y-2 pb-2 border-b border-gray-200">
+                <div className="space-y-2 pb-2 border-b border-black">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center space-x-2 flex-1 min-w-0">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
+                    <div className="flex items-center space-x-2 flex-1 min-w-0 border border-black rounded-lg p-2">
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 border border-black">
                         <span className="text-white font-black text-xs sm:text-sm">
                           {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
-                        <div className="flex items-center space-x-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
                           {((response as any).userProfileVerified || response.isIdentityVerified) && (
-                            <div className="flex items-center space-x-0.5">
-                              <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600" />
-                              <span className="text-[9px] sm:text-xs font-bold text-blue-600">Trust Badge</span>
-                            </div>
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
                           )}
+                        </div>
+                        <div className="flex items-center space-x-1.5">
                           <span className="text-[9px] sm:text-xs text-gray-500">
                             {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString() : 'N/A'}
                           </span>
@@ -613,14 +612,14 @@ const EnquiryResponsesPage = () => {
                     </div>
                     
                     {/* Price Quote - Compact */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-2 flex-shrink-0">
+                    <div className="bg-white border border-black rounded-lg p-2 flex-shrink-0">
                       <div className="flex items-center space-x-1 mb-0.5">
                         <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                           <span className="text-white text-[8px] font-black">₹</span>
                         </div>
                         <span className="text-[8px] sm:text-[9px] font-bold text-gray-600">Price</span>
                       </div>
-                      <p className="font-black text-sm sm:text-lg text-blue-600">
+                      <p className="font-black text-lg sm:text-xl lg:text-2xl text-black">
                         {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
                       </p>
                     </div>
@@ -629,28 +628,28 @@ const EnquiryResponsesPage = () => {
                 </div>
 
                 {/* Message & Notes Group */}
-                <div className="space-y-2 pb-2 border-b border-gray-200">
+                <div className="space-y-2 pb-2 border-b border-black">
                   {/* Message Section */}
-                  <div>
+                  <div className="border border-black rounded-lg p-2">
                     <div className="flex items-center space-x-1.5 mb-1.5">
                       <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                       <span className="text-[9px] sm:text-xs font-black text-gray-700">Message</span>
                     </div>
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-2">
-                      <p className="text-[10px] sm:text-xs text-gray-900 leading-snug">{response.message || 'No message provided'}</p>
+                    <div className="bg-gray-50 border border-black rounded-lg p-2">
+                      <p className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">{response.message || 'No message provided'}</p>
                     </div>
                   </div>
                   
                   {/* Additional Notes */}
                   {response.notes && (
-                    <div>
+                    <div className="border border-black rounded-lg p-2">
                       <div className="flex items-center space-x-1.5 mb-1.5">
-                        <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                        <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-black">
                           <span className="text-white text-[8px] font-black">📝</span>
                         </div>
                         <span className="text-[9px] sm:text-xs font-black text-gray-700">Additional Notes</span>
                       </div>
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                      <div className="bg-yellow-50 border border-black rounded-lg p-2">
                         <p className="text-[10px] sm:text-xs text-gray-900 leading-snug">{response.notes}</p>
                       </div>
                     </div>
@@ -659,12 +658,12 @@ const EnquiryResponsesPage = () => {
                 
                 {/* Images Section */}
                 {response.imageUrls && response.imageUrls.length > 0 && (
-                  <div className="pb-2 border-b border-gray-200">
-                    <div className="flex items-center space-x-1.5 mb-2">
+                  <div className="pb-2 border-b border-black">
+                    <div className="flex items-center space-x-1.5 mb-2 border border-black rounded-lg p-2">
                       <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                       <span className="text-[9px] sm:text-xs font-black text-gray-700">Images ({response.imageUrls.length})</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 border border-black rounded-lg p-2">
                       {response.imageUrls.map((imageUrl, imgIndex) => (
                         <div 
                           key={imgIndex} 
@@ -677,7 +676,7 @@ const EnquiryResponsesPage = () => {
                           <img 
                             src={imageUrl} 
                             alt={`Response image ${imgIndex + 1}`}
-                            className="w-full h-20 sm:h-24 object-cover rounded-lg border-4 border-black hover:border-blue-500 transition-all duration-200 hover:scale-105"
+                            className="w-full h-20 sm:h-24 object-cover rounded-lg border border-black hover:border-blue-500 transition-all duration-200 hover:scale-105"
                             loading="lazy"
                             decoding="async"
                           />
@@ -695,8 +694,8 @@ const EnquiryResponsesPage = () => {
                 )}
                 
                 {/* Footer Section - Timestamp & Action */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-gray-200">
-                  <div className="text-[9px] sm:text-xs text-gray-500 flex items-center space-x-1">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-black">
+                  <div className="text-[9px] sm:text-xs text-gray-500 flex items-center space-x-1 border border-black rounded-lg px-2 py-1">
                     <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     <span>Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString() : 'N/A'}</span>
                   </div>

@@ -1162,21 +1162,29 @@ const SellerResponse = () => {
         {/* Enhanced Header */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
-            <div className="mb-4 sm:mb-6 lg:mb-8">
-              <button onClick={() => window.history.back()} className="inline-flex items-center text-[10px] sm:text-xs lg:text-sm text-white/80 hover:text-white transition-all">
-                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                Back to Enquiries
-              </button>
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
+              </div>
             </div>
             
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6">
-                <FileText className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-              </div>
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-white mb-2 sm:mb-3 lg:mb-4 px-2">
-                SELL
+            {/* Sell Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight text-center drop-shadow-lg">
+                Sell
               </h1>
-              <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2 mb-3 sm:mb-4 lg:mb-6">
+            </div>
+            
+            <div className="text-center mb-3 sm:mb-4 lg:mb-6">
+              <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2">
                 Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
               </p>
             </div>
@@ -1329,29 +1337,28 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <div className="w-full">
-              {/* Full-width header matching main header */}
-              <div className="bg-black text-white py-4 sm:py-6 -mx-1 sm:-mx-6 lg:-mx-8 px-1 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto">
-                  <div className="flex items-center relative">
-                    {/* Icon on the left */}
-                    <div className="w-12 h-12 bg-pal-blue rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Star className="h-6 w-6 text-white" />
-                    </div>
-                    {/* Centered text content */}
-                    <div className="flex-1 flex flex-col items-center text-center">
-                      <h2 className="text-lg sm:text-2xl font-bold text-white">Your Offer</h2>
-                      <p className="text-[10px] sm:text-base text-gray-300">
-                        Your product, your rules, you're the king.
-                      </p>
-                    </div>
-                    {/* Spacer to balance the icon */}
-                    <div className="w-12 h-12 flex-shrink-0"></div>
-                  </div>
+            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-4 border-black rounded-2xl">
+            <CardHeader className="bg-black p-3 sm:p-4">
+              {/* Title and Category Row */}
+              <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Star className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                  <p className="text-xs sm:text-sm font-semibold text-white">
+                    Your Offer
+                  </p>
+                </div>
+                <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full">
+                  Offer
+                </Badge>
+              </div>
+
+              {/* Subtitle Row */}
+              <div className="flex flex-row items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center text-[10px] sm:text-xs text-gray-300">
+                  <span>Your product, your rules, you're the king.</span>
                 </div>
               </div>
-              
-              <Card className="card-premium overflow-hidden rounded-t-none rounded-2xl">
+            </CardHeader>
             <CardContent className="p-8">
               {errors.submit && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -2260,8 +2267,7 @@ const SellerResponse = () => {
               </div>
             </form>
             </CardContent>
-              </Card>
-            </div>
+          </Card>
           )}
         </div>
       </div>
