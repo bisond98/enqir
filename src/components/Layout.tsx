@@ -384,8 +384,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
       }
     );
 
-    // Listen for response viewed events
-    const handleResponseViewed = () => {
+    // Listen for response viewed events to update header badge in real-time
+    const handleResponseViewed = (e?: any) => {
+      console.log('🔄 Layout: Response viewed event received', e?.detail);
       countUnreadResponses();
     };
 

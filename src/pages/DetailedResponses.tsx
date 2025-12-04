@@ -100,9 +100,19 @@ const DetailedResponses = () => {
     // Mark this enquiry's responses as viewed
     const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
     localStorage.setItem(viewedKey, Date.now().toString());
+    
+    console.log('✅ Marked responses as viewed for enquiry:', enquiryId);
 
-    // Dispatch event to update unread counts
-    window.dispatchEvent(new Event('responseViewed'));
+    // Dispatch event to update unread counts in real-time
+    const event = new CustomEvent('responseViewed', { 
+      detail: { enquiryId, userId: user.uid } 
+    });
+    window.dispatchEvent(event);
+    
+    // Also dispatch a general update event for all components
+    setTimeout(() => {
+      window.dispatchEvent(new Event('responseViewed'));
+    }, 100);
   }, [enquiryId, user]);
 
   // Fetch enquiry data

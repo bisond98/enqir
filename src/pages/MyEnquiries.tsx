@@ -90,9 +90,10 @@ const MyEnquiries = () => {
     });
   };
 
-  // Listen for response viewed events to update badges
+  // Listen for response viewed events to update badges in real-time
   useEffect(() => {
-    const handleResponseViewed = () => {
+    const handleResponseViewed = (e?: any) => {
+      console.log('🔄 MyEnquiries: Response viewed event received', e?.detail);
       forceUpdate({}); // Force re-render to update badges
     };
 
