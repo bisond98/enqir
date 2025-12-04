@@ -813,13 +813,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <div className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
-                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <div className="relative">
+                        <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                        {unreadResponseCount > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+                            {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
+                          </span>
+                        )}
+                      </div>
                       <span className="hidden lg:inline text-xs sm:text-sm truncate">Dashboard</span>
-                      {unreadResponseCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                          {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
-                        </span>
-                      )}
                     </Button>
                   </Link>
                   <Link to="/profile">
@@ -855,13 +857,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     
                     {/* Dashboard button - visible on mobile */}
                     <Link to="/dashboard" className="md:hidden">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black relative">
-                        <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
-                        {unreadResponseCount > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                            {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
-                          </span>
-                        )}
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black">
+                        <div className="relative">
+                          <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                          {unreadResponseCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+                              {unreadResponseCount > 9 ? '9+' : unreadResponseCount}
+                            </span>
+                          )}
+                        </div>
                       </Button>
                     </Link>
                     
