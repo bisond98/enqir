@@ -994,17 +994,30 @@ const Dashboard = () => {
     const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
     const lastViewedTime = localStorage.getItem(viewedKey);
 
-    if (!lastViewedTime) return true; // Never viewed
+    if (!lastViewedTime) {
+      console.log('📌 Never viewed:', enquiryId);
+      return true; // Never viewed
+    }
 
     const viewedTime = parseInt(lastViewedTime, 10);
     
     // Check if any response is newer than last viewed time
-    return responses.some((response: any) => {
+    const hasUnread = responses.some((response: any) => {
       const responseTime = response.createdAt?.toDate
         ? response.createdAt.toDate().getTime()
         : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
-      return responseTime > viewedTime;
+      const isNewer = responseTime > viewedTime;
+      if (isNewer) {
+        console.log('📌 Unread response found:', enquiryId, 'responseTime:', responseTime, 'viewedTime:', viewedTime);
+      }
+      return isNewer;
     });
+    
+    if (!hasUnread) {
+      console.log('✅ All responses viewed:', enquiryId);
+    }
+    
+    return hasUnread;
   };
 
   // Listen for response viewed events to update badges in real-time

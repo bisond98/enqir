@@ -93,27 +93,33 @@ const DetailedResponses = () => {
     }
   };
 
-  // Mark responses as viewed when page loads
+  // Mark responses as viewed AFTER responses are loaded
   useEffect(() => {
-    if (!enquiryId || !user) return;
+    if (!enquiryId || !user || responses.length === 0) return;
 
-    // Mark this enquiry's responses as viewed
-    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
-    localStorage.setItem(viewedKey, Date.now().toString());
-    
-    console.log('✅ Marked responses as viewed for enquiry:', enquiryId);
+    // Wait a bit to ensure responses are fully rendered
+    const timer = setTimeout(() => {
+      // Mark this enquiry's responses as viewed with current timestamp
+      const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+      const now = Date.now();
+      localStorage.setItem(viewedKey, now.toString());
+      
+      console.log('✅ Marked responses as viewed for enquiry:', enquiryId, 'at timestamp:', now);
 
-    // Dispatch event to update unread counts in real-time
-    const event = new CustomEvent('responseViewed', { 
-      detail: { enquiryId, userId: user.uid } 
-    });
-    window.dispatchEvent(event);
-    
-    // Also dispatch a general update event for all components
-    setTimeout(() => {
-      window.dispatchEvent(new Event('responseViewed'));
-    }, 100);
-  }, [enquiryId, user]);
+      // Dispatch event to update unread counts in real-time
+      const event = new CustomEvent('responseViewed', { 
+        detail: { enquiryId, userId: user.uid, timestamp: now } 
+      });
+      window.dispatchEvent(event);
+      
+      // Also dispatch a general update event for all components
+      setTimeout(() => {
+        window.dispatchEvent(new Event('responseViewed'));
+      }, 100);
+    }, 500); // Wait 500ms to ensure responses are loaded
+
+    return () => clearTimeout(timer);
+  }, [enquiryId, user, responses.length]);
 
   // Fetch enquiry data
   useEffect(() => {
