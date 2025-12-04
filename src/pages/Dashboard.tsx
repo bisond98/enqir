@@ -2401,8 +2401,8 @@ const Dashboard = () => {
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
                             <div className="relative space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3">
-                              <p className={`text-[10px] sm:text-sm lg:text-xs xl:text-sm mb-2 line-clamp-2 leading-snug font-bold ${
-                                isExpired ? 'text-gray-400' : 'text-gray-900'
+                              <p className={`text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] mb-2 line-clamp-2 leading-snug font-medium ${
+                                isExpired ? 'text-gray-400' : 'text-gray-600'
                               }`}>
                                 {enquiry.description}
                               </p>
@@ -2423,10 +2423,11 @@ const Dashboard = () => {
                           }
                         }}
                         disabled={isExpired}
-                        className="w-full border border-black bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-gray-900 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="w-full border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-lg lg:rounded-md xl:rounded-lg shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center relative overflow-hidden"
                       >
-                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0" />
-                        View Details
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg lg:rounded-md xl:rounded-lg pointer-events-none" />
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10 text-white" />
+                        <span className="relative z-10">View Details</span>
                       </Button>
                     </div>
                           </div>
@@ -2492,13 +2493,13 @@ const Dashboard = () => {
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-300 hover:to-gray-400 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-700 hover:to-blue-800 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10" />
-                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Be the genie</span>
+                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
+                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Be the well paid genie</span>
                   </button>
                 </Link>
               </div>

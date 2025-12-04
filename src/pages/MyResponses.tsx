@@ -375,66 +375,91 @@ const MyResponses = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
-          {/* Professional Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Header Section with Back Button */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    onClick={() => window.history.back()}
-                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                  >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </Button>
-                </div>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Profile Page Style - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Responses
-                    </h2>
-                  </div>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 font-medium">
-                    Track & manage your responses like the FBI
-                  </p>
-                </div>
+            </div>
+            
+            {/* Responses Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Responses
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <p className="text-[9px] sm:text-[10px] lg:text-xs text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  Track & manage your responses like the FBI
+                </p>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-8">
-            <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-              <CardContent className="p-2 sm:p-3 text-center">
-                <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.length}</h3>
-                <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Total</p>
-              </CardContent>
-            </Card>
-            <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-              <CardContent className="p-2 sm:p-3 text-center">
-                <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'approved').length}</h3>
-                <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Approved</p>
-              </CardContent>
-            </Card>
-            <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-              <CardContent className="p-2 sm:p-3 text-center">
-                <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'pending').length}</h3>
-                <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Pending</p>
-              </CardContent>
-            </Card>
-            <Card className="border border-black bg-white rounded-lg sm:rounded-xl overflow-hidden">
-              <CardContent className="p-2 sm:p-3 text-center">
-                <h3 className="text-sm sm:text-xl lg:text-2xl font-black text-slate-900 mb-0.5 sm:mb-1">{sellerSubmissions.filter(s => s.status === 'rejected').length}</h3>
-                <p className="text-[8px] sm:text-[10px] lg:text-xs text-slate-600 font-medium">Rejected</p>
-              </CardContent>
-            </Card>
+        {/* Content - Inside Container */}
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
+
+          {/* Stats Summary - Circular Design */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+            <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                  {sellerSubmissions.length}
+                </h3>
+                <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Total</p>
+              </div>
+            </div>
+            
+            <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                  {sellerSubmissions.filter(s => s.status === 'approved').length}
+                </h3>
+                <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Approved</p>
+              </div>
+            </div>
+            
+            <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                  {sellerSubmissions.filter(s => s.status === 'pending').length}
+                </h3>
+                <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Pending</p>
+              </div>
+            </div>
+            
+            <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                  {sellerSubmissions.filter(s => s.status === 'rejected').length}
+                </h3>
+                <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Rejected</p>
+              </div>
+            </div>
           </div>
 
           {/* Responses List */}
@@ -463,13 +488,13 @@ const MyResponses = () => {
                 const isHighlighted = highlightSubmissionId === submission.id;
                 return (
                   <div key={submission.id} ref={isHighlighted ? highlightedSubmissionRef : undefined}>
-                  <Card className={`border-[6px] border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
+                  <Card className={`border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
                     {/* Card Header - Solid black background */}
-                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 border-b-2 border-gray-700 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
+                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
                           {isExpired || isEnquiryDeleted ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
-                          <h3 className={`text-[11px] sm:text-lg font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
+                          <h3 className={`text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
                             Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
                           </h3>
                           {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
@@ -495,7 +520,7 @@ const MyResponses = () => {
                         </div>
                       </div>
                       <div className="mt-1 sm:mt-2">
-                        <span className={`text-[9px] sm:text-xs font-bold opacity-95 ${isExpired || isEnquiryDeleted ? 'text-red-200' : 'text-white'}`}>
+                        <span className={`text-[8px] sm:text-[9px] font-medium opacity-70 ${isExpired || isEnquiryDeleted ? 'text-red-200' : 'text-white'}`}>
                           {isEnquiryDeleted ? 'Enquiry has been deleted' : getStatusMessage(submission)}
                         </span>
                       </div>
@@ -505,23 +530,15 @@ const MyResponses = () => {
                     <CardContent className="p-2 sm:p-4 space-y-2 sm:space-y-3">
 
                       {/* Response Information Group */}
-                      <div className="space-y-1.5 sm:space-y-2 pb-2 border-b border-black">
+                      <div className="space-y-1.5 sm:space-y-2 pb-2">
                         {/* Response Title */}
-                        <p className="text-[10px] sm:text-sm text-gray-900 leading-snug line-clamp-2 font-bold">{submission.title}</p>
+                        <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-900 leading-snug line-clamp-2 font-bold text-center">{submission.title}</p>
                         
                         {/* Response Message */}
-                        <p className="text-[10px] sm:text-sm text-gray-700 leading-snug line-clamp-2">{submission.message}</p>
+                        <p className="text-[8px] sm:text-[10px] text-gray-700 leading-snug line-clamp-2 text-center">{submission.message}</p>
                         
                         {/* Stats & Details */}
-                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-1">
-                          <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
-                            <ImageIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-600" />
-                            <span>{submission.imageCount || 0}</span>
-                          </span>
-                          <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
-                            <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-600" />
-                            <span>{submission.price?.toString().startsWith('₹') ? submission.price : `₹${submission.price}`}</span>
-                          </span>
+                        <div className="flex flex-wrap items-center gap-6 sm:gap-8 pt-1">
                           {submission.govIdUrl && (
                             <span className="flex items-center space-x-1 text-[9px] sm:text-xs text-gray-700 font-black">
                               <Shield className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-600" />
@@ -539,11 +556,11 @@ const MyResponses = () => {
                         </div>
                       )}
 
-                      {/* Enquiry Context - Budget & Category Group */}
+                      {/* Enquiry Context - Budget & Seller Amount Group */}
                       {enquiry && (
-                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded border-x border-b border-black shadow-sm">
+                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded shadow-sm mt-8 sm:mt-52 lg:mt-56">
                           <div className="flex items-center space-x-1.5">
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                               <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
                             </div>
                             <div>
@@ -551,13 +568,28 @@ const MyResponses = () => {
                               <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
                             </div>
                           </div>
-                          {enquiry.category && (
-                            <Badge variant="outline" className="text-[8px] sm:text-xs font-black border border-gray-300 text-gray-800 px-1.5 py-0">
-                              {enquiry.category}
-                            </Badge>
+                          {submission.price && (
+                            <div className="flex items-center space-x-1.5">
+                              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
+                              </div>
+                              <div>
+                                <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Your Amount</div>
+                                <div className="text-xs sm:text-base font-black text-gray-900">{submission.price}</div>
+                              </div>
+                            </div>
                           )}
                         </div>
                       )}
+
+                      {/* Timestamps */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[8px] sm:text-[9px] md:text-[10px] text-slate-500 pt-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
+                          <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
+                        </div>
+                        {/* Updated timestamp intentionally hidden as requested */}
+                      </div>
 
                       {/* View Enquiry Button */}
                       {enquiry && !isExpired && !isEnquiryDeleted && (
@@ -595,18 +627,9 @@ const MyResponses = () => {
                         </div>
                       )}
 
-                      {/* Timestamps */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[10px] sm:text-[11px] md:text-xs text-slate-500 pt-2 border-t border-black">
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
-                          <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
-                        </div>
-                        {/* Updated timestamp intentionally hidden as requested */}
-                      </div>
-
                       {/* Status-specific Actions */}
                       {!isExpired && !isEnquiryDeleted && (
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-black">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2">
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
                             {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
@@ -636,7 +659,7 @@ const MyResponses = () => {
                                   {/* Shimmer effect */}
                                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chatavailable:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                                   <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white flex-shrink-0 group-hover/chatavailable:scale-110 transition-transform duration-200 relative z-10" />
-                                  <span className="whitespace-nowrap tracking-tight relative z-10">Chat Available</span>
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">Talk To The Buyer</span>
                               </Button>
                             </Link>
                           )}

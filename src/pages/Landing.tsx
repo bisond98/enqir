@@ -2096,8 +2096,8 @@ const Landing = () => {
                       <div className={`${windowWidth < 640 ? 'mb-2 space-y-1.5' : 'mb-2 sm:mb-2.5'} flex ${windowWidth < 640 ? 'flex-col' : 'flex-row items-center flex-nowrap'} ${windowWidth < 640 ? 'gap-1.5' : 'gap-2 sm:gap-2.5'} ${windowWidth >= 640 ? 'w-full' : ''}`}>
                         {enquiry.budget && (
                           <div className={`inline-flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg ${windowWidth < 640 ? 'px-2 py-1' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} ${windowWidth < 640 ? 'border-2' : 'border-2'} border-black ${windowWidth >= 640 ? 'flex-shrink-0' : 'w-fit'} flex-shrink-0`}>
-                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
-                            <span className={`${windowWidth < 640 ? 'text-xs' : 'text-sm sm:text-base lg:text-lg'} font-extrabold text-gray-900 whitespace-nowrap`}>{formatIndianCurrency(enquiry.budget)}</span>
+                            <span className={`${windowWidth < 640 ? 'text-base' : 'text-lg sm:text-xl lg:text-2xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
+                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 whitespace-nowrap`}>{formatIndianCurrency(enquiry.budget)}</span>
                           </div>
                         )}
                         {enquiry.location && (
