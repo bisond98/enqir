@@ -1739,8 +1739,8 @@ const Dashboard = () => {
                                     </div>
                                   )}
 
-                              {/* Spacer to maintain original card height */}
-                              <div className="mb-8 sm:mb-10 lg:mb-6 xl:mb-8"></div>
+                              {/* Spacer to maintain card height */}
+                              <div className="mb-12 sm:mb-16 lg:mb-10 xl:mb-12"></div>
 
                               {/* Plan Notice - Show plan-specific seller limit, positioned above response button */}
                               {(() => {
