@@ -47,7 +47,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const lastUpdateTimeRef = useRef(0);
   
-  // Simple handler - only update if enough time has passed since last update
+  // IMPORTANT: Menu state handler with throttling to prevent loop issues
+  // The Sheet component can trigger onOpenChange multiple times rapidly,
+  // causing a loop where the menu opens and closes repeatedly.
+  // Solution: Throttle updates to max once per 300ms and check if state
+  // is already the desired value before updating.
+  // DO NOT REMOVE THIS THROTTLING - it prevents menu bar loop bugs.
   const handleMenuOpenChange = useCallback((open: boolean) => {
     const now = Date.now();
     // Prevent updates if less than 300ms since last update
