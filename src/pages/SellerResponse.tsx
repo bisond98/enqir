@@ -1173,8 +1173,8 @@ const SellerResponse = () => {
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </Button>
                 <div className="w-10 h-10"></div>
-              </div>
             </div>
+              </div>
             
             {/* Sell Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
@@ -1345,8 +1345,8 @@ const SellerResponse = () => {
                   <Star className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
                   <p className="text-xs sm:text-sm font-semibold text-white">
                     Your Offer
-                  </p>
-                </div>
+              </p>
+            </div>
                 <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full">
                   Offer
                 </Badge>
@@ -1822,11 +1822,11 @@ const SellerResponse = () => {
                         </div>
                         
                         {/* Verifying Text - Bottom */}
-                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-6">
                           <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                             Verifying your ID...
                           </p>
-                          <p className="text-[8px] sm:text-[10px] text-gray-600 font-medium whitespace-nowrap">
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
                             Your ID remains securely encrypted and will be verified within a few minutes.
                           </p>
                         </div>
@@ -2069,7 +2069,7 @@ const SellerResponse = () => {
                                 {/* Success Icon with Animation */}
                                 <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-green-500 flex items-center justify-center shadow-md">
                                   <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
-                                </div>
+                              </div>
                                 
                                 {/* Text Content */}
                                 <div className="flex-1 min-w-0">

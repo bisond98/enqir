@@ -471,7 +471,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Small delay before redirect to ensure all state is cleared
       setTimeout(() => {
-        window.location.href = '/';
+      window.location.href = '/';
       }, 100);
 
       return { error: null };

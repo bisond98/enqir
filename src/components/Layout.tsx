@@ -771,10 +771,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     className="w-full"
                   >
                     <Link
-                      to={item.path}
+                    to={item.path}
                       onClick={() => handleMenuOpenChange(false)}
                       className={`flex items-center justify-between space-x-4 p-4 sm:p-5 rounded-xl transition-all duration-300 ease-out group border-2 h-14 sm:h-16 md:h-20 ${
-                        isActive(item.path)
+                      isActive(item.path)
                           ? "bg-gradient-to-r from-black to-gray-900 text-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] border-black hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
                           : "bg-white text-gray-700 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-gray-50 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0"
                       }`}
@@ -786,44 +786,44 @@ export default function Layout({ children, showNavigation = true }: { children: 
                             : "bg-white shadow-sm border border-gray-200 group-hover:shadow-md group-hover:border-gray-300"
                         }`}>
                           <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 transition-colors duration-300 ${isActive(item.path) ? "text-white" : "text-gray-700"}`} strokeWidth={2.5} />
-                        </div>
+                      </div>
                         <span className={`font-semibold text-base sm:text-lg md:text-xl transition-colors duration-300 ${isActive(item.path) ? "text-white" : "text-gray-800"}`}>
-                          {item.label}
-                        </span>
+                        {item.label}
+                      </span>
                       </div>
                       {isActive(item.path) && (
                         <div className="w-2.5 h-2.5 bg-white rounded-full flex-shrink-0 shadow-lg animate-pulse"></div>
                       )}
-                    </Link>
+                  </Link>
                   </motion.div>
                 );
               })}
-              
+
               {/* Footer Actions - Same Button Size */}
-              {user && (
+          {user && (
                 <>
                   {/* Dark Mode Toggle */}
-                  {mounted && (
+              {mounted && (
                     <div className="w-full">
-                      <Button
-                        variant="outline"
+                <Button
+                  variant="outline"
                         className="w-full flex items-center justify-start h-14 sm:h-16 md:h-20 rounded-xl border-2 border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-gray-50 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0 font-semibold text-base sm:text-lg md:text-xl text-gray-700 p-0 transition-all duration-300 ease-out"
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                      >
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
                         <div className="flex items-center flex-1 min-w-0 p-4 sm:p-5">
                           <div className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-white shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 flex-shrink-0 mr-4 transition-all duration-300">
-                            {theme === "dark" ? (
+                  {theme === "dark" ? (
                               <Sun className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-gray-700 transition-colors duration-300" />
-                            ) : (
+                  ) : (
                               <Moon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-gray-700 transition-colors duration-300" />
-                            )}
+                  )}
                           </div>
                           <span className="transition-colors duration-300">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
                         </div>
-                      </Button>
+                </Button>
                     </div>
-                  )}
-                  
+              )}
+              
                   {/* Settings */}
                   <div className="w-full">
                     <Link to="/settings" onClick={() => handleMenuOpenChange(false)}>
@@ -834,15 +834,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           </div>
                           <span className="transition-colors duration-300">Settings</span>
                         </div>
-                      </Button>
-                    </Link>
+                </Button>
+              </Link>
                   </div>
                   
                   {/* Log Out */}
                   <div className="w-full">
-                    <Button 
-                      variant="outline" 
-                      onClick={handleSignOutClick} 
+              <Button 
+                variant="outline" 
+                onClick={handleSignOutClick} 
                       className="w-full flex items-center justify-start h-14 sm:h-16 md:h-20 rounded-xl border-2 border-red-600 bg-white shadow-[0_4px_0_0_rgba(220,38,38,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-red-50 hover:shadow-[0_6px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(220,38,38,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0 text-red-600 hover:text-red-700 font-semibold text-base sm:text-lg md:text-xl p-0 transition-all duration-300 ease-out"
                     >
                       <div className="flex items-center flex-1 min-w-0 p-4 sm:p-5">
@@ -851,10 +851,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         </div>
                         <span className="transition-colors duration-300">Log Out</span>
                       </div>
-                    </Button>
-                  </div>
+              </Button>
+            </div>
                 </>
-              )}
+          )}
             </div>
           </nav>
         </div>
@@ -915,8 +915,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         )}
                       </div>
                       <span className="hidden lg:inline text-xs sm:text-sm truncate">Dashboard</span>
-                    </Button>
-                  </Link>
+                      </Button>
+                    </Link>
                   <Link to="/profile">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
                       <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
@@ -944,10 +944,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         <Home className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>
                     </Link>
-                    
-                    {/* Smart Notifications */}
-                    <SmartNotifications />
-                    
+                  
+                  {/* Smart Notifications */}
+                  <SmartNotifications />
+                  
                     {/* Dashboard button - visible on mobile */}
                     <Link to="/dashboard" className="md:hidden">
                       <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black">
@@ -959,8 +959,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                             </span>
                           )}
                         </div>
-                      </Button>
-                    </Link>
+                    </Button>
+                  </Link>
                     
                   {/* Chats button – shows all user chats (mobile + desktop) */}
                   <Link to="/my-chats">
@@ -991,7 +991,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           onClick={handleMenuButtonClick}
                         >
                           <Menu className="h-4 w-4" />
-                        </Button>
+                    </Button>
                         <Sheet 
                           open={mobileMenuOpen} 
                           onOpenChange={handleMenuOpenChange}
@@ -999,7 +999,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         >
                           <MobileNavigation />
                         </Sheet>
-                      </div>
+                </div>
                     )}
                   </div>
                 </>

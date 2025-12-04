@@ -942,11 +942,11 @@ const Profile = () => {
                 </div>
                 
                 {/* Verifying Text - Bottom */}
-                <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+                <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-6">
                   <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                     Verifying your ID...
                   </p>
-                  <p className="text-[8px] sm:text-[10px] text-gray-600 font-medium whitespace-nowrap">
+                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
                     Your ID remains securely encrypted and will be verified within a few minutes.
                   </p>
                 </div>

@@ -115,14 +115,14 @@ const Settings = () => {
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    Manage your account preferences and platform settings
-                  </p>
+              Manage your account preferences and platform settings
+            </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
+          </div>
+          
         {/* Content - Inside Container */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           {/* Privacy Settings */}

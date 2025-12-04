@@ -313,7 +313,7 @@ const SignIn = () => {
                       >
                         <span className="relative z-10">Sign Up</span>
                       </TabsTrigger>
-                    </TabsList>
+                </TabsList>
 
                 {/* Sign In Form */}
                     <TabsContent value="signin" className="space-y-4 sm:space-y-5">

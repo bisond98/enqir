@@ -108,7 +108,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose, onConfirm, userName }: De
       setIsConfirmed(false);
       setIsPasswordValid(false);
       setPasswordError(null);
-      onClose();
+    onClose();
     }
   };
 

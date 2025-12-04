@@ -296,9 +296,9 @@ export default function MyChats() {
             {/* Your Chats Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
-                Your Chats
-              </h1>
-            </div>
+                      Your Chats
+                    </h1>
+                  </div>
             
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
@@ -314,7 +314,7 @@ export default function MyChats() {
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
-                      <motion.div
+                    <motion.div 
                         animate={{
                           scale: viewMode === 'buyer' ? 1.1 : 1,
                           opacity: viewMode === 'buyer' ? 1 : 0.5,
@@ -331,7 +331,7 @@ export default function MyChats() {
                       {/* Creative Rotating Dial Toggle */}
                       <div className="relative inline-flex items-center">
                         {/* Track Background with Animated Gradient */}
-                        <motion.div 
+                      <motion.div 
                           className="w-20 h-8 sm:w-28 sm:h-10 lg:w-32 lg:h-12 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full relative cursor-pointer overflow-hidden"
                           animate={{
                             background: viewMode === 'buyer' 
@@ -351,7 +351,7 @@ export default function MyChats() {
                               handleToggleView('seller');
                             }
                           }}
-                        >
+                      >
                           {/* Animated Background Overlay */}
                           <motion.div
                             className="absolute inset-0 rounded-full"
@@ -362,15 +362,15 @@ export default function MyChats() {
                             }}
                             transition={{ duration: 0.5 }}
                           />
-                          
+                      
                           {/* Rotating Dial Knob */}
-                          <motion.button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
+                      <motion.button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                               handleToggleView(viewMode === 'buyer' ? 'seller' : 'buyer');
-                            }}
+                        }}
                             className="absolute top-1/2 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full cursor-pointer z-10"
                             animate={{
                               left: viewMode === 'buyer' ? '-8px' : 'calc(100% - 32px)',
@@ -387,9 +387,9 @@ export default function MyChats() {
                             style={{
                               transform: 'translateY(-50%)',
                             }}
-                          >
+                      >
                             {/* Outer Ring - Rotating */}
-                            <motion.div
+                        <motion.div 
                               className="absolute inset-0 rounded-full border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                               animate={{
                                 rotate: viewMode === 'buyer' ? 0 : 360,
@@ -445,40 +445,40 @@ export default function MyChats() {
                             
                             {/* Unread Badge - Buyer */}
                             {viewMode === 'buyer' && buyerUnreadCount > 0 && (
-                              <motion.span 
+                            <motion.span 
                                 className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
-                                animate={{
+                              animate={{
                                   scale: [1, 1.3, 1],
                                   rotate: [0, 15, -15, 0]
-                                }}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
-                              </motion.span>
-                            )}
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
+                            </motion.span>
+                          )}
                             
                             {/* Unread Badge - Seller */}
                             {viewMode === 'seller' && sellerUnreadCount > 0 && (
-                              <motion.span 
+                            <motion.span 
                                 className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
-                                animate={{
+                              animate={{
                                   scale: [1, 1.3, 1],
                                   rotate: [0, 15, -15, 0]
-                                }}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
-                              </motion.span>
-                            )}
-                          </motion.button>
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
+                            </motion.span>
+                          )}
+                      </motion.button>
                           
                           {/* Animated Particles on Toggle */}
                           {[...Array(3)].map((_, i) => (
@@ -502,7 +502,7 @@ export default function MyChats() {
                               }}
                             />
                           ))}
-                        </motion.div>
+                    </motion.div>
                       </div>
                       
                       {/* Sell Label with Animation */}

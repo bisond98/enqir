@@ -417,11 +417,11 @@ const EnquiryResponsesPage = () => {
                   className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
+          </Button>
                 <div className="w-10 h-10"></div>
               </div>
-            </div>
-            
+        </div>
+
             {/* Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
@@ -439,7 +439,7 @@ const EnquiryResponsesPage = () => {
             </div>
           </div>
         </div>
-
+        
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
         {/* Sorting Controls - Simple Design */}
         {visibleResponses.length > 1 && (
@@ -598,7 +598,7 @@ const EnquiryResponsesPage = () => {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                          <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
+                        <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
                           {((response as any).userProfileVerified || response.isIdentityVerified) && (
                             <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
                           )}
