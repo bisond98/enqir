@@ -44,28 +44,47 @@ export default function Layout({ children, showNavigation = true }: { children: 
   }
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const menuOpenRef = useRef(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const lastUpdateTimeRef = useRef(0);
   
-  // Prevent rapid toggling of menu
+  // Simple handler - only update if enough time has passed since last update
   const handleMenuOpenChange = useCallback((open: boolean) => {
-    // Only update if state actually changed and not in a rapid toggle
-    if (open !== menuOpenRef.current) {
-      menuOpenRef.current = open;
-      setMobileMenuOpen(open);
+    const now = Date.now();
+    // Prevent updates if less than 300ms since last update
+    if (now - lastUpdateTimeRef.current < 300) {
+      return;
     }
+    
+    // Use functional update to check current state
+    setMobileMenuOpen((current) => {
+      // If state is already what we want, don't update
+      if (current === open) {
+        return current;
+      }
+      
+      lastUpdateTimeRef.current = now;
+      return open;
+    });
   }, []);
+  
+  const handleMenuButtonClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const now = Date.now();
+    // Only open if enough time has passed and menu is closed
+    if (now - lastUpdateTimeRef.current >= 300 && !mobileMenuOpen) {
+      lastUpdateTimeRef.current = now;
+      setMobileMenuOpen(true);
+    }
+  }, [mobileMenuOpen]);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-  
-  // Sync ref with state to prevent rapid toggling
-  useEffect(() => {
-    menuOpenRef.current = mobileMenuOpen;
-  }, [mobileMenuOpen]);
 
   // Count unread chat messages - Optimized version
   useEffect(() => {
@@ -460,7 +479,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
   const handleSignOut = async () => {
     await signOut();
-    setMobileMenuOpen(false);
+    handleMenuOpenChange(false);
   };
 
   const handleSignOutClick = () => {
@@ -487,7 +506,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleMenuOpenChange(false);
+                }}
                 className="h-8 w-8 p-0 rounded-lg hover:bg-gray-100 transition-colors bg-white"
               >
                 <X className="h-4 w-4 text-black" />
@@ -533,7 +556,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <User className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-gray-600 mb-3 text-sm">Not signed in</p>
-                <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/signin" onClick={() => handleMenuOpenChange(false)}>
                   <Button className="w-full bg-black hover:bg-gray-900 text-white font-medium text-sm h-9 rounded-lg border-2 border-black">
                     Sign In
                   </Button>
@@ -557,7 +580,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   >
                     <Link
                     to={item.path}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => handleMenuOpenChange(false)}
                       className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group border-2 ${
                       isActive(item.path)
                           ? "bg-black text-white shadow-sm border-black"
@@ -611,7 +634,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </Button>
               )}
               
-              <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/settings" onClick={() => handleMenuOpenChange(false)}>
                 <Button variant="outline" className="w-full justify-start h-10 rounded-lg border-2 border-black hover:bg-gray-50 font-medium text-sm text-gray-700">
                   <Settings className="h-4 w-4 mr-2.5 text-gray-600" />
                   Settings
@@ -746,21 +769,18 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           variant="ghost" 
                           size="sm" 
                           className="h-8 w-8 p-0 hover:bg-muted/50"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            if (!mobileMenuOpen) {
-                              setMobileMenuOpen(true);
-                              menuOpenRef.current = true;
-                            }
-                          }}
+                          onClick={handleMenuButtonClick}
                         >
                           <Menu className="h-4 w-4" />
-                    </Button>
-                        <Sheet open={mobileMenuOpen} onOpenChange={handleMenuOpenChange}>
+                        </Button>
+                        <Sheet 
+                          open={mobileMenuOpen} 
+                          onOpenChange={handleMenuOpenChange}
+                          modal={true}
+                        >
                           <MobileNavigation />
                         </Sheet>
-                </div>
+                      </div>
                     )}
                   </div>
                 </>
