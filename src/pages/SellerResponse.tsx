@@ -1706,10 +1706,10 @@ const SellerResponse = () => {
 
                 {/* ID Upload Form - Only show for unverified users - Matching Buyer Form Design */}
                 {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className="relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white border-2 border-black rounded-xl w-full max-w-full overflow-visible">
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-2 border-black'} rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden border-2 border-black">
                         {/* Moving Tick - All Over Card */}
                         <div 
                           className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
@@ -1794,16 +1794,25 @@ const SellerResponse = () => {
                           ></div>
                         </div>
                         
-                        {/* Countdown Text - Fixed Position */}
-                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg">
-                            <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
-                            <span className="text-sm sm:text-base font-bold tabular-nums">
-                              {verificationCountdown}s
-                            </span>
+                        {/* Countdown - Large Transparent Overlapping */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div 
+                            className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-white/20 tabular-nums animate-pulse select-none"
+                            style={{
+                              WebkitTextStroke: '1px #000000'
+                            } as React.CSSProperties}
+                          >
+                            {verificationCountdown}
                           </div>
-                          <p className="mt-3 text-xs sm:text-sm text-gray-600 font-medium">
+                        </div>
+                        
+                        {/* Verifying Text - Bottom */}
+                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+                          <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                             Verifying your ID...
+                          </p>
+                          <p className="text-[8px] sm:text-[10px] text-gray-600 font-medium whitespace-nowrap">
+                            Your ID remains securely encrypted and will be verified within a few minutes.
                           </p>
                         </div>
                       </div>
@@ -1948,10 +1957,10 @@ const SellerResponse = () => {
                                   <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
                                 ) : (
                                   <>
-                                    <span className="text-xs sm:text-sm font-medium text-white">Verifying</span>
-                                    <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-none">
-                                      <span className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
-                                        {Math.floor(verificationCountdown / 60)}:{(verificationCountdown % 60).toString().padStart(2, '0')}
+                                    <span className="text-xs sm:text-sm font-medium text-white mb-2">Verifying</span>
+                                    <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-5 rounded-lg">
+                                      <span className="text-4xl sm:text-5xl font-bold text-white tabular-nums animate-pulse">
+                                        {verificationCountdown}
                                       </span>
                                     </div>
                                   </>
@@ -2038,13 +2047,23 @@ const SellerResponse = () => {
                               </div>
                           )}
                           
-                          {/* Image Upload Status - Text Only */}
+                          {/* Image Upload Status - Sleek Design */}
                           {(idFrontImage || idFrontUrl) && (
-                            <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
-                              <div className="flex items-center gap-2 sm:gap-2.5">
-                                <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
-                                <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
+                            <div className="w-full border-2 rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black" style={{ borderColor: '#000000' }}>
+                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0">
+                                {/* Success Icon with Animation */}
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-green-500 flex items-center justify-center shadow-md">
+                                  <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
+                                </div>
+                                
+                                {/* Text Content */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[11px] sm:text-lg font-bold text-white truncate leading-tight">ID Image Uploaded</p>
+                                  <p className="text-[8px] sm:text-sm text-gray-300 mt-0">Ready for verification</p>
+                                </div>
                               </div>
+                              
+                              {/* Remove Button - Sleek Design */}
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2053,12 +2072,12 @@ const SellerResponse = () => {
                                   if (govIdUrl === idFrontUrl) setGovIdUrl("");
                                   setIdVerificationResult(null);
                                 }}
-                                className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                                style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
+                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+                                style={{ backgroundColor: '#dc2626' }}
                                 disabled={verifyingId}
                                 aria-label="Remove image"
                               >
-                                <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                                <X className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white group-hover:rotate-90 transition-transform duration-300" />
                               </button>
                             </div>
                           )}
@@ -2166,16 +2185,15 @@ const SellerResponse = () => {
                               className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {verifyingId ? (
-                                <>
-                                  <div 
-                                    className="h-4 w-4 sm:h-5 sm:w-5 mr-2 border-2 border-white border-t-transparent rounded-full flex-shrink-0"
-                                    style={{
-                                      animation: 'spin 1s linear infinite',
-                                      WebkitAnimation: 'spin 1s linear infinite'
-                                    }}
-                                  ></div>
-                                  Verifying ID...
-                                </>
+                                <span className="flex items-center justify-center gap-2 sm:gap-3">
+                                  {/* Countdown Square - No Borders */}
+                                  <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-2.5 rounded-lg">
+                                    <span className="text-2xl sm:text-2xl font-bold text-white tabular-nums animate-pulse">
+                                      {verificationCountdown}
+                                    </span>
+                                  </div>
+                                  <span className="font-semibold text-sm sm:text-base">Verifying ID...</span>
+                                </span>
                               ) : (
                                 <>
                                   <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />

@@ -27,7 +27,7 @@ import { usePerformanceOptimizations } from "@/hooks/use-performance";
 const MobileAIController = lazy(() => import("./MobileAIController"));
 
 export default function Layout({ children, showNavigation = true }: { children: React.ReactNode; showNavigation?: boolean }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isProfileVerified, profileVerificationStatus } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
@@ -45,44 +45,43 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  const lastUpdateTimeRef = useRef(0);
+  const ignoreSheetCallbacksRef = useRef(false);
   
-  // IMPORTANT: Menu state handler with throttling to prevent loop issues
-  // The Sheet component can trigger onOpenChange multiple times rapidly,
-  // causing a loop where the menu opens and closes repeatedly.
-  // Solution: Throttle updates to max once per 300ms and check if state
-  // is already the desired value before updating.
-  // DO NOT REMOVE THIS THROTTLING - it prevents menu bar loop bugs.
+  // ULTIMATE FIX: Menu state handler - completely prevents loops
+  // Strategy: Ignore ALL Sheet callbacks for 600ms after we manually change state
+  // This prevents Sheet from triggering state changes after we set it
   const handleMenuOpenChange = useCallback((open: boolean) => {
-    const now = Date.now();
-    // Prevent updates if less than 300ms since last update
-    if (now - lastUpdateTimeRef.current < 300) {
+    // If we're ignoring callbacks (just set state manually), ignore this completely
+    if (ignoreSheetCallbacksRef.current) {
       return;
     }
     
-    // Use functional update to check current state
-    setMobileMenuOpen((current) => {
-      // If state is already what we want, don't update
-      if (current === open) {
-        return current;
-      }
-      
-      lastUpdateTimeRef.current = now;
-      return open;
-    });
+    // Only allow Sheet to close, never open (opening only via button)
+    if (open === true) {
+      return; // Ignore Sheet trying to open - only button can open
+    }
+    
+    // Allow Sheet to close (overlay click, close button, etc.)
+    setMobileMenuOpen(false);
   }, []);
   
   const handleMenuButtonClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const now = Date.now();
-    // Only open if enough time has passed and menu is closed
-    if (now - lastUpdateTimeRef.current >= 300 && !mobileMenuOpen) {
-      lastUpdateTimeRef.current = now;
-      setMobileMenuOpen(true);
-    }
-  }, [mobileMenuOpen]);
+    // Ignore Sheet callbacks for 600ms after we change state
+    ignoreSheetCallbacksRef.current = true;
+    
+    // Toggle menu
+    setMobileMenuOpen((current) => {
+      return !current;
+    });
+    
+    // After 600ms, allow Sheet callbacks again
+    setTimeout(() => {
+      ignoreSheetCallbacksRef.current = false;
+    }, 600);
+  }, []);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -494,15 +493,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const isActive = (path: string) => location.pathname === path;
 
   const navigationItems = [
-    { path: "/", label: "Home", icon: Home },
-    { path: "/enquiries", label: "Browse", icon: Search },
+    { path: "/enquiries", label: "Sell", icon: Search },
     { path: "/post-enquiry", label: "Post Enquiry", icon: Plus },
     { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
     { path: "/profile", label: "Profile", icon: User },
   ];
 
   const MobileNavigation = () => (
-      <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 bg-white [&>button]:hidden">
+      <SheetContent side="right" className="w-[320px] sm:w-[380px] md:w-[420px] p-0 bg-white [&>button]:hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 sm:p-5 border-b-4 border-black bg-black">
@@ -539,11 +537,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Badge variant="outline" className={`text-[10px] font-medium px-1.5 py-0.5 border-2 ${
-                    user.emailVerified 
+                    isProfileVerified && profileVerificationStatus === 'approved'
                       ? "border-green-300 bg-green-50 text-green-700" 
                       : "border-gray-300"
                   }`}>
-                    {user.emailVerified ? "✓ Verified" : "⏳ Pending"}
+                    {isProfileVerified && profileVerificationStatus === 'approved' ? "✓ Verified" : "⏳ Pending"}
                   </Badge>
                   {/* PRO BADGE - KEPT FOR FUTURE UPDATES */}
                   {/* {proRemainingCount > 0 && (
@@ -570,10 +568,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
             )}
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 sm:p-5">
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-3 px-1">Navigation</p>
+          {/* Menu Items - Optimized Size */}
+          <nav className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+            <div className="space-y-3 sm:space-y-4">
+              {/* Navigation Items */}
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
@@ -582,79 +580,95 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
+                    className="w-full"
                   >
                     <Link
-                    to={item.path}
-                    onClick={() => handleMenuOpenChange(false)}
-                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group border-2 ${
-                      isActive(item.path)
-                          ? "bg-black text-white shadow-sm border-black"
-                          : "hover:bg-gray-50 text-gray-700 border-black"
+                      to={item.path}
+                      onClick={() => handleMenuOpenChange(false)}
+                      className={`flex items-center justify-between space-x-4 p-4 sm:p-5 rounded-xl transition-all duration-300 ease-out group border-2 h-14 sm:h-16 md:h-20 ${
+                        isActive(item.path)
+                          ? "bg-gradient-to-r from-black to-gray-900 text-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] border-black hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
+                          : "bg-white text-gray-700 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-gray-50 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0"
                       }`}
                     >
-                      <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${
-                        isActive(item.path) ? "bg-white/10" : "bg-gray-100 group-hover:bg-gray-200"
-                      } transition-colors`}>
-                        <Icon className={`h-4 w-4 ${isActive(item.path) ? "text-white" : "text-gray-600"}`} strokeWidth={2.5} />
+                      <div className="flex items-center flex-1 min-w-0">
+                        <div className={`flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg flex-shrink-0 mr-4 transition-all duration-300 ${
+                          isActive(item.path) 
+                            ? "bg-white/20 shadow-inner" 
+                            : "bg-white shadow-sm border border-gray-200 group-hover:shadow-md group-hover:border-gray-300"
+                        }`}>
+                          <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 transition-colors duration-300 ${isActive(item.path) ? "text-white" : "text-gray-700"}`} strokeWidth={2.5} />
+                        </div>
+                        <span className={`font-semibold text-base sm:text-lg md:text-xl transition-colors duration-300 ${isActive(item.path) ? "text-white" : "text-gray-800"}`}>
+                          {item.label}
+                        </span>
                       </div>
-                      <span className={`font-medium text-sm flex-1 ${isActive(item.path) ? "text-white" : "text-gray-800"}`}>
-                        {item.label}
-                      </span>
                       {isActive(item.path) && (
-                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="w-2.5 h-2.5 bg-white rounded-full flex-shrink-0 shadow-lg animate-pulse"></div>
                       )}
-                  </Link>
+                    </Link>
                   </motion.div>
                 );
               })}
+              
+              {/* Footer Actions - Same Button Size */}
+              {user && (
+                <>
+                  {/* Dark Mode Toggle */}
+                  {mounted && (
+                    <div className="w-full">
+                      <Button
+                        variant="outline"
+                        className="w-full flex items-center justify-start h-14 sm:h-16 md:h-20 rounded-xl border-2 border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-gray-50 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0 font-semibold text-base sm:text-lg md:text-xl text-gray-700 p-0 transition-all duration-300 ease-out"
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                      >
+                        <div className="flex items-center flex-1 min-w-0 p-4 sm:p-5">
+                          <div className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-white shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 flex-shrink-0 mr-4 transition-all duration-300">
+                            {theme === "dark" ? (
+                              <Sun className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-gray-700 transition-colors duration-300" />
+                            ) : (
+                              <Moon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-gray-700 transition-colors duration-300" />
+                            )}
+                          </div>
+                          <span className="transition-colors duration-300">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                        </div>
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Settings */}
+                  <div className="w-full">
+                    <Link to="/settings" onClick={() => handleMenuOpenChange(false)}>
+                      <Button variant="outline" className="w-full flex items-center justify-start h-14 sm:h-16 md:h-20 rounded-xl border-2 border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-gray-50 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0 font-semibold text-base sm:text-lg md:text-xl text-gray-700 p-0 transition-all duration-300 ease-out">
+                        <div className="flex items-center flex-1 min-w-0 p-4 sm:p-5">
+                          <div className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-white shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 flex-shrink-0 mr-4 transition-all duration-300">
+                            <Settings className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-gray-700 transition-colors duration-300" />
+                          </div>
+                          <span className="transition-colors duration-300">Settings</span>
+                        </div>
+                      </Button>
+                    </Link>
+                  </div>
+                  
+                  {/* Log Out */}
+                  <div className="w-full">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleSignOutClick} 
+                      className="w-full flex items-center justify-start h-14 sm:h-16 md:h-20 rounded-xl border-2 border-red-600 bg-white shadow-[0_4px_0_0_rgba(220,38,38,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:bg-red-50 hover:shadow-[0_6px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:shadow-[0_2px_0_0_rgba(220,38,38,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-0 text-red-600 hover:text-red-700 font-semibold text-base sm:text-lg md:text-xl p-0 transition-all duration-300 ease-out"
+                    >
+                      <div className="flex items-center flex-1 min-w-0 p-4 sm:p-5">
+                        <div className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg bg-white shadow-sm border border-red-200 hover:shadow-md hover:border-red-300 flex-shrink-0 mr-4 transition-all duration-300">
+                          <LogOut className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-red-600 transition-colors duration-300" />
+                        </div>
+                        <span className="transition-colors duration-300">Log Out</span>
+                      </div>
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </nav>
-
-          {/* Footer Actions */}
-          {user && (
-            <div className="p-4 sm:p-5 border-t-4 border-black bg-white space-y-2">
-              {/* Mobile Notifications */}
-              <div className="flex items-center justify-center pb-1 border-2 border-black rounded-lg p-2">
-                <SmartNotifications />
-              </div>
-              
-              {/* Dark Mode Toggle for Mobile */}
-              {mounted && (
-                <Button
-                  variant="outline"
-                  className="w-full justify-start h-10 rounded-lg border-2 border-black hover:bg-gray-50 font-medium text-sm text-gray-700"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                >
-                  {theme === "dark" ? (
-                    <>
-                      <Sun className="h-4 w-4 mr-2.5 text-gray-600" />
-                      Light Mode
-                    </>
-                  ) : (
-                    <>
-                      <Moon className="h-4 w-4 mr-2.5 text-gray-600" />
-                      Dark Mode
-                    </>
-                  )}
-                </Button>
-              )}
-              
-              <Link to="/settings" onClick={() => handleMenuOpenChange(false)}>
-                <Button variant="outline" className="w-full justify-start h-10 rounded-lg border-2 border-black hover:bg-gray-50 font-medium text-sm text-gray-700">
-                  <Settings className="h-4 w-4 mr-2.5 text-gray-600" />
-                  Settings
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                onClick={handleSignOutClick} 
-                className="w-full justify-start h-10 rounded-lg border-2 border-red-600 hover:bg-red-50 text-red-600 hover:text-red-700 font-medium text-sm"
-              >
-                <LogOut className="h-4 w-4 mr-2.5" />
-                Log Out
-              </Button>
-            </div>
-          )}
         </div>
       </SheetContent>
   );
@@ -664,12 +678,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
         <div className="max-w-4xl mx-auto pl-3 pr-3 sm:px-6 lg:px-8 safe-area-left safe-area-right">
-          <div className="relative flex h-14 sm:h-20 items-center justify-between gap-4 min-w-0">
+          <div className="relative flex h-14 sm:h-20 items-center justify-between gap-2 sm:gap-3 md:gap-4 min-w-0 overflow-hidden">
             {/* Desktop Navigation */}
             {showNavigation && !isMobile && (
-              <nav className="hidden md:flex items-center gap-2 md:gap-3">
+              <nav className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
                 {navigationItems.filter(item => 
-                  item.path !== "/" && item.path !== "/dashboard" && item.path !== "/profile"
+                  item.path !== "/dashboard" && item.path !== "/profile"
                 ).map((item) => {
                   const Icon = item.icon;
                   return (
@@ -677,17 +691,18 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       key={item.path}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      className="flex-shrink-0"
                     >
                       <Link
                         to={item.path}
-                        className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 min-h-[44px] whitespace-nowrap border border-black ${
+                        className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 min-h-[40px] whitespace-nowrap border border-black ${
                           isActive(item.path)
                             ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md border-black"
                             : "text-black hover:text-black hover:bg-gray-100 hover:shadow-sm"
                         }`}
                       >
-                        <Icon className="h-4 w-4" />
-                        <span>{item.label}</span>
+                        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
                       </Link>
                     </motion.div>
                   );
@@ -700,39 +715,29 @@ export default function Layout({ children, showNavigation = true }: { children: 
               {user ? (
                 <>
                   {/* Desktop-only buttons */}
-                  <div className="hidden md:flex items-center gap-2 md:gap-3">
-                  {/* Home Icon - Only show when not on home page */}
-                  {location.pathname !== "/" && (
-                    <Link to="/">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 md:border md:border-black">
-                        <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
-                      </Button>
-                    </Link>
-                  )}
-                  
+                  <div className="hidden md:flex items-center gap-1.5 md:gap-2 flex-shrink-0 overflow-hidden">
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Dashboard</span>
                     </Button>
                   </Link>
                   <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Profile</span>
                     </Button>
                   </Link>
                     {/* Settings button - hidden on mobile, visible on sm+ */}
                     <Link to="/settings" className="hidden sm:inline-flex">
-                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                        <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>
+                      <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                        <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                        <span className="hidden lg:inline text-xs sm:text-sm truncate">Settings</span>
                       </Button>
                     </Link>
-                    <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-7 sm:h-9 px-3 sm:px-4 text-black hover:text-black md:border md:border-black">
-                      <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Log Out</span>
+                    <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Log Out</span>
                     </Button>
                   </div>
 
@@ -790,17 +795,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </div>
                 </>
               ) : (
-                <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
-                  {/* Home Icon - Only show when not on home page */}
-                  {location.pathname !== "/" && (
-                    <Link to="/">
-                      <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
-                        <Home className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                        <span className="hidden sm:inline text-xs sm:text-sm">Home</span>
-                      </Button>
-                    </Link>
-                  )}
-                  
+                <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
                   <Link to="/signin">
                     <Button variant="outline" size="sm" className="hidden sm:flex">
                       Sign In
@@ -837,7 +832,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
       {isMobile && showNavigation && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom">
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
-            {navigationItems.slice(0, 4).map((item) => {
+            {navigationItems.filter(item => item.path !== "/").map((item) => {
               const Icon = item.icon;
               return (
                 <Link

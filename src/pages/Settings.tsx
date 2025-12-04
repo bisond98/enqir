@@ -6,15 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { 
   Shield, 
-  Eye, 
-  Download,
   Trash2,
   Bell,
   BellOff,
-  Key
+  Key,
+  ArrowLeft
 } from "lucide-react";
 import Layout from "@/components/Layout";
-import { Breadcrumb } from "@/components/Breadcrumb";
 import { useUsage } from "@/contexts/UsageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
@@ -86,19 +84,47 @@ const Settings = () => {
   
   return (
     <Layout>
-      <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Breadcrumb />
-          
-          <div className="mb-6 sm:mb-8">
-            <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">Settings</h1>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Profile Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground text-center">
-              Manage your account preferences and platform settings
-            </p>
+            
+            {/* Settings Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                Settings
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    Manage your account preferences and platform settings
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          
+        </div>
+
+        {/* Content - Inside Container */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           {/* Privacy Settings */}
           <div className="space-y-4 sm:space-y-6">
             <Card className="p-4 sm:p-6 border-4 border-black">
@@ -118,7 +144,6 @@ const Settings = () => {
                     <SelectContent>
                       <SelectItem value="public">Public - Anyone can see</SelectItem>
                       <SelectItem value="verified">Verified Users Only</SelectItem>
-                      <SelectItem value="private">Private - Hidden</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -230,19 +255,11 @@ const Settings = () => {
                 <Separator />
                 
                 <div className="space-y-4">
-                  <h3 className="text-sm sm:text-base font-medium text-black">Data Management</h3>
+                  <h3 className="text-sm sm:text-base font-medium text-black">Account Management</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    <Button variant="outline" className="flex items-center justify-center sm:justify-start w-full border-2 border-black">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View My Data
-                    </Button>
-                    <Button variant="outline" className="flex items-center justify-center sm:justify-start w-full border-2 border-black">
-                      <Download className="h-4 w-4 mr-2" />
-                      Export Data
-                    </Button>
                     <Button 
                       variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full text-destructive hover:text-destructive sm:col-span-2 md:col-span-1 border-2 border-black"
+                      className="flex items-center justify-center sm:justify-start w-full text-destructive hover:text-destructive border-2 border-black"
                       onClick={() => setShowDeleteDialog(true)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />

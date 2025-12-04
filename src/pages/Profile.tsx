@@ -929,16 +929,25 @@ const Profile = () => {
                   ></div>
                 </div>
                 
-                {/* Countdown Text - Fixed Position */}
-                <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg">
-                    <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
-                    <span className="text-sm sm:text-base font-bold tabular-nums">
-                      {verificationCountdown}s
-                    </span>
+                {/* Countdown - Large Transparent Overlapping */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div 
+                    className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-white/20 tabular-nums animate-pulse select-none"
+                    style={{
+                      WebkitTextStroke: '1px #000000'
+                    } as React.CSSProperties}
+                  >
+                    {verificationCountdown}
                   </div>
-                  <p className="mt-3 text-xs sm:text-sm text-gray-600 font-medium">
+                </div>
+                
+                {/* Verifying Text - Bottom */}
+                <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+                  <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                     Verifying your ID...
+                  </p>
+                  <p className="text-[8px] sm:text-[10px] text-gray-600 font-medium whitespace-nowrap">
+                    Your ID remains securely encrypted and will be verified within a few minutes.
                   </p>
                 </div>
               </div>
