@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
@@ -73,6 +73,11 @@ export default function EnquiryWall() {
   const [isAISearching, setIsAISearching] = useState(false);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Scroll indicator state
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const categoryBoxRef = useRef<HTMLDivElement>(null);
 
   // Real-time expiry check - update every second to automatically disable expired cards
   useEffect(() => {
@@ -96,6 +101,58 @@ export default function EnquiryWall() {
       setSearchTerm(search);
     }
   }, [searchParams]);
+
+  // Show scroll indicator after page loads and category box is rendered
+  useEffect(() => {
+    if (loading) return;
+
+    // Show indicator after category box is rendered (check multiple times to ensure it's visible)
+    const checkAndShow = () => {
+      if (categoryBoxRef.current && !hasScrolled) {
+        const rect = categoryBoxRef.current.getBoundingClientRect();
+        // Check if category box is visible in viewport
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          setShowScrollIndicator(true);
+        }
+      }
+    };
+
+    // Check immediately and after delays
+    checkAndShow();
+    const timer1 = setTimeout(checkAndShow, 500);
+    const timer2 = setTimeout(checkAndShow, 1000);
+    const timer3 = setTimeout(checkAndShow, 1500);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, [loading, hasScrolled]);
+
+  // Hide scroll indicator when user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollIndicator(false);
+        setHasScrolled(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Auto-hide after 5 seconds if user hasn't scrolled
+    const timer = setTimeout(() => {
+      if (!hasScrolled) {
+        setShowScrollIndicator(false);
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
+    };
+  }, [hasScrolled]);
 
   // Lock viewport when suggestions are shown to prevent zoom
   useEffect(() => {
@@ -1018,7 +1075,7 @@ export default function EnquiryWall() {
 
             <div className="space-y-3 sm:space-y-4">
               {/* Categories Box - Scrollable */}
-              <div className="w-full">
+              <div className="w-full" ref={categoryBoxRef}>
                 <div className="bg-white border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <h3 className="text-xs sm:text-sm md:text-base font-black text-black">Categories</h3>
@@ -1147,6 +1204,41 @@ export default function EnquiryWall() {
               </div>
             </div>
           </div>
+
+          {/* Scroll Indicator - Mobile Only - Between Categories and Cards */}
+          {showScrollIndicator && (
+            <div className="flex justify-center items-center py-4 sm:hidden">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center"
+              >
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
+                </motion.div>
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="text-[10px] text-gray-600 font-medium mt-1"
+                >
+                  Scroll down
+                </motion.div>
+              </motion.div>
+            </div>
+          )}
 
           {/* View Toggle */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
