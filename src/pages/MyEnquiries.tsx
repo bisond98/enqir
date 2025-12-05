@@ -552,7 +552,7 @@ const MyEnquiries = () => {
             {/* My Enquiries Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
-                My Enquiries
+                My Enquiries.
               </h1>
                   </div>
             
@@ -561,7 +561,7 @@ const MyEnquiries = () => {
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    Track & Manage Your Enquiries
+                    Track & Manage Your Enquiries.
                   </p>
                 </div>
               </div>

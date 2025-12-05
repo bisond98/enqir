@@ -425,7 +425,7 @@ const EnquiryResponsesPage = () => {
             {/* Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
-                Responses to "{enquiry.title}"
+                Responses to "{enquiry.title}".
               </h1>
             </div>
             
@@ -433,7 +433,7 @@ const EnquiryResponsesPage = () => {
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                  View and manage responses from sellers for this enquiry
+                  View and manage responses from sellers for this enquiry.
                 </p>
               </div>
             </div>

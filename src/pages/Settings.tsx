@@ -108,7 +108,7 @@ const Settings = () => {
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                 <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                Settings
+                Settings.
               </h1>
             </div>
             
@@ -117,8 +117,8 @@ const Settings = () => {
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-              Manage your account preferences and platform settings
-            </p>
+              Manage your account preferences and platform settings.
+              </p>
                 </div>
               </div>
             </div>

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera } from "lucide-react";
+import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -1101,7 +1101,7 @@ const SellerResponse = () => {
               <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 text-center">
                 {/* Success Icon */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 lg:mb-8 xl:mb-10">
-                  <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 xl:h-14 xl:w-14 text-green-600" />
+                  <Rocket className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 xl:h-14 xl:w-14 text-green-600" />
                 </div>
                 
                 {/* Main Content */}
@@ -1115,8 +1115,8 @@ const SellerResponse = () => {
                 
                 {/* Status Badge */}
                 {isUserVerified && (
-                  <div className="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 xl:px-5 xl:py-2.5 bg-green-50 text-green-700 rounded-full text-xs sm:text-sm lg:text-base xl:text-lg font-medium mb-6 lg:mb-8 xl:mb-10 border-2 border-green-200">
-                    <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4 xl:h-5 xl:w-5 mr-1.5" />
+                  <div className="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 xl:px-5 xl:py-2.5 bg-blue-50 text-blue-700 rounded-full text-xs sm:text-sm lg:text-base xl:text-lg font-medium mb-6 lg:mb-8 xl:mb-10 border-2 border-blue-200">
+                    <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4 xl:h-5 xl:w-5 mr-1.5 text-blue-500" />
                     Verified User
                   </div>
                 )}
@@ -1179,13 +1179,13 @@ const SellerResponse = () => {
             {/* Sell Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
-                Sell
+                Sell.
               </h1>
             </div>
             
             <div className="text-center mb-3 sm:mb-4 lg:mb-6">
               <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white/90 max-w-2xl mx-auto px-2">
-                Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
+                Share your offer for: <span className="font-semibold">"{enquiry?.title}".</span>
               </p>
             </div>
           </div>
@@ -1216,7 +1216,7 @@ const SellerResponse = () => {
                 <div className="text-center">
                   {/* Icon */}
                   <div className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-amber-600" />
+                    <AlertTriangle className="h-6 w-6 sm:h-7 sm:w-7 text-amber-600" />
                   </div>
                   
                   {/* Title */}
@@ -1706,7 +1706,7 @@ const SellerResponse = () => {
                   {!authLoading && isUserVerified ? (
                     <div className="p-3 sm:p-4 border border-black rounded-lg text-center" style={{ backgroundColor: '#004d00', borderColor: '#003300' }}>
                       <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white flex-shrink-0" />
+                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                         <Badge variant="secondary" className="bg-transparent text-white border-transparent text-[10px] sm:text-xs px-2 py-0.5">
                           <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
                           You Already Have a Trust Badge

@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -1587,7 +1587,7 @@ export default function PostEnquiry() {
               <div className="bg-black rounded-lg p-4 sm:p-6">
                 <div className="text-center">
                   <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
-                    <CheckCircle className="h-8 w-8 sm:h-12 sm:w-12 text-green-400" />
+                    <Rocket className="h-8 w-8 sm:h-12 sm:w-12 text-green-400" />
                   </div>
                   <h2 className="text-lg sm:text-2xl font-bold text-white mb-2">
                     Enquiry Sent for Verification
@@ -1745,7 +1745,7 @@ export default function PostEnquiry() {
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      Post Your Enquiry
+                      Post Your Enquiry.
               </h1>
                   </div>
             
@@ -1768,7 +1768,7 @@ export default function PostEnquiry() {
             <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
               <CardContent className="p-6 sm:p-8 text-center">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg">
-                  <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                  <Rocket className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-green-800 mb-2 sm:mb-3">
                   Enquiry Posted Successfully! 🎉
@@ -2521,7 +2521,7 @@ export default function PostEnquiry() {
                         )}
                         {idVerificationResult && !verifyingId && (
                           <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                            idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                            idVerificationResult.matches ? 'text-blue-600' : 'text-red-600'
                           }`}>
                             {idVerificationResult.matches ? (
                               <>
@@ -2604,7 +2604,7 @@ export default function PostEnquiry() {
                             <div className="w-full border-2 rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black" style={{ borderColor: '#000000' }}>
                               <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0">
                                 {/* Success Icon with Animation */}
-                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-green-500 flex items-center justify-center shadow-md">
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
                                   <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
                               </div>
                                 
@@ -2766,18 +2766,18 @@ export default function PostEnquiry() {
 
                   {/* Trust Badge Status - Enhanced for Verified Users */}
                   {!authLoading && isUserVerified && (
-                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-green-50 to-green-100/30 border-2 border-green-200 rounded-xl">
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/30 border-2 border-blue-200 rounded-xl">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-700" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
                         </div>
-                        <Label className="text-sm sm:text-base font-semibold text-green-800">
+                        <Label className="text-sm sm:text-base font-semibold text-blue-800">
                           Trust Badge Verified
                         </Label>
                       </div>
-                      <div className="p-3 sm:p-4 bg-white border-2 border-green-200 rounded-lg">
-                        <p className="text-xs sm:text-sm text-green-700 font-medium flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                      <div className="p-3 sm:p-4 bg-white border-2 border-blue-200 rounded-lg">
+                        <p className="text-xs sm:text-sm text-blue-700 font-medium flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                           <span>Trust badge verified - no ID upload needed</span>
                         </p>
                       </div>
@@ -2889,7 +2889,7 @@ export default function PostEnquiry() {
                         : 'bg-gradient-to-br from-yellow-500 to-yellow-600'
                     }`}>
                       {enquiryStatus === 'live' || enquiryStatus === 'approved' ? (
-                        <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                        <Rocket className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       ) : enquiryStatus === 'rejected' ? (
                         <X className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       ) : (

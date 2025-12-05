@@ -712,7 +712,7 @@ const Profile = () => {
             {/* Profile Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
-                    Profile
+                    Profile.
               </h1>
             </div>
             

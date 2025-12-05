@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -1316,7 +1316,7 @@ const Dashboard = () => {
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      Dashboard
+                      Dashboard.
               </h1>
             </div>
             
@@ -1558,7 +1558,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{allEnquiriesForStats.length || enquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Total</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total</p>
                     </div>
                   </div>
                   
@@ -1580,7 +1580,7 @@ const Dashboard = () => {
                           return true;
                         }).length;
                       })()}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Active</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
                     </div>
                   </div>
                   
@@ -1589,7 +1589,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{savedEnquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-black uppercase">Saved</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Saved</p>
                     </div>
                   </div>
                 </div>
@@ -1666,8 +1666,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
-                                : 'bg-white border-2 border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
+                                : 'bg-white border border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1742,8 +1742,8 @@ const Dashboard = () => {
                               
                               {/* Enquiry Title - Moved from header to top left of card */}
                               <div className="relative z-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5">
-                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-semibold leading-snug tracking-tight border-2 inline-block px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-1 lg:py-0.5 xl:py-1 rounded-md backdrop-blur-sm shadow-sm ${
-                                  expiredFlag ? 'bg-transparent text-gray-500 border-gray-400' : 'bg-transparent text-gray-900 border-black'
+                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-black leading-snug tracking-tight ${
+                                  expiredFlag ? 'text-gray-500' : 'text-gray-900'
                                 }`}>
                                   {enquiry.title}
                                 </h5>
@@ -1907,7 +1907,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale hover:bg-gray-50"
+                                  className="w-full sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-white to-gray-50 text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale hover:bg-gray-50"
                               >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -1947,7 +1947,7 @@ const Dashboard = () => {
                                               }
                                             }}
                                             disabled={expiredFlag}
-                                            className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade flex items-center justify-center sm:min-w-[110px] relative overflow-hidden disabled:grayscale"
+                                            className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade flex items-center justify-center sm:min-w-[110px] relative overflow-hidden disabled:grayscale"
                                           >
                                             {/* Physical button depth effect */}
                                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -1971,7 +1971,7 @@ const Dashboard = () => {
                                       }
                                     }}
                                     disabled={expiredFlag}
-                                    className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                    className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
                                   >
                                     {/* Physical button depth effect */}
                                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2054,7 +2054,7 @@ const Dashboard = () => {
                       <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Responses</p>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Responses</p>
                     </div>
                   </div>
                   
@@ -2065,7 +2065,7 @@ const Dashboard = () => {
                       <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Approved</p>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Approved</p>
                     </div>
                   </div>
                   
@@ -2076,7 +2076,7 @@ const Dashboard = () => {
                       <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Pending</p>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
                     </div>
                   </div>
                   
@@ -2087,7 +2087,7 @@ const Dashboard = () => {
                       <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                         {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Rejected</p>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Rejected</p>
                     </div>
                   </div>
                 </div>
@@ -2152,8 +2152,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
-                              : 'bg-white border-2 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
+                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2175,15 +2175,16 @@ const Dashboard = () => {
                             {/* Shine effect on hover */}
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             
-                            <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
-                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
-                                {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                                  <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
-                                    <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
+                            <div className="relative flex flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                              <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                                <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
+                                  {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                                    <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
+                                      <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                 {/* Enquiry Deleted Badge */}
                                 {isEnquiryDeleted && (
                                   <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
@@ -2213,6 +2214,14 @@ const Dashboard = () => {
                                 {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
                               </Badge>
                               </div>
+                              </div>
+                              {/* Submitted Date in Header */}
+                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                                <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 lg:h-2 lg:w-2 xl:h-2.5 xl:w-2.5 text-gray-300 flex-shrink-0" />
+                                <span className="text-[7px] sm:text-[8px] lg:text-[7px] xl:text-[8px] text-gray-300 font-medium">
+                                  Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                           
@@ -2239,30 +2248,20 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 rounded-lg lg:rounded-md xl:rounded-lg border-2 font-semibold backdrop-blur-sm shadow-sm ${
-                                    submission.status === 'approved'
-                                      ? 'bg-transparent text-black border-black'
-                                      : 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-300/60'
-                                  }`}>
-                                    <div className={`flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 rounded-full flex-shrink-0 ${
-                                      submission.status === 'approved' ? 'bg-transparent' : 'bg-amber-500/20'
-                                    }`}>
-                                      {submission.status === 'approved' ? (
-                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-black" />
-                                      ) : (
-                                        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-amber-600" />
-                                      )}
-                                    </div>
+                                  <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
                                     <span className={`text-sm sm:text-base lg:text-sm xl:text-base font-black ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
                               </span>
+                                    {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                                      <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-blue-500 flex-shrink-0" />
+                                    )}
                                   </div>
                               )}
                             </div>
 
-                            {/* Details */}
+                            {/* Details - Moved from where Submission Time was */}
                               <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
@@ -2272,14 +2271,6 @@ const Dashboard = () => {
                               </div>
                             </div>
 
-                            {/* Submission Time */}
-                              <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
-                                <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 lg:h-2 lg:w-2 xl:h-2.5 xl:w-2.5 text-gray-600 flex-shrink-0" />
-                                <span className="text-[7px] sm:text-[8px] lg:text-[7px] xl:text-[8px] text-gray-700 font-medium">
-                                Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
-                                </span>
-                            </div>
-
                             {/* Action Buttons */}
                               <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (
@@ -2287,7 +2278,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden"
+                                    className="w-full sm:flex-none flex-shrink-0 border border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden"
                                 >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2309,7 +2300,7 @@ const Dashboard = () => {
                                     state: { highlightSubmissionId: submission.id }
                                   });
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black hover:bg-gray-50 text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-white to-gray-50 text-black hover:bg-gray-50 text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   {/* Physical button depth effect */}
@@ -2329,7 +2320,7 @@ const Dashboard = () => {
                                     deleteResponse(submission.id);
                                   }
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   {/* Physical button depth effect */}

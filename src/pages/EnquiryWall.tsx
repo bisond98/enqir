@@ -948,7 +948,7 @@ export default function EnquiryWall() {
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 rounded-full bg-green-500 flex-shrink-0"></span>
-                      Live Enquiries
+                      Live Enquiries.
               </h1>
                   </div>
             
@@ -957,7 +957,7 @@ export default function EnquiryWall() {
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    respect the tastebuds
+                    respect the tastebuds.
                   </p>
                 </div>
                 </div>
