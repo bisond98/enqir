@@ -598,12 +598,12 @@ const MyEnquiries = () => {
                     transition={{ duration: 0.3, delay: 0.1 }}
                     className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                   >
-                    {/* Physical button depth effect */}
+                      {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{totalCount}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total Enquiries</p>
-                    </div>
+                          </div>
                   </motion.div>
                   
                   <motion.div
@@ -612,12 +612,12 @@ const MyEnquiries = () => {
                     transition={{ duration: 0.3, delay: 0.2 }}
                     className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                   >
-                    {/* Physical button depth effect */}
+                      {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{liveCount}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Live</p>
-                    </div>
+                          </div>
                   </motion.div>
                   
                   <motion.div
@@ -626,12 +626,12 @@ const MyEnquiries = () => {
                     transition={{ duration: 0.3, delay: 0.3 }}
                     className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                   >
-                    {/* Physical button depth effect */}
+                      {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{pendingCount}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
-                    </div>
+                          </div>
                   </motion.div>
                   
                   <motion.div
@@ -640,12 +640,12 @@ const MyEnquiries = () => {
                     transition={{ duration: 0.3, delay: 0.4 }}
                     className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
                   >
-                    {/* Physical button depth effect */}
+                      {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{completedCount}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Completed</p>
-                    </div>
+                          </div>
                   </motion.div>
                 </>
               );

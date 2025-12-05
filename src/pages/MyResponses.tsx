@@ -488,22 +488,25 @@ const MyResponses = () => {
                 const isHighlighted = highlightSubmissionId === submission.id;
                 return (
                   <div key={submission.id} ref={isHighlighted ? highlightedSubmissionRef : undefined}>
-                  <Card className={`border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
+                  <Card className={`border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden min-h-[400px] sm:min-h-0 flex flex-col ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
                     {/* Card Header - Solid black background */}
-                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
+                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 flex-shrink-0 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
-                          {isExpired || isEnquiryDeleted ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" /> : <div className="flex-shrink-0">{getStatusIcon(submission.status)}</div>}
-                          <h3 className={`text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
+                          {isExpired || isEnquiryDeleted ? (
+                            <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" />
+                          ) : (
+                            ((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                              <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
+                                isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
+                              }`}>
+                                <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                              </div>
+                            )
+                          )}
+                          <h3 className={`hidden sm:block text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
                             Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
                           </h3>
-                          {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                            <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
-                              isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
-                            }`}>
-                              <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
-                            </div>
-                          )}
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                           {isEnquiryDeleted && (
@@ -519,7 +522,7 @@ const MyResponses = () => {
                           )}
                         </div>
                       </div>
-                      <div className="mt-1 sm:mt-2">
+                      <div className="mt-1 sm:mt-2 hidden sm:block">
                         <span className={`text-[8px] sm:text-[9px] font-medium opacity-70 ${isExpired || isEnquiryDeleted ? 'text-red-200' : 'text-white'}`}>
                           {isEnquiryDeleted ? 'Enquiry has been deleted' : getStatusMessage(submission)}
                         </span>
@@ -527,10 +530,10 @@ const MyResponses = () => {
                     </div>
                     
                     {/* Card Content - Rest with white background */}
-                    <CardContent className="p-2 sm:p-4 space-y-2 sm:space-y-3">
+                    <CardContent className="px-3 pt-3 !pb-0 sm:p-5 lg:p-6 sm:!pb-5 flex flex-col flex-1 sm:flex-none space-y-3 sm:space-y-4">
 
                       {/* Response Information Group */}
-                      <div className="space-y-1.5 sm:space-y-2 pb-2">
+                      <div className="space-y-1.5 sm:space-y-2 pb-2 pt-3 sm:pt-0">
                         {/* Response Title */}
                         <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-900 leading-snug line-clamp-2 font-bold text-center">{submission.title}</p>
                         
@@ -556,34 +559,8 @@ const MyResponses = () => {
                         </div>
                       )}
 
-                      {/* Enquiry Context - Budget & Seller Amount Group */}
-                      {enquiry && (
-                        <div className="flex items-center justify-between gap-2 p-2 bg-white rounded shadow-sm mt-8 sm:mt-52 lg:mt-56">
-                          <div className="flex items-center space-x-1.5">
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                              <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
-                            </div>
-                            <div>
-                              <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Enquiry Budget</div>
-                              <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
-                            </div>
-                          </div>
-                          {submission.price && (
-                            <div className="flex items-center space-x-1.5">
-                              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
-                              </div>
-                              <div>
-                                <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Your Amount</div>
-                                <div className="text-xs sm:text-base font-black text-gray-900">{submission.price}</div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Timestamps */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[8px] sm:text-[9px] md:text-[10px] text-slate-500 pt-2">
+                      {/* Timestamps - Desktop Only */}
+                      <div className="hidden sm:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-4 text-[8px] sm:text-[9px] md:text-[10px] text-slate-500 pt-8 sm:pt-3">
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
                           <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
@@ -591,9 +568,9 @@ const MyResponses = () => {
                         {/* Updated timestamp intentionally hidden as requested */}
                       </div>
 
-                      {/* View Enquiry Button */}
+                      {/* View Enquiry Button - Desktop Only */}
                       {enquiry && !isExpired && !isEnquiryDeleted && (
-                        <div className="pt-2">
+                        <div className="pt-3 sm:pt-4 lg:pt-5 hidden sm:block">
                           <Link 
                             to={`/enquiry/${enquiry.id}`}
                             onClick={(e) => {
@@ -627,10 +604,126 @@ const MyResponses = () => {
                         </div>
                       )}
 
-                      {/* Status-specific Actions */}
-                      {!isExpired && !isEnquiryDeleted && (
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2">
-                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
+                      {/* Bottom Section - Budget Tile & Buttons (Mobile: pushed to bottom) */}
+                      <div className="mt-auto sm:mt-6 lg:mt-8 space-y-1 sm:space-y-3">
+                        {/* Enquiry Context - Budget & Seller Amount Group - Desktop */}
+                        {enquiry && (
+                          <div className="hidden sm:flex items-center justify-between gap-2 p-2 sm:p-3 bg-white rounded shadow-sm">
+                            <div className="flex items-center space-x-1.5">
+                              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
+                              </div>
+                              <div>
+                                <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Enquiry Budget</div>
+                                <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
+                              </div>
+                            </div>
+                            {submission.price && (
+                              <div className="flex items-center space-x-1.5">
+                                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
+                                </div>
+                                <div>
+                                  <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Your Amount</div>
+                                  <div className="text-xs sm:text-base font-black text-gray-900">{submission.price}</div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Timestamps - Mobile Only (Above invisible spacer) */}
+                        <div className="block sm:hidden flex justify-center text-[8px] text-slate-500 mb-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-1 h-1 bg-blue-500 rounded-full flex-shrink-0"></span>
+                            <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
+                          </div>
+                        </div>
+
+                        {/* Status-specific Actions */}
+                        {!isExpired && !isEnquiryDeleted && (
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-0 sm:gap-4 pt-0 sm:pt-3 lg:pt-4">
+                          <div className="flex flex-col sm:flex-row gap-0 sm:gap-3 flex-1">
+                            {/* Invisible spacer with Your Response #X inside - Mobile Only */}
+                            {!isExpired && !isEnquiryDeleted && (
+                              <div className="block sm:hidden h-20 w-full flex flex-col justify-end pb-6">
+                                <div className="w-full text-center">
+                                  <h3 className={`text-base font-black ${isExpired || isEnquiryDeleted ? 'text-gray-400' : 'text-gray-900'}`}>
+                                    Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
+                                  </h3>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Enquiry Context - Budget & Seller Amount Group - Mobile (Above View Enquiry button) */}
+                            {enquiry && (
+                              <div className="block sm:hidden flex flex-col gap-1.5 p-2 bg-white rounded shadow-sm mb-1">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center space-x-1.5">
+                                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                      <span className="text-white font-black text-[9px]">₹</span>
+                                    </div>
+                                    <div>
+                                      <div className="text-[8px] text-gray-600 font-bold">Enquiry Budget</div>
+                                      <div className="text-xs font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
+                                    </div>
+                                  </div>
+                                  {submission.price && (
+                                    <div className="flex items-center space-x-1.5">
+                                      <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span className="text-white font-black text-[9px]">₹</span>
+                                      </div>
+                                      <div>
+                                        <div className="text-[8px] text-gray-600 font-bold">Your Amount</div>
+                                        <div className="text-xs font-black text-gray-900">{submission.price}</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="w-full text-center">
+                                  <span className={`text-[7px] font-medium opacity-70 ${isExpired || isEnquiryDeleted ? 'text-red-400' : 'text-gray-600'}`}>
+                                    {isEnquiryDeleted ? 'Enquiry has been deleted' : getStatusMessage(submission)}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* View Enquiry Button - Mobile Only */}
+                            {enquiry && (
+                              <div className="block sm:hidden flex-1">
+                                <Link 
+                                  to={`/enquiry/${enquiry.id}`}
+                                  onClick={(e) => {
+                                    if (isExpired || isEnquiryDeleted) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                  className="block"
+                                >
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    disabled={isExpired || isEnquiryDeleted}
+                                    className="w-full border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black text-[9px] font-black h-9 rounded-lg shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/viewenquirymobile"
+                                    onClick={(e) => {
+                                      if (isExpired || isEnquiryDeleted) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                      }
+                                    }}
+                                  >
+                                    {/* Physical button depth effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                    {/* Shimmer effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewenquirymobile:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
+                                    <Eye className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 group-hover/viewenquirymobile:scale-110 transition-transform duration-200 relative z-10" />
+                                    <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
+                                  </Button>
+                                </Link>
+                              </div>
+                            )}
+                            
                             {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
                                 to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}
@@ -663,6 +756,7 @@ const MyResponses = () => {
                               </Button>
                             </Link>
                           )}
+                          
                           {submission.status === 'rejected' && (
                               <Link 
                                 to="/enquiries"
@@ -701,6 +795,7 @@ const MyResponses = () => {
                           )}
                         </div>
                       )}
+                      </div>
                     </CardContent>
                   </Card>
                   </div>

@@ -2605,7 +2605,7 @@ export default function PostEnquiry() {
                                 {/* Success Icon with Animation */}
                                 <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-green-500 flex items-center justify-center shadow-md">
                                   <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
-                                </div>
+                              </div>
                                 
                                 {/* Text Content */}
                                 <div className="flex-1 min-w-0">
@@ -2615,21 +2615,21 @@ export default function PostEnquiry() {
                               </div>
                               
                               {/* Remove Button - Sleek Design */}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setIdFrontImage(null);
-                                  setIdFrontUrl("");
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIdFrontImage(null);
+                              setIdFrontUrl("");
                                   if (govIdUrl === idFrontUrl) setGovIdUrl("");
-                                  setIdVerificationResult(null);
-                                }}
+                              setIdVerificationResult(null);
+                            }}
                                 className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
                                 style={{ backgroundColor: '#dc2626' }}
-                                disabled={verifyingId}
-                                aria-label="Remove image"
-                              >
+                            disabled={verifyingId}
+                            aria-label="Remove image"
+                          >
                                 <X className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-                              </button>
+                          </button>
                         </div>
                       )}
                     </div>

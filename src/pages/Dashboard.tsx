@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -112,9 +112,36 @@ const Dashboard = () => {
     return 'buyer';
   });
 
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Hide scroll indicator when user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollIndicator(false);
+        setHasScrolled(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Auto-hide after 5 seconds if user hasn't scrolled
+    const timer = setTimeout(() => {
+      if (!hasScrolled) {
+        setShowScrollIndicator(false);
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
+    };
+  }, [hasScrolled]);
 
   // Sync viewMode with localStorage on mount and when it changes
   useEffect(() => {
@@ -1211,6 +1238,41 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Scroll Indicator - Mobile Only */}
+        {showScrollIndicator && (
+          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 sm:hidden pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center"
+            >
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
+              </motion.div>
+              <motion.div
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="text-[10px] text-gray-600 font-medium mt-1"
+              >
+                Scroll down
+              </motion.div>
+            </motion.div>
+          </div>
+        )}
+
         {/* Header - Matching Profile/Seller Form Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
@@ -1839,7 +1901,7 @@ const Dashboard = () => {
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
                                     {responseCount} {responseCount === 1 ? 'Response' : 'Responses'}
                                   </span>
-                                  {hasUnreadResponses(enquiry.id) && responseCount > 0 && (
+                                  {hasUnreadResponses(enquiry.id) && responseCount > 0 && !expiredFlag && (
                                     <div className="ml-1.5 lg:ml-1 xl:ml-1.5 flex items-center justify-center w-5 h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5 bg-red-500 text-white text-[10px] lg:text-[9px] xl:text-[10px] font-bold rounded-full shadow-md relative z-10">
                                       {responseCount}
                                     </div>

@@ -44,92 +44,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
     preloadedChatsContext = null;
   }
   const isMobile = useIsMobile();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  const ignoreSheetCallbacksRef = useRef(false);
-  
-  // ULTIMATE FIX: Menu state handler - completely prevents loops
-  // Strategy: Multiple layers of protection to prevent any loop scenario
-  const lastMenuChangeRef = useRef<number>(0);
-  const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isTransitioningRef = useRef<boolean>(false);
-  
-  const handleMenuOpenChange = useCallback((open: boolean) => {
-    // LAYER 1: Block if currently transitioning
-    if (isTransitioningRef.current) {
-      console.log('⚠️ Menu: Blocked - transition in progress');
-      return;
-    }
-    
-    // LAYER 2: Prevent rapid state changes within 500ms (increased from 300ms)
-    const now = Date.now();
-    if (now - lastMenuChangeRef.current < 500) {
-      console.log('⚠️ Menu: Blocked - too rapid (within 500ms)');
-      return;
-    }
-    
-    // LAYER 3: If we're ignoring callbacks (manual state change), block completely
-    if (ignoreSheetCallbacksRef.current) {
-      console.log('⚠️ Menu: Blocked - manual state change in progress');
-      return;
-    }
-    
-    // LAYER 4: Only allow Sheet to close, NEVER open (opening only via button)
-    if (open === true) {
-      console.log('⚠️ Menu: Blocked - Sheet cannot open itself');
-      return;
-    }
-    
-    // LAYER 5: Check if already in desired state
-    setMobileMenuOpen((current) => {
-      if (current === open) {
-        console.log('⚠️ Menu: Already in desired state, no change needed');
-        return current;
-      }
-      
-      // Allow Sheet to close
-      console.log('✅ Menu: Closing via Sheet callback');
-      lastMenuChangeRef.current = now;
-      return false;
-    });
-  }, []);
-  
-  const handleMenuButtonClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Prevent multiple rapid clicks
-    if (isTransitioningRef.current) {
-      console.log('⚠️ Menu: Button blocked - transition in progress');
-      return;
-    }
-    
-    // Clear any existing timer
-    if (menuTimerRef.current) {
-      clearTimeout(menuTimerRef.current);
-    }
-    
-    // Mark as transitioning
-    isTransitioningRef.current = true;
-    
-    // Ignore Sheet callbacks for 800ms (increased from 600ms)
-    ignoreSheetCallbacksRef.current = true;
-    
-    // Toggle menu
-    setMobileMenuOpen((current) => {
-      console.log(`✅ Menu: Button toggling from ${current} to ${!current}`);
-      return !current;
-    });
-    
-    lastMenuChangeRef.current = Date.now();
-    
-    // After 800ms, allow Sheet callbacks again and clear transition flag
-    menuTimerRef.current = setTimeout(() => {
-      ignoreSheetCallbacksRef.current = false;
-      isTransitioningRef.current = false;
-      console.log('✅ Menu: Re-enabled - ready for next action');
-    }, 800);
-  }, []);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -380,6 +295,37 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
         // Track enquiries with unread responses (similar to chat system)
         const enquiriesWithUnread = new Set<string>();
+        
+        // Create a map of enquiry data for expiry checking
+        const enquiryMap = new Map<string, any>();
+        enquiriesSnapshot.docs.forEach((doc) => {
+          enquiryMap.set(doc.id, doc.data());
+        });
+
+        // Helper function to check if enquiry is expired
+        const isEnquiryExpired = (enquiryId: string) => {
+          const enquiry = enquiryMap.get(enquiryId);
+          if (!enquiry || !enquiry.deadline) return false;
+          
+          try {
+            const now = new Date();
+            let deadlineDate: Date;
+            if (enquiry.deadline && typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+              deadlineDate = enquiry.deadline.toDate();
+            } else if (typeof enquiry.deadline === 'string' || typeof enquiry.deadline === 'number') {
+              deadlineDate = new Date(enquiry.deadline);
+            } else if (enquiry.deadline instanceof Date) {
+              deadlineDate = enquiry.deadline;
+            } else {
+              return false;
+            }
+            if (!deadlineDate || isNaN(deadlineDate.getTime())) return false;
+            return deadlineDate.getTime() < now.getTime();
+          } catch (error) {
+            console.error('Error checking expiry for enquiry:', enquiryId, error);
+            return false;
+          }
+        };
 
         // Get all responses for user's enquiries
         const responsesQuery = query(
@@ -395,6 +341,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const enquiryId = responseData.enquiryId;
           
           if (!enquiryId) return;
+          
+          // Skip if enquiry is expired
+          if (isEnquiryExpired(enquiryId)) {
+            console.log(`⏭️ Enquiry ${enquiryId}: Expired, skipping badge count`);
+            return;
+          }
           
           // Skip if already marked as having unread
           if (enquiriesWithUnread.has(enquiryId)) return;
@@ -981,25 +933,27 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     </Button>
                   </Link>
 
-                    {/* Mobile Menu Button */}
+                    {/* Settings and Logout Icons */}
                     {showNavigation && (
-                      <div className="lg:hidden">
+                      <div className="lg:hidden flex items-center gap-2">
+                        <Link to="/settings">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-muted/50"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                        </Link>
                         <Button 
                           variant="ghost" 
                           size="sm" 
                           className="h-8 w-8 p-0 hover:bg-muted/50"
-                          onClick={handleMenuButtonClick}
+                          onClick={() => setShowSignOutDialog(true)}
                         >
-                          <Menu className="h-4 w-4" />
-                    </Button>
-                        <Sheet 
-                          open={mobileMenuOpen} 
-                          onOpenChange={handleMenuOpenChange}
-                          modal={true}
-                        >
-                          <MobileNavigation />
-                        </Sheet>
-                </div>
+                          <LogOut className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </>
