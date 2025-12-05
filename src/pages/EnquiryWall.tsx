@@ -1077,8 +1077,8 @@ export default function EnquiryWall() {
               {/* Categories Box - Scrollable */}
               <div className="w-full" ref={categoryBoxRef}>
                 <div className="bg-white border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 className="text-xs sm:text-sm md:text-base font-black text-black">Categories</h3>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4 bg-black px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl">
+                    <h3 className="text-xs sm:text-sm md:text-base font-black text-white">Categories</h3>
                 </div>
 
                   <div
@@ -1442,16 +1442,16 @@ export default function EnquiryWall() {
                                     <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
                                   )}
                               </div>
-                              
-                              {/* Description - Centered between "before [date]" and budget section */}
-                              {enquiry.description && (
-                                <div className="flex justify-center my-2 sm:my-3">
-                                  <p className="text-[7px] sm:text-[8px] text-gray-600 leading-tight line-clamp-2 text-center max-w-full">
-                                {enquiry.description}
-                              </p>
-                                </div>
-                              )}
                             </div>
+                            
+                            {/* Description - Lower position for mobile list view */}
+                            {enquiry.description && (
+                              <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
+                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-2 text-center max-w-full">
+                                  {enquiry.description}
+                                </p>
+                              </div>
+                            )}
                           </CardHeader>
                         </>
                       ) : (
@@ -1545,10 +1545,11 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
-                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
+                          {/* Desktop Layout */}
+                          <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
@@ -1576,8 +1577,8 @@ export default function EnquiryWall() {
                               </Badge>
                             </div>
                             
-                            {/* Right: Action Button */}
-                            <div className="flex-shrink-0 w-full sm:w-auto mt-1 sm:mt-0">
+                            {/* Right: Action Button - Desktop */}
+                            <div className="flex-shrink-0 w-auto mt-6 lg:mt-8">
                               {isOwnEnquiry(enquiry) ? (
                                 <button 
                                   type="button"
@@ -1620,11 +1621,83 @@ export default function EnquiryWall() {
                               )}
                             </div>
                           </div>
+                          
+                          {/* Mobile Layout - Budget, Location, Category and Button at Bottom */}
+                          <div className="block sm:hidden w-full mt-auto space-y-2 pt-4">
+                            {/* Budget, Location, Category - Mobile Only */}
+                            <div className="flex flex-wrap items-center gap-1.5 justify-start">
+                              {/* Budget */}
+                              {enquiry.budget && (
+                                <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                  <span className="font-black text-black text-sm relative z-10">₹</span>
+                                  <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
+                                </div>
+                              )}
+                              {/* Location */}
+                              {enquiry.location && (
+                                <div className="flex items-center gap-1 text-gray-700 border-2 border-black rounded-lg px-1.5 py-0.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                  <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
+                                    <MapPin className="h-2 w-2 text-gray-600" />
+                                  </div>
+                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
+                                </div>
+                              )}
+                              {/* Category */}
+                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 border-2 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
+                              </Badge>
+                            </div>
+                            
+                            {/* Action Button - Mobile Only - At Bottom */}
+                            <div className="w-full">
+                            {isOwnEnquiry(enquiry) ? (
+                              <button 
+                                type="button"
+                                disabled
+                                className="w-full h-6 text-[8px] font-bold border-2 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
+                                style={{ backgroundColor: '#000000' }}
+                              >
+                                Your Enquiry
+                              </button>
+                            ) : authUser ? (
+                              isDealClosed(enquiry) ? (
+                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  Deal Closed
+                                </Button>
+                              ) : isEnquiryOutdated(enquiry) ? (
+                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  Expired
+                                </Button>
+                              ) : (
+                              <Button 
+                                className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
+                                onClick={() => window.location.href = `/respond/${enquiry.id}`}
+                              >
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md" />
+                                <span className="relative z-10 flex items-center">
+                                  Sell
+                                  <ArrowRight className="h-2 w-2 ml-0.5" />
+                                </span>
+                              </Button>
+                              )
+                            ) : (
+                              <Link to="/signin" className="w-full block">
+                                <Button variant="outline" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md">
+                                  Sign In to Respond
+                                </Button>
+                              </Link>
+                            )}
+                            </div>
+                          </div>
                           </>
                         ) : (
-                          <div className="space-y-1.5 sm:space-y-2.5">
-                            {/* Response count - Hidden in grid view */}
-                            
+                          <div className="space-y-1.5 sm:space-y-2.5 mt-auto sm:mt-6 lg:mt-8">
                             {isOwnEnquiry(enquiry) ? (
                               <button 
                                 type="button"
