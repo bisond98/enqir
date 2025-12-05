@@ -1178,13 +1178,13 @@ const SellerResponse = () => {
             
             {/* Sell Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight text-center drop-shadow-lg">
+              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
                 Sell
               </h1>
             </div>
             
             <div className="text-center mb-3 sm:mb-4 lg:mb-6">
-              <p className="text-[11px] sm:text-sm lg:text-lg text-white/90 max-w-2xl mx-auto px-2">
+              <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white/90 max-w-2xl mx-auto px-2">
                 Share your offer for: <span className="font-semibold">"{enquiry?.title}"</span>
               </p>
             </div>

@@ -2684,12 +2684,10 @@ const EnquiryResponses = () => {
               </div>
               
               {/* Chat Heading in Black Header */}
-              <div className="text-center mb-4 sm:mb-6">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                  <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
-                    Chat
-                  </h1>
-                </div>
+              <div className="flex justify-center items-center mb-4 sm:mb-6">
+                <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                  Chat
+                </h1>
               </div>
               
               {/* Content Card - White Background */}

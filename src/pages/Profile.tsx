@@ -727,7 +727,7 @@ const Profile = () => {
                     )}
                   </h2>
                 </div>
-                <p className="text-[9px] sm:text-[10px] lg:text-xs text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                   {authUser.email}
                 </p>
               </div>

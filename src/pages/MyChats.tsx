@@ -304,7 +304,7 @@ export default function MyChats() {
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                     See all conversations you're currently having with buyers and sellers.
                   </p>
                 </div>

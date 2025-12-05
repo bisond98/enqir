@@ -114,7 +114,7 @@ const Settings = () => {
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
               Manage your account preferences and platform settings
             </p>
                 </div>
@@ -138,12 +138,12 @@ const Settings = () => {
                       savePrivacySetting('profileVisibility', value);
                     }}
                   >
-                    <SelectTrigger className="border-2 border-black focus:border-black focus:ring-black">
+                    <SelectTrigger className="border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public - Anyone can see</SelectItem>
-                      <SelectItem value="verified">Verified Users Only</SelectItem>
+                    <SelectContent className="text-xs sm:text-sm">
+                      <SelectItem value="public" className="text-xs sm:text-sm">Public - Anyone can see</SelectItem>
+                      <SelectItem value="verified" className="text-xs sm:text-sm">Verified Users Only</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -153,7 +153,7 @@ const Settings = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                   <div className="flex-1">
                     <h3 className="text-sm sm:text-base font-medium text-black">Data Collection</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Allow Enqir.in to collect analytics for improving your experience</p>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">Allow Enqir.in to collect analytics for improving your experience</p>
                   </div>
                   <Switch 
                     checked={privacy.dataCollection}
@@ -177,7 +177,7 @@ const Settings = () => {
                       )}
                       <h3 className="text-sm sm:text-base font-medium text-black">Notifications</h3>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Receive notifications about enquiries, responses, and updates</p>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">Receive notifications about enquiries, responses, and updates</p>
                   </div>
                   <Switch 
                     checked={privacy.notificationsEnabled}
@@ -208,7 +208,7 @@ const Settings = () => {
                   <div className="space-y-3">
                     <Button 
                       variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full border-2 border-black"
+                      className="flex items-center justify-center sm:justify-start w-full border-2 border-black text-xs sm:text-sm"
                       onClick={async () => {
                         if (!authUser?.email) {
                           toast({
@@ -259,7 +259,7 @@ const Settings = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     <Button 
                       variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full text-destructive hover:text-destructive border-2 border-black"
+                      className="flex items-center justify-center sm:justify-start w-full text-destructive hover:text-destructive border-2 border-black text-xs sm:text-sm"
                       onClick={() => setShowDeleteDialog(true)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
