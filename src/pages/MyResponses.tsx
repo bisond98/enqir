@@ -2,12 +2,13 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Rocket, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Eye, Shield, ImageIcon } from "lucide-react";
+import { ArrowLeft, Rocket, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Eye, Shield, ImageIcon, Trash2, Search } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, query, where, getDocs, orderBy, limit, getDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, limit, getDoc, doc, onSnapshot, deleteDoc } from "firebase/firestore";
+import { toast } from "@/hooks/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 interface SellerSubmission {
@@ -356,6 +357,18 @@ const MyResponses = () => {
     }).format(budget);
   };
 
+  const deleteResponse = async (submissionId: string) => {
+    if (window.confirm('Are you sure you want to delete this response? This action cannot be undone.')) {
+      try {
+        await deleteDoc(doc(db, 'sellerSubmissions', submissionId));
+        toast({ title: 'Response Deleted', description: 'Your response has been removed successfully.' });
+      } catch (error) {
+        console.error('Error deleting response:', error);
+        toast({ title: 'Error', description: 'Failed to delete response. Please try again.', variant: 'destructive' });
+      }
+    }
+  };
+
   if (!user) {
     return (
       <Layout>
@@ -488,9 +501,9 @@ const MyResponses = () => {
                 const isHighlighted = highlightSubmissionId === submission.id;
                 return (
                   <div key={submission.id} ref={isHighlighted ? highlightedSubmissionRef : undefined}>
-                  <Card className={`border-2 border-black shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden min-h-[400px] sm:min-h-0 flex flex-col ${isExpired || isEnquiryDeleted ? 'opacity-60 grayscale pointer-events-none' : 'hover:border-black'}`}>
+                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-visible transition-all duration-300 ${isExpired || isEnquiryDeleted ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-800 shadow-sm' : 'bg-white border border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'}`}>
                     {/* Card Header - Solid black background */}
-                    <div className={`bg-black px-2.5 py-2 sm:px-6 sm:py-4 flex-shrink-0 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
+                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
                           {isExpired || isEnquiryDeleted ? (
@@ -530,7 +543,7 @@ const MyResponses = () => {
                     </div>
                     
                     {/* Card Content - Rest with white background */}
-                    <CardContent className="px-3 pt-3 !pb-0 sm:p-5 lg:p-6 sm:!pb-5 flex flex-col flex-1 sm:flex-none space-y-3 sm:space-y-4">
+                    <CardContent className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-5 overflow-visible space-y-3 sm:space-y-4">
 
                       {/* Response Information Group */}
                       <div className="space-y-1.5 sm:space-y-2 pb-2 pt-3 sm:pt-0">
@@ -568,47 +581,11 @@ const MyResponses = () => {
                         {/* Updated timestamp intentionally hidden as requested */}
                       </div>
 
-                      {/* View Enquiry Button - Desktop Only */}
-                      {enquiry && !isExpired && !isEnquiryDeleted && (
-                        <div className="pt-3 sm:pt-4 lg:pt-5 hidden sm:block">
-                          <Link 
-                            to={`/enquiry/${enquiry.id}`}
-                            onClick={(e) => {
-                              if (isExpired || isEnquiryDeleted) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }
-                            }}
-                            className="block"
-                          >
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              disabled={isExpired || isEnquiryDeleted}
-                              className="w-full border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black text-[9px] sm:text-xs font-black h-7 sm:h-8 rounded-lg sm:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/viewenquiry"
-                              onClick={(e) => {
-                                if (isExpired || isEnquiryDeleted) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }
-                              }}
-                            >
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                              {/* Shimmer effect */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewenquiry:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 flex-shrink-0 group-hover/viewenquiry:scale-110 transition-transform duration-200 relative z-10" />
-                              <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
-
-                      {/* Bottom Section - Budget Tile & Buttons (Mobile: pushed to bottom) */}
-                      <div className="mt-auto sm:mt-6 lg:mt-8 space-y-1 sm:space-y-3">
-                        {/* Enquiry Context - Budget & Seller Amount Group - Desktop */}
+                      {/* Bottom Section - Budget Tile & Buttons */}
+                      <div className="mt-6 lg:mt-8 space-y-3">
+                        {/* Enquiry Context - Budget & Seller Amount Group */}
                         {enquiry && (
-                          <div className="hidden sm:flex items-center justify-between gap-2 p-2 sm:p-3 bg-white rounded shadow-sm">
+                          <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-white rounded shadow-sm">
                             <div className="flex items-center space-x-1.5">
                               <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
@@ -632,102 +609,38 @@ const MyResponses = () => {
                           </div>
                         )}
 
-                        {/* Timestamps - Mobile Only (Above invisible spacer) */}
-                        <div className="block sm:hidden flex justify-center text-[8px] text-slate-500 mb-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1 h-1 bg-blue-500 rounded-full flex-shrink-0"></span>
-                            <span className="text-slate-600">Submitted: {formatDate(submission.createdAt)}</span>
-                          </div>
-                        </div>
-
                         {/* Status-specific Actions */}
                         {!isExpired && !isEnquiryDeleted && (
-                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-0 sm:gap-4 pt-0 sm:pt-3 lg:pt-4">
-                          <div className="flex flex-col sm:flex-row gap-0 sm:gap-3 flex-1">
-                            {/* Invisible spacer with Your Response #X inside - Mobile Only */}
-                            {!isExpired && !isEnquiryDeleted && (
-                              <div className="block sm:hidden h-20 w-full flex flex-col justify-end pb-6">
-                                <div className="w-full text-center">
-                                  <h3 className={`text-base font-black ${isExpired || isEnquiryDeleted ? 'text-gray-400' : 'text-gray-900'}`}>
-                                    Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
-                                  </h3>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Enquiry Context - Budget & Seller Amount Group - Mobile (Above View Enquiry button) */}
-                            {enquiry && (
-                              <div className="block sm:hidden flex flex-col gap-1.5 p-2 bg-white rounded shadow-sm mb-1">
-                                <div className="flex items-center justify-between gap-2">
-                                  <div className="flex items-center space-x-1.5">
-                                    <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                      <span className="text-white font-black text-[9px]">₹</span>
-                                    </div>
-                                    <div>
-                                      <div className="text-[8px] text-gray-600 font-bold">Enquiry Budget</div>
-                                      <div className="text-xs font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
-                                    </div>
-                                  </div>
-                                  {submission.price && (
-                                    <div className="flex items-center space-x-1.5">
-                                      <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <span className="text-white font-black text-[9px]">₹</span>
-                                      </div>
-                                      <div>
-                                        <div className="text-[8px] text-gray-600 font-bold">Your Amount</div>
-                                        <div className="text-xs font-black text-gray-900">{submission.price}</div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="w-full text-center">
-                                  <span className={`text-[7px] font-medium opacity-70 ${isExpired || isEnquiryDeleted ? 'text-red-400' : 'text-gray-600'}`}>
-                                    {isEnquiryDeleted ? 'Enquiry has been deleted' : getStatusMessage(submission)}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* View Enquiry Button - Mobile Only */}
-                            {enquiry && (
-                              <div className="block sm:hidden flex-1">
-                                <Link 
-                                  to={`/enquiry/${enquiry.id}`}
-                                  onClick={(e) => {
-                                    if (isExpired || isEnquiryDeleted) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }
-                                  }}
-                                  className="block"
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">{enquiry && (
+                              <Link 
+                                to={`/enquiry/${enquiry.id}`}
+                                onClick={(e) => {
+                                  if (isExpired || isEnquiryDeleted) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }
+                                }}
+                                className="w-full sm:flex-shrink-0 lg:flex-1 group/btn"
+                              >
+                                <button 
+                                  disabled={isExpired || isEnquiryDeleted}
+                                  className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                                 >
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    disabled={isExpired || isEnquiryDeleted}
-                                    className="w-full border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black text-[9px] font-black h-9 rounded-lg shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/viewenquirymobile"
-                                    onClick={(e) => {
-                                      if (isExpired || isEnquiryDeleted) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                      }
-                                    }}
-                                  >
-                                    {/* Physical button depth effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                    {/* Shimmer effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewenquirymobile:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
-                                    <Eye className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 group-hover/viewenquirymobile:scale-110 transition-transform duration-200 relative z-10" />
-                                    <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
-                                  </Button>
-                                </Link>
-                              </div>
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                  <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
+                                </button>
+                              </Link>
                             )}
                             
                             {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
                                 to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}
-                                className="flex-1 sm:flex-initial"
+                                className="w-full sm:flex-shrink-0 lg:flex-1 group/chat"
                                 onClick={(e) => {
                                   if (isExpired || isEnquiryDeleted) {
                                     e.preventDefault();
@@ -735,32 +648,24 @@ const MyResponses = () => {
                                   }
                                 }}
                               >
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
+                                <button 
                                   disabled={isExpired || isEnquiryDeleted}
-                                  className="w-full sm:w-auto border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs sm:text-sm h-9 sm:h-10 rounded-lg sm:rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/chatavailable"
-                                  onClick={(e) => {
-                                    if (isExpired || isEnquiryDeleted) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }
-                                  }}
+                                  className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                                 >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chatavailable:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-white flex-shrink-0 group-hover/chatavailable:scale-110 transition-transform duration-200 relative z-10" />
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                  <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chat:scale-110 transition-transform duration-200 relative z-10 text-emerald-500 fill-emerald-500 stroke-black stroke-2" />
                                   <span className="whitespace-nowrap tracking-tight relative z-10">Talk To The Buyer</span>
-                              </Button>
+                              </button>
                             </Link>
                           )}
                           
                           {submission.status === 'rejected' && (
                               <Link 
                                 to="/enquiries"
-                                className="flex-1 sm:flex-initial"
+                                className="w-full sm:flex-shrink-0 lg:flex-1 group/browse"
                                 onClick={(e) => {
                                   if (isExpired) {
                                     e.preventDefault();
@@ -768,23 +673,39 @@ const MyResponses = () => {
                                   }
                                 }}
                               >
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
+                                <button 
                                   disabled={isExpired}
-                                  className="w-full sm:w-auto border border-black hover:border-black text-blue-700 hover:bg-blue-50 text-xs sm:text-sm h-9 sm:h-10"
-                                  onClick={(e) => {
-                                    if (isExpired) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }
-                                  }}
+                                  className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                                 >
-                                  <Rocket className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                                Submit New Response
-                              </Button>
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/browse:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                  <Rocket className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/browse:scale-110 transition-transform duration-200 relative z-10 text-orange-500 fill-orange-500 stroke-black stroke-2" />
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">Submit New Response</span>
+                                </button>
                             </Link>
                           )}
+                          
+                          <button
+                            onClick={() => {
+                              if (!isExpired && !isEnquiryDeleted) {
+                                deleteResponse(submission.id);
+                              }
+                            }}
+                            disabled={isExpired || isEnquiryDeleted}
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                          >
+                            {/* Physical button depth effect */}
+                            {!isExpired && !isEnquiryDeleted && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                              </>
+                            )}
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-red-500 fill-red-500 stroke-black stroke-2" />
+                            <span className="whitespace-nowrap tracking-tight relative z-10">Delete</span>
+                          </button>
                         </div>
                         
                           {submission.buyerViewed && (

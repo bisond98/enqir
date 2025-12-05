@@ -159,6 +159,18 @@ const Dashboard = () => {
     console.log('View mode updated to:', mode);
   };
 
+  const deleteResponse = async (submissionId: string) => {
+    if (window.confirm('Are you sure you want to delete this response? This action cannot be undone.')) {
+      try {
+        await deleteDoc(doc(db, 'sellerSubmissions', submissionId));
+        toast({ title: 'Response Deleted', description: 'Your response has been removed successfully.' });
+      } catch (error) {
+        console.error('Error deleting response:', error);
+        toast({ title: 'Error', description: 'Failed to delete response. Please try again.', variant: 'destructive' });
+      }
+    }
+  };
+
   // Check if user is admin
   useEffect(() => {
     if (user?.email === 'admin@example.com') {
@@ -1726,8 +1738,8 @@ const Dashboard = () => {
                               
                               {/* Enquiry Title - Moved from header to top left of card */}
                               <div className="relative z-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5">
-                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-bold leading-snug tracking-tight ${
-                                  expiredFlag ? 'text-gray-500' : 'text-gray-900'
+                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-semibold leading-snug tracking-tight border-2 inline-block px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-1 lg:py-0.5 xl:py-1 rounded-md backdrop-blur-sm shadow-sm ${
+                                  expiredFlag ? 'bg-transparent text-gray-500 border-gray-400' : 'bg-transparent text-gray-900 border-black'
                                 }`}>
                                   {enquiry.title}
                                 </h5>
@@ -1998,7 +2010,7 @@ const Dashboard = () => {
             {/* Responses Card - Seller View Only */}
             {viewMode === 'seller' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative"
+              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-responses');
@@ -2025,7 +2037,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 relative z-10">
+              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Professional Stats Grid - Circular Design */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
                   <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
@@ -2077,10 +2089,6 @@ const Dashboard = () => {
                 <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
                   {/* Section Header */}
                   <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4">
-                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-white border-2 border-black rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl shadow-md flex-shrink-0">
-                      <Rocket className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-black" />
-                    </div>
-                    <h4 className="text-sm sm:text-xl lg:text-base xl:text-lg font-bold text-gray-900 tracking-tight">Your Submissions</h4>
                   </div>
                   
                   {!responsesReady ? (
@@ -2137,8 +2145,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
-                              : 'bg-white border-[6px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
+                              : 'bg-white border-2 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2151,7 +2159,7 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 rounded-t-xl sm:rounded-t-2xl lg:rounded-t-xl xl:rounded-t-2xl ${
+                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
                             {/* Elegant pattern overlay */}
@@ -2258,31 +2266,33 @@ const Dashboard = () => {
                             </div>
 
                             {/* Submission Time */}
-                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-gray-400 flex-shrink-0" />
-                                <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-gray-500 font-medium">
+                              <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3">
+                                <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 lg:h-2 lg:w-2 xl:h-2.5 xl:w-2.5 text-gray-600 flex-shrink-0" />
+                                <span className="text-[7px] sm:text-[8px] lg:text-[7px] xl:text-[8px] text-gray-700 font-medium">
                                 Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
                                 </span>
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="flex-1 sm:flex-none border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 whitespace-nowrap relative overflow-hidden group/chat"
+                                    className="w-full sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden"
                                 >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                                   {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10" />
-                                  <span className="relative z-10">Chat</span>
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                    <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/chat:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
                                 </Button>
                               )}
                               
+                              {/* View Details & Delete - Side by side on mobile */}
+                              <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
                               <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -2292,16 +2302,37 @@ const Dashboard = () => {
                                     state: { highlightSubmissionId: submission.id }
                                   });
                                 }}
-                                  className="flex-1 sm:flex-none border-4 border-black bg-gradient-to-b from-gray-200 to-gray-300 text-black hover:from-gray-300 hover:to-gray-400 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black hover:bg-gray-50 text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                                   {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10" />
-                                  <span className="relative z-10">View Details</span>
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">View Details</span>
                               </Button>
+                              
+                              <Button 
+                                variant="destructive" 
+                                size="sm" 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  if (!isEnquiryDeleted && !isEnquiryExpired) {
+                                    deleteResponse(submission.id);
+                                  }
+                                }}
+                                  className="flex-1 sm:flex-none flex-shrink-0 border-4 border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                  disabled={isEnquiryDeleted || isEnquiryExpired}
+                              >
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
+                              </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2435,8 +2466,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isExpired 
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[6px] border-black shadow-sm'
-                              : 'bg-white border-[6px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
+                              : 'bg-white border-2 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
                           {/* Premium Header */}

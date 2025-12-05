@@ -1013,15 +1013,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
               );
             })}
             <Link
-              to="/profile"
+              to="/settings"
               className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 ${
-                isActive("/profile")
+                isActive("/settings")
                   ? "text-pal-blue bg-pal-blue/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               }`}
             >
-              <User className="h-5 w-5" />
-              <span className="text-[10px] font-medium truncate leading-tight">Profile</span>
+              <Settings className="h-5 w-5" />
+              <span className="text-[10px] font-medium truncate leading-tight">Settings</span>
             </Link>
           </div>
         </div>
