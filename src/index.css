@@ -22,12 +22,43 @@
   }
   
   /* Performance: Optimize animations with GPU acceleration */
+  
+  /* Smooth scrolling globally */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Optimize images and media for better performance */
+  img, video, iframe {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  /* GPU acceleration for animated elements */
+  [class*="animate-"], 
+  [class*="transition-"],
+  [class*="motion-"],
+  button:hover,
+  a:hover {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  /* Optimize scrollable containers */
+  [class*="overflow-auto"],
+  [class*="overflow-scroll"],
+  [class*="overflow-y-auto"] {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+  
   @keyframes spin {
     from {
-      transform: rotate(0deg);
+      transform: rotate(0deg) translateZ(0);
     }
     to {
-      transform: rotate(360deg);
+      transform: rotate(360deg) translateZ(0);
     }
   }
   
