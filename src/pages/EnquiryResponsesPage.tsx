@@ -424,7 +424,7 @@ const EnquiryResponsesPage = () => {
 
             {/* Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider text-center drop-shadow-2xl">
                 Responses to "{enquiry.title}"
               </h1>
             </div>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -2538,7 +2538,8 @@ const EnquiryResponses = () => {
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
-                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">
+                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider drop-shadow-2xl inline-flex items-center gap-2">
+                      <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                       Chat
                     </h1>
                   </div>
@@ -2685,7 +2686,8 @@ const EnquiryResponses = () => {
               
               {/* Chat Heading in Black Header */}
               <div className="flex justify-center items-center mb-4 sm:mb-6">
-                <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+                <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider text-center drop-shadow-2xl inline-flex items-center gap-2">
+                  <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                   Chat
                 </h1>
               </div>

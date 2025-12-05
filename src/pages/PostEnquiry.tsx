@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2 } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -157,9 +157,9 @@ export default function PostEnquiry() {
   const { toast } = useToast();
   
   // Reference images (optional for buyers)
-  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
-  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>(Array(5).fill(""));
-  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(5).fill(0));
+  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
+  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>(Array(4).fill(""));
+  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(4).fill(0));
   
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
@@ -1743,7 +1743,8 @@ export default function PostEnquiry() {
               
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider text-center drop-shadow-2xl inline-flex items-center gap-2">
+                      <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Post Your Enquiry
               </h1>
                   </div>
@@ -1800,7 +1801,7 @@ export default function PostEnquiry() {
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
+                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {category === "jobs" ? "Job Title" : "From a 4 a.m. tea Spot to a piece of the moon."}
                     </Label>
@@ -1818,9 +1819,9 @@ export default function PostEnquiry() {
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2 sm:space-y-2.5">
-                      <Label className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
+                      <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
-                        <span>⚠️ Select at least one category</span>
+                        <span>Select at least one category</span>
                       </Label>
                     </div>
                     
@@ -1998,7 +1999,7 @@ export default function PostEnquiry() {
 
                   {/* Description - Enhanced Professional Textarea */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
+                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
                       {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
@@ -2016,16 +2017,16 @@ export default function PostEnquiry() {
 
                   {/* Reference Images (Optional) - Professional Design */}
                   <div className="space-y-2.5 sm:space-y-3">
-                    <Label className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
-                      <Upload className="h-4 w-4 text-slate-500" />
+                    <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <Upload className="h-4 w-4 text-gray-900" />
                       Reference Images (Optional)
                     </Label>
                     <p className="text-[9px] sm:text-[10px] text-slate-500 leading-relaxed">
                       What if they end up misunderstanding you?
                     </p>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                      {Array.from({ length: 5 }).map((_, index) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {Array.from({ length: 4 }).map((_, index) => (
                         <div key={index} className="relative">
                           <label
                             htmlFor={`reference-image-${index}`}
@@ -2100,7 +2101,7 @@ export default function PostEnquiry() {
                   {/* Budget & Location - Enhanced Side by Side Layout */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
+                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
@@ -2128,7 +2129,7 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-normal text-slate-500 flex items-center gap-2">
+                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Location
                       </Label>
@@ -2180,8 +2181,8 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-normal text-slate-500">
-                        Notes <span className="text-slate-500 font-normal">(Optional)</span>
+                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-bold text-gray-900">
+                        Notes <span className="text-gray-600 font-normal">(Optional)</span>
                       </Label>
                       <Textarea
                         id="notes"
@@ -2974,9 +2975,9 @@ export default function PostEnquiry() {
                       setIdFrontImage(null);
                       setIdBackImage(null);
                       // Clear reference images
-                      setReferenceImageFiles(Array(5).fill(null));
-                      setReferenceImageUrls(Array(5).fill(""));
-                      setReferenceUploadProgresses(Array(5).fill(0));
+                      setReferenceImageFiles(Array(4).fill(null));
+                      setReferenceImageUrls(Array(4).fill(""));
+                      setReferenceUploadProgresses(Array(4).fill(0));
                     }}
                     className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200"
                   >

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -1314,7 +1314,8 @@ const Dashboard = () => {
               
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider text-center drop-shadow-2xl inline-flex items-center gap-2">
+                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Dashboard
               </h1>
             </div>
@@ -1532,7 +1533,10 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Enquiries</h2>
+                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight inline-flex items-center gap-2">
+                      <FileText className="w-4 h-4 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      Your Enquiries
+                    </h2>
                   </div>
                   
                   {/* Content Card - Black Background */}
@@ -2023,7 +2027,10 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight">Your Responses</h2>
+                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight inline-flex items-center gap-2">
+                      <Reply className="w-4 h-4 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      Your Responses
+                    </h2>
                   </div>
                   
                   {/* Content Card - Black Background */}

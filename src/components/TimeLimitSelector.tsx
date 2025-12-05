@@ -288,19 +288,27 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => setTimeType('quick')}
-                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base transition-colors' : ''} ${timeType === 'quick' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : 'hover:bg-red-50'}`}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-bold ${isDesktop ? 'h-10 text-base' : ''} transition-all duration-200 relative overflow-hidden ${
+                    timeType === 'quick' 
+                      ? '!bg-red-600 !text-white !border-red-600 border-4 shadow-[0_6px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.2)] hover:!bg-red-700 hover:shadow-[0_4px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-[2px]' 
+                      : 'bg-white text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(0,0,0,0.05)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] active:translate-y-[2px] hover:bg-red-50'
+                  }`}
                 >
-                <Zap className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
-                  Quick Select
+                <Zap className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''} relative z-10`} />
+                  <span className="relative z-10">Quick Select</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setTimeType('custom')}
-                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-medium ${isDesktop ? 'h-10 text-base transition-colors' : ''} ${timeType === 'custom' ? '!bg-red-600 !text-white !border-red-600 hover:!bg-red-700' : 'hover:bg-red-50'}`}
+                className={`flex-1 h-11 sm:h-9 text-sm sm:text-base font-bold ${isDesktop ? 'h-10 text-base' : ''} transition-all duration-200 relative overflow-hidden ${
+                    timeType === 'custom' 
+                      ? '!bg-red-600 !text-white !border-red-600 border-4 shadow-[0_6px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.2)] hover:!bg-red-700 hover:shadow-[0_4px_0_0_rgba(220,38,38,0.4),inset_0_2px_4px_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:translate-y-[2px]' 
+                      : 'bg-white text-black border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(0,0,0,0.05)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] active:translate-y-[2px] hover:bg-red-50'
+                  }`}
                 >
-                <CalendarIcon className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''}`} />
-                  Custom
+                <CalendarIcon className={`mr-2 h-4 w-4 ${isDesktop ? 'h-4 w-4' : ''} relative z-10`} />
+                  <span className="relative z-10">Custom</span>
                 </Button>
               </div>
 

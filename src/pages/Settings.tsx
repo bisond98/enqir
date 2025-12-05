@@ -10,7 +10,8 @@ import {
   Bell,
   BellOff,
   Key,
-  ArrowLeft
+  ArrowLeft,
+  Settings as SettingsIcon
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useUsage } from "@/contexts/UsageContext";
@@ -105,7 +106,8 @@ const Settings = () => {
             
             {/* Settings Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight text-center">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-wider text-center drop-shadow-2xl inline-flex items-center gap-2">
+                <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                 Settings
               </h1>
             </div>
