@@ -970,34 +970,38 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-10 pointer-events-none" />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search enquiries..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleSearchChange(searchTerm);
-                    }
-                  }}
-                  onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-200 bg-white shadow-sm placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal"
-                  style={{ 
-                    fontSize: '16px', // Prevents zoom on iOS
-                    lineHeight: '1.5',
-                    paddingTop: '0.75rem',
-                    paddingBottom: '0.75rem',
-                    paddingLeft: '2.75rem', // More space for icon on mobile
-                    WebkitAppearance: 'none',
-                    WebkitTapHighlightColor: 'transparent',
-                    direction: 'ltr'
-                  }}
-                  disabled={isAISearching}
-                />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" />
+                <div className="relative">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search enquiries..."
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSearchChange(searchTerm);
+                      }
+                    }}
+                    onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-4 focus:ring-black/20 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                    style={{ 
+                      fontSize: '16px', // Prevents zoom on iOS
+                      lineHeight: '1.5',
+                      paddingTop: '0.75rem',
+                      paddingBottom: '0.75rem',
+                      paddingLeft: '2.75rem', // More space for icon on mobile
+                      WebkitAppearance: 'none',
+                      WebkitTapHighlightColor: 'transparent',
+                      direction: 'ltr'
+                    }}
+                    disabled={isAISearching}
+                  />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
+                </div>
                 {isAISearching ? (
                   <div className="absolute right-10 sm:right-12 top-1/2 transform -translate-y-1/2 z-10">
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -1077,10 +1081,13 @@ export default function EnquiryWall() {
             <div className="space-y-3 sm:space-y-4">
               {/* Categories Box - Scrollable */}
               <div className="w-full" ref={categoryBoxRef}>
-                <div className="bg-white border-4 sm:border-[6px] md:border-8 border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3 sm:mb-4 bg-black px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl">
-                    <h3 className="text-xs sm:text-sm md:text-base font-black text-white">Categories</h3>
-                </div>
+                <div className="bg-white border border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
+                  <div className="relative z-10">
+                    <h3 className="text-xs sm:text-sm md:text-base font-black text-black mb-3 sm:mb-4 bg-white border-2 border-black rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 inline-block">
+                      Categories
+                    </h3>
 
                   <div
                     ref={categoriesScrollRef}
@@ -1184,8 +1191,8 @@ export default function EnquiryWall() {
                         }}
                           className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex-shrink-0 ${
                           selectedCategory === category.value
-                              ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] sm:hover:scale-105'
-                              : 'bg-white hover:bg-gray-50 text-black border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
+                              ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] sm:hover:scale-105'
+                              : 'bg-white hover:bg-gray-50 text-black border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
                         }`}
                       >
                         {/* Physical button depth effect */}
@@ -1199,7 +1206,8 @@ export default function EnquiryWall() {
                         <span className="relative z-10">{category.label}</span>
                       </button>
                       ));
-                    })()}
+                      })()}
+                  </div>
                   </div>
                 </div>
               </div>
@@ -1354,9 +1362,9 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border-2 sm:border-4 border-black bg-white flex flex-col rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden relative' : 'border-2 sm:border-4 border-black bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border border-black bg-white flex flex-col rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
                     } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
-                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l-2 sm:border-l-4 border-l-green-500'
+                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l border-l-green-500'
                     }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
                       {/* Physical button depth effect */}
                       {!isEnquiryDisabled(enquiry) && (
@@ -1516,14 +1524,14 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] sm:border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
                                   <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-2 sm:border-4 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] sm:border-2 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-gray-600" />
@@ -1536,7 +1544,7 @@ export default function EnquiryWall() {
                             {/* Category */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
                               <div>
-                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-2 sm:border-4 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
+                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] sm:border-2 border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                                 </Badge>
@@ -1555,7 +1563,7 @@ export default function EnquiryWall() {
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-[0.5px] sm:border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-black text-black text-sm sm:text-xl md:text-2xl relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs sm:text-lg md:text-xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
@@ -1563,7 +1571,7 @@ export default function EnquiryWall() {
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-gray-700 border-2 sm:border-4 border-black rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-gray-700 border-[0.5px] sm:border-2 border-black rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-600" />
@@ -1572,7 +1580,7 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-2 sm:border-4 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] sm:border-2 border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                 <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
@@ -1600,13 +1608,11 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
+                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
                                     {/* Physical button depth effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
-                                    {/* Shimmer effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-xl" />
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
                                     <span className="relative z-10 flex items-center">
                                       Sell
                                       <ArrowRight className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 ml-0.5 sm:ml-1.5 md:ml-2" />
@@ -1674,13 +1680,11 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
+                                className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
                                 <span className="relative z-10 flex items-center">
                                   Sell
                                   <ArrowRight className="h-2 w-2 ml-0.5" />
@@ -1719,13 +1723,11 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
+                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
                                 <span className="relative z-10 flex items-center">
                                   Sell
                                   <ArrowRight className="h-2 w-2 sm:h-3.5 sm:w-3.5 ml-1 sm:ml-2" />
