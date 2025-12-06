@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen } from "lucide-react";
+import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
@@ -82,50 +82,50 @@ const Landing = () => {
     { value: "other", label: "Other" }
   ];
 
-  // Icon mapping for categories
+  // Icon mapping for categories - Each category has a matching icon
   const getCategoryIcon = (value: string) => {
     const iconMap: { [key: string]: any } = {
       "jobs": Briefcase,
       "professional-services": Briefcase,
       "real-estate": Home,
       "real-estate-services": Home,
-      "legal-financial": FileText,
-      "marketing-advertising": BarChart3,
+      "legal-financial": Scale,
+      "marketing-advertising": Megaphone,
       "insurance-services": Shield,
-      "government-public": Users,
+      "government-public": Building2,
       "non-profit-charity": Heart,
       "antiques": Package,
-      "art": Package,
+      "art": Palette,
       "automobile": Car,
-      "books-publications": FileText,
+      "books-publications": BookOpen,
       "collectibles": Package,
-      "electronics-gadgets": Package,
-      "fashion-apparel": Package,
+      "electronics-gadgets": Laptop,
+      "fashion-apparel": ShoppingBag,
       "home-furniture": Home,
-      "jewelry-accessories": Package,
-      "memorabilia": Package,
-      "sneakers": Package,
-      "souvenir": Package,
-      "thrift": Package,
+      "jewelry-accessories": Gem,
+      "memorabilia": Camera,
+      "sneakers": Footprints,
+      "souvenir": Gift,
+      "thrift": ShoppingBag,
       "vintage": Package,
       "agriculture-farming": Sprout,
-      "childcare-family": Heart,
-      "education-training": FileText,
-      "entertainment-media": MessageSquare,
+      "childcare-family": Baby,
+      "education-training": GraduationCap,
+      "entertainment-media": Music,
       "events-entertainment": Calendar,
-      "food-beverage": Package,
-      "gaming-recreation": Package,
-      "health-beauty": Heart,
-      "pets": Heart,
-      "sports-outdoor": Package,
-      "travel-tourism": Calendar,
-      "wedding-events": Calendar,
-      "technology": Package,
-      "renewable-energy": Sprout,
-      "construction-renovation": Home,
+      "food-beverage": Utensils,
+      "gaming-recreation": Gamepad2,
+      "health-beauty": Stethoscope,
+      "pets": PawPrint,
+      "sports-outdoor": Dumbbell,
+      "travel-tourism": Plane,
+      "wedding-events": Cake,
+      "technology": Smartphone,
+      "renewable-energy": Zap,
+      "construction-renovation": Hammer,
       "raw-materials-industrial": Package,
-      "transportation-logistics": Car,
-      "waste-management": Package,
+      "transportation-logistics": Truck,
+      "waste-management": Recycle,
       "security-safety": Shield,
       "other": Package
     };
@@ -1639,7 +1639,7 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border-4 border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
@@ -1649,7 +1649,7 @@ const Landing = () => {
             </button>
           </Link>
           <Link to="/enquiries" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border-4 border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
@@ -1721,7 +1721,7 @@ const Landing = () => {
           {/* Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-blue-50/30 border border-black rounded-xl sm:rounded-2xl">
+              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
                 <div className="relative">
                   <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
@@ -1955,6 +1955,8 @@ const Landing = () => {
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
                         willChange: 'transform, opacity',
+                        perspective: '1000px',
+                        perspectiveOrigin: 'center center',
                         // Position cards right-to-left: middle card centered below "Live Needs"
                         left: baseLeft,
                         transform: showAllEnquiries ? 'none' : 'none',
@@ -2024,10 +2026,16 @@ const Landing = () => {
               } ${isHovered ? 'shadow-2xl border-black' : ''}`}
               style={{ 
                 backgroundColor: 'white',
+                // 3D Card Effects
+                transformStyle: 'preserve-3d',
+                transform: isHovered ? 'perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(20px)' : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
                 // Creative: Add subtle glow when hovered
-                filter: isHovered ? 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))' : 'none',
-                transition: 'filter 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                willChange: 'filter, transform'
+                filter: isHovered ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+                transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                willChange: 'filter, transform',
+                boxShadow: isHovered 
+                  ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
+                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)'
               }}
               transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             >
@@ -2515,7 +2523,7 @@ const Landing = () => {
                   Popular Categories
                 </h2>
                   <div className="w-full flex justify-center">
-                    <p className="text-xs sm:text-base lg:text-lg font-black text-black w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-black text-black w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
                       "They not like us"
                 </p>
                   </div>
@@ -2554,39 +2562,29 @@ const Landing = () => {
                           transition: { duration: 0.3 }
                         }}
                     >
-                        <div className="relative">
-                          {/* Glow Effect on Hover */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/20 group-hover:to-purple-400/20 rounded-full blur-xl transition-all duration-500 scale-0 group-hover:scale-150"></div>
-                          
-                          {/* Circle Container */}
+                        {/* Circle Container - Styled exactly like Dashboard count circles with 3D shadow border */}
                       <motion.div
-                            className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-full w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-400/20 overflow-hidden flex flex-col items-center justify-center cursor-pointer border border-gray-700/50 group-hover:border-gray-600"
-                            style={{ willChange: 'transform, box-shadow' }}
-                            whileHover={{ 
-                              scale: 1.1,
-                              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)"
-                            }}
-                            transition={{ duration: 0.3 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                            className="group relative flex flex-col items-center justify-center bg-white rounded-full border-3 border-black overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] cursor-pointer w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40"
                       >
-                            {/* Shine Effect */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            {/* Physical button depth effect */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                             
                         {/* Content - Perfectly Centered */}
-                            <div className="relative flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5 lg:space-y-3 z-10 w-full h-full p-4 sm:p-4">
+                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
                           {/* Icon Container */}
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-white/10 group-hover:scale-110 transition-all duration-500 flex-shrink-0 shadow-lg">
-                                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-white group-hover:text-blue-100 transition-colors duration-300" />
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center group-hover:bg-white transition-all duration-300 flex-shrink-0 mb-1 sm:mb-1.5">
+                                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-black transition-colors duration-300" />
                           </div>
                           
-                              {/* Category Name - Well Arranged */}
-                              <div className="w-full flex flex-row sm:flex-col items-center justify-center gap-0.5 sm:gap-0.5">
-                                <h4 className="text-[9px] sm:text-xs md:text-sm lg:text-xs font-semibold text-white/95 group-hover:text-white leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
+                              {/* Category Name */}
+                              <h4 className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm font-black text-black tracking-tight leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
                                 {category.name}
                               </h4>
-                              </div>
                           </div>
                         </motion.div>
-                      </div>
                     </motion.div>
                   );
                 })}
@@ -2597,7 +2595,7 @@ const Landing = () => {
                 <div className="text-center">
                 <Link
                   to="/enquiries"
-                    className="group inline-flex items-center gap-2 h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
+                    className="group inline-flex items-center gap-2 h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2630,13 +2628,52 @@ const Landing = () => {
             <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-1">
               How It Works
             </h2>
-            <p className="text-xs sm:text-sm font-black text-black">
+            <p className="text-[10px] sm:text-xs font-black text-black">
               This isn't rocket science.
             </p>
           </div>
 
-          {/* Animated SVG Flow - Compact Layout */}
-          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-4 border-black shadow-md sm:shadow-lg">
+          {/* Animated SVG Flow - Compact Layout with 3D Border */}
+          <div 
+            className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-[0.5px] border-black shadow-md sm:shadow-lg relative"
+            style={{
+              transformStyle: 'preserve-3d',
+              perspective: '1000px',
+              transform: 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)',
+              boxShadow: `
+                0 15px 40px rgba(0,0,0,0.2),
+                0 8px 20px rgba(0,0,0,0.15),
+                0 4px 10px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(255,255,255,0.9),
+                inset 0 -2px 4px rgba(0,0,0,0.05)
+              `,
+              transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              willChange: 'transform, box-shadow'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateX(4deg) rotateY(-2deg) translateZ(30px)';
+              e.currentTarget.style.boxShadow = `
+                0 20px 50px rgba(0,0,0,0.25),
+                0 10px 25px rgba(0,0,0,0.2),
+                0 5px 12px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(0,0,0,0.3),
+                inset 0 3px 6px rgba(255,255,255,0.95),
+                inset 0 -3px 6px rgba(0,0,0,0.1)
+              `;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)';
+              e.currentTarget.style.boxShadow = `
+                0 15px 40px rgba(0,0,0,0.2),
+                0 8px 20px rgba(0,0,0,0.15),
+                0 4px 10px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(255,255,255,0.9),
+                inset 0 -2px 4px rgba(0,0,0,0.05)
+              `;
+            }}
+          >
             <div className="text-center mb-8 sm:mb-4 lg:mb-6">
               <p className="text-[8px] sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
             </div>
