@@ -23,8 +23,15 @@
   
   /* Performance: Optimize animations with GPU acceleration */
   
-  /* Smooth scrolling globally */
+  /* Smooth scrolling globally with optimizations */
   html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+  }
+  
+  /* Optimize all scrollable elements */
+  * {
+    -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
   }
   
@@ -54,11 +61,24 @@
   }
   
   @keyframes spin {
-    from {
+    0% {
       transform: rotate(0deg) translateZ(0);
     }
-    to {
+    100% {
       transform: rotate(360deg) translateZ(0);
+    }
+  }
+  
+  /* Smoother spinning animation */
+  @keyframes spin-smooth {
+    0% {
+      transform: rotate(0deg) translateZ(0) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) translateZ(0) scale(1.05);
+    }
+    100% {
+      transform: rotate(360deg) translateZ(0) scale(1);
     }
   }
   
@@ -160,7 +180,7 @@
   }
   
   .animate-spin {
-    animation: spin 1s linear infinite;
+    animation: spin-smooth 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
     will-change: transform;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -197,9 +217,16 @@
     will-change: scroll-position;
   }
   
-  /* Optimize all transitions and animations */
+  /* Optimize all transitions and animations for ultra-smooth feel */
   * {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition-duration: 0.3s;
+  }
+  
+  /* Smoother transitions for interactive elements */
+  button, a, input, select, textarea {
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition-duration: 0.2s;
   }
   
   /* Optimize scroll performance */

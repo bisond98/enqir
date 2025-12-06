@@ -1686,7 +1686,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-4 border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -1702,7 +1702,7 @@ const Landing = () => {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 sm:h-12 px-3 sm:px-3 rounded-r-xl sm:rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] sm:min-w-[52px] border-4 border-l-0 border-black relative overflow-hidden"
+                className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 sm:h-12 px-3 sm:px-3 rounded-r-xl sm:rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] sm:min-w-[52px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
               >
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
@@ -2401,7 +2401,7 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-4 border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2439,7 +2439,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-4 border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',
@@ -2454,7 +2454,7 @@ const Landing = () => {
                     <button
                       onClick={handleSearch}
                       disabled={isSearching}
-                      className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-4 border-l-0 border-black relative overflow-hidden"
+                      className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
                     >
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
@@ -2471,7 +2471,7 @@ const Landing = () => {
                 
                 <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
                   <Link to="/dashboard" className="group">
-                    <button className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
                       {/* Shimmer effect */}
@@ -2480,7 +2480,7 @@ const Landing = () => {
                     </button>
                   </Link>
                   <Link to="/post-enquiry" className="group">
-                    <button className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
                       {/* Shimmer effect */}
