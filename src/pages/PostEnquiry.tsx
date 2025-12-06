@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -1803,17 +1803,21 @@ export default function PostEnquiry() {
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                       <span className="text-blue-600">*</span>
-                      {category === "jobs" ? "Job Title" : "From a 4 a.m. tea Spot to a piece of the moon."}
+                      {category === "jobs" ? "Job Title" : "Enqir anything from a 4 a.m. tea spot to a piece of the moon."}
                     </Label>
-                    <Input
-                      id="title"
-                      placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
-                      style={{ fontSize: '16px' }}
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="title"
+                        placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                            className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px' }}
+                        required
+                      />
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                    </div>
                   </div>
 
                   {/* Multiple Categories - Enhanced Professional Design */}
@@ -1833,13 +1837,15 @@ export default function PostEnquiry() {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-2 rounded-xl transition-all duration-200 text-base font-medium ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                              }`}
+                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
                             >
-                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
                                 {selectedCategories.length === 0 ? (
                                   <span className="text-[10px] text-slate-500">Select categories...</span>
                                 ) : (
@@ -1857,7 +1863,7 @@ export default function PostEnquiry() {
                                   })
                                 )}
                               </div>
-                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0" />
+                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
                             </Button>
                           </SheetTrigger>
                           <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
@@ -1914,14 +1920,15 @@ export default function PostEnquiry() {
                       <div className="hidden sm:block">
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-2 rounded-xl transition-all duration-200 font-medium ${
-                                selectedCategories.length === 0 
-                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
-                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                              }`}
-                            >
+                            <div className="relative">
+                              <Button
+                                variant="outline"
+                                className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative z-10 ${
+                                  selectedCategories.length === 0 
+                                    ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                    : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                                } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                              >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
                                   <span className="text-[10px] text-slate-500">Select categories...</span>
@@ -1942,6 +1949,9 @@ export default function PostEnquiry() {
                               </div>
                               <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
                             </Button>
+                            {/* Physical button depth effect */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                          </div>
                           </PopoverTrigger>
                           <PopoverContent 
                             className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm" 
@@ -2003,16 +2013,20 @@ export default function PostEnquiry() {
                       <span className="text-blue-600">*</span>
                       {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
                     </Label>
-                    <Textarea
-                      id="description"
-                      placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={5}
-                      className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
-                      style={{ fontSize: '16px' }}
-                      required
-                    />
+                    <div className="relative">
+                      <Textarea
+                        id="description"
+                        placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={5}
+                        className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px' }}
+                        required
+                      />
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                    </div>
                   </div>
 
                   {/* Reference Images (Optional) - Professional Design */}
@@ -2030,17 +2044,16 @@ export default function PostEnquiry() {
                         <div key={index} className="relative">
                           <label
                             htmlFor={`reference-image-${index}`}
-                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-3 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
                               referenceImageUrls[index]
                                 ? 'border-green-300 bg-green-50 hover:border-green-400'
-                                : 'bg-black hover:bg-gray-900 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]'
+                                : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                             } ${loading || idUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
                             {/* Physical button depth effect */}
                             {!referenceImageUrls[index] && (
                               <>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                               </>
                             )}
                             <input
@@ -2053,12 +2066,16 @@ export default function PostEnquiry() {
                             />
                             
                             {referenceImageUrls[index] ? (
-                              <div className="relative w-full h-full rounded-lg overflow-hidden group">
-                                <img
-                                  src={referenceImageUrls[index]}
-                                  alt={`Reference ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
+                              <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+                                <div className="flex flex-col items-center justify-center">
+                                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mb-1.5 sm:mb-2 relative z-10" />
+                                  <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
+                                  {referenceImageFiles[index] && (
+                                    <p className="text-[8px] sm:text-[9px] text-gray-600 text-center relative z-10 truncate w-full px-2">
+                                      {referenceImageFiles[index].name}
+                                    </p>
+                                  )}
+                                </div>
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -2066,7 +2083,7 @@ export default function PostEnquiry() {
                                     e.stopPropagation();
                                     removeReferenceImage(index);
                                   }}
-                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg"
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg z-20"
                                   disabled={loading || idUploadLoading}
                                 >
                                   <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -2086,8 +2103,8 @@ export default function PostEnquiry() {
                                   </>
                                 ) : (
                                   <>
-                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-white mb-1.5 sm:mb-2 relative z-10" />
-                                    <p className="text-[10px] sm:text-xs text-white font-black text-center relative z-10">Add Image</p>
+                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
+                                    <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10">Add Image</p>
                                   </>
                                 )}
                               </div>
@@ -2105,27 +2122,31 @@ export default function PostEnquiry() {
                         <span className="text-blue-600">*</span>
                         {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
-                      <Input
-                        id="budget"
-                        placeholder={selectedCategories.includes("jobs") ? "50,000/month" : "50,000"}
-                        value={budget}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/[^\d,]/g, '');
-                          const numericValue = value.replace(/,/g, '');
-                          if (numericValue === '' || /^\d+$/.test(numericValue)) {
-                            const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
-                            setBudget(formattedValue);
-                          }
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value && !e.target.value.startsWith('₹')) {
-                            setBudget('₹' + e.target.value);
-                          }
-                        }}
-                        className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
-                        style={{ fontSize: '16px' }}
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          id="budget"
+                          placeholder={selectedCategories.includes("jobs") ? "50,000/month" : "50,000"}
+                          value={budget}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^\d,]/g, '');
+                            const numericValue = value.replace(/,/g, '');
+                            if (numericValue === '' || /^\d+$/.test(numericValue)) {
+                              const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
+                              setBudget(formattedValue);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value && !e.target.value.startsWith('₹')) {
+                              setBudget('₹' + e.target.value);
+                            }
+                          }}
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
+                          required
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      </div>
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
@@ -2141,10 +2162,12 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                         
                         {/* AI Location Suggestions Dropdown - Enhanced */}
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
@@ -2184,23 +2207,27 @@ export default function PostEnquiry() {
                       <Label htmlFor="notes" className="text-[10px] sm:text-xs font-bold text-gray-900">
                         Notes <span className="text-gray-600 font-normal">(Optional)</span>
                       </Label>
-                      <Textarea
-                        id="notes"
-                        placeholder="Additional requirements or preferences..."
-                        className="border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px]"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={4}
-                        style={{ fontSize: '16px' }}
-                      />
+                      <div className="relative">
+                        <Textarea
+                          id="notes"
+                          placeholder="Additional requirements or preferences..."
+                          className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          rows={4}
+                          style={{ fontSize: '16px' }}
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      </div>
                     </div>
                   </div>
 
                   {/* Form Progress Indicator */}
-                  <div className="pt-4 space-y-3 border-4 border-black bg-black rounded-lg p-4 transition-all">
+                  <div className="pt-4 space-y-3 border-4 border-black bg-white rounded-lg p-4 transition-all">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs sm:text-sm font-semibold text-white">Form Completion</h3>
-                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-300' : 'text-white'}`}>
+                      <h3 className="text-xs sm:text-sm font-semibold text-black">Form Completion</h3>
+                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-600' : 'text-black'}`}>
                         {Math.round(formProgress)}% Complete
                       </span>
                     </div>
@@ -2210,7 +2237,7 @@ export default function PostEnquiry() {
                         style={{ width: `${formProgress}%` }}
                       />
                     </div>
-                    <p className="text-[10px] sm:text-xs text-white">
+                    <p className="text-[10px] sm:text-xs text-black">
                       Fill in all required & click submit
                     </p>
                   </div>
@@ -2251,7 +2278,7 @@ export default function PostEnquiry() {
 
                   {/* Trust Badge Card - Matching SellerResponse Design */}
                   {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-2 border-black'} rounded-xl w-full max-w-full overflow-visible`}>
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-[0.5px] border-black'} rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
                       <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden border-2 border-black">
@@ -2436,26 +2463,30 @@ export default function PostEnquiry() {
                             <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
                           ID Document Type
                         </Label>
-                            <Select value={govIdType} onValueChange={(value) => {
-                              setGovIdType(value);
-                              if (govIdNumber && value) {
-                                validateIdNumber(govIdNumber, value);
-                          } else {
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                          }
-                          setIdVerificationResult(null);
-                        }} disabled={verifyingId}>
-                              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-black w-full" disabled={verifyingId}>
-                            <SelectValue placeholder="Select ID Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                            <SelectItem value="pan">PAN Card</SelectItem>
-                            <SelectItem value="passport">Passport</SelectItem>
-                            <SelectItem value="driving_license">Driving License</SelectItem>
-                            <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                          </SelectContent>
-                        </Select>
+                            <div className="relative">
+                              <Select value={govIdType} onValueChange={(value) => {
+                                setGovIdType(value);
+                                if (govIdNumber && value) {
+                                  validateIdNumber(govIdNumber, value);
+                            } else {
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                            }
+                            setIdVerificationResult(null);
+                          }} disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                              <SelectValue placeholder="Select ID Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                              <SelectItem value="pan">PAN Card</SelectItem>
+                              <SelectItem value="passport">Passport</SelectItem>
+                              <SelectItem value="driving_license">Driving License</SelectItem>
+                              <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
+                        </div>
                             {errors.govIdType && (
                           <span className="text-xs text-red-500 flex items-center">
                             <X className="h-3 w-3 mr-1" />
@@ -2468,34 +2499,38 @@ export default function PostEnquiry() {
                             <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
                           ID Number
                         </Label>
-                        <Input
-                              id="govIdNumber"
-                              placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                              value={govIdNumber}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            
-                            // Auto-format Aadhaar: add space after every 4 digits
-                                if (govIdType === 'aadhaar') {
-                              // Remove all spaces first
-                              const digitsOnly = value.replace(/\s/g, '');
-                              // Add space after every 4 digits
-                              value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                            }
-                            
-                                setGovIdNumber(value);
-                                // Clear verification result when user changes the ID number
-                            setIdVerificationResult(null);
-                                // Clear any existing errors for ID number
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                // Validate the new value
-                                if (govIdType) {
-                                  validateIdNumber(value, govIdType);
-                                }
-                          }}
-                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01] placeholder:text-slate-400 placeholder:text-[10px] w-full"
-                          disabled={verifyingId}
-                        />
+                        <div className="relative">
+                          <Input
+                                id="govIdNumber"
+                                placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                                value={govIdNumber}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              
+                              // Auto-format Aadhaar: add space after every 4 digits
+                                  if (govIdType === 'aadhaar') {
+                                // Remove all spaces first
+                                const digitsOnly = value.replace(/\s/g, '');
+                                // Add space after every 4 digits
+                                value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                              }
+                              
+                                  setGovIdNumber(value);
+                                  // Clear verification result when user changes the ID number
+                              setIdVerificationResult(null);
+                                  // Clear any existing errors for ID number
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                  // Validate the new value
+                                  if (govIdType) {
+                                    validateIdNumber(value, govIdType);
+                                  }
+                            }}
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                            disabled={verifyingId}
+                          />
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        </div>
                             {errors.govIdNumber && !idVerificationResult && (
                           <span className="text-xs text-red-500 flex items-center">
                             <X className="h-3 w-3 mr-1" />
@@ -2580,7 +2615,7 @@ export default function PostEnquiry() {
                               {/* Upload Button - Full Width with Black Border */}
                         <label
                           htmlFor="idFront"
-                                className={`w-full h-14 border-2 border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                                className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
                             verifyingId
                               ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                                     : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
@@ -2591,7 +2626,9 @@ export default function PostEnquiry() {
                             }
                           }}
                         >
-                          <div className="flex items-center gap-2">
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                          <div className="flex items-center gap-2 relative z-10">
                             <Upload className="h-5 w-5 text-slate-600" />
                             <span className="text-sm text-slate-700 font-semibold">Upload</span>
                           </div>
@@ -2810,7 +2847,7 @@ export default function PostEnquiry() {
                     <Button
                       type="submit"
                       disabled={loading || idUploadLoading || paymentLoading}
-                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-4 border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                     >
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />

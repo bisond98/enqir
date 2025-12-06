@@ -464,9 +464,11 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
-              <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
-              {value ? formatDeadline(deadline) : 'Set deadline'}
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
+              <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
+              <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto border-2 border-black p-0 flex flex-col">
@@ -482,9 +484,11 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-sm hover:shadow-md focus:shadow-lg focus:scale-[1.01]">
-              <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4" />
-              {value ? formatDeadline(deadline) : 'Set deadline'}
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
+              <CalendarIcon className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
+              <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black" align="start">

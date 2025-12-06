@@ -283,8 +283,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
             key={plan.id}
             className={`relative transition-all duration-200 overflow-hidden group/plan ${
               selectedPlan === plan.id
-                ? 'border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                : 'border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                ? 'border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                : 'border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
             } ${
               plan.isPopular 
                 ? 'bg-gradient-to-br from-blue-50 via-white to-blue-50/50' 
@@ -342,7 +342,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                 <Button
                   type="button"
                   size="sm"
-                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-2 sm:border-4 md:border-2 lg:border-2 border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
+                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-[0.5px] border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
                     selectedPlan === plan.id
                       ? 'bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                       : 'bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
@@ -377,7 +377,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
               <Button
                 size="sm"
                 disabled={isProcessingPayment}
-                className="h-12 sm:h-11 md:h-10 text-sm sm:text-base md:text-lg font-black bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] md:min-h-[40px] border-2 sm:border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-200 rounded-xl sm:rounded-2xl mx-auto disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group/upgrade hover:scale-105 active:scale-95"
+                className="h-12 sm:h-11 md:h-10 text-sm sm:text-base md:text-lg font-black bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] md:min-h-[40px] border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-200 rounded-xl sm:rounded-2xl mx-auto disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group/upgrade hover:scale-105 active:scale-95"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (user && !isProcessingPayment) {
