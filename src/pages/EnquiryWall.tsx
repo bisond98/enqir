@@ -1209,14 +1209,14 @@ export default function EnquiryWall() {
           {/* Scroll Indicator - Mobile Only - Between Categories and Cards */}
           {showScrollIndicator && (
             <div className="flex justify-center items-center pt-1 pb-4 sm:hidden">
-              <motion.div
+            <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.5 }}
                 className="flex flex-col items-center"
               >
-                <motion.div
+              <motion.div 
                   animate={{ y: [0, 10, 0] }}
                   transition={{
                     duration: 1.5,
@@ -1225,8 +1225,8 @@ export default function EnquiryWall() {
                   }}
                 >
                   <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
-                </motion.div>
-                <motion.div
+              </motion.div>
+                <motion.div 
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{
                     duration: 1.5,
@@ -1265,7 +1265,7 @@ export default function EnquiryWall() {
                 </div>
                 
                 {/* Sliding knob */}
-              <motion.div 
+                <motion.div 
                   className="absolute top-0.5 sm:top-1 w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full shadow-md z-20 flex items-center justify-center"
                   animate={{
                     left: viewMode === 'grid' ? '0.125rem' : 'calc(100% - 1.5rem)',
@@ -1442,16 +1442,16 @@ export default function EnquiryWall() {
                                   {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
                                     <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
                                   )}
+                                </div>
                               </div>
-                            </div>
-                            
+                              
                             {/* Description - Lower position for mobile list view */}
                             {enquiry.description && (
                               <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
                                 <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-2 text-center max-w-full">
-                                  {enquiry.description}
-                                </p>
-                              </div>
+                                {enquiry.description}
+                              </p>
+                            </div>
                             )}
                           </CardHeader>
                         </>
@@ -1633,7 +1633,7 @@ export default function EnquiryWall() {
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <span className="font-black text-black text-sm relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
-                                </div>
+                                  </div>
                               )}
                               {/* Location */}
                               {enquiry.location && (
@@ -1641,10 +1641,10 @@ export default function EnquiryWall() {
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2 w-2 text-gray-600" />
-                                  </div>
-                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
                                 </div>
-                              )}
+                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
+                              </div>
+                            )}
                               {/* Category */}
                               <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 border-2 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />

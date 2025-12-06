@@ -182,7 +182,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       )}
       <Badge 
         variant="outline" 
-        className={`text-xs font-medium px-2 py-1 text-white border-2 ${
+        className={`text-xs font-medium px-2 py-1 text-white border ${
           urgencyLevel === 'critical' || urgencyLevel === 'urgent' ? 'animate-pulse' : ''
         }`}
         style={{ backgroundColor: '#dc2626', borderColor: '#000000', color: 'white' }}

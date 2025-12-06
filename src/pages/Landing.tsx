@@ -2019,7 +2019,7 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border-4 border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
+              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               } ${isHovered ? 'shadow-2xl border-black' : ''}`}
               style={{ 
@@ -2051,8 +2051,11 @@ const Landing = () => {
                       )}
                       <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
                       {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
-                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''}`}>
-                        <div className="flex justify-between items-center">
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative`}>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-[8px] sm:text-[9px] lg:text-xs font-medium text-white`}>Need</span>
+                        </div>
+                        <div className="flex justify-between items-center relative z-10">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                               <>
@@ -2069,7 +2072,7 @@ const Landing = () => {
                           </div>
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {!isEnquiryOutdated(enquiry) && (
-                              <Badge variant="default" className="text-[8px] sm:text-[9px] lg:text-xs px-1 sm:px-1.5 lg:px-2.5 py-0.5 lg:py-1 bg-green-100 text-green-700 border-green-200">Live</Badge>
+                              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-green-500 flex-shrink-0"></span>
                             )}
                             {enquiry.isUrgent && !isEnquiryOutdated(enquiry) && (
                               <Badge variant="destructive" className="text-[8px] sm:text-[9px] lg:text-xs px-1 sm:px-1.5 lg:px-2.5 py-0.5 lg:py-1">Urgent</Badge>
@@ -2084,62 +2087,148 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className={`${windowWidth < 640 ? 'px-2.5 pt-2.5 pb-0' : 'p-3 sm:p-4 lg:p-4'} flex-1 flex flex-col ${windowWidth < 640 ? 'overflow-y-auto' : 'overflow-visible'} ${windowWidth < 640 ? 'space-y-2' : 'space-y-2 sm:space-y-2.5'} ${windowWidth < 640 ? 'min-h-0' : 'min-h-0'} ${windowWidth >= 640 ? 'flex-grow' : ''}`}>
+                      <div className={`px-2.5 pt-2.5 pb-0 sm:px-3 sm:pt-3 flex-1 flex flex-col overflow-hidden space-y-1.5 sm:space-y-2 min-h-0`}>
                       {/* Title - Professional Typography */}
-                      <h3 className={`${windowWidth < 640 ? 'text-xs leading-tight' : 'text-sm sm:text-base lg:text-lg'} font-extrabold ${windowWidth < 640 ? 'mb-2' : 'mb-2 sm:mb-2.5'} leading-snug ${isAnyCardHovered ? '' : (windowWidth < 640 ? 'line-clamp-2' : 'line-clamp-2')} font-heading text-gray-900 ${windowWidth < 640 ? 'border-b border-black pb-1.5' : 'border-b-2 border-black pb-1.5 sm:pb-2'} ${
+                      <h3 className={`text-xs sm:text-sm font-semibold leading-snug line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 sm:pb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
-                      }`}>
-                        {enquiry.title && enquiry.title.length > 22 ? enquiry.title.substring(0, 22).trim() + '...' : enquiry.title}
+                      } w-full overflow-hidden`}>
+                        {enquiry.title}
                       </h3>
                       
-                      {/* Budget and Location - Horizontal Layout on Desktop, Stacked on Mobile */}
-                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-1.5' : 'mb-2 sm:mb-2.5'} flex ${windowWidth < 640 ? 'flex-col' : 'flex-row items-center flex-nowrap'} ${windowWidth < 640 ? 'gap-1.5' : 'gap-2 sm:gap-2.5'} ${windowWidth >= 640 ? 'w-full' : ''}`}>
+                      {/* Budget and Location - Stacked on Both Mobile and Desktop */}
+                      <div className="flex flex-col w-full gap-1.5">
                         {enquiry.budget && (
-                          <div className={`inline-flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg ${windowWidth < 640 ? 'px-2 py-1' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} ${windowWidth < 640 ? 'border-2' : 'border-2'} border-black ${windowWidth >= 640 ? 'flex-shrink-0' : 'w-fit'} flex-shrink-0`}>
-                            <span className={`${windowWidth < 640 ? 'text-base' : 'text-lg sm:text-xl lg:text-2xl'} font-extrabold text-gray-900 ${windowWidth < 640 ? 'mr-0.5' : 'mr-1 sm:mr-1.5'}`}>₹</span>
-                            <span className={`${windowWidth < 640 ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-extrabold text-gray-900 whitespace-nowrap`}>{formatIndianCurrency(enquiry.budget)}</span>
+                          <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 overflow-hidden">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 mr-1 sm:mr-1.5 flex-shrink-0">Budget -</span>
+                            <span className="text-sm sm:text-base font-extrabold text-gray-900 mr-0.5 flex-shrink-0">₹</span>
+                            <span className="text-xs sm:text-sm font-extrabold text-gray-900 truncate">{formatIndianCurrency(enquiry.budget)}</span>
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 px-2 py-1' : 'gap-1.5 sm:gap-2 px-2 py-1.5'} ${windowWidth < 640 ? 'text-[10px]' : 'text-xs sm:text-sm lg:text-base'} text-gray-700 ${windowWidth < 640 ? 'border border-black rounded' : 'border-2 border-black rounded-lg'} ${windowWidth >= 640 ? 'flex-shrink-0 min-w-0' : 'w-fit'} flex-shrink-0`}>
-                            <MapPin className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-4 lg:w-4'} text-gray-600 flex-shrink-0`} />
-                            <span className={`font-semibold ${isAnyCardHovered ? '' : 'line-clamp-1 truncate'} ${windowWidth >= 640 ? 'max-w-[200px]' : ''}`}>{enquiry.location}</span>
+                          <div className="flex items-center text-gray-700 border border-black rounded-lg w-full gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 overflow-hidden">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-900 flex-shrink-0 stroke-[2.5]" />
+                            <span className="text-xs sm:text-sm font-bold truncate flex-1 min-w-0">{enquiry.location}</span>
                           </div>
                         )}
                       </div>
                       
                       {/* Meta Information - Professional Grouping */}
-                      <div className={`${windowWidth < 640 ? 'mb-2 space-y-1.5' : 'mb-2 sm:mb-2.5 space-y-1.5 sm:space-y-2'} flex flex-col ${windowWidth >= 640 ? 'w-full' : ''}`}>
-                        <div className={`flex items-center ${windowWidth < 640 ? 'flex-col items-stretch gap-1.5' : 'flex-row justify-between flex-nowrap gap-2 sm:gap-2.5'} ${windowWidth >= 640 ? 'w-full' : ''}`}>
-                          <Badge variant="secondary" className={`${windowWidth < 640 ? 'text-[9px] px-1.5 py-0.5' : 'text-[10px] sm:text-xs lg:text-sm px-2 sm:px-2.5 lg:px-3 py-0.5 sm:py-1 lg:py-1.5'} bg-gray-100 text-black ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} font-semibold rounded-lg shadow-sm ${windowWidth < 640 ? 'w-full text-center' : 'flex-shrink-0'}`}>
-                            {enquiry.category}
-                          </Badge>
-                          <div className={`flex items-center ${windowWidth < 640 ? 'gap-1 px-1.5 py-0.5 justify-center' : 'gap-1 sm:gap-1.5 px-1.5 py-1'} ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} text-gray-600 ${windowWidth < 640 ? 'border border-black rounded w-full' : 'border-2 border-black rounded-lg flex-shrink-0'}`}>
-                            <Clock className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} text-gray-500 flex-shrink-0`} />
-                            <span className="whitespace-nowrap font-semibold truncate">
-                              {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
+                      <div className="flex flex-col w-full gap-1.5 sm:gap-1.5">
+                          <div className="relative flex items-center text-gray-600 border border-black rounded-lg w-full overflow-hidden gap-1 sm:gap-1.5 px-1.5 py-0.5 sm:px-2 sm:py-1">
+                            <span className="absolute left-1 top-0.5 sm:left-1.5 sm:top-1 text-[7px] sm:text-[8px] font-normal text-gray-500">before</span>
+                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-900 flex-shrink-0 stroke-[2.5] ml-6 sm:ml-8" />
+                            <span className="text-xs sm:text-sm font-black text-gray-900 truncate flex-1 min-w-0">
+                              {enquiry.deadline ? (enquiry.deadline.toDate ? formatDate(enquiry.deadline.toDate().toISOString()) : formatDate(new Date(enquiry.deadline).toISOString())) : 'N/A'}
                             </span>
                           </div>
+                          {/* Deadline Timer */}
+                          {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
+                            <div className="border border-black rounded-lg w-full flex items-center gap-1 sm:gap-1.5 overflow-hidden px-1.5 py-1 sm:px-2 sm:py-1">
+                              <CountdownTimer
+                                deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
+                                className="text-[9px] sm:text-[10px]"
+                              />
+                              <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
+                            </div>
+                          )}
+                        
+                        {/* Sell Button - Mobile only (inside meta container) */}
+                        <div className="block sm:hidden w-full">
+                          {user ? (
+                            (() => {
+                              const isOwnEnquiry = enquiry.userId === user.uid;
+                              if (isOwnEnquiry) {
+                                return (
+                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <span className="relative z-10">✅ Your Enquiry</span>
+                                  </button>
+                                );
+                              } else if (isEnquiryOutdated(enquiry)) {
+                                return (
+                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <span className="relative z-10">Expired</span>
+                                  </button>
+                                );
+                              } else {
+                                return (
+                                  <button 
+                                    className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden min-h-[36px]"
+                                    onClick={() => navigate(`/respond/${enquiry.id}`)}
+                                  >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
+                                    <span className="relative z-10">Sell</span>
+                                  </button>
+                                );
+                              }
+                            })()
+                          ) : (
+                            <button 
+                              className="w-full h-9 bg-white hover:bg-gray-50 text-black text-[10px] font-black rounded-t-lg rounded-b-xl border border-black hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden min-h-[36px]"
+                              onClick={() => navigate('/signin')}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
+                              <span className="relative z-10">Sign In</span>
+                            </button>
+                          )}
                         </div>
-                        {/* Deadline Timer */}
-                        {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                          <div className={`${windowWidth < 640 ? 'pt-1.5 px-1.5 py-1' : 'pt-1.5 px-1.5 py-1 sm:pt-2 sm:px-2 sm:py-1.5'} ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} rounded-lg w-full`}>
-                            <CountdownTimer
-                              deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className={`${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'}`}
-                            />
+                        
+                        {/* Save and Share - Mobile only (inside meta container, after sell button) */}
+                        <div className="block sm:hidden w-full border-t border-black pt-1.5 pb-2">
+                          <div className="flex items-center gap-1.5 justify-between">
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!isEnquiryOutdated(enquiry)) {
+                                  handleSave(enquiry.id, e);
+                                }
+                              }}
+                              disabled={!user || isEnquiryOutdated(enquiry)}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black ${
+                                savedEnquiries.includes(enquiry.id) 
+                                  ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                  : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
+                              } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                              <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!isEnquiryOutdated(enquiry)) {
+                                  handleShare(enquiry, e);
+                                }
+                              }}
+                              disabled={isEnquiryOutdated(enquiry)}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                              <span className="font-semibold">Share</span>
+                            </button>
                           </div>
-                        )}
+                        </div>
+                        
+                        {/* Category - Desktop only */}
+                        <Badge variant="secondary" className="invisible sm:block bg-gray-100 text-black border border-black font-semibold rounded-lg shadow-sm w-full text-center text-[9px] sm:text-[10px] px-1.5 py-0.5 sm:px-2 sm:py-1">
+                          {enquiry.category}
+                        </Badge>
                       </div>
                       
-                      {/* Primary Action Button - Professional Styling */}
-                      <div className={`mt-auto ${windowWidth < 640 ? 'pt-2 pb-0' : 'pt-2 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} ${windowWidth < 640 ? '-mb-0' : ''}`}>
+                      {/* Primary Action Button - Desktop only */}
+                      <div className="hidden sm:block mt-auto border-t border-black w-full pt-1.5 pb-0 sm:pt-2">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
                                   {/* Physical button depth effect */}
                                   <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
                                   <span className="relative z-10">✅ Your Enquiry</span>
@@ -2147,7 +2236,7 @@ const Landing = () => {
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
                                   {/* Physical button depth effect */}
                                   <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
                                   <span className="relative z-10">Expired</span>
@@ -2156,7 +2245,7 @@ const Landing = () => {
                             } else {
                               return (
                                 <button 
-                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
                                   {/* Physical button depth effect */}
@@ -2170,7 +2259,7 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-white hover:bg-gray-50 text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} ${windowWidth < 640 ? 'border-2 border-black' : 'border-4 border-black'} hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-white hover:bg-gray-50 text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                             onClick={() => navigate('/signin')}
                           >
                             {/* Physical button depth effect */}
@@ -2182,9 +2271,9 @@ const Landing = () => {
                         )}
                       </div>
                       
-                      {/* Footer - Save and Share - Professional Layout */}
-                      <div className={`${windowWidth < 640 ? 'mt-2 pt-2' : 'mt-2 pt-2 sm:mt-2.5 sm:pt-2.5'} ${windowWidth < 640 ? 'border-t border-black' : 'border-t-2 border-black'} ${windowWidth >= 640 ? 'flex-shrink-0 pb-0' : ''}`}>
-                        <div className={`flex items-center ${windowWidth < 640 ? 'gap-1.5' : 'justify-between gap-2 sm:gap-3'}`}>
+                      {/* Footer - Save and Share - Desktop only */}
+                      <div className="hidden sm:block mt-2 pt-2 pb-3 border-t border-black">
+                        <div className="flex items-center gap-2 justify-between">
                           <button 
                             onClick={(e) => {
                               e.preventDefault();
@@ -2194,13 +2283,13 @@ const Landing = () => {
                               }
                             }}
                             disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 flex-1 justify-center' : 'gap-1 sm:gap-1.5'} ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} rounded-lg transition-all duration-200 font-semibold ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} ${windowWidth < 640 ? 'min-h-[32px]' : 'min-h-[32px] sm:min-h-[36px]'} ${
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border border-black ${
                               savedEnquiries.includes(enquiry.id) 
-                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100 ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'}` 
-                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900 ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'}`
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
                             } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Bookmark className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
                             <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                           </button>
                           <button 
@@ -2212,9 +2301,9 @@ const Landing = () => {
                               }
                             }}
                             disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center ${windowWidth < 640 ? 'gap-1 flex-1 justify-center' : 'gap-1 sm:gap-1.5'} ${windowWidth < 640 ? 'px-2 py-1.5' : 'px-2 py-1.5 sm:px-2.5 sm:py-2'} rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold ${windowWidth < 640 ? 'text-[9px]' : 'text-[10px] sm:text-xs lg:text-sm'} ${windowWidth < 640 ? 'min-h-[32px]' : 'min-h-[32px] sm:min-h-[36px]'} ${windowWidth < 640 ? 'border border-black' : 'border-2 border-black'} ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Share2 className={`${windowWidth < 640 ? 'h-3 w-3' : 'h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4'} transition-transform duration-200 hover:scale-110`} />
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
                             <span className="font-semibold">Share</span>
                           </button>
                         </div>

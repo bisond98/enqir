@@ -393,16 +393,16 @@ const MyResponses = () => {
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
                   type="button"
-                  onClick={() => window.history.back()}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
+                    onClick={() => window.history.back()}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
                 <div className="w-10 h-10"></div>
               </div>
             </div>
@@ -412,14 +412,14 @@ const MyResponses = () => {
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
                 Responses.
               </h1>
-            </div>
-            
+              </div>
+              
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-              <div className="text-center">
+                <div className="text-center">
                 <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                   Track & manage your responses like the FBI.
-                </p>
+                  </p>
               </div>
             </div>
           </div>
@@ -460,9 +460,9 @@ const MyResponses = () => {
                   {sellerSubmissions.filter(s => s.status === 'pending').length}
                 </h3>
                 <p className="text-[7px] sm:text-[8px] lg:text-[10px] xl:text-xs text-black font-black uppercase">Pending</p>
-              </div>
             </div>
-            
+          </div>
+
             <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
@@ -510,11 +510,11 @@ const MyResponses = () => {
                             <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" />
                           ) : (
                             ((submission as any).userProfileVerified || submission.isIdentityVerified) && (
-                              <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
-                                isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
-                              }`}>
-                                <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
-                              </div>
+                            <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
+                              isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
+                            }`}>
+                              <CheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-white" />
+                            </div>
                             )
                           )}
                           <h3 className={`hidden sm:block text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
@@ -584,17 +584,17 @@ const MyResponses = () => {
                       {/* Bottom Section - Budget Tile & Buttons */}
                       <div className="mt-6 lg:mt-8 space-y-3">
                         {/* Enquiry Context - Budget & Seller Amount Group */}
-                        {enquiry && (
+                      {enquiry && (
                           <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-white rounded shadow-sm">
-                            <div className="flex items-center space-x-1.5">
+                          <div className="flex items-center space-x-1.5">
                               <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
-                              </div>
-                              <div>
-                                <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Enquiry Budget</div>
-                                <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
-                              </div>
+                              <span className="text-white font-black text-[9px] sm:text-xs">₹</span>
                             </div>
+                            <div>
+                              <div className="text-[8px] sm:text-[9px] text-gray-600 font-bold">Enquiry Budget</div>
+                              <div className="text-xs sm:text-base font-black text-gray-900">{formatBudget(enquiry.budget)}</div>
+                            </div>
+                          </div>
                             {submission.price && (
                               <div className="flex items-center space-x-1.5">
                                 <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -605,38 +605,38 @@ const MyResponses = () => {
                                   <div className="text-xs sm:text-base font-black text-gray-900">{submission.price}</div>
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        )}
+                          )}
+                        </div>
+                      )}
 
                         {/* Status-specific Actions */}
                         {!isExpired && !isEnquiryDeleted && (
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">{enquiry && (
-                              <Link 
-                                to={`/enquiry/${enquiry.id}`}
-                                onClick={(e) => {
-                                  if (isExpired || isEnquiryDeleted) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                  }
-                                }}
+                          <Link 
+                            to={`/enquiry/${enquiry.id}`}
+                            onClick={(e) => {
+                              if (isExpired || isEnquiryDeleted) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
                                 className="w-full sm:flex-shrink-0 lg:flex-1 group/btn"
-                              >
+                          >
                                 <button 
-                                  disabled={isExpired || isEnquiryDeleted}
+                              disabled={isExpired || isEnquiryDeleted}
                                   className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
-                                >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
+                            >
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                              {/* Shimmer effect */}
                                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                                   <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
-                                  <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
+                              <span className="whitespace-nowrap tracking-tight relative z-10">View Enquiry</span>
                                 </button>
-                              </Link>
-                            )}
-                            
+                          </Link>
+                      )}
+
                             {submission.status === 'approved' && !isEnquiryDeleted && (
                               <Link 
                                 to={`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`}

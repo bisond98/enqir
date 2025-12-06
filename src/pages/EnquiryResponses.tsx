@@ -2689,7 +2689,7 @@ const EnquiryResponses = () => {
                 <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                   <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                   Chat.
-                </h1>
+                  </h1>
               </div>
               
               {/* Content Card - White Background */}

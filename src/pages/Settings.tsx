@@ -118,7 +118,7 @@ const Settings = () => {
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
               Manage your account preferences and platform settings.
-              </p>
+            </p>
                 </div>
               </div>
             </div>

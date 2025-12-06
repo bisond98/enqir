@@ -943,8 +943,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                             className="h-8 w-8 p-0 hover:bg-muted/50"
                           >
                             <Settings className="h-4 w-4" />
-                          </Button>
-                        </Link>
+                    </Button>
+                  </Link>
                         <Button 
                           variant="ghost" 
                           size="sm" 
@@ -952,8 +952,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           onClick={() => setShowSignOutDialog(true)}
                         >
                           <LogOut className="h-4 w-4" />
-                        </Button>
-                      </div>
+                  </Button>
+                </div>
                     )}
                   </div>
                 </>

@@ -564,7 +564,7 @@ const MyEnquiries = () => {
                     Track & Manage Your Enquiries.
                   </p>
                 </div>
-              </div>
+                </div>
               </div>
             </div>
           </div>
