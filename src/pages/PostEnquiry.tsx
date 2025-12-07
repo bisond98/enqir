@@ -2104,7 +2104,7 @@ export default function PostEnquiry() {
                                 ) : (
                                   <>
                                     <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
-                                    <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10">Add Image</p>
+                                    <p className="text-[8px] sm:text-[9px] text-black font-black text-center relative z-10">Add Image</p>
                                   </>
                                 )}
                               </div>

@@ -1062,6 +1062,47 @@ const Admin = () => {
         } catch (notificationError) {
           console.error('Failed to create seller approval notification:', notificationError);
         }
+
+        // Get enquiry data to notify both buyer and seller about chat availability
+        try {
+          if (submission.enquiryId) {
+            const enquiryDoc = await getDoc(doc(db, 'enquiries', submission.enquiryId));
+            if (enquiryDoc.exists()) {
+              const enquiryData = enquiryDoc.data();
+              const buyerId = enquiryData.userId;
+              
+              // Notify the BUYER (enquiry owner) that a new chat is available
+              if (buyerId && buyerId !== submission.sellerId && createNotificationForUser) {
+                await createNotificationForUser(buyerId, 'new_chat', {
+                  title: '💬 New Chat Available!',
+                  message: `A seller's response to "${enquiryData.title || submission.title}" has been approved. You can now chat with them!`,
+                  priority: 'high',
+                  actionUrl: `/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`,
+                  actionText: 'Open Chat',
+                  enquiryId: submission.enquiryId,
+                  sellerId: submission.sellerId
+                });
+                console.log('✅ Buyer chat notification created successfully');
+              }
+
+              // Notify the SELLER that a new chat is available (chat card notification)
+              if (submission.sellerId && createNotificationForUser) {
+                await createNotificationForUser(submission.sellerId, 'new_chat', {
+                  title: '💬 New Chat Available!',
+                  message: `Your response to "${enquiryData.title || submission.title}" has been approved. You can now chat with the buyer!`,
+                  priority: 'high',
+                  actionUrl: `/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`,
+                  actionText: 'Open Chat',
+                  enquiryId: submission.enquiryId,
+                  sellerId: submission.sellerId
+                });
+                console.log('✅ Seller chat notification created successfully');
+              }
+            }
+          }
+        } catch (chatNotificationError) {
+          console.error('Failed to create chat notifications:', chatNotificationError);
+        }
       }
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to approve seller response', variant: 'destructive' });

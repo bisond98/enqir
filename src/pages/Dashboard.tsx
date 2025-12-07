@@ -1679,6 +1679,40 @@ const Dashboard = () => {
                               }
                             }}
                           >
+                            {/* EXPIRED Stamp Badge */}
+                            {expiredFlag && (
+                              <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                  <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                    {/* Distressed border effect */}
+                                    <div className="absolute inset-0 border-4 rounded-sm" style={{
+                                      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                                      filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                      WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                                      borderColor: '#ef4444',
+                                      borderWidth: '4px',
+                                      borderStyle: 'solid'
+                                    }}></div>
+                                    {/* Text with distressed effect */}
+                                    <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                      <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
+                                        color: '#ef4444',
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                        letterSpacing: '0.15em',
+                                        filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                        WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                                      }}>EXPIRED</span>
+                                    </div>
+                                    {/* Additional distressed texture overlay */}
+                                    <div className="absolute inset-0 opacity-20" style={{
+                                      background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                                      backgroundSize: '8px 8px'
+                                    }}></div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                             {/* Premium Header with Sophisticated Design */}
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
@@ -2165,6 +2199,40 @@ const Dashboard = () => {
                             }
                           }}
                         >
+                          {/* EXPIRED Stamp Badge */}
+                          {isEnquiryExpired && (
+                            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                              <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                  {/* Distressed border effect */}
+                                  <div className="absolute inset-0 border-4 rounded-sm" style={{
+                                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                                    filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                                    borderColor: '#ef4444',
+                                    borderWidth: '4px',
+                                    borderStyle: 'solid'
+                                  }}></div>
+                                  {/* Text with distressed effect */}
+                                  <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                    <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
+                                      color: '#ef4444',
+                                      textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                      letterSpacing: '0.15em',
+                                      filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                      WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                                    }}>EXPIRED</span>
+                                  </div>
+                                  {/* Additional distressed texture overlay */}
+                                  <div className="absolute inset-0 opacity-20" style={{
+                                    background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                                    backgroundSize: '8px 8px'
+                                  }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
@@ -2392,45 +2460,48 @@ const Dashboard = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-400/0 to-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
-                    {savedEnquiries.length}
+                    <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      {savedEnquiries.length}
+                    </h3>
+                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total</p>
                   </div>
-                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Total</div>
-                </div>
                 </motion.div>
                 
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
-                    {savedEnquiries.filter(e => e.status === 'live').length}
+                    <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      {savedEnquiries.filter(e => e.status === 'live').length}
+                    </h3>
+                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
                   </div>
-                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Active</div>
-                </div>
                 </motion.div>
                 
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="group relative flex flex-col items-center justify-center bg-white rounded-full border-2 border-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-default overflow-hidden w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                    <div className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 tracking-tight leading-none">
-                    {savedEnquiries.filter(e => e.status === 'completed').length}
+                    <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      {savedEnquiries.filter(e => e.status === 'completed').length}
+                    </h3>
+                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Saved</p>
                   </div>
-                    <div className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm text-black font-bold uppercase tracking-wide">Saved</div>
-                </div>
                 </motion.div>
               </div>
 
@@ -2464,10 +2535,44 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isExpired 
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-black shadow-sm'
-                              : 'bg-white border-2 border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
+                              : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >
+                          {/* EXPIRED Stamp Badge */}
+                          {isExpired && (
+                            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                              <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                  {/* Distressed border effect */}
+                                  <div className="absolute inset-0 border-4 rounded-sm" style={{
+                                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                                    filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                                    borderColor: '#ef4444',
+                                    borderWidth: '4px',
+                                    borderStyle: 'solid'
+                                  }}></div>
+                                  {/* Text with distressed effect */}
+                                  <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                    <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
+                                      color: '#ef4444',
+                                      textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                      letterSpacing: '0.15em',
+                                      filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                      WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                                    }}>EXPIRED</span>
+                                  </div>
+                                  {/* Additional distressed texture overlay */}
+                                  <div className="absolute inset-0 opacity-20" style={{
+                                    background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                                    backgroundSize: '8px 8px'
+                                  }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                           {/* Premium Header */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
                             isExpired ? 'opacity-70' : ''
@@ -2514,10 +2619,11 @@ const Dashboard = () => {
                           }
                         }}
                         disabled={isExpired}
-                        className="w-full border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:border-black text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-lg lg:rounded-md xl:rounded-lg shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center relative overflow-hidden"
+                        className="w-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center relative overflow-hidden group"
                       >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg lg:rounded-md xl:rounded-lg pointer-events-none" />
-                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 relative z-10 text-white" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
                         <span className="relative z-10">View Details</span>
                       </Button>
                     </div>
@@ -2556,7 +2662,7 @@ const Dashboard = () => {
               <div className="mb-6 sm:mb-8 lg:mb-6">
                 <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-xl p-5 sm:p-8 lg:p-6 overflow-hidden">
                   {/* Content Card - White Background */}
-                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4">
+                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-1.5 sm:p-2 lg:p-2">
                     <div className="text-center">
                       <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-3">
                         <h2 className="text-4xl sm:text-6xl lg:text-4xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
@@ -2573,7 +2679,7 @@ const Dashboard = () => {
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full h-full border-4 border-black bg-black text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:bg-gray-900 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                  <button className="w-full h-full border-[0.5px] border-black bg-black text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:bg-gray-900 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}
@@ -2584,7 +2690,7 @@ const Dashboard = () => {
                 </Link>
                 
                 <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full h-full border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-700 hover:to-blue-800 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                  <button className="w-full h-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-700 hover:to-blue-800 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}

@@ -602,7 +602,7 @@ const MyEnquiries = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{totalCount}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total Enquiries</p>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total Enquiries</p>
                           </div>
                   </motion.div>
                   
@@ -616,7 +616,7 @@ const MyEnquiries = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{liveCount}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Live</p>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Live</p>
                           </div>
                   </motion.div>
                   
@@ -630,7 +630,7 @@ const MyEnquiries = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{pendingCount}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
                           </div>
                   </motion.div>
                   
@@ -644,7 +644,7 @@ const MyEnquiries = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{completedCount}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Completed</p>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Completed</p>
                           </div>
                   </motion.div>
                 </>
@@ -698,6 +698,40 @@ const MyEnquiries = () => {
                       ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-800 shadow-sm'
                       : 'bg-white border border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
                   }`}>
+                    {/* EXPIRED Stamp Badge */}
+                    {isExpired && (
+                      <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                        <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                          <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                            {/* Distressed border effect */}
+                            <div className="absolute inset-0 border-4 rounded-sm" style={{
+                              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                              filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                              WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                              borderColor: '#ef4444',
+                              borderWidth: '4px',
+                              borderStyle: 'solid'
+                            }}></div>
+                            {/* Text with distressed effect */}
+                            <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                              <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
+                                color: '#ef4444',
+                                textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                letterSpacing: '0.15em',
+                                filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                              }}>EXPIRED</span>
+                            </div>
+                            {/* Additional distressed texture overlay */}
+                            <div className="absolute inset-0 opacity-20" style={{
+                              background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                              backgroundSize: '8px 8px'
+                            }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     {/* Premium Header with Sophisticated Design */}
                     <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${
                       isExpired ? 'opacity-70' : ''
@@ -853,18 +887,18 @@ const MyEnquiries = () => {
                           
                           {/* Category */}
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 pt-1.5 sm:pt-2 lg:pt-1.5 xl:pt-2">
-                            <Badge variant="outline" className="text-[7px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold border-2 border-gray-300/80 text-gray-800 px-1.5 sm:px-3 lg:px-2.5 xl:px-3 py-0.5 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white shadow-sm">
+                            <Badge variant="outline" className="text-[7px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold border-0 text-gray-800 px-1.5 sm:px-3 lg:px-2.5 xl:px-3 py-0.5 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white shadow-sm">
                               {enquiry.category}
                             </Badge>
                             {/* Posted - Mobile Only */}
-                            <span className="sm:hidden flex items-center gap-1 px-1.5 py-0.5 bg-gray-50/80 border border-gray-200/60 rounded-md text-[7px] text-gray-600 font-semibold">
+                            <span className="sm:hidden flex items-center gap-1 px-1.5 py-0.5 bg-gray-50/80 border-0 rounded-md text-[7px] text-gray-600 font-semibold">
                               Posted: {formatDate(enquiry.createdAt)}
                             </span>
                           </div>
                         </div>
 
                         {/* Budget & Location Group */}
-                        <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 p-2 sm:p-2.5 lg:p-2 xl:p-2.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl border-2 border-gray-800 shadow-sm">
+                        <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 p-2 sm:p-2.5 lg:p-2 xl:p-2.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl border-[0.5px] border-gray-800 shadow-sm">
                           <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
                             <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6.5 lg:h-6.5 xl:w-7 xl:h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
                               <span className="text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs">₹</span>
@@ -875,7 +909,7 @@ const MyEnquiries = () => {
                             </div>
                           </div>
                           {enquiry.location && (
-                            <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-2 border-gray-800 rounded-md lg:rounded-sm xl:rounded-md">
+                            <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-[0.5px] border-gray-800 rounded-md lg:rounded-sm xl:rounded-md">
                               <span className="text-sm sm:text-base lg:text-sm xl:text-base">📍</span>
                               <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-700 font-semibold truncate max-w-[120px] sm:max-w-none">{enquiry.location}</span>
                             </div>
@@ -883,7 +917,7 @@ const MyEnquiries = () => {
                         </div>
 
                         {/* Plan Information Group - Premium Design */}
-                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-2 border-gray-800 shadow-md">
+                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-[0.5px] border-gray-800 shadow-md">
                           {/* Current Plan & Response Limit */}
                           <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
                             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
@@ -905,9 +939,11 @@ const MyEnquiries = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-blue-100/80 border-2 border-gray-800 rounded-lg lg:rounded-md xl:rounded-lg flex-shrink-0">
-                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0"></div>
-                              <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                              {/* Physical depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0 relative z-10"></div>
+                              <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap relative z-10">
                                 {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
                               </span>
                             </div>
@@ -930,12 +966,12 @@ const MyEnquiries = () => {
                             <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5">
                               <button
                                 onClick={() => handleUpgradeClick(enquiry)}
-                                className="w-full border-2 sm:border-4 border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/upgrade"
+                                className="w-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/upgrade"
                               >
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                                 {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                 <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform duration-200 relative z-10" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">Upgrade to Premium</span>
                               </button>
@@ -948,7 +984,7 @@ const MyEnquiries = () => {
                           {/* Admin Notes - Hidden */}
                           {/* Timestamps */}
                           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
-                            <span className="hidden sm:flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                            <span className="hidden sm:flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-0 rounded-lg lg:rounded-md xl:rounded-lg">
                               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
                               <span className="font-semibold">Posted: {formatDate(enquiry.createdAt)}</span>
                             </span>
@@ -970,17 +1006,17 @@ const MyEnquiries = () => {
                           }}
                         >
                           {isExpired ? (
-                            <button disabled className="flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black text-gray-400 bg-gray-100 text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black rounded-lg sm:rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden">
+                            <button disabled className="flex-shrink-0 lg:flex-1 border-[0.5px] border-black text-gray-400 bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden">
                               <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10" />
                               <span className="whitespace-nowrap relative z-10">View Details</span>
                             </button>
                           ) : (
                             <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-shrink-0 lg:flex-1 group/btn">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                                 {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                 <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Details</span>
                               </button>
@@ -989,7 +1025,7 @@ const MyEnquiries = () => {
                           
                           <button 
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
@@ -999,8 +1035,8 @@ const MyEnquiries = () => {
                             {/* Physical button depth effect */}
                             {!isExpired && (
                               <>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               </>
                             )}
                             <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
@@ -1014,11 +1050,11 @@ const MyEnquiries = () => {
                           
                           {enquiry.status === 'live' && !isExpired && (
                             <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-shrink-0 lg:flex-1 group/chats">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                                 {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                 <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10 text-green-500 fill-green-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
                               </button>
@@ -1032,13 +1068,13 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 border-2 sm:border-4 border-black bg-gray-100 hover:bg-gray-200 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-lg sm:rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
                           >
                             {/* Physical button depth effect */}
                             {!isExpired && (
                               <>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               </>
                             )}
                             <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-red-500 fill-red-500 stroke-black stroke-2" />

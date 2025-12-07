@@ -2135,19 +2135,19 @@ const Landing = () => {
                               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
                               <span className="text-[10px] sm:text-xs font-normal text-black truncate min-w-0">
                                 {enquiry.deadline ? (enquiry.deadline.toDate ? formatDate(enquiry.deadline.toDate().toISOString()) : formatDate(new Date(enquiry.deadline).toISOString())) : 'N/A'}
-                              </span>
-                            </div>
+                            </span>
                           </div>
-                          {/* Deadline Timer */}
-                          {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
+                        </div>
+                        {/* Deadline Timer */}
+                        {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
                             <div className="border-[0.5px] border-black rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                               <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
-                              <CountdownTimer
-                                deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
+                            <CountdownTimer
+                              deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
                                 className="text-[9px] sm:text-[10px]"
-                              />
-                            </div>
-                          )}
+                            />
+                          </div>
+                        )}
                         
                         {/* Sell Button - Mobile only (inside meta container) */}
                         <div className="block sm:hidden w-full">
@@ -2191,8 +2191,8 @@ const Landing = () => {
                               <span className="relative z-10">Sign In</span>
                             </button>
                           )}
-                        </div>
-                        
+                      </div>
+                      
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
                         <div className="block sm:hidden w-full border-t border-black pt-1.5">
                           <div className="flex items-center gap-1.5 justify-between">

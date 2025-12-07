@@ -972,33 +972,33 @@ export default function EnquiryWall() {
               <div className="relative">
                 <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" />
                 <div className="relative">
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Search enquiries..."
-                    value={searchTerm}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleSearchChange(searchTerm);
-                      }
-                    }}
-                    onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search enquiries..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSearchChange(searchTerm);
+                    }
+                  }}
+                  onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-4 focus:ring-black/20 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
-                    style={{ 
-                      fontSize: '16px', // Prevents zoom on iOS
-                      lineHeight: '1.5',
-                      paddingTop: '0.75rem',
-                      paddingBottom: '0.75rem',
-                      paddingLeft: '2.75rem', // More space for icon on mobile
-                      WebkitAppearance: 'none',
-                      WebkitTapHighlightColor: 'transparent',
-                      direction: 'ltr'
-                    }}
-                    disabled={isAISearching}
-                  />
+                  style={{ 
+                    fontSize: '16px', // Prevents zoom on iOS
+                    lineHeight: '1.5',
+                    paddingTop: '0.75rem',
+                    paddingBottom: '0.75rem',
+                    paddingLeft: '2.75rem', // More space for icon on mobile
+                    WebkitAppearance: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    direction: 'ltr'
+                  }}
+                  disabled={isAISearching}
+                />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                 </div>
@@ -1082,7 +1082,7 @@ export default function EnquiryWall() {
               {/* Categories Box - Scrollable */}
               <div className="w-full" ref={categoryBoxRef}>
                 <div className="bg-white border border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
-                  {/* Physical button depth effect */}
+                      {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                   <div className="relative z-10">
                     <h3 className="text-xs sm:text-sm md:text-base font-black text-black mb-3 sm:mb-4 bg-white border-2 border-black rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 inline-block">
@@ -1208,8 +1208,8 @@ export default function EnquiryWall() {
                       ));
                       })()}
                   </div>
-                  </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -1366,6 +1366,48 @@ export default function EnquiryWall() {
                     } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
                       isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l border-l-green-500'
                     }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
+                      {/* EXPIRED Stamp Badge */}
+                      {isEnquiryDisabled(enquiry) && (
+                        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                          <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                            <div className={`relative bg-transparent ${
+                              viewMode === 'grid' 
+                                ? 'px-4 sm:px-6 lg:px-5 xl:px-6 py-2 sm:py-2.5 lg:py-2 xl:py-2.5' 
+                                : 'px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4'
+                            }`} style={{ filter: 'none', WebkitFilter: 'none' }}>
+                              {/* Distressed border effect */}
+                              <div className={`absolute inset-0 rounded-sm ${viewMode === 'grid' ? 'border-2' : 'border-4'}`} style={{
+                                clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                                filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                                borderColor: '#ef4444',
+                                borderWidth: viewMode === 'grid' ? '2px' : '4px',
+                                borderStyle: 'solid'
+                              }}></div>
+                              {/* Text with distressed effect */}
+                              <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                <span className={`font-black tracking-wider ${
+                                  viewMode === 'grid'
+                                    ? 'text-2xl sm:text-3xl lg:text-2xl xl:text-3xl'
+                                    : 'text-4xl sm:text-5xl lg:text-4xl xl:text-5xl'
+                                }`} style={{
+                                  color: '#ef4444',
+                                  textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                  letterSpacing: '0.15em',
+                                  filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                  WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                                }}>EXPIRED</span>
+                              </div>
+                              {/* Additional distressed texture overlay */}
+                              <div className="absolute inset-0 opacity-20" style={{
+                                background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                                backgroundSize: '8px 8px'
+                              }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       {/* Physical button depth effect */}
                       {!isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
