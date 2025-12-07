@@ -2658,100 +2658,101 @@ const EnquiryResponses = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 py-4 sm:py-6 lg:py-8">
-          {/* Professional Header - Matching Dashboard Style */}
-          <div className="mb-6 sm:mb-12 lg:mb-16 -mt-2 sm:-mt-4">
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
-              {/* Header Section with Back Button */}
-              <div className="mb-4 sm:mb-6">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      // Go back to previous page (where user came from)
-                      if (window.history.length > 1) {
-                        navigate(-1);
-                      } else {
-                        // Fallback if no history, go to my-enquiries
-                        navigate('/my-enquiries');
-                      }
-                    }}
-                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                  >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </Button>
-                </div>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+        {/* Header - Matching Settings Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => {
+                    // Go back to previous page (where user came from)
+                    if (window.history.length > 1) {
+                      navigate(-1);
+                    } else {
+                      // Fallback if no history, go to my-enquiries
+                      navigate('/my-enquiries');
+                    }
+                  }}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
+                <div className="w-10 h-10"></div>
               </div>
-              
-              {/* Chat Heading in Black Header */}
-              <div className="flex justify-center items-center mb-4 sm:mb-6">
-                <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
-                  <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
-                  Chat.
-                  </h1>
-              </div>
-              
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="space-y-3 sm:space-y-4">
-                    {/* Title Row with Response Count Badge */}
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black leading-tight truncate flex-1 min-w-0">
-                        {enquiry.title}
-                      </h3>
-                      {/* Only show response count to enquiry owner */}
-                      {user && user.uid === enquiry.userId && (
-                        <div className="flex items-center justify-center border-2 border-black rounded-md px-2.5 py-1.5 flex-shrink-0">
-                          <span className="text-base sm:text-lg font-black text-black">{approvedResponses.length}</span>
-                        </div>
-                      )}
+            </div>
+            
+            {/* Chat Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
+                Chat.
+              </h1>
+            </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-3 sm:p-4 lg:p-5">
+              {/* Content Card - Black Background */}
+              <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-5">
+                <div className="space-y-2.5 sm:space-y-3">
+                  {/* Title Row with Response Count Badge - Mobile Optimized */}
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight text-center flex-1 min-w-0 px-1">
+                      {enquiry.title}
+                    </h3>
+                    {/* Only show response count to enquiry owner */}
+                    {user && user.uid === enquiry.userId && (
+                      <div className="flex items-center justify-center border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0">
+                        <span className="text-xs sm:text-base font-black text-white">{approvedResponses.length}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Category and Type Row - Centered Badges */}
+                  <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-center">
+                    <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1">
+                      <Tag className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
+                      <span className="text-[7px] sm:text-[9px] text-white font-medium capitalize">{enquiry.category}</span>
+                    </div>
+                    {enquiry.isUrgent && (
+                      <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600">
+                        <Sparkles className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
+                        <span className="text-[7px] sm:text-[9px] text-white font-medium">Urgent</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Budget and Location Row - Horizontal Layout */}
+                  <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 pt-2 border-t-2 border-black">
+                    {/* Budget Section */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0">
+                      <div className="text-left min-w-0 flex-1">
+                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Budget</div>
+                        <div className="text-[10px] sm:text-sm font-bold text-white truncate">{formatBudget(enquiry.budget)}</div>
+                      </div>
                     </div>
                     
-                    {/* Category and Type Row - Single Color Badges */}
-                    <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center">
-                      <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5">
-                        <Tag className="h-3.5 w-3.5 text-black flex-shrink-0" />
-                        <span className="text-[8px] sm:text-[9px] text-black font-medium capitalize">{enquiry.category}</span>
-                      </div>
-                      {enquiry.isUrgent && (
-                        <div className="inline-flex items-center gap-1.5 border-2 border-black rounded-md px-2.5 py-1.5 bg-red-50">
-                          <Sparkles className="h-3.5 w-3.5 text-red-600 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm text-red-600 font-medium">Urgent</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Budget and Location Row - Single Color Layout */}
-                    <div className="flex items-center justify-between pt-2 border-t-2 border-black">
-                      {/* Budget Section - Left */}
-                      <div className="flex items-center gap-2 sm:gap-2.5">
-                        <span className="text-base sm:text-lg text-black flex-shrink-0 h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">₹</span>
-                        <div className="text-left">
-                          <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Budget</div>
-                          <div className="text-sm sm:text-base font-bold text-black">{formatBudget(enquiry.budget)}</div>
+                    {/* Location Section */}
+                    {enquiry.location && (
+                      <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0 justify-end">
+                        <MapPin className="hidden sm:block h-4 w-4 text-white flex-shrink-0" />
+                        <div className="text-right min-w-0 flex-1">
+                          <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Location</div>
+                          <div className="text-[10px] sm:text-sm font-bold text-white truncate">{enquiry.location}</div>
                         </div>
                       </div>
-                      
-                      {/* Location Section - Right */}
-                      {enquiry.location && (
-                        <div className="flex items-center gap-2 sm:gap-2.5">
-                          <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
-                          <div className="text-right">
-                            <div className="text-[10px] sm:text-xs text-black font-medium mb-0.5 sm:mb-1">Location</div>
-                            <div className="text-sm sm:text-base font-bold text-black">{enquiry.location}</div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-
+        <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 py-4 sm:py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
             {/* Responses List */}
             <div className="lg:col-span-1 order-2 lg:order-1">
