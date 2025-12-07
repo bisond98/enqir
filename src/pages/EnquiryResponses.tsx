@@ -2756,7 +2756,10 @@ const EnquiryResponses = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
             {/* Responses List */}
             <div className="lg:col-span-1 order-2 lg:order-1">
-              <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5 text-center sm:text-left">Approved Responses</h3>
+              <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5 text-center sm:text-left">
+                Approved Responses
+                <span className="text-[9px] sm:text-[10px] lg:text-xs font-serif font-bold text-slate-600 ml-1.5 italic">(select to chat)</span>
+              </h3>
               {approvedResponses.length === 0 ? (
                 <Card className="p-4 sm:p-6 lg:p-8 text-center border-[0.5px] border-black shadow-lg rounded-2xl">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
@@ -2768,37 +2771,43 @@ const EnquiryResponses = () => {
               ) : (
                 <div className="space-y-3 sm:space-y-4">
                   {/* Visible Responses */}
-                  {getVisibleResponses().map((response, index) => (
+                  {getVisibleResponses().map((response, index) => {
+                    const isSelected = selectedResponse?.id === response.id || selectedResponse?.sellerId === response.sellerId;
+                    return (
+                    <div key={response.id}>
                     <div
-                      key={response.id}
-                      className="cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-hidden group/card"
-                      style={{ border: '1.5px solid black' }}
+                      className={`cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-visible group/card ${
+                        isSelected ? 'ring-4 ring-black ring-offset-2' : ''
+                      }`}
+                      style={{ border: isSelected ? '2px solid black' : '1.5px solid black' }}
                       onClick={() => handleResponseClick(response)}
                     >
                       <div
-                        className={`w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl bg-white ${
-                          selectedResponse?.id === response.id
-                            ? 'ring-4 ring-black bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                            : 'shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
+                        className={`w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl ${
+                          isSelected
+                            ? 'bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                            : 'bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                         style={{ border: 'none' }}
                       >
                       {/* Physical button depth effect */}
-                      {selectedResponse?.id !== response.id && (
+                      {!isSelected && (
                         <>
                           <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                         </>
                       )}
                       <CardContent className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
-                        <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
-                          {user?.uid === enquiry?.userId && (
-                            <Badge variant="outline" className="text-[8px] sm:text-xs font-black bg-gradient-to-b from-blue-600 to-blue-700 text-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg whitespace-nowrap flex-shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge mb-1.5 sm:mb-2">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                        {user?.uid === enquiry?.userId && (
+                          <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 lg:top-3 lg:left-3 z-20">
+                            <div className="border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-[8px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl whitespace-nowrap flex-shrink-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/responsebadge">
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Response #{index + 1}</span>
-                            </Badge>
-                          )}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
                           <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
                           {response.isIdentityVerified && (
                             <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
@@ -2807,7 +2816,7 @@ const EnquiryResponses = () => {
                             </div>
                           )}
                         </div>
-                        <p className="text-black font-medium text-xs sm:text-sm lg:text-base mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
+                        <p className="text-black font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-between text-xs sm:text-sm lg:text-base text-black font-medium">
                           <span className="font-semibold text-blue-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                           <span>{response.imageCount} images</span>
@@ -2815,7 +2824,9 @@ const EnquiryResponses = () => {
                       </CardContent>
                       </div>
                     </div>
-                  ))}
+                    </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -2845,8 +2856,8 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
-                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-white p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
+                <Card className="border border-black shadow-sm h-[calc(100vh-100px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
+                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
                       <Button
@@ -2863,13 +2874,13 @@ const EnquiryResponses = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-black rounded-full flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-white" />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-black">Chat</h2>
-                            <span className="text-xs sm:text-sm text-black font-medium">with</span>
+                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-white">Chat</h2>
+                            <span className="text-xs sm:text-sm text-white font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2879,7 +2890,7 @@ const EnquiryResponses = () => {
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
                                 (userProfiles[enquiry?.userId]?.isProfileVerified || false)
                               }
-                              className="text-xs sm:text-sm text-black"
+                              className="text-xs sm:text-sm text-white"
                             />
                           </div>
                         </div>
@@ -3102,7 +3113,7 @@ const EnquiryResponses = () => {
 
 
 
-                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40">
+                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40 min-h-[400px] sm:min-h-0">
                     {chatMessages.length === 0 ? (
                       <div className="flex items-center justify-center h-full min-h-[200px]">
                         <div className="text-center">
