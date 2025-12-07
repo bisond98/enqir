@@ -2700,7 +2700,7 @@ const EnquiryResponses = () => {
                 <div className="space-y-2.5 sm:space-y-3">
                   {/* Title Row with Response Count Badge - Mobile Optimized */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
-                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight text-center flex-1 min-w-0 px-1">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1">
                       {enquiry.title}
                     </h3>
                     {/* Only show response count to enquiry owner */}
@@ -2857,16 +2857,16 @@ const EnquiryResponses = () => {
                 // Always show chat box for sellers, but with different behavior
                 <>
                 <Card className="border border-black shadow-sm h-[calc(100vh-100px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
-                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-gradient-to-br from-green-700 via-green-800 to-green-900 p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
+                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-green-950 p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={closeChat}
-                        className="text-black hover:text-black hover:bg-gray-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                        className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                       >
-                        <X className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
+                        <X className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
                       </Button>
                     </div>
                     
@@ -2874,7 +2874,7 @@ const EnquiryResponses = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex items-center justify-center flex-shrink-0">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black">
                           <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -2904,9 +2904,9 @@ const EnquiryResponses = () => {
                           const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
                           const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
                           return responseNumber ? (
-                            <div className="flex items-center justify-center border-[0.5px] border-black rounded-md sm:rounded-lg px-2.5 py-1.5 bg-white text-black flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                            <div className="border-[0.5px] border-black !bg-white hover:!bg-gray-50 text-black text-[9px] sm:text-[10px] font-black px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/responsebadge flex-shrink-0">
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">#Response {responseNumber}</span>
                             </div>
                           ) : null;
@@ -2919,10 +2919,10 @@ const EnquiryResponses = () => {
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-black hover:text-black hover:bg-gray-100 cursor-pointer min-touch"
+                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-white hover:text-white hover:bg-white/10 cursor-pointer min-touch"
                               title="Call feature coming soon"
                             >
-                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-black" />
+                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-white" />
                             </Button>
                             
                             {/* Coming Soon Tooltip/Badge - Desktop */}
@@ -2965,9 +2965,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-black hover:text-black hover:bg-gray-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-black" />
+                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-white" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 sm:w-48 bg-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg shadow-lg p-1.5 sm:p-2">
@@ -3023,9 +3023,9 @@ const EnquiryResponses = () => {
                           variant="ghost"
                           size="sm"
                           onClick={closeChat}
-                          className="hidden lg:flex text-black hover:text-black hover:bg-gray-100 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                          className="hidden lg:flex text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                         >
-                          <X className="h-5.5 w-5.5 text-black" />
+                          <X className="h-5.5 w-5.5 text-white" />
                         </Button>
                         
                         {/* Settings Menu - Desktop Only (aligned with close button) */}
@@ -3035,9 +3035,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-black hover:text-black hover:bg-gray-100 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-5 w-5 text-black" />
+                                <Settings className="h-5 w-5 text-white" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48 bg-white border-4 border-black rounded-lg shadow-lg p-2">
@@ -3113,7 +3113,7 @@ const EnquiryResponses = () => {
 
 
 
-                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40 min-h-[400px] sm:min-h-0">
+                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-white min-h-[400px] sm:min-h-0">
                     {chatMessages.length === 0 ? (
                       <div className="flex items-center justify-center h-full min-h-[200px]">
                         <div className="text-center">
@@ -3151,19 +3151,19 @@ const EnquiryResponses = () => {
                               className={`flex ${message.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
                             >
                               <div
-                                className={`max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative ${
+                                className={`max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative border-[0.5px] border-black ${
                                   message.senderId === user?.uid
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-blue-500 text-white'
+                                    ? 'bg-white text-black'
+                                    : 'bg-white text-black'
                                 }`}
                               >
                                 {/* Message Content */}
                                 {message.message && (
-                                  <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-white font-medium">
+                                  <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-black font-medium">
                                     {message.message.split(/(₹?\d+(?:,\d+)*(?:\.\d+)?)/g).map((part, i) => {
                                       // Check if part is a number (with or without ₹)
                                       if (/^₹?\d+(?:,\d+)*(?:\.\d+)?$/.test(part)) {
-                                        return <span key={i} className="text-blue-100 font-bold bg-blue-800/50 px-1 rounded">{part}</span>;
+                                        return <span key={i} className="text-black font-bold bg-gray-200 px-1 rounded">{part}</span>;
                                       }
                                       return <span key={i}>{part}</span>;
                                     })}
@@ -3337,12 +3337,12 @@ const EnquiryResponses = () => {
                               
                               {/* Message Meta - Mobile Responsive */}
                               <div className="flex items-center justify-end space-x-1.5 sm:space-x-2 mt-1.5 sm:mt-2">
-                                <span className={`text-[9px] sm:text-[10px] lg:text-xs font-medium text-white/90`}>
+                                <span className={`text-[8px] sm:text-[9px] lg:text-[10px] font-medium text-gray-600`}>
                                   {formatDate(message.timestamp)}
                                 </span>
                                 {message.senderId === user?.uid && (
                                   <div className="ml-0.5 sm:ml-1">
-                                    <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                                    <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-600" />
                                   </div>
                                 )}
                               </div>
