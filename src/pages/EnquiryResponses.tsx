@@ -2755,9 +2755,9 @@ const EnquiryResponses = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
             {/* Responses List */}
             <div className="lg:col-span-1 order-2 lg:order-1">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5">Approved Responses</h3>
+              <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5 text-center sm:text-left">Approved Responses</h3>
               {approvedResponses.length === 0 ? (
-                <Card className="p-4 sm:p-6 lg:p-8 text-center border-2 border-black shadow-lg rounded-2xl">
+                <Card className="p-4 sm:p-6 lg:p-8 text-center border-[0.5px] border-black shadow-lg rounded-2xl">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-slate-600" />
                   </div>
@@ -2768,15 +2768,20 @@ const EnquiryResponses = () => {
                 <div className="space-y-3 sm:space-y-4">
                   {/* Visible Responses */}
                   {getVisibleResponses().map((response, index) => (
-                    <Card
+                    <div
                       key={response.id}
-                      className={`cursor-pointer border-2 sm:border-4 border-black transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-hidden group/card ${
-                        selectedResponse?.id === response.id
-                          ? 'ring-4 ring-black bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                          : 'shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
-                      }`}
+                      className="cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-hidden group/card"
+                      style={{ border: '1.5px solid black' }}
                       onClick={() => handleResponseClick(response)}
                     >
+                      <div
+                        className={`w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl bg-white ${
+                          selectedResponse?.id === response.id
+                            ? 'ring-4 ring-black bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                            : 'shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
+                        }`}
+                        style={{ border: 'none' }}
+                      >
                       {/* Physical button depth effect */}
                       {selectedResponse?.id !== response.id && (
                         <>
@@ -2784,26 +2789,22 @@ const EnquiryResponses = () => {
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                         </>
                       )}
-                      <CardContent className="p-3.5 sm:p-4 lg:p-5 pointer-events-none relative z-10">
-                        <div className="flex items-start justify-between mb-2.5 sm:mb-3 lg:mb-3.5">
-                          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 mr-2">
-                            {user?.uid === enquiry?.userId && (
-                              <Badge variant="outline" className="text-[8px] sm:text-xs font-black bg-gradient-to-b from-blue-600 to-blue-700 text-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg whitespace-nowrap flex-shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
-                                <span className="relative z-10">Response #{index + 1}</span>
-                              </Badge>
-                            )}
-                            <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg">{response.title}</h4>
-                          </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {response.isIdentityVerified && (
-                              <div className="flex items-center gap-0.5 sm:gap-1">
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-                                <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
-                              </div>
-                            )}
-                          </div>
+                      <CardContent className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
+                        <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
+                          {user?.uid === enquiry?.userId && (
+                            <Badge variant="outline" className="text-[8px] sm:text-xs font-black bg-gradient-to-b from-blue-600 to-blue-700 text-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg whitespace-nowrap flex-shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge mb-1.5 sm:mb-2">
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <span className="relative z-10">Response #{index + 1}</span>
+                            </Badge>
+                          )}
+                          <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
+                          {response.isIdentityVerified && (
+                            <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
+                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                              <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
+                            </div>
+                          )}
                         </div>
                         <p className="text-black font-medium text-xs sm:text-sm lg:text-base mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-between text-xs sm:text-sm lg:text-base text-black font-medium">
@@ -2811,7 +2812,8 @@ const EnquiryResponses = () => {
                           <span>{response.imageCount} images</span>
                         </div>
                       </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -2842,15 +2844,15 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border-4 border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%' }}>
-                  <CardHeader className="pb-2 sm:pb-2.5 lg:pb-3 border-b-4 border-black bg-black p-2.5 sm:p-3 lg:p-4 overflow-visible relative">
+                <Card className="border border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
+                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-white p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={closeChat}
-                        className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                        className="text-black hover:text-black hover:bg-gray-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                       >
                         <X className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                       </Button>
@@ -2860,13 +2862,13 @@ const EnquiryResponses = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-white">Chat</h2>
-                            <span className="text-xs sm:text-sm text-white font-medium">with</span>
+                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-black">Chat</h2>
+                            <span className="text-xs sm:text-sm text-black font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2876,16 +2878,8 @@ const EnquiryResponses = () => {
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
                                 (userProfiles[enquiry?.userId]?.isProfileVerified || false)
                               }
-                              className="text-xs sm:text-sm text-white"
+                              className="text-xs sm:text-sm text-black"
                             />
-                            {enquiry && (
-                              <Badge 
-                                variant={enquiry.status === 'live' ? 'default' : 'secondary'}
-                                className="text-[10px] sm:text-xs lg:text-sm h-5 sm:h-5 lg:h-6 px-2 sm:px-2.5 lg:px-3 flex-shrink-0 border-2 sm:border-4 border-white rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.5)] sm:shadow-[0_4px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)] active:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden bg-white text-black"
-                              >
-                                {enquiry.status === 'live' ? 'Live' : 'Ended'}
-                              </Badge>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -2898,7 +2892,7 @@ const EnquiryResponses = () => {
                           const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
                           const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
                           return responseNumber ? (
-                            <div className="flex items-center justify-center border-2 sm:border-4 border-white rounded-md sm:rounded-lg px-2.5 py-1.5 bg-white text-black flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.3)] sm:shadow-[0_4px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.3)] sm:hover:shadow-[0_3px_0_0_rgba(255,255,255,0.3),inset_0_2px_4px_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(255,255,255,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
+                            <div className="flex items-center justify-center border-[0.5px] border-black rounded-md sm:rounded-lg px-2.5 py-1.5 bg-white text-black flex-shrink-0 font-black text-xs sm:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/responsebadge">
                               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
                               <span className="relative z-10">#Response {responseNumber}</span>
@@ -2913,10 +2907,10 @@ const EnquiryResponses = () => {
                               variant="ghost"
                               size="sm"
                               onClick={toggleCallsEnabled}
-                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-white hover:text-white hover:bg-white/10 cursor-pointer min-touch"
+                              className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-black hover:text-black hover:bg-gray-100 cursor-pointer min-touch"
                               title="Call feature coming soon"
                             >
-                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-white" />
+                              <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-black" />
                             </Button>
                             
                             {/* Coming Soon Tooltip/Badge - Desktop */}
@@ -2959,9 +2953,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-white hover:text-white hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-black hover:text-black hover:bg-gray-100 h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-white" />
+                                <Settings className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-black" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 sm:w-48 bg-white border-2 sm:border-4 border-black rounded-md sm:rounded-lg shadow-lg p-1.5 sm:p-2">
@@ -3017,9 +3011,9 @@ const EnquiryResponses = () => {
                           variant="ghost"
                           size="sm"
                           onClick={closeChat}
-                          className="hidden lg:flex text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
+                          className="hidden lg:flex text-black hover:text-black hover:bg-gray-100 h-11 w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 min-touch"
                         >
-                          <X className="h-5.5 w-5.5 text-white" />
+                          <X className="h-5.5 w-5.5 text-black" />
                         </Button>
                         
                         {/* Settings Menu - Desktop Only (aligned with close button) */}
@@ -3029,9 +3023,9 @@ const EnquiryResponses = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-white hover:text-white hover:bg-white/10 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
+                                className="text-black hover:text-black hover:bg-gray-100 h-11 w-11 p-0 rounded-md transition-all duration-200 flex-shrink-0 min-touch"
                               >
-                                <Settings className="h-5 w-5 text-white" />
+                                <Settings className="h-5 w-5 text-black" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48 bg-white border-4 border-black rounded-lg shadow-lg p-2">
@@ -3085,7 +3079,7 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="pt-2 sm:pt-2.5 lg:pt-3 border-t-4 border-white bg-white -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4">
+                    <div className="mt-4 sm:mt-5 lg:mt-6 pt-2 sm:pt-2.5 lg:pt-3 border-t border-black bg-white -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4" style={{ borderTopWidth: '0.5px' }}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black truncate">
@@ -3109,16 +3103,18 @@ const EnquiryResponses = () => {
 
                   <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-gray-50/40">
                     {chatMessages.length === 0 ? (
-                      <div className="text-center py-10 sm:py-14 lg:py-16">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-5">
-                          <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-slate-500" />
+                      <div className="flex items-center justify-center h-full min-h-[200px]">
+                        <div className="text-center">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-2.5 lg:mb-3">
+                            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-slate-500" />
+                          </div>
+                          <h4 className="text-xs sm:text-sm lg:text-base font-bold text-black mb-1.5 sm:mb-2 lg:mb-2.5">Start chatting</h4>
+                          {user?.uid !== selectedResponse?.sellerId && (
+                            <p className="text-black font-medium text-[10px] sm:text-xs lg:text-sm max-w-sm mx-auto px-3 sm:px-4 lg:px-5">
+                              Begin discussing details and negotiating with this seller
+                            </p>
+                          )}
                         </div>
-                        <h4 className="text-sm sm:text-base lg:text-lg font-bold text-black mb-2 sm:mb-2.5 lg:mb-3">Start chatting</h4>
-                        {user?.uid !== selectedResponse?.sellerId && (
-                          <p className="text-black font-medium text-xs sm:text-sm lg:text-base max-w-sm mx-auto px-3 sm:px-4 lg:px-5">
-                            Begin discussing details and negotiating with this seller
-                          </p>
-                        )}
                       </div>
                     ) : (
                       <div className="px-3 sm:px-4 lg:px-5 py-3 sm:py-4 lg:py-5 space-y-2 sm:space-y-2.5 lg:space-y-3">
@@ -3381,9 +3377,9 @@ const EnquiryResponses = () => {
                     )}
                   </div>
 
-                  <div className="border-t-4 border-gray-800 bg-white">
+                  <div className="border-t border-gray-800 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
-                    <div className="p-2.5 sm:p-3 lg:p-4">
+                    <div className="p-1.5 sm:p-2 lg:p-2.5">
                       {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
                       <Dialog open={showMicrophonePrompt && microphonePermission !== 'granted'} onOpenChange={setShowMicrophonePrompt}>
                         <DialogContent className="sm:max-w-lg max-w-[95vw] p-0 gap-0 border-0 bg-transparent shadow-2xl">
@@ -3397,58 +3393,60 @@ const EnquiryResponses = () => {
                         </DialogContent>
                       </Dialog>
                       {/* Smart Suggestions - Mobile Responsive */}
-                      <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 mb-2.5 sm:mb-3 lg:mb-4 overflow-x-auto pb-2.5 sm:pb-3 lg:pb-4">
+                      <div className="flex items-center gap-2 sm:gap-2 lg:gap-2 mb-2 sm:mb-2.5 lg:mb-3 overflow-x-auto pb-2 sm:pb-2.5 lg:pb-3 px-2 sm:px-0 -mx-1.5 sm:mx-0 scrollbar-hide">
                         {user?.uid === selectedResponse?.sellerId ? (
                           // SELLER Suggestions - Mobile Responsive
                           <>
                             <button
                               onClick={() => setNewMessage("Payment: 50% advance, 50% on delivery")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/payment"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/payment"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/payment:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/payment:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Payment</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Delivery: 3-5 days")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/delivery"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/delivery"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delivery:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delivery:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Delivery</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Bulk discounts available")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bulk"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bulk"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bulk:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bulk:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Bulk</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Quality guarantee included")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/quality"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/quality"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/quality:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/quality:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Quality</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Meetup</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-1.5 py-0.5 sm:px-3 sm:py-2 text-[10px] sm:text-sm bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Samples</span>
                             </button>
+                            {/* Spacer for mobile to balance padding */}
+                            <div className="flex-shrink-0 w-2 sm:w-0"></div>
                           </>
                         ) : (
                           // BUYER Suggestions - Mobile Responsive
@@ -3456,68 +3454,70 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Can you provide more details about pricing?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/pricing"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/pricing"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/pricing:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/pricing:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Pricing</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What's the delivery timeline?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/timeline"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/timeline"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/timeline:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/timeline:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Timeline</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you share more images?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/images"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/images"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/images:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/images:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Images</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What are the payment terms?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/terms"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/terms"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/terms:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/terms:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Terms</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we meet in person to discuss?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup2"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup2"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup2:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup2:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Meetup</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Do you have samples I can check?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples2"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples2"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples2:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples2:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Samples</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What's your best price for this?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bestprice"
+                              className="flex-shrink-0 px-2 py-1 sm:px-2.5 sm:py-1.5 lg:px-3 lg:py-2 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bestprice"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bestprice:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bestprice:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Best Price</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you provide references or reviews?")}
-                              className="flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2.5 text-xs sm:text-sm lg:text-base bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-2 sm:border-4 border-black rounded-md sm:rounded-lg font-black min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/reviews"
+                              className="flex-shrink-0 px-2 py-1 sm:px-2.5 sm:py-1.5 lg:px-3 lg:py-2 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/reviews"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-lg pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/reviews:translate-x-full transition-transform duration-700 pointer-events-none rounded-md sm:rounded-lg" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/reviews:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Reviews</span>
                             </button>
+                            {/* Spacer for mobile to balance padding */}
+                            <div className="flex-shrink-0 w-2 sm:w-0"></div>
                           </>
                         )}
                       </div>
@@ -3697,7 +3697,7 @@ const EnquiryResponses = () => {
                       )}
 
                       {/* Simple Chat Input */}
-                      <div className="flex items-end space-x-2 sm:space-x-2.5 lg:space-x-3 border-2 border-gray-800 rounded-lg sm:rounded-xl p-2 sm:p-2.5 lg:p-3">
+                      <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 border border-gray-800 rounded-lg sm:rounded-xl p-1.5 sm:p-2 lg:p-2.5">
                         {/* Voice Recording Button */}
                         {!isRecording && !audioBlob && (
                           <Button
@@ -3766,9 +3766,9 @@ const EnquiryResponses = () => {
                           
                           {/* Attachment Options Dropdown */}
                           {showAttachmentOptions && (
-                            <div className="absolute bottom-full left-0 mb-2 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10">
+                            <div className="absolute bottom-full left-0 mb-2 bg-white border border-slate-200 rounded-lg shadow-lg p-1.5 z-10">
                               <div className="flex flex-col space-y-1">
-                                <label className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-slate-50 rounded cursor-pointer">
+                                <label className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
                                   <Image className="h-4 w-4 text-green-600" />
                                   <span>Image</span>
                                   <input
@@ -3780,7 +3780,7 @@ const EnquiryResponses = () => {
                                   />
                                 </label>
 
-                                <label className={`flex items-center space-x-2 px-3 py-2 text-sm rounded ${
+                                <label className={`flex items-center space-x-2 px-2 py-1.5 text-sm rounded ${
                                   isBlocked 
                                     ? 'opacity-50 cursor-not-allowed' 
                                     : 'hover:bg-slate-50 cursor-pointer'
@@ -3796,7 +3796,7 @@ const EnquiryResponses = () => {
                                     className="hidden"
                                   />
                                 </label>
-                                <label className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-slate-50 rounded cursor-pointer">
+                                <label className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
                                   <File className="h-4 w-4 text-slate-600" />
                                   <span>File</span>
                                   <input
@@ -3830,7 +3830,7 @@ const EnquiryResponses = () => {
                               }
                             }}
                             disabled={!canUserChat(selectedResponse) || isBlocked}
-                            className={`resize-none border-2 border-gray-800 focus:border-2 focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
+                            className={`resize-none border border-gray-800 focus:border focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
                               (!canUserChat(selectedResponse) || isBlocked) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}
@@ -3874,17 +3874,27 @@ const EnquiryResponses = () => {
                             }
                           }}
                           disabled={!canUserChat(selectedResponse) || isBlocked || ((!newMessage.trim() && attachments.length === 0) || Object.values(uploadingFiles).some(uploading => uploading))}
-                          className={`h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 rounded-lg sm:rounded-xl disabled:opacity-50 disabled:cursor-not-allowed min-touch border-2 border-gray-800 ${
+                          className={`h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed min-touch border-[0.5px] border-black relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
                             (canUserChat(selectedResponse) && !isBlocked)
-                              ? 'bg-slate-600 hover:bg-slate-700 text-white' 
-                              : 'md:bg-slate-600 md:hover:bg-slate-700 md:text-white bg-slate-300 text-slate-500'
+                              ? 'bg-slate-600 hover:bg-slate-700 text-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/send' 
+                              : 'md:bg-slate-600 md:hover:bg-slate-700 md:text-white bg-slate-300 text-slate-500 border-gray-400'
                           }`}
                         >
-                          {Object.values(uploadingFiles).some(uploading => uploading) ? (
-                            <div className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Send className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
+                          {/* Physical button depth effect */}
+                          {(canUserChat(selectedResponse) && !isBlocked) && (
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                           )}
+                          {/* Shimmer effect on button */}
+                          {(canUserChat(selectedResponse) && !isBlocked) && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/send:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                          )}
+                          <div className="relative z-10 flex items-center justify-center">
+                            {Object.values(uploadingFiles).some(uploading => uploading) ? (
+                              <div className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Send className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
+                            )}
+                          </div>
                         </Button>
                       </div>
                     </div>

@@ -242,7 +242,7 @@ export default function AllChats() {
                     } : {}}
                   >
                     <Card
-                      className={`border-2 sm:border-[3px] border-black bg-gradient-to-br from-white via-white to-gray-50 shadow-md transition-all duration-300 relative overflow-hidden ${
+                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 shadow-md transition-all duration-300 relative overflow-hidden ${
                         isDisabled 
                           ? 'opacity-60 grayscale cursor-not-allowed' 
                           : 'hover:shadow-xl cursor-pointer group'
@@ -263,7 +263,7 @@ export default function AllChats() {
                         <div className="flex flex-col items-center gap-1.5 sm:gap-2 flex-shrink-0">
                           {/* My Enquiry / My Response Badge */}
                           {chat.isBuyerChat !== undefined && (
-                            <div className="flex items-center justify-center border-2 border-black rounded px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0 font-black text-[7px] sm:text-[8px] shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] bg-white text-black">
+                            <div className="flex items-center justify-center border-[0.5px] border-black rounded px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0 font-black text-[7px] sm:text-[8px] shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] bg-white text-black">
                               <span>{chat.isBuyerChat ? 'My Enquiry' : 'My Response'}</span>
                             </div>
                           )}
@@ -275,19 +275,12 @@ export default function AllChats() {
                             </div>
                           )}
 
-                          {/* Chat Available Badge */}
-                          {readyToChat && !isDisabled && (
-                            <div className="flex items-center justify-center border-2 border-black rounded px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white flex-shrink-0 font-black text-[7px] sm:text-[8px] shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)]">
-                              <span>Chat Available</span>
-                            </div>
-                          )}
-
                           {/* Chat avatar */}
                           <div className="relative">
                             <motion.div 
                               className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
                                 isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
-                              } flex items-center justify-center border-2 border-black shadow-md relative overflow-hidden`}
+                              } flex items-center justify-center border-[0.5px] border-black shadow-md relative overflow-hidden`}
                               whileHover={!isDisabled ? {
                                 scale: 1.1,
                                 rotate: 180,
@@ -363,10 +356,10 @@ export default function AllChats() {
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
-                            className={`border-2 border-black text-[9px] sm:text-[10px] font-bold px-3 sm:px-4 py-1.5 sm:py-2 relative overflow-hidden ${
+                            className={`border-[0.5px] border-black text-[9px] sm:text-[10px] font-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 ${
                               isDisabled
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400'
-                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-md hover:shadow-lg'
+                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 group/startchat'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -375,6 +368,14 @@ export default function AllChats() {
                               }
                             }}
                           >
+                            {/* Physical button depth effect */}
+                            {!isDisabled && (
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                            )}
+                            {/* Shimmer effect */}
+                            {!isDisabled && (
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                            )}
                             <span className="relative z-10">{isDisabled ? 'Closed' : readyToChat ? 'Start Chat' : 'Open Chat'}</span>
                           </Button>
                         </div>
@@ -390,4 +391,6 @@ export default function AllChats() {
     </Layout>
   );
 }
+
+
 

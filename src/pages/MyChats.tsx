@@ -4,10 +4,10 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
-import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -278,6 +278,78 @@ export default function MyChats() {
     if (chat.enquiryData.status === 'completed') return 'Completed';
     
     return 'Closed';
+  };
+
+  // Helper function to check if chat is expired
+  const isChatExpired = (chat: ChatThread) => {
+    if (!chat.isDisabled || !chat.enquiryData) return false;
+    
+    // Check for expired (deadline passed)
+    if (chat.enquiryData.deadline) {
+      const now = new Date();
+      const deadline = chat.enquiryData.deadline?.toDate ? chat.enquiryData.deadline.toDate() : new Date(chat.enquiryData.deadline);
+      if (deadline < now) return true;
+    }
+    
+    return false;
+  };
+
+  // Function to clear expired chats (only those visible on current page)
+  const clearExpiredChats = async () => {
+    if (!user?.uid) return;
+    
+    // Find expired chats only from the currently visible chats (filtered by view mode)
+    const expiredChats = chats.filter(chat => isChatExpired(chat));
+    
+    if (expiredChats.length === 0) {
+      alert('No expired chats to clear on this page.');
+      return;
+    }
+    
+    if (!window.confirm(`Are you sure you want to delete ${expiredChats.length} expired chat(s) from this page? This action cannot be undone.`)) {
+      return;
+    }
+    
+    try {
+      // Delete chat documents from Firestore (only the visible expired ones)
+      const deletePromises = expiredChats.map(async (chat) => {
+        try {
+          // Delete the chat document
+          const chatRef = doc(db, 'chats', chat.id);
+          await deleteDoc(chatRef);
+          
+          // Also delete all messages in this chat thread
+          if (chat.enquiryId && chat.sellerId) {
+            const messagesQuery = query(
+              collection(db, 'chatMessages'),
+              where('enquiryId', '==', chat.enquiryId),
+              where('sellerId', '==', chat.sellerId)
+            );
+            const messagesSnapshot = await getDocs(messagesQuery);
+            const messageDeletePromises = messagesSnapshot.docs.map(docSnap => deleteDoc(docSnap.ref));
+            await Promise.all(messageDeletePromises);
+          }
+        } catch (error) {
+          console.error(`Error deleting chat ${chat.id}:`, error);
+        }
+      });
+      
+      await Promise.all(deletePromises);
+      
+      // Update local state to remove only the expired chats that were on this page
+      const expiredChatIds = new Set(expiredChats.map(chat => chat.id));
+      setAllChats(prevChats => prevChats.filter(chat => !expiredChatIds.has(chat.id)));
+      
+      // Refresh chats from context
+      if (refreshChats) {
+        refreshChats();
+      }
+      
+      alert(`Successfully deleted ${expiredChats.length} expired chat(s) from this page.`);
+    } catch (error) {
+      console.error('Error clearing expired chats:', error);
+      alert('Failed to clear expired chats. Please try again.');
+    }
   };
 
   return (
@@ -594,7 +666,7 @@ export default function MyChats() {
                     style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-4 border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
                         isDisabled 
                           ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
                           : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
@@ -639,7 +711,7 @@ export default function MyChats() {
                           <motion.div 
                             className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
                               isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
-                            } flex items-center justify-center border-2 border-black shadow-lg relative overflow-hidden`}
+                            } flex items-center justify-center border-[0.5px] border-black shadow-lg relative overflow-hidden`}
                             animate={!isDisabled ? {
                               rotate: [0, 360],
                               scale: [1, 1.1, 1],
@@ -853,7 +925,7 @@ export default function MyChats() {
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
-                            className={`w-full border-4 border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-lg sm:rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                            className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
                               isDisabled
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                                 : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
@@ -867,11 +939,11 @@ export default function MyChats() {
                           >
                             {/* Physical button depth effect */}
                             {!isDisabled && (
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                             )}
                             {/* Shimmer effect on button */}
                             {!isDisabled && (
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/openchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/openchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                             )}
                             
                             <motion.span
@@ -913,16 +985,35 @@ export default function MyChats() {
             </div>
           )}
           
-          {/* Show All Chats Button - After Cards */}
-          <div className="flex justify-center items-center mt-6 sm:mt-8">
+          {/* Action Buttons - After Cards */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-6 sm:mt-8">
+            {/* Clear Expired Chats Button */}
+            {chats.filter(chat => isChatExpired(chat)).length > 0 && (
+              <Button
+                onClick={clearExpiredChats}
+                className="border-[0.5px] border-black bg-gradient-to-b from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/clear"
+              >
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/clear:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10 text-white" />
+                  Clear Expired Chats
+                </span>
+              </Button>
+            )}
+            
+            {/* Show All Chats Button */}
             <Button
+              variant="outline"
               onClick={() => navigate('/all-chats')}
-              className="border-4 border-black bg-gradient-to-b from-white to-gray-50 text-black hover:from-gray-50 hover:to-gray-100 text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/allchats"
+              className="border-[0.5px] border-black !bg-white hover:!bg-gray-50 text-black text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/allchats"
             >
               {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/allchats:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/allchats:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
               <span className="relative z-10 flex items-center gap-2">
                 Show All Chats
                 <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
