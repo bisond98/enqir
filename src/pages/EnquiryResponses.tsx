@@ -2856,8 +2856,8 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border border-black shadow-sm h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
-                  <CardHeader className="pb-1.5 sm:pb-2 lg:pb-2.5 bg-green-950 p-1.5 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
+                <Card className="border border-black shadow-sm h-[calc(100vh-160px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
+                  <CardHeader className="pb-2 sm:pb-2 lg:pb-2.5 bg-green-950 p-2 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
                       <Button
@@ -3391,7 +3391,7 @@ const EnquiryResponses = () => {
 
                   <div className="border-t border-gray-800 bg-white">
                     {/* Message Input Section - Mobile Responsive */}
-                    <div className="p-2 sm:p-2 lg:p-2.5">
+                    <div className="p-2.5 sm:p-2 lg:p-2.5">
                       {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
                       <Dialog open={showMicrophonePrompt && microphonePermission !== 'granted'} onOpenChange={setShowMicrophonePrompt}>
                         <DialogContent className="sm:max-w-lg max-w-[95vw] p-0 gap-0 border-0 bg-transparent shadow-2xl">
