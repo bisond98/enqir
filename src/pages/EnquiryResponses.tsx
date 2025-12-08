@@ -2809,7 +2809,7 @@ const EnquiryResponses = () => {
                         )}
                         <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
                           <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
-                          {response.isIdentityVerified && (
+                          {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
                             <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
                               <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
                               <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>

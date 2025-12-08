@@ -232,7 +232,7 @@ const EnquiryDetail = () => {
     try {
       setLoading(true);
       
-      // Fetch enquiry details
+      // OPTIMIZATION: Fetch enquiry details first (required for everything else)
       const enquiryDoc = await getDoc(doc(db, 'enquiries', id!));
       if (!enquiryDoc.exists()) {
         toast({
@@ -248,28 +248,49 @@ const EnquiryDetail = () => {
       setEnquiry(enquiryData);
       setCurrentPlan(enquiryData.selectedPlanId || 'free');
 
-      // Increment view count (with error handling)
-      try {
-        await updateDoc(doc(db, 'enquiries', id!), {
+      // OPTIMIZATION: Run view count increment and user profile fetch in parallel (non-blocking)
+      // Don't wait for these - let them complete in background
+      const backgroundTasks = [];
+
+      // View count increment (non-blocking)
+      backgroundTasks.push(
+        updateDoc(doc(db, 'enquiries', id!), {
           views: increment(1)
-        });
-      } catch (viewError) {
-        console.warn('Failed to increment view count:', viewError);
-        // Don't show error to user for view count increment failure
+        }).catch((viewError) => {
+          console.warn('Failed to increment view count:', viewError);
+          // Don't show error to user for view count increment failure
+        })
+      );
+
+      // Fetch user profile in parallel (non-blocking)
+      if (enquiryData.userId) {
+        backgroundTasks.push(
+          (async () => {
+            try {
+              // Try 'userProfiles' first (same as EnquiryWall)
+              let userDoc = await getDoc(doc(db, 'userProfiles', enquiryData.userId));
+              if (!userDoc.exists()) {
+                // Fallback to 'profiles' collection
+                userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
+              }
+              if (userDoc.exists()) {
+                setUserProfile({ ...userDoc.data() } as UserProfile);
+              }
+            } catch (profileError) {
+              console.warn('Failed to load user profile:', profileError);
+              // Don't block page load if profile fails
+            }
+          })()
+        );
       }
 
-      // Fetch user profile - check both 'userProfiles' and 'profiles' collections
-      if (enquiryData.userId) {
-        // Try 'userProfiles' first (same as EnquiryWall)
-        let userDoc = await getDoc(doc(db, 'userProfiles', enquiryData.userId));
-        if (!userDoc.exists()) {
-          // Fallback to 'profiles' collection
-          userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
-        }
-        if (userDoc.exists()) {
-          setUserProfile({ ...userDoc.data() } as UserProfile);
-        }
-      }
+      // Fire all background tasks but don't wait for them
+      Promise.all(backgroundTasks).catch(() => {
+        // Silently handle any background task errors
+      });
+
+      // Page is ready to render immediately after enquiry data loads
+      setLoading(false);
 
     } catch (error: any) {
       console.error('Error loading enquiry details:', error);
@@ -304,7 +325,6 @@ const EnquiryDetail = () => {
           variant: "destructive",
         });
       }
-    } finally {
       setLoading(false);
     }
   };
@@ -689,7 +709,11 @@ const EnquiryDetail = () => {
                     {/* Show verified badge if: 
                         1. User has profile-level verification (applies to all enquiries), OR
                         2. This specific enquiry has ID images (enquiry-specific verification) */}
-                    {(userProfile?.isVerified || userProfile?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                    {((userProfile?.isProfileVerified || 
+                       userProfile?.isVerified || 
+                       userProfile?.trustBadge || 
+                       userProfile?.isIdentityVerified) || 
+                      enquiry.idFrontImage || enquiry.idBackImage) && (
                       <div title="Verified Enquiry" className="flex-shrink-0">
                       <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                       </div>
@@ -745,18 +769,18 @@ const EnquiryDetail = () => {
         {/* Content - Inside Container */}
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           {/* Enquiry Card - Professional Design */}
-          <Card className="border-0 shadow-lg rounded-3xl sm:rounded-2xl overflow-hidden bg-white mb-5 sm:mb-6 w-full">
+          <Card className="border-[0.5px] border-black shadow-lg rounded-none overflow-hidden bg-white mb-5 sm:mb-6 w-full">
               {/* Card Content - Enhanced White Background */}
               <CardContent className="p-5 sm:p-5 lg:p-6">
                 <div className="space-y-4 sm:space-y-4">
                   <div>
-                    <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-3">Description</h3>
-                    <p className="text-sm sm:text-sm md:text-base text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3">Description</h3>
+                    <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
                   </div>
                   
                   {/* Reference Images Section - Only on Detailed Page */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
-                    <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t-4 border-black">
+                    <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t-[0.5px] border-black">
                       <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2.5">
                         <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4" />
                         Reference Images ({enquiry.referenceImages.length})
@@ -798,9 +822,9 @@ const EnquiryDetail = () => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+              <Card className="border border-black shadow-lg rounded-none bg-white">
                 {/* Card Header - Black Background */}
-                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-none">
                   <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
                     <Tag className="h-4 w-4 sm:h-4 sm:w-4" />
                     Enquiry Details
@@ -810,7 +834,7 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="p-4 sm:p-5 lg:p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/budget">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/budget">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                       {/* Shimmer effect */}
@@ -826,7 +850,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                       {/* Shimmer effect */}
@@ -842,7 +866,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/category">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/category">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                       {/* Shimmer effect */}
@@ -860,7 +884,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/deadline">
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/deadline">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                       {/* Shimmer effect */}
@@ -883,7 +907,7 @@ const EnquiryDetail = () => {
                     </div>
                     
                     {enquiry.createdAt && (
-                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
+                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
                         {/* Physical button depth effect */}
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                         {/* Shimmer effect */}
@@ -904,7 +928,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   {enquiry.notes && (
-                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-4 border-black">
+                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-[0.5px] border-black">
                       <p className="text-sm sm:text-sm font-bold text-slate-800 mb-3 sm:mb-3 flex items-center gap-2.5">
                         <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
                         Additional Notes
@@ -955,9 +979,9 @@ const EnquiryDetail = () => {
             {/* Sidebar */}
             <div className="space-y-4 sm:space-y-6">
               {/* Action Buttons - Professional Design */}
-              <Card className="border border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+              <Card className="border border-black shadow-lg rounded-none bg-white">
                 {/* Card Header - Black Background */}
-                <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+                <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-none">
                   <h3 className="text-sm sm:text-sm md:text-base font-bold text-white">
                     {user && enquiry.userId === user.uid ? 'Your Enquiry' : 'Ready to Respond?'}
                   </h3>
@@ -979,7 +1003,7 @@ const EnquiryDetail = () => {
                         <Button
                           onClick={() => navigate('/dashboard')}
                           variant="outline"
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/viewdashboard"
+                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-[0.5px] border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/viewdashboard"
                         >
                           {/* Physical button depth effect */}
                           <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -1012,7 +1036,7 @@ const EnquiryDetail = () => {
                           <div className="pt-3">
                             <Button
                               onClick={handleUpgradeClick}
-                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 rounded-xl min-h-[44px] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/upgrade border-4 border-black"
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm sm:text-xs py-2.5 sm:py-2 font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 rounded-xl min-h-[44px] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/upgrade border-[0.5px] border-black"
                               size="sm"
                             >
                               {/* Physical button depth effect */}
@@ -1050,7 +1074,7 @@ const EnquiryDetail = () => {
                       <Button
                         variant="outline"
                         onClick={handleSave}
-                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black min-h-[44px] rounded-xl font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/save ${
+                        className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-[0.5px] border-black min-h-[44px] rounded-xl font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/save ${
                           savedEnquiries.includes(enquiry.id) 
                             ? 'bg-gradient-to-b from-black to-gray-900 text-white hover:from-gray-900 hover:to-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]' 
                             : 'bg-gradient-to-b from-white to-gray-50 text-black hover:from-gray-50 hover:to-gray-100 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]'
@@ -1066,7 +1090,7 @@ const EnquiryDetail = () => {
                       
                       <Button 
                         variant="outline" 
-                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/share"
+                        className="flex-1 h-12 sm:h-11 text-sm sm:text-sm border-[0.5px] border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/share"
                         onClick={handleShare}
                       >
                         {/* Physical button depth effect */}
@@ -1083,9 +1107,9 @@ const EnquiryDetail = () => {
 
               {/* User Profile - Professional Design */}
               {userProfile && (
-                <Card className="border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white">
+                <Card className="border-[0.5px] border-black shadow-lg rounded-none bg-white">
                   {/* Card Header - Black Background */}
-                  <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-t-3xl sm:rounded-t-2xl">
+                  <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-none">
                     <h3 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
                       <User className="h-4 w-4 sm:h-4 sm:w-4" />
                       Posted by
@@ -1112,8 +1136,12 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     {userProfile.location && (
-                      <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border-4 border-black shadow-sm">
-                        <div className="flex items-center gap-2.5 text-gray-700">
+                      <div className="bg-gradient-to-br from-gray-50 to-white rounded-none p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none" />
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-none" />
+                        <div className="flex items-center gap-2.5 text-gray-700 relative z-10">
                           <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
                           <span className="font-semibold text-sm sm:text-sm truncate">{userProfile.location}</span>
                         </div>

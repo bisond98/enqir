@@ -218,7 +218,7 @@ const Dashboard = () => {
                 return;
               }
 
-          // Fetch each saved enquiry
+          // Fetch saved enquiries in parallel (already optimized with Promise.all)
           const savedPromises = savedIds.map(async (enquiryId: string) => {
             try {
               const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
@@ -232,6 +232,7 @@ const Dashboard = () => {
             }
           });
 
+          // Parallel fetch is already optimal - Promise.all handles batching
           const savedData = (await Promise.all(savedPromises)).filter((e): e is Enquiry => e !== null);
           // Sort by order in savedIds array (most recently saved is at the end, so reverse to show latest first)
           const sortedSavedData = savedData.sort((a, b) => {
@@ -301,50 +302,58 @@ const Dashboard = () => {
     let submissionsData: SellerSubmission[] = [];
     
     try {
-      console.log('Dashboard: Fetching initial data with getDocs (simplified)');
+      console.log('Dashboard: Fetching initial data in parallel');
 
-      // Fetch enquiries and seller submissions - enquiries first, then submissions with error handling
-      try {
-        // Try with orderBy first
-        const enquiriesSnapshot = await getDocs(query(
-            collection(db, 'enquiries'),
-            where('userId', '==', user.uid),
-            orderBy('createdAt', 'desc'),
-            limit(10)
-        ));
-        enquiriesSnapshot.forEach((doc) => {
-          enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);
-        });
-      } catch (orderByError: any) {
-        // If index error, fallback to query without orderBy
-        if (orderByError?.code === 'failed-precondition' || orderByError?.message?.includes('index')) {
-          console.warn('Dashboard: Index missing, using fallback query without orderBy');
-          const allEnquiriesSnapshot = await getDocs(query(
-              collection(db, 'enquiries'),
-              where('userId', '==', user.uid)
-          ));
-          // Sort in JavaScript and limit
-          allEnquiriesSnapshot.forEach((doc) => {
-            enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);
-          });
-          enquiriesData.sort((a, b) => {
-            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-            return dateB.getTime() - dateA.getTime();
-          });
-          enquiriesData = enquiriesData.slice(0, 10);
-        } else {
-          throw orderByError;
-        }
-      }
+      // PARALLEL FETCH: Fetch enquiries and seller submissions simultaneously
+      const [enquiriesResult, sellerSubmissionsSnapshot] = await Promise.all([
+        // Fetch enquiries with error handling
+        (async () => {
+          try {
+            // Try with orderBy first
+            const enquiriesSnapshot = await getDocs(query(
+                collection(db, 'enquiries'),
+                where('userId', '==', user.uid),
+                orderBy('createdAt', 'desc'),
+                limit(10)
+            ));
+            const data: Enquiry[] = [];
+            enquiriesSnapshot.forEach((doc) => {
+              data.push({ id: doc.id, ...doc.data() } as Enquiry);
+            });
+            return data;
+          } catch (orderByError: any) {
+            // If index error, fallback to query without orderBy
+            if (orderByError?.code === 'failed-precondition' || orderByError?.message?.includes('index')) {
+              console.warn('Dashboard: Index missing, using fallback query without orderBy');
+              const allEnquiriesSnapshot = await getDocs(query(
+                  collection(db, 'enquiries'),
+                  where('userId', '==', user.uid)
+              ));
+              const data: Enquiry[] = [];
+              allEnquiriesSnapshot.forEach((doc) => {
+                data.push({ id: doc.id, ...doc.data() } as Enquiry);
+              });
+              // Sort in JavaScript and limit
+              data.sort((a, b) => {
+                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                return dateB.getTime() - dateA.getTime();
+              });
+              return data.slice(0, 10);
+            } else {
+              throw orderByError;
+            }
+          }
+        })(),
+        // Fetch seller submissions without orderBy to avoid index requirement, sort in JavaScript
+        getDocs(query(
+          collection(db, 'sellerSubmissions'),
+          where('sellerId', '==', user.uid)
+        ))
+      ]);
 
-      // Fetch seller submissions without orderBy to avoid index requirement, sort in JavaScript
-      const sellerSubmissionsSnapshot = await getDocs(query(
-        collection(db, 'sellerSubmissions'),
-        where('sellerId', '==', user.uid)
-      ));
-
-      // Process enquiries (already processed above if fallback was used)
+      // Process parallel results
+      enquiriesData = enquiriesResult;
       setEnquiries(enquiriesData);
 
       // Process seller submissions immediately
@@ -456,35 +465,64 @@ const Dashboard = () => {
       setResponsesSummary(submissionsData);
       console.log('Dashboard: Deleted enquiries:', Array.from(deletedSet));
       
-      // Only set ready after successfully loading data
+      // Set ready after successfully loading critical data (before fetching responses)
       setResponsesReady(true);
       console.log('Dashboard: ✅ responsesSummary state updated with', submissionsData.length, 'items - responsesReady set to true');
 
-      // Also load responses to user's enquiries (limited) so both tiles populate together
+      // Load responses to user's enquiries in background (non-blocking)
+      // This allows the page to render faster while responses load
       const responsePromises = enquiriesData.map(async (enquiry) => {
         try {
-          const responsesQuery = query(
-            collection(db, 'sellerSubmissions'),
-            where('enquiryId', '==', enquiry.id),
-            orderBy('createdAt', 'desc'),
-            limit(20)
-          );
-          const snap = await getDocs(responsesQuery);
-          const responses: SellerSubmission[] = [];
-          snap.forEach((d) => responses.push({ id: d.id, ...d.data() } as SellerSubmission));
-          return { enquiryId: enquiry.id, responses };
+          // Try with orderBy first, fallback to simple query
+          try {
+            const responsesQuery = query(
+              collection(db, 'sellerSubmissions'),
+              where('enquiryId', '==', enquiry.id),
+              orderBy('createdAt', 'desc'),
+              limit(20)
+            );
+            const snap = await getDocs(responsesQuery);
+            const responses: SellerSubmission[] = [];
+            snap.forEach((d) => responses.push({ id: d.id, ...d.data() } as SellerSubmission));
+            return { enquiryId: enquiry.id, responses };
+          } catch (orderByError: any) {
+            // Fallback to query without orderBy
+            if (orderByError?.code === 'failed-precondition' || orderByError?.message?.includes('index')) {
+              const responsesQuery = query(
+                collection(db, 'sellerSubmissions'),
+                where('enquiryId', '==', enquiry.id)
+              );
+              const snap = await getDocs(responsesQuery);
+              const responses: SellerSubmission[] = [];
+              snap.forEach((d) => responses.push({ id: d.id, ...d.data() } as SellerSubmission));
+              // Sort in JavaScript
+              responses.sort((a, b) => {
+                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                return dateB.getTime() - dateA.getTime();
+              });
+              return { enquiryId: enquiry.id, responses: responses.slice(0, 20) };
+            }
+            throw orderByError;
+          }
         } catch (e) {
           return { enquiryId: enquiry.id, responses: [] as SellerSubmission[] };
         }
       });
-      const responsesResults = await Promise.all(responsePromises);
-      const initialMap: {[key: string]: SellerSubmission[]} = {};
-      responsesResults.forEach(({ enquiryId, responses }) => {
-        initialMap[enquiryId] = responses;
+      
+      // Don't await - let this run in background
+      Promise.all(responsePromises).then((responsesResults) => {
+        const initialMap: {[key: string]: SellerSubmission[]} = {};
+        responsesResults.forEach(({ enquiryId, responses }) => {
+          initialMap[enquiryId] = responses;
+        });
+        setEnquiryResponses(initialMap);
+        console.log('Dashboard: Responses to enquiries loaded');
+      }).catch((error) => {
+        console.error('Dashboard: Error loading responses to enquiries:', error);
       });
-      setEnquiryResponses(initialMap);
 
-      console.log('Dashboard: All initial data loaded');
+      console.log('Dashboard: Critical data loaded, page can render now');
       setRefreshing(false);
       // responsesReady already set above when data was loaded
       
@@ -552,7 +590,8 @@ const Dashboard = () => {
         // Verify data was loaded
         console.log('Dashboard: setupDashboard complete, responsesReady should be true now');
         
-        // Set loading to false immediately after data is fetched (before setting up listeners)
+        // Set loading to false immediately after critical data is fetched (before setting up listeners)
+        // Response fetching continues in background
         setLoading(false);
       } catch (error) {
         // Clear timeout on error
@@ -724,12 +763,17 @@ const Dashboard = () => {
       
       setEnquiries(enquiriesData);
       
-      // Fetch ALL enquiries for accurate stats (without limit)
+      // For stats, use the enquiries we already have (non-blocking background fetch for complete stats)
+      // Set initial stats from current data immediately
+      setAllEnquiriesForStats(enquiriesData);
+      
+      // Fetch ALL enquiries for accurate stats in background (non-blocking)
       const allEnquiriesQuery = query(
         collection(db, 'enquiries'),
         where('userId', '==', user.uid)
       );
       
+      // Don't block - let this run in background
       getDocs(allEnquiriesQuery).then((snapshot) => {
         const allEnquiriesData: Enquiry[] = [];
         const now = new Date();
@@ -753,8 +797,7 @@ const Dashboard = () => {
         setAllEnquiriesForStats(allEnquiriesData);
       }).catch((error) => {
         console.error('Error fetching all enquiries for stats:', error);
-        // Fallback to using the limited enquiries for stats
-        setAllEnquiriesForStats(enquiriesData);
+        // Keep using the limited enquiries for stats (already set above)
       });
       
       // Only fetch responses for enquiries that have responses (optimized)
@@ -1632,7 +1675,9 @@ const Dashboard = () => {
                         const ordered = [...active, ...expired];
                         return ordered.map((enquiry) => {
                         const allResponses = enquiryResponses[enquiry.id] || [];
-                        const responseCount = enquiry.responses || allResponses.length || 0;
+                        // Count only approved responses to match what's shown on responses page
+                        const approvedResponses = allResponses.filter((r: SellerSubmission) => r.status === 'approved');
+                        const responseCount = approvedResponses.length || 0;
                         const visibleResponses = getVisibleResponses(enquiry.id);
                         const lockedResponses = getLockedResponses(enquiry.id);
                         const remainingCount = getRemainingResponseCount(enquiry.id);
@@ -1666,8 +1711,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
-                                : 'bg-white border border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
+                                : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1735,7 +1780,11 @@ const Dashboard = () => {
                                     {/* Show verified badge if: 
                                         1. User has profile-level verification (applies to all enquiries), OR
                                         2. This specific enquiry has ID images (enquiry-specific verification) */}
-                                    {(userProfile?.isProfileVerified || (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
+                                    {((userProfile?.isProfileVerified || 
+                                       userProfile?.isVerified || 
+                                       userProfile?.trustBadge || 
+                                       userProfile?.isIdentityVerified) || 
+                                      (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
                                       <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
                                         expiredFlag ? 'bg-gray-500' : 'bg-blue-500'
                                 }`}>
@@ -2246,7 +2295,7 @@ const Dashboard = () => {
                             <div className="relative flex flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                               <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                                 <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
-                                  {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                                  {((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
                                     <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
                                       <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
                                     </div>
@@ -2322,7 +2371,7 @@ const Dashboard = () => {
                                     }`}>
                                 {submission.title}
                               </span>
-                                    {((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                                    {((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
                                       <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-blue-500 flex-shrink-0" />
                                     )}
                                   </div>

@@ -14,7 +14,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
-import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, where, getDocs, onSnapshot, increment } from "firebase/firestore";
 import { uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
@@ -932,6 +932,21 @@ const SellerResponse = () => {
       // 🤖 AI Processing - Skip for verified users, process for non-verified
       if (isUserVerified) {
         console.log('✅ Trust Badge User: Seller response automatically approved and made live!');
+        
+        // Increment enquiry response count when verified user's response is auto-approved
+        if (enquiry) {
+          try {
+            const enquiryRef = doc(db, 'enquiries', enquiryId!);
+            await updateDoc(enquiryRef, {
+              responses: increment(1),
+              lastResponseAt: serverTimestamp()
+            });
+            console.log('✅ SellerResponse: Incremented response count for verified user auto-approval');
+          } catch (error) {
+            console.error('❌ SellerResponse: Error incrementing enquiry response count:', error);
+            // Don't fail the submission if count increment fails
+          }
+        }
       } else {
         console.log('🤖 SellerResponse: Starting AI processing for response:', docRef.id);
         realtimeAI.processSellerResponse(docRef.id, responseData)
@@ -950,14 +965,7 @@ const SellerResponse = () => {
           });
       }
       
-      // Update the enquiry to increment response count
-      if (enquiry) {
-        const enquiryRef = doc(db, 'enquiries', enquiryId!);
-        await updateDoc(enquiryRef, {
-          responses: (enquiry.responses || 0) + 1,
-          lastResponseAt: serverTimestamp()
-        });
-      }
+      // Note: Response count is incremented only when response is approved (in realtimeAI.ts or Admin.tsx)
       // Set submitted state first
       setIsSubmitted(true);
       setSubmitting(false);

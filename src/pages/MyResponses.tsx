@@ -509,7 +509,7 @@ const MyResponses = () => {
                           {isExpired || isEnquiryDeleted ? (
                             <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" />
                           ) : (
-                            ((submission as any).userProfileVerified || submission.isIdentityVerified) && (
+                            ((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
                             <div className={`flex items-center justify-center w-3 h-3 sm:w-4 sm:w-4 rounded-full flex-shrink-0 shadow-sm ${
                               isExpired || isEnquiryDeleted ? 'bg-gray-400' : 'bg-blue-500'
                             }`}>

@@ -458,7 +458,7 @@ const DetailedResponses = () => {
                             <h3 className="text-xs sm:text-sm font-semibold text-white truncate">{response.title}</h3>
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <span className="text-[9px] sm:text-[10px] text-gray-300 truncate">by {response.sellerName || 'Anonymous'}</span>
-                              {((response as any).userProfileVerified || response.isIdentityVerified) && (
+                              {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
                                 <div className="flex items-center space-x-0.5">
                                   <CheckCircle className="h-3 w-3 text-blue-600" />
                                   <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>

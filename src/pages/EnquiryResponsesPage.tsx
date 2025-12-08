@@ -561,13 +561,9 @@ const EnquiryResponsesPage = () => {
         <div className="space-y-2.5 sm:space-y-6">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
-              <div key={response.id} className="border-2 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:scale-[1.01] active:scale-[0.99] relative group/card">
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+              <div key={response.id} className="border-[0.5px] border-black rounded-lg sm:rounded-xl bg-white overflow-hidden">
                 {/* Card Header - Solid black background */}
-                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b border-black relative z-20">
+                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-[0.5px] border-black relative z-20">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
                       <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
@@ -588,10 +584,10 @@ const EnquiryResponsesPage = () => {
                 <div className="p-2.5 sm:p-6 space-y-2.5 sm:space-y-4 relative z-10">
                 
                 {/* Seller Info & Price Group */}
-                <div className="space-y-2 pb-2 border-b border-black">
+                <div className="space-y-2 pb-2 border-b-[0.5px] border-black">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center space-x-2 flex-1 min-w-0 border border-black rounded-lg p-2">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 border border-black">
+                    <div className="flex items-center space-x-2 flex-1 min-w-0 border-[0.5px] border-black rounded-lg p-2">
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 border-[0.5px] border-black">
                         <span className="text-white font-black text-xs sm:text-sm">
                           {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
                         </span>
@@ -612,7 +608,7 @@ const EnquiryResponsesPage = () => {
                     </div>
                     
                     {/* Price Quote - Compact */}
-                    <div className="bg-white border border-black rounded-lg p-2 flex-shrink-0">
+                    <div className="bg-white border-[0.5px] border-black rounded-lg p-2 flex-shrink-0">
                       <div className="flex items-center space-x-1 mb-0.5">
                         <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                           <span className="text-white text-[8px] font-black">₹</span>
@@ -628,28 +624,28 @@ const EnquiryResponsesPage = () => {
                 </div>
 
                 {/* Message & Notes Group */}
-                <div className="space-y-2 pb-2 border-b border-black">
+                <div className="space-y-2 pb-2 border-b-[0.5px] border-black">
                   {/* Message Section */}
-                  <div className="border border-black rounded-lg p-2">
+                  <div className="border-[0.5px] border-black rounded-lg p-2">
                     <div className="flex items-center space-x-1.5 mb-1.5">
                       <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                       <span className="text-[9px] sm:text-xs font-black text-gray-700">Message</span>
                     </div>
-                    <div className="bg-gray-50 border border-black rounded-lg p-2">
+                    <div className="bg-gray-50 border-[0.5px] border-black rounded-lg p-2">
                       <p className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">{response.message || 'No message provided'}</p>
                     </div>
                   </div>
                   
                   {/* Additional Notes */}
                   {response.notes && (
-                    <div className="border border-black rounded-lg p-2">
+                    <div className="border-[0.5px] border-black rounded-lg p-2">
                       <div className="flex items-center space-x-1.5 mb-1.5">
-                        <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-black">
+                        <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border-[0.5px] border-black">
                           <span className="text-white text-[8px] font-black">📝</span>
                         </div>
                         <span className="text-[9px] sm:text-xs font-black text-gray-700">Additional Notes</span>
                       </div>
-                      <div className="bg-yellow-50 border border-black rounded-lg p-2">
+                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg p-2">
                         <p className="text-[10px] sm:text-xs text-gray-900 leading-snug">{response.notes}</p>
                       </div>
                     </div>
@@ -658,12 +654,12 @@ const EnquiryResponsesPage = () => {
                 
                 {/* Images Section */}
                 {response.imageUrls && response.imageUrls.length > 0 && (
-                  <div className="pb-2 border-b border-black">
-                    <div className="flex items-center space-x-1.5 mb-2 border border-black rounded-lg p-2">
+                  <div className="pb-2 border-b-[0.5px] border-black">
+                    <div className="flex items-center space-x-1.5 mb-2 border-[0.5px] border-black rounded-lg p-2">
                       <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                       <span className="text-[9px] sm:text-xs font-black text-gray-700">Images ({response.imageUrls.length})</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 border border-black rounded-lg p-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 border-[0.5px] border-black rounded-lg p-2">
                       {response.imageUrls.map((imageUrl, imgIndex) => (
                         <div 
                           key={imgIndex} 
@@ -676,7 +672,7 @@ const EnquiryResponsesPage = () => {
                           <img 
                             src={imageUrl} 
                             alt={`Response image ${imgIndex + 1}`}
-                            className="w-full h-20 sm:h-24 object-cover rounded-lg border border-black hover:border-blue-500 transition-all duration-200 hover:scale-105"
+                            className="w-full h-20 sm:h-24 object-cover rounded-lg border-[0.5px] border-black hover:border-blue-500 transition-all duration-200 hover:scale-105"
                             loading="lazy"
                             decoding="async"
                           />
@@ -694,8 +690,8 @@ const EnquiryResponsesPage = () => {
                 )}
                 
                 {/* Footer Section - Timestamp & Action */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-black">
-                  <div className="text-[9px] sm:text-xs text-gray-500 flex items-center space-x-1 border border-black rounded-lg px-2 py-1">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t-[0.5px] border-black">
+                  <div className="text-[9px] sm:text-xs text-gray-500 flex items-center space-x-1 border-[0.5px] border-black rounded-lg px-2 py-1">
                     <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     <span>Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString() : 'N/A'}</span>
                   </div>
@@ -703,7 +699,7 @@ const EnquiryResponsesPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-4 border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-xs font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/startchat"
+                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-xs font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/startchat"
                   >
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />

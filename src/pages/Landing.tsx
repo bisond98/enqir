@@ -2021,23 +2021,35 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg hover:shadow-2xl border border-black hover:border-gray-700 flex flex-col h-full transform transition-all duration-300 ease-out overflow-visible group relative ${
+              className={`bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl border border-black hover:border-gray-700 flex flex-col h-full overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
-              } ${isHovered ? 'shadow-2xl border-black' : ''}`}
+              }`}
+              animate={{
+                rotateX: isHovered ? 2 : 0,
+                rotateY: isHovered ? -2 : 0,
+                z: isHovered ? 20 : 0,
+                scale: isHovered ? 1.02 : 1,
+              }}
+              transition={{ 
+                duration: 0.5, 
+                ease: [0.22, 1, 0.36, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
               style={{ 
                 backgroundColor: 'white',
-                // 3D Card Effects
                 transformStyle: 'preserve-3d',
-                transform: isHovered ? 'perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(20px)' : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
-                // Creative: Add subtle glow when hovered
-                filter: isHovered ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
-                transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                willChange: 'filter, transform',
+                perspective: '1000px',
+                willChange: 'transform',
+                filter: isHovered 
+                  ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' 
+                  : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
                 boxShadow: isHovered 
                   ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
-                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)'
+                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
               }}
-              transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
                       {!isEnquiryOutdated(enquiry) && (
@@ -2102,7 +2114,7 @@ const Landing = () => {
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       } w-full overflow-hidden`}>
-                        {enquiry.title}
+                        {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
                       </h3>
                       
                       {/* Budget and Location - Stacked on Both Mobile and Desktop */}

@@ -26,7 +26,7 @@ echo "✓ Changes staged"
 
 echo ""
 echo "=== STEP 4: Committing ==="
-git commit --no-verify -m "Deploy: Complete styling updates - thin borders, Dynamic Island toast animations, smoother loading, seller form improvements" || echo "⚠ No changes to commit or already committed"
+git commit --no-verify -m "Style: Thin borders for EnquiryResponsesPage response cards" || echo "⚠ No changes to commit or already committed"
 
 echo ""
 echo "=== STEP 5: Pushing to main ==="

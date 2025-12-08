@@ -1,5 +1,5 @@
 import { db } from '@/firebase';
-import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, getDoc, increment } from 'firebase/firestore';
 import { autoApprovalAI } from './autoApproval';
 import { aiActivityLogger } from './aiActivityLogger';
 
@@ -413,6 +413,21 @@ class RealtimeAIService {
             processingTime
           }
         });
+
+        // Increment enquiry response count when approved
+        if (responseData.enquiryId) {
+          try {
+            const enquiryRef = doc(db, 'enquiries', responseData.enquiryId);
+            await updateDoc(enquiryRef, {
+              responses: increment(1),
+              lastResponseAt: serverTimestamp()
+            });
+            console.log('✅ Realtime AI: Incremented response count for enquiry:', responseData.enquiryId);
+          } catch (error) {
+            console.error('❌ Realtime AI: Error incrementing enquiry response count:', error);
+            // Don't fail the approval if count increment fails
+          }
+        }
 
         // Log the activity
         await aiActivityLogger.logResponseActivity(responseId, 'approved', result.confidence, result.reason, result.aiAnalysis);

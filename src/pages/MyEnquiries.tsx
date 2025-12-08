@@ -756,7 +756,11 @@ const MyEnquiries = () => {
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
-                            {(userProfile?.isProfileVerified || (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
+                            {((userProfile?.isProfileVerified || 
+                               userProfile?.isVerified || 
+                               userProfile?.trustBadge || 
+                               userProfile?.isIdentityVerified) || 
+                              (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
                               <div className={`flex items-center justify-center w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 rounded-full flex-shrink-0 shadow-lg ring-1 ring-white/20 ${
                                 isExpired ? 'bg-gray-500' : 'bg-blue-500'
                               }`}>
@@ -1047,12 +1051,22 @@ const MyEnquiries = () => {
                               </>
                             )}
                             <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
-                            <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
-                            {hasUnreadResponses(enquiry.id) && (enquiryResponses[enquiry.id]?.length || 0) > 0 && (
-                              <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
-                                {enquiryResponses[enquiry.id]?.length || 0}
-                              </div>
-                            )}
+                            {(() => {
+                              const allResponses = enquiryResponses[enquiry.id] || [];
+                              // Count only approved responses to match what's shown on responses page
+                              const approvedResponses = allResponses.filter((r: any) => r.status === 'approved');
+                              const responseCount = approvedResponses.length || 0;
+                              return (
+                                <>
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({responseCount})</span>
+                                  {hasUnreadResponses(enquiry.id) && responseCount > 0 && (
+                                    <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
+                                      {responseCount}
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
                           </button>
                           
                           {enquiry.status === 'live' && !isExpired && (

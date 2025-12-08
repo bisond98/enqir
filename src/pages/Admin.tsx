@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
-import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -1038,6 +1038,21 @@ const Admin = () => {
           isIdentityVerified,
           chatEnabled: true
         });
+        
+        // Increment enquiry response count when approved
+        if (submission.enquiryId) {
+          try {
+            const enquiryRef = doc(db, 'enquiries', submission.enquiryId);
+            await updateDoc(enquiryRef, {
+              responses: increment(1),
+              lastResponseAt: serverTimestamp()
+            });
+            console.log('✅ Admin: Incremented response count for enquiry:', submission.enquiryId);
+          } catch (error) {
+            console.error('❌ Admin: Error incrementing enquiry response count:', error);
+            // Don't fail the approval if count increment fails
+          }
+        }
         
         // Remove the submission from the list immediately for faster UI response
         setSellerSubmissions(prev => prev.filter(s => s.id !== id));
