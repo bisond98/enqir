@@ -2856,7 +2856,7 @@ const EnquiryResponses = () => {
               {selectedResponse ? (
                 // Always show chat box for sellers, but with different behavior
                 <>
-                <Card className="border border-black shadow-sm h-[calc(100vh-160px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-visible" style={{ width: '100%', borderWidth: '0.5px' }}>
+                <Card className="border border-black shadow-sm h-[calc(100vh-160px)] sm:h-[calc(100vh-200px)] lg:h-[750px] xl:h-[800px] flex flex-col bg-white overflow-hidden" style={{ width: '100%', borderWidth: '0.5px' }}>
                   <CardHeader className="pb-2 sm:pb-2 lg:pb-2.5 bg-green-950 p-2 sm:p-2 lg:p-2.5 overflow-visible relative" style={{ borderBottom: '0.5px solid black' }}>
                     {/* Close Button - Top Right Corner (Mobile Only) */}
                     <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 lg:hidden z-20">
@@ -3113,7 +3113,7 @@ const EnquiryResponses = () => {
 
 
 
-                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-white min-h-[400px] sm:min-h-0">
+                  <div ref={chatContainerRef} id="chat-messages" className="flex-1 overflow-y-auto bg-white min-h-0">
                     {chatMessages.length === 0 ? (
                       <div className="flex items-center justify-center h-full min-h-[200px]">
                         <div className="text-center">
