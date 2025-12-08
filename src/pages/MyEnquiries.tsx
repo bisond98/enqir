@@ -693,11 +693,18 @@ const MyEnquiries = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-visible transition-all duration-300 ${
+                  <Card className={`group relative rounded-xl overflow-visible transition-all duration-200 ${
                     isExpired
-                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-800 shadow-sm'
-                      : 'bg-white border border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'
+                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                      : 'bg-white border-[0.5px] border-black hover:bg-gray-50 cursor-pointer shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
                   }`}>
+                    {/* Physical button depth effect - matching View Details button */}
+                    {!isExpired && (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      </>
+                    )}
                     {/* EXPIRED Stamp Badge */}
                     {isExpired && (
                       <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>

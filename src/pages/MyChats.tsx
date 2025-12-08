@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,6 +38,9 @@ export default function MyChats() {
     return 'buyer';
   });
   
+  // Track if animation has been initialized to prevent double animation
+  const hasAnimated = useRef(false);
+  
   // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
   // Exclude disabled/expired chats from unread counts
   const buyerUnreadCount = allChats
@@ -51,6 +54,8 @@ export default function MyChats() {
   const handleToggleView = (mode: 'buyer' | 'seller') => {
     setViewMode(mode);
     localStorage.setItem('chatsViewMode', mode);
+    // Reset animation flag when switching views
+    hasAnimated.current = false;
   };
 
   // Filter chats based on view mode (show all chats including disabled ones)
@@ -72,6 +77,11 @@ export default function MyChats() {
       setLoading(chatsLoading);
     }
   }, [preloadedChats, chatsLoading]);
+
+  // Reset animation flag when view mode changes
+  useEffect(() => {
+    hasAnimated.current = false;
+  }, [viewMode]);
 
   // Real-time listener for unread message counts - Optimized
   useEffect(() => {
@@ -623,15 +633,24 @@ export default function MyChats() {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
                 
+                // Only animate on first render of this view
+                const shouldAnimate = !hasAnimated.current;
+                
                 return (
                   <motion.div
                     key={chat.id}
-                    initial={{ 
+                    initial={shouldAnimate ? { 
                       opacity: 0, 
                       y: 50, 
                       scale: 0.8,
                       rotateX: -15,
                       rotateY: 10
+                    } : {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      rotateX: 0,
+                      rotateY: 0
                     }}
                     animate={{ 
                       opacity: 1, 
@@ -640,12 +659,20 @@ export default function MyChats() {
                       rotateX: 0,
                       rotateY: 0
                     }}
-                    transition={{ 
+                    transition={shouldAnimate ? { 
                       type: "spring",
                       stiffness: 100,
                       damping: 15,
                       delay: index * 0.08,
                       duration: 0.6
+                    } : {
+                      duration: 0
+                    }}
+                    onAnimationComplete={() => {
+                      // Mark as animated after first animation completes
+                      if (shouldAnimate && index === chats.length - 1) {
+                        hasAnimated.current = true;
+                      }
                     }}
                     whileHover={!isDisabled ? { 
                       y: -8,

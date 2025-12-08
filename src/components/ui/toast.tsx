@@ -14,7 +14,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      "fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex max-h-screen w-full flex-col items-center justify-start p-0 sm:bottom-0 sm:right-0 sm:left-auto sm:top-auto sm:translate-x-0 sm:flex-col sm:items-end md:max-w-[420px]",
       className
     )}
     {...props}
@@ -23,17 +23,17 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-xl border-[16px] p-4 pr-8 shadow-2xl transition-all duration-300 data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full backdrop-blur-sm",
+  "group pointer-events-auto relative flex w-full max-w-[420px] items-center justify-between space-x-4 overflow-hidden rounded-xl border-[0.5px] p-4 pr-8 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] transition-all duration-300 data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none backdrop-blur-sm mx-auto",
   {
     variants: {
       variant: {
-        default: "border-black bg-white text-black shadow-xl",
+        default: "border-black bg-white text-black",
         destructive:
-          "destructive group border-0 bg-red-600 text-white shadow-xl",
-        success: "border-green-500 bg-green-50 text-green-900 shadow-xl",
-        warning: "border-yellow-500 bg-yellow-50 text-yellow-900 shadow-xl",
-        info: "border-blue-500 bg-blue-50 text-blue-900 shadow-xl",
-        cancelled: "border-red-900 bg-red-900 text-white shadow-xl",
+          "destructive group border-red-600 bg-red-600 text-white",
+        success: "border-green-500 bg-green-50 text-green-900",
+        warning: "border-yellow-500 bg-yellow-50 text-yellow-900",
+        info: "border-blue-500 bg-blue-50 text-blue-900",
+        cancelled: "border-red-900 bg-red-900 text-white",
       },
     },
     defaultVariants: {
@@ -46,13 +46,24 @@ const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
     VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+>(({ className, variant, children, ...props }, ref) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
-      className={cn(toastVariants({ variant }), className)}
+      className={cn(
+        toastVariants({ variant }), 
+        className,
+        "[&[data-state=open]]:animate-[dynamicIslandEnter_0.6s_cubic-bezier(0.34,1.56,0.64,1)_forwards]",
+        "[&[data-state=closed]]:animate-[dynamicIslandExit_0.5s_cubic-bezier(0.34,1.56,0.64,1)_forwards]"
+      )}
       {...props}
-    />
+    >
+      {/* Physical button depth effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent rounded-xl pointer-events-none z-[1]" />
+      {/* Shimmer effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl z-[1]" />
+      {children}
+    </ToastPrimitives.Root>
   )
 })
 Toast.displayName = ToastPrimitives.Root.displayName
@@ -79,7 +90,7 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 sm:right-3 top-2 sm:top-3 rounded-md p-1.5 sm:p-2 text-black hover:text-gray-700 opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 touch-manipulation",
+      "absolute right-2 sm:right-3 top-2 sm:top-3 rounded-md p-1.5 sm:p-2 text-black hover:text-gray-700 opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 touch-manipulation z-20",
       className
     )}
     toast-close=""

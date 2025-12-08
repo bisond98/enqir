@@ -116,18 +116,42 @@ export const listItem: Variants = {
   }
 };
 
-// Page transition
+// Page transition - smoother
 export const pageTransition: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { 
+      duration: 0.5, 
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.05
+    }
   },
   exit: {
     opacity: 0,
-    y: -10,
-    transition: { duration: 0.3 }
+    y: -8,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+// Smooth fade in for components
+export const smoothFadeIn: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+// Smooth scale fade for cards
+export const cardFadeIn: Variants = {
+  hidden: { opacity: 0, scale: 0.96, y: 10 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
   }
 };
 

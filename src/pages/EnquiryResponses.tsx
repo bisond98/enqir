@@ -2817,9 +2817,8 @@ const EnquiryResponses = () => {
                           )}
                         </div>
                         <p className="text-black font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
-                        <div className="flex items-center justify-between text-xs sm:text-sm lg:text-base text-black font-medium">
+                        <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-black font-medium">
                           <span className="font-semibold text-blue-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
-                          <span>{response.imageCount} images</span>
                         </div>
                       </CardContent>
                       </div>

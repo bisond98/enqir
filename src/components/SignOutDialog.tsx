@@ -46,23 +46,26 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
         
         <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-4 w-full items-stretch sm:items-center px-0">
           <Button
-            variant="outline"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:flex-1 h-10 sm:h-10 border-slate-300 text-slate-700 hover:bg-slate-50 text-sm sm:text-sm font-medium min-h-[40px] sm:min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center"
             disabled={isLoading}
+            variant="outline"
+            className="w-full sm:flex-1 !bg-white !border-[0.5px] !border-slate-300 !text-slate-700 hover:!bg-slate-50 font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/cancel"
           >
-            Cancel
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cancel:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+            <span className="relative z-10">Cancel</span>
           </Button>
           <Button
             onClick={handleSignOut}
             disabled={isLoading}
-            variant="outline"
-            className="w-full sm:flex-1 h-10 sm:h-10 text-sm sm:text-sm font-medium min-h-[40px] sm:min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center"
+            className="w-full sm:flex-1 text-white font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/logout"
             style={{ 
               backgroundColor: '#000000', 
               color: '#ffffff', 
               borderColor: '#000000',
-              borderWidth: '2px',
+              borderWidth: '0.5px',
               backgroundImage: 'none'
             }}
             onMouseEnter={(e) => {
@@ -72,13 +75,17 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
               e.currentTarget.style.backgroundColor = '#000000';
             }}
           >
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/logout:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
             {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 relative z-10">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Logging out...</span>
               </div>
             ) : (
-              'Log Out'
+              <span className="relative z-10">Log Out</span>
             )}
           </Button>
         </DialogFooter>

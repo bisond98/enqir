@@ -1529,12 +1529,12 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+              <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight inline-flex items-center gap-2">
-                      <FileText className="w-4 h-4 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Enquiries
                     </h2>
                   </div>
@@ -1542,7 +1542,7 @@ const Dashboard = () => {
                   {/* Content Card - Black Background */}
                   <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
-                      <p className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
                         Track your needs; We won't be tracking you.
                       </p>
                     </div>
@@ -2057,12 +2057,12 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               
               {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+              <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-base sm:text-3xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight inline-flex items-center gap-2">
-                      <Reply className="w-4 h-4 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                      <Reply className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Responses
                     </h2>
                   </div>
@@ -2070,7 +2070,7 @@ const Dashboard = () => {
                   {/* Content Card - Black Background */}
                   <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
-                      <p className="text-[10px] sm:text-sm lg:text-[10px] xl:text-xs text-white leading-snug">
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
                         Track your sales; We won't be tracking you.
                       </p>
                     </div>
@@ -2431,24 +2431,29 @@ const Dashboard = () => {
           {/* Saved Enquiries Card - Seller View Only */}
           {viewMode === 'seller' && (
           <Card 
-            className="group cursor-pointer border-8 border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
+            className="group cursor-pointer border-[0.5px] border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             style={{ position: 'relative', zIndex: 10 }}
           >
             {/* Professional Header - Matching Dashboard Style */}
-            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-5 xl:p-6 overflow-hidden">
-              {/* Content Card - White Background */}
-              <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-3 sm:p-4 lg:p-4 xl:p-6">
-                <div className="text-center">
-                  <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-5">
-                    <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
-                      saved enquiries
-                    </h2>
+            <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+              <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
+                {/* Header Section with Title - Centered */}
+                <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <Bookmark className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                    Saved Enquiries
+                  </h2>
+                </div>
+                
+                {/* Content Card - Black Background */}
+                <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
+                  <div className="text-center">
+                    <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
+                      Track your saved items; We won't be tracking you.
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-sm lg:text-[10px] xl:text-xs text-black leading-snug">
-                    did you find it?
-                  </p>
                 </div>
               </div>
             </div>
@@ -2656,36 +2661,39 @@ const Dashboard = () => {
           )}
 
           {/* Quick Actions Card - Always Visible */}
-          <Card className="border-4 border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
-            <CardContent className="p-6 sm:p-8 lg:p-6">
-              {/* Header Section - Matching Dashboard Header */}
-              <div className="mb-6 sm:mb-8 lg:mb-6">
-                <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-xl p-5 sm:p-8 lg:p-6 overflow-hidden">
-                  {/* Content Card - White Background */}
-                  <div className="bg-white border border-black border-t-4 border-t-black rounded-lg p-1.5 sm:p-2 lg:p-2">
-                    <div className="text-center">
-                      <div className="flex justify-center items-center mb-3 sm:mb-4 lg:mb-3">
-                        <h2 className="text-4xl sm:text-6xl lg:text-4xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black break-words">
-                          Quick Actions
-                        </h2>
-                      </div>
-                      <p className="text-[10px] sm:text-xs text-slate-600 text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                        in case you changed your mind
-                      </p>
-                    </div>
+          <Card className="border-[0.5px] border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
+            {/* Header Section - Matching Dashboard Header */}
+            <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
+              <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
+                {/* Header Section with Title - Centered */}
+                <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <Activity className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                    Quick Actions
+                  </h2>
+                </div>
+                
+                {/* Content Card - Black Background */}
+                <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
+                  <div className="text-center">
+                    <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
+                      in case you changed your mind
+                    </p>
                   </div>
                 </div>
               </div>
-              
+            </div>
+            
+            <CardContent className="p-6 sm:p-8 lg:p-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
                 <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full h-full border-[0.5px] border-black bg-black text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:bg-gray-900 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
+                  <button className="w-full h-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
                     {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
-                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10 text-white">Make a wish</span>
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-black" />
+                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10 text-black">Make a wish</span>
                   </button>
                 </Link>
                 

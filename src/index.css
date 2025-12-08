@@ -81,6 +81,46 @@
       transform: rotate(360deg) translateZ(0) scale(1);
     }
   }
+
+  /* Ultra-smooth spinner */
+  @keyframes spin-ultra-smooth {
+    0% {
+      transform: rotate(0deg) translateZ(0);
+      opacity: 1;
+    }
+    50% {
+      transform: rotate(180deg) translateZ(0);
+      opacity: 0.8;
+    }
+    100% {
+      transform: rotate(360deg) translateZ(0);
+      opacity: 1;
+    }
+  }
+
+  /* Smooth fade in */
+  @keyframes fadeInSmooth {
+    from {
+      opacity: 0;
+      transform: translateY(8px) translateZ(0);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) translateZ(0);
+    }
+  }
+
+  /* Smooth scale fade */
+  @keyframes scaleFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateZ(0);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateZ(0);
+    }
+  }
   
   /* Blue tick verification animations - Deconstructed to Reconstructed */
   @keyframes circleReconstruct {
@@ -180,10 +220,22 @@
   }
   
   .animate-spin {
-    animation: spin-smooth 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    animation: spin-ultra-smooth 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     will-change: transform;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+  }
+
+  /* Smooth fade-in utility */
+  .animate-fade-in-smooth {
+    animation: fadeInSmooth 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: opacity, transform;
+  }
+
+  /* Smooth scale fade utility */
+  .animate-scale-fade-in {
+    animation: scaleFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: opacity, transform;
   }
   
   /* Performance: Reduce motion for users who prefer it */
@@ -219,14 +271,14 @@
   
   /* Optimize all transitions and animations for ultra-smooth feel */
   * {
-    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     transition-duration: 0.3s;
   }
   
   /* Smoother transitions for interactive elements */
   button, a, input, select, textarea {
-    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.25s;
   }
   
   /* Optimize scroll performance */
@@ -2001,6 +2053,84 @@
   100% {
     stroke-dashoffset: 0;
     opacity: 1;
+  }
+}
+
+/* Dynamic Island Animation for Toast Messages */
+@keyframes dynamicIslandEnter {
+  0% {
+    transform: scale(0.3) translateY(-20px);
+    opacity: 0;
+    border-radius: 9999px;
+    width: 80px;
+    max-width: 80px;
+  }
+  30% {
+    transform: scale(0.6) translateY(-10px);
+    opacity: 0.5;
+    border-radius: 9999px;
+    width: 120px;
+    max-width: 120px;
+  }
+  60% {
+    transform: scale(0.9) translateY(-5px);
+    opacity: 0.8;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 420px;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+@keyframes dynamicIslandExit {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+  }
+  40% {
+    transform: scale(0.9) translateY(-5px);
+    opacity: 0.8;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 380px;
+  }
+  70% {
+    transform: scale(0.6) translateY(-10px);
+    opacity: 0.4;
+    border-radius: 9999px;
+    width: 120px;
+    max-width: 120px;
+  }
+  100% {
+    transform: scale(0.3) translateY(-20px);
+    opacity: 0;
+    border-radius: 9999px;
+    width: 80px;
+    max-width: 80px;
+  }
+}
+
+@keyframes dynamicIslandContentFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

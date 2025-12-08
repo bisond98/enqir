@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket } from "lucide-react";
+import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -1269,7 +1269,7 @@ const SellerResponse = () => {
           )}
 
           {/* Enhanced Enquiry Display */}
-          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-4 border-black rounded-2xl">
+          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-[0.5px] border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -1324,9 +1324,9 @@ const SellerResponse = () => {
                 
                   {/* Deadline */}
                   {enquiry.deadline && (
-                  <div className="flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border-2" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                    <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white mr-1.5 flex-shrink-0" />
-                    <span className="text-[11px] sm:text-xs text-white font-medium">
+                  <div className="flex items-center px-4 py-3 sm:px-5 sm:py-3.5 rounded-lg border-[0.5px] shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)]" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white mr-2 flex-shrink-0" />
+                    <span className="text-[11px] sm:text-xs text-white font-bold">
                         Deadline: {formatDate(enquiry.deadline)}
                       </span>
                     </div>
@@ -1337,7 +1337,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-4 border-black rounded-2xl">
+            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-[0.5px] border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -1379,14 +1379,19 @@ const SellerResponse = () => {
                     <span className="sm:hidden">Title *</span>
                   </span>
                 </Label>
-                <Input
-                  id="title"
-                  value={title}
-                  readOnly
-                  disabled
-                  className="h-12 input-touch font-bold text-lg bg-gray-100 cursor-not-allowed border-4 border-black"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="title"
+                    value={title}
+                    readOnly
+                    disabled
+                    className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-gray-100 to-gray-200 cursor-not-allowed shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
+                    style={{ fontSize: '16px' }}
+                    required
+                  />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                </div>
               </div>
 
               {/* Enhanced Product Description */}
@@ -1400,13 +1405,18 @@ const SellerResponse = () => {
                 <p className="text-[10px] sm:text-sm text-black">
                   Explain it like to a 5 year-old.
                 </p>
-                <Textarea
-                  id="description"
-                  placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className={`min-h-[140px] input-touch placeholder:text-[8px] sm:placeholder:text-sm border-4 ${errors.description ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
-                />
+                <div className="relative">
+                  <Textarea
+                    id="description"
+                    placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className={`min-h-[140px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    style={{ fontSize: '16px' }}
+                  />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                </div>
                 <div className="flex justify-between items-center">
                   {errors.description && (
                     <span className="text-xs text-red-500 flex items-center">
@@ -1443,29 +1453,32 @@ const SellerResponse = () => {
                 )}
                 
                 <div className="relative">
-                <Input
-                  id="price"
+                  <Input
+                    id="price"
                     placeholder="Enter amount (e.g., 50000)"
-                  value={price}
-                  onChange={(e) => {
-                    // Remove non-numeric characters and format with commas
-                    const value = e.target.value.replace(/[^\d]/g, '');
-                    if (value) {
-                      const num = parseInt(value);
-                      setPrice(num.toLocaleString('en-IN'));
-                    } else {
-                      setPrice('');
-                    }
-                  }}
-                  onBlur={(e) => {
-                    // Add ₹ symbol when leaving the field
-                    if (e.target.value && !e.target.value.startsWith('₹')) {
-                      setPrice('₹' + e.target.value);
-                    }
-                  }}
-                    className={`h-12 text-lg font-semibold input-touch border-4 ${errors.price ? 'border-red-500 focus:border-red-500' : 'border-black focus:border-black'}`}
-                  required
-                />
+                    value={price}
+                    onChange={(e) => {
+                      // Remove non-numeric characters and format with commas
+                      const value = e.target.value.replace(/[^\d]/g, '');
+                      if (value) {
+                        const num = parseInt(value);
+                        setPrice(num.toLocaleString('en-IN'));
+                      } else {
+                        setPrice('');
+                      }
+                    }}
+                    onBlur={(e) => {
+                      // Add ₹ symbol when leaving the field
+                      if (e.target.value && !e.target.value.startsWith('₹')) {
+                        setPrice('₹' + e.target.value);
+                      }
+                    }}
+                    className={`h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold ${errors.price ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    style={{ fontSize: '16px' }}
+                    required
+                  />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     <span className="text-sm text-black">INR</span>
                   </div>
@@ -1516,13 +1529,18 @@ const SellerResponse = () => {
                 <p className="text-[8px] sm:text-sm text-black">
                   Payment Terms, Delivery Details, Warranties, Or Any Special Conditions
                 </p>
-                <Textarea
-                  id="notes"
-                  placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="min-h-[120px] input-touch placeholder:text-[8px] sm:placeholder:text-sm border-4 border-black focus:border-black"
-                />
+                <div className="relative">
+                  <Textarea
+                    id="notes"
+                    placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="min-h-[120px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    style={{ fontSize: '16px' }}
+                  />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                </div>
                 <span className="text-[10px] sm:text-xs text-black">
                   {notes.length}/300 characters
                 </span>
@@ -1551,88 +1569,82 @@ const SellerResponse = () => {
                 {/* 5-Slot Grid Layout */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                   {Array.from({ length: 5 }, (_, index) => (
-                    <div key={index} className="aspect-square">
-                      <div className={`
-                        relative h-full border-2 border-dashed rounded-xl overflow-hidden transition-all duration-300
-                        ${imageUrls[index] ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-pal-blue hover:bg-pal-blue/5'}
-                      `}>
+                    <div key={index} className="relative">
+                      <label
+                        htmlFor={`image-${index}`}
+                        className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-[0.5px] border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                          imageUrls[index]
+                            ? 'border-green-300 bg-green-50 hover:border-green-400'
+                            : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                        }`}
+                      >
+                        {/* Physical button depth effect */}
+                        {!imageUrls[index] && (
+                          <>
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                          </>
+                        )}
+                        <input
+                          id={`image-${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, index)}
+                          className="hidden"
+                        />
+                        
                         {imageUrls[index] ? (
                           // Image Preview
-                          <div className="relative h-full group">
-                            <img 
-                              src={imageUrls[index]} 
-                              alt={`Product ${index + 1}`} 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                console.error('Image display error:', imageUrls[index]);
-                                e.currentTarget.style.display = 'none';
+                          <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+                            <div className="flex flex-col items-center justify-center">
+                              <Check className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mb-1.5 sm:mb-2 relative z-10" />
+                              <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                removeImage(index);
                               }}
-                            />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <Button 
-                                type="button" 
-                                variant="destructive"
-                                size="sm"
-                                className="text-xs"
-                                onClick={() => removeImage(index)}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                            <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                              ✓
-                            </div>
-                            <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                              {index + 1}
-                            </div>
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg z-20"
+                            >
+                              <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            </button>
+                            {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
+                                {uploadProgresses[index]}%
+                              </div>
+                            )}
                           </div>
                         ) : (
                           // Upload Area
-                          <div className="h-full flex flex-col items-center justify-center p-3 text-center">
-                            <div className={`
-                              w-8 h-8 mb-2 rounded-full flex items-center justify-center
-                              ${uploadProgresses[index] > 0 ? 'bg-pal-blue' : 'bg-gray-100'}
-                            `}>
-                              {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                              ) : (
-                                <Upload className={`h-4 w-4 ${uploadProgresses[index] > 0 ? 'text-white' : 'text-gray-400'}`} />
-                              )}
-                            </div>
-                            
-                <Input
-                              id={`image-${index}`}
-                  type="file"
-                  accept="image/*"
-                              onChange={(e) => handleImageUpload(e, index)}
-                              className="hidden"
-                            />
-                            <Label 
-                              htmlFor={`image-${index}`} 
-                              className="cursor-pointer text-xs text-pal-blue hover:text-pal-blue-dark font-medium"
-                            >
-                              Add Image {index + 1}
-                            </Label>
-                            
-                            {/* Upload Progress */}
+                          <div className="flex flex-col items-center justify-center p-3 sm:p-4">
+                            {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 ? (
+                              <>
+                                <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
+                                <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
+                                <p className="text-[8px] sm:text-[9px] text-black font-black text-center relative z-10">Add Image</p>
+                              </>
+                            )}
                             {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
-                              <div className="mt-2 w-full">
-                                <Progress value={uploadProgresses[index]} className="h-1" />
-                                <p className="text-[10px] text-muted-foreground mt-1">
-                                  {uploadProgresses[index]}%
-                                </p>
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
+                                {uploadProgresses[index]}%
                               </div>
                             )}
                           </div>
                         )}
-                        
-                        {/* Error Message */}
-                        {errors[`image_${index}`] && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] p-1 text-center">
-                            Error
-                          </div>
-                        )}
-                      </div>
+                      </label>
+                      
+                      {/* Error Message */}
+                      {errors[`image_${index}`] && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] p-1 text-center rounded-b-xl">
+                          Error
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1834,16 +1846,23 @@ const SellerResponse = () => {
                     )}
                     
                     <div className="space-y-1 w-full">
-                      <div className="flex items-center gap-2 w-full">
+                      <div className="flex items-start justify-between w-full">
+                        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 flex-1 min-w-0 pr-2">
                         <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
                           <span className="block">Trust</span>
                           <span className="block">Badge</span>
                         </h3>
-                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0">(optional)</span>
+                          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black flex items-center">
+                              <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>
+                            </span>
+                            <span className="text-[6px] sm:text-[7px] text-blue-600 font-medium whitespace-nowrap">Blue Badge For This Response.</span>
+                          </div>
+                        </div>
+                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
+                          (optional)
+                        </span>
                       </div>
-                      <p className="text-xs sm:text-xs text-slate-500 text-left mt-1">
-                        <span className="text-[9px] sm:text-xs text-blue-600 font-medium">Blue Badge For This Response.</span>
-                      </p>
                     </div>
                     {idVerificationResult?.matches ? (
                       <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
@@ -1899,26 +1918,30 @@ const SellerResponse = () => {
                             <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
                               ID Document Type
                             </Label>
-                            <Select value={govIdType} onValueChange={(value) => {
-                              setGovIdType(value);
-                              if (govIdNumber && value) {
-                                validateIdNumber(govIdNumber, value);
-                              } else {
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                              }
-                              setIdVerificationResult(null);
-                            }} disabled={verifyingId}>
-                              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black w-full" disabled={verifyingId}>
-                                <SelectValue placeholder="Select ID Type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                                <SelectItem value="pan">PAN Card</SelectItem>
-                                <SelectItem value="passport">Passport</SelectItem>
-                                <SelectItem value="driving_license">Driving License</SelectItem>
-                                <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <div className="relative">
+                              <Select value={govIdType} onValueChange={(value) => {
+                                setGovIdType(value);
+                                if (govIdNumber && value) {
+                                  validateIdNumber(govIdNumber, value);
+                                } else {
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                }
+                                setIdVerificationResult(null);
+                              }} disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                                  <SelectValue placeholder="Select ID Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                                  <SelectItem value="pan">PAN Card</SelectItem>
+                                  <SelectItem value="passport">Passport</SelectItem>
+                                  <SelectItem value="driving_license">Driving License</SelectItem>
+                                  <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
+                            </div>
                             {errors.govIdType && (
                               <span className="text-xs text-red-500 flex items-center">
                                 <X className="h-3 w-3 mr-1" />
@@ -1931,34 +1954,38 @@ const SellerResponse = () => {
                             <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
                               ID Number
                             </Label>
-                            <Input
-                              id="govIdNumber"
-                              placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                              value={govIdNumber}
-                              onChange={(e) => {
-                                let value = e.target.value.toUpperCase();
-                                
-                                // Auto-format Aadhaar: add space after every 4 digits
-                                if (govIdType === 'aadhaar') {
-                                  // Remove all spaces first
-                                  const digitsOnly = value.replace(/\s/g, '');
-                                  // Add space after every 4 digits
-                                  value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                                }
-                                
-                                setGovIdNumber(value);
-                                // Clear verification result when user changes the ID number
-                                setIdVerificationResult(null);
-                                // Clear any existing errors for ID number
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                // Validate the new value
-                                if (govIdType) {
-                                  validateIdNumber(value, govIdType);
-                                }
-                              }}
-                              className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black w-full"
-                              disabled={verifyingId}
-                            />
+                            <div className="relative">
+                              <Input
+                                id="govIdNumber"
+                                placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                                value={govIdNumber}
+                                onChange={(e) => {
+                                  let value = e.target.value.toUpperCase();
+                                  
+                                  // Auto-format Aadhaar: add space after every 4 digits
+                                  if (govIdType === 'aadhaar') {
+                                    // Remove all spaces first
+                                    const digitsOnly = value.replace(/\s/g, '');
+                                    // Add space after every 4 digits
+                                    value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                                  }
+                                  
+                                  setGovIdNumber(value);
+                                  // Clear verification result when user changes the ID number
+                                  setIdVerificationResult(null);
+                                  // Clear any existing errors for ID number
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                  // Validate the new value
+                                  if (govIdType) {
+                                    validateIdNumber(value, govIdType);
+                                  }
+                                }}
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                                disabled={verifyingId}
+                              />
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                            </div>
                             {errors.govIdNumber && !idVerificationResult && (
                               <span className="text-xs text-red-500 flex items-center">
                                 <X className="h-3 w-3 mr-1" />
@@ -1984,7 +2011,7 @@ const SellerResponse = () => {
                             )}
                             {idVerificationResult && !verifyingId && (
                               <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                                idVerificationResult.matches ? 'text-green-600' : 'text-red-600'
+                                idVerificationResult.matches ? 'text-blue-600' : 'text-red-600'
                               }`}>
                                 {idVerificationResult.matches ? (
                                   <>
@@ -2040,10 +2067,10 @@ const SellerResponse = () => {
                               className="hidden"
                             />
                             
-                              {/* Upload Button - Full Width */}
+                              {/* Upload Button - Full Width with Black Border */}
                             <label
                               htmlFor="idFront"
-                                className={`w-full h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                                className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
                                 verifyingId
                                   ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                                     : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
@@ -2054,7 +2081,9 @@ const SellerResponse = () => {
                                 }
                               }}
                             >
-                              <div className="flex items-center gap-2">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex items-center gap-2 relative z-10">
                                 <Upload className="h-5 w-5 text-slate-600" />
                                 <span className="text-sm text-slate-700 font-semibold">Upload</span>
                               </div>
@@ -2064,10 +2093,12 @@ const SellerResponse = () => {
                           
                           {/* Image Upload Status - Sleek Design */}
                           {(idFrontImage || idFrontUrl) && (
-                            <div className="w-full border-2 rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black" style={{ borderColor: '#000000' }}>
-                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0">
+                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black relative overflow-hidden">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
                                 {/* Success Icon with Animation */}
-                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-green-500 flex items-center justify-center shadow-md">
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
                                   <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
                               </div>
                                 
@@ -2087,7 +2118,7 @@ const SellerResponse = () => {
                                   if (govIdUrl === idFrontUrl) setGovIdUrl("");
                                   setIdVerificationResult(null);
                                 }}
-                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group relative z-10"
                                 style={{ backgroundColor: '#dc2626' }}
                                 disabled={verifyingId}
                                 aria-label="Remove image"
@@ -2197,23 +2228,27 @@ const SellerResponse = () => {
                                 }
                               }}
                               disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                              className="w-full h-12 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
                             >
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                               {verifyingId ? (
-                                <span className="flex items-center justify-center gap-2 sm:gap-3">
+                                <span className="flex items-center justify-center gap-2 sm:gap-3 relative z-10">
                                   {/* Countdown Square - No Borders */}
                                   <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-2.5 rounded-lg">
                                     <span className="text-2xl sm:text-2xl font-bold text-white tabular-nums animate-pulse">
                                       {verificationCountdown}
                                     </span>
                                   </div>
-                                  <span className="font-semibold text-sm sm:text-base">Verifying ID...</span>
+                                  <span className="text-white font-semibold text-sm sm:text-base">Verifying ID...</span>
                                 </span>
                               ) : (
-                                <>
-                                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                  Upload ID for Trust Badge
-                                </>
+                                <span className="flex items-center justify-center gap-2 relative z-10">
+                                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                                  <span className="text-white">Upload ID for Trust Badge</span>
+                                </span>
                               )}
                             </Button>
                           </div>
@@ -2243,20 +2278,24 @@ const SellerResponse = () => {
                       });
                     }
                   }}
-                  className={`w-full h-16 text-lg font-bold rounded-xl btn-primary transition-all transform hover:scale-[1.02] ${
+                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group ${
                     submitting ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                   disabled={!price || submitting}
                 >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                   {submitting ? (
-                    <div className="flex items-center justify-center space-x-2">
+                    <div className="flex items-center justify-center space-x-2 relative z-10">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      <span>Submitting Response...</span>
+                      <span className="text-white">Submitting Response...</span>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center space-x-2">
-                      <CheckCircle className="h-5 w-5" />
-                      <span>Submit Offer</span>
+                    <div className="flex items-center justify-center space-x-2 relative z-10">
+                      <CheckCircle className="h-5 w-5 text-white" />
+                      <span className="text-white">Submit Offer</span>
                     </div>
                   )}
                 </Button>

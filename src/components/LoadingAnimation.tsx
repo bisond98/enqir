@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 interface LoadingAnimationProps {
   message?: string;
@@ -26,7 +27,12 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      className={`min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}
+    >
       {/* Back Button - Top Left Corner */}
       {showBackButton && (
         <button
@@ -38,9 +44,19 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
         </button>
       )}
 
-      <div className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+        className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center"
+      >
         {/* Business Model Loading Animation */}
-        <div className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg border-4 border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+          className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg border-4 border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"
+        >
           <svg viewBox="0 0 500 280" className="w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6" preserveAspectRatio="xMidYMid meet">
             {/* Step 1: User Posting Enquiry */}
             <g id="step1" transform="translate(80, 80)">
@@ -190,13 +206,24 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               </rect>
             </g>
           </svg>
-          <p className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center"
+          >
             {message}
-            <span className="inline-block animate-pulse">...</span>
-          </p>
-        </div>
-      </div>
-    </div>
+            <motion.span 
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-block"
+            >
+              ...
+            </motion.span>
+          </motion.p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -218,7 +218,7 @@ const SignIn = () => {
           </div>
 
           {/* Clean Card */}
-          <Card className="shadow-2xl border-4 border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
+          <Card className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
             <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11">
               {/* Error Display */}
               {error && (
@@ -282,7 +282,7 @@ const SignIn = () => {
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-4 border-black rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-full h-auto grid grid-cols-2">
+                    <TabsList className="relative inline-flex items-center bg-gradient-to-b from-gray-200 to-gray-300 border-[0.5px] border-black rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-full h-auto grid grid-cols-2">
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
                       
@@ -323,16 +323,19 @@ const SignIn = () => {
                             Email Address
                           </Label>
                       <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
                           required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                       </div>
                     </div>
                         
@@ -341,32 +344,39 @@ const SignIn = () => {
                             Password
                           </Label>
                       <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                       </div>
                     </div>
 
                     <Button 
                       type="submit" 
-                          className="w-full h-12 sm:h-13 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                       disabled={loading}
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                     >
-                          {loading ? (
-                            <>
-                              <div className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
-                              Logging in...
-                            </>
-                          ) : (
-                            "Log In"
-                          )}
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      {loading ? (
+                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                          <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-white">Logging in...</span>
+                        </div>
+                      ) : (
+                        <span className="relative z-10">Log In</span>
+                      )}
                     </Button>
                   </form>
                   
@@ -385,16 +395,19 @@ const SignIn = () => {
                             Email Address
                           </Label>
                       <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
                           required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                       </div>
                     </div>
 
@@ -403,32 +416,39 @@ const SignIn = () => {
                             Password
                           </Label>
                       <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10 pointer-events-none transition-colors group-focus-within:text-blue-500" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-13 text-sm sm:text-base bg-gray-50/50 border-2 border-black text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-2 focus:ring-black/20 focus:bg-white rounded-xl transition-all duration-300 hover:border-black"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                       </div>
                     </div>
 
                     <Button 
                       type="submit" 
-                          className="w-full h-12 sm:h-13 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                       disabled={loading}
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                     >
-                          {loading ? (
-                            <>
-                              <div className="h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0" style={{ animation: 'spin 1s linear infinite', WebkitAnimation: 'spin 1s linear infinite' }}></div>
-                              Creating account...
-                            </>
-                          ) : (
-                            "Create Account"
-                          )}
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      {loading ? (
+                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                          <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-white">Creating account...</span>
+                        </div>
+                      ) : (
+                        <span className="relative z-10">Create Account</span>
+                      )}
                     </Button>
                   </form>
                 </TabsContent>

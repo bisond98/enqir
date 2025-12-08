@@ -2044,7 +2044,7 @@ export default function PostEnquiry() {
                         <div key={index} className="relative">
                           <label
                             htmlFor={`reference-image-${index}`}
-                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-3 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-[0.5px] border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
                               referenceImageUrls[index]
                                 ? 'border-green-300 bg-green-50 hover:border-green-400'
                                 : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
@@ -2638,8 +2638,10 @@ export default function PostEnquiry() {
                       
                           {/* Image Upload Status - Sleek Design */}
                       {(idFrontImage || idFrontUrl) && (
-                            <div className="w-full border-2 rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black" style={{ borderColor: '#000000' }}>
-                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0">
+                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black relative overflow-hidden">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
                                 {/* Success Icon with Animation */}
                                 <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
                                   <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
@@ -2661,7 +2663,7 @@ export default function PostEnquiry() {
                                   if (govIdUrl === idFrontUrl) setGovIdUrl("");
                               setIdVerificationResult(null);
                             }}
-                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
+                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group relative z-10"
                                 style={{ backgroundColor: '#dc2626' }}
                             disabled={verifyingId}
                             aria-label="Remove image"
