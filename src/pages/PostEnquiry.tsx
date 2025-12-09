@@ -33,6 +33,8 @@ import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
+import { validateText, validateBudget, validateLocation, sanitizeInput } from "@/utils/validation";
+import { trackEnquiryPosted } from "@/utils/analytics";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -1220,11 +1222,36 @@ export default function PostEnquiry() {
       return;
     }
 
-    // Validate required fields
-    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !location.trim()) {
-      alert('Please fill in all required fields (title, description, categories, budget, location).');
+    // Validate and sanitize required fields
+    const titleValidation = validateText(title.trim(), 3, 200);
+    const descriptionValidation = validateText(description.trim(), 10, 5000);
+    const budgetValidation = validateBudget(budget.trim());
+    const locationValidation = validateLocation(location.trim());
+    
+    if (!titleValidation.isValid || !descriptionValidation.isValid || 
+        (selectedCategories.length === 0 && !category) || 
+        !budgetValidation.isValid || !locationValidation.isValid) {
+      const errors = [
+        !titleValidation.isValid && titleValidation.error,
+        !descriptionValidation.isValid && descriptionValidation.error,
+        (selectedCategories.length === 0 && !category) && 'Please select at least one category',
+        !budgetValidation.isValid && budgetValidation.error,
+        !locationValidation.isValid && locationValidation.error
+      ].filter(Boolean).join(', ');
+      
+      toast({
+        title: "Validation Error",
+        description: errors || 'Please fill in all required fields correctly.',
+        variant: "destructive",
+      });
       return;
     }
+    
+    // Use sanitized values
+    const sanitizedTitle = titleValidation.sanitized;
+    const sanitizedDescription = descriptionValidation.sanitized;
+    const sanitizedBudget = budgetValidation.sanitized;
+    const sanitizedLocation = locationValidation.sanitized;
 
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
@@ -1361,12 +1388,12 @@ export default function PostEnquiry() {
       
       // Only include government ID fields if they exist
       const enquiryData: any = {
-        title: title.trim(),
-        description: description.trim(),
+        title: sanitizedTitle,
+        description: sanitizedDescription,
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other', // Primary category (first selected)
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
-        budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-        location: location.trim(),
+        budget: sanitizedBudget ? parseFloat(sanitizedBudget.replace(/[^\d]/g, '')) : null,
+        location: sanitizedLocation,
         deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
@@ -1386,7 +1413,7 @@ export default function PostEnquiry() {
         shares: 0,
         views: 0,
         userLikes: [],
-        notes: notes.trim(),
+        notes: sanitizeInput(notes.trim()),
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified
       };
@@ -1417,6 +1444,10 @@ export default function PostEnquiry() {
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
+        
+        // Track analytics event
+        trackEnquiryPosted(docRef.id, enquiryData.category || 'other', enquiryData.isPremium || false);
+        
         // Mark as submitted immediately after successful creation to prevent duplicates
         setIsSubmitted(true);
         setSubmittedEnquiryId(docRef.id);

@@ -20,6 +20,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
+import { trackResponseSubmitted } from "@/utils/analytics";
 
 interface Enquiry {
   id: string;
@@ -925,6 +926,9 @@ const SellerResponse = () => {
       // Save to sellerSubmissions collection
       const docRef = await addDoc(collection(db, "sellerSubmissions"), responseData);
       console.log('Seller response saved with ID:', docRef.id);
+      
+      // Track analytics event
+      trackResponseSubmitted(enquiryId!, docRef.id);
       
       // Set submission ID for real-time tracking
       setSubmissionId(docRef.id);
