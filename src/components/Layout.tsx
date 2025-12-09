@@ -1005,6 +1005,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 if (isProtectedRoute && !user) {
                   e.preventDefault();
                   navigate("/signin");
+                } else if (isProtectedRoute && user) {
+                  e.preventDefault();
+                  navigate(item.path);
                 }
               };
 

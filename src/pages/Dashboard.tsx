@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useContext } from "react";
+import { useState, useEffect, useMemo, useContext, useRef } from "react";
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -91,6 +91,7 @@ const Dashboard = () => {
   const [responsesSummary, setResponsesSummary] = useState<SellerSubmission[]>([]);
   const [responsesReady, setResponsesReady] = useState(false);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -562,7 +563,10 @@ const Dashboard = () => {
 
   // Set up real-time listeners for dashboard data
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      isInitialLoad.current = true; // Reset for next user
+      return;
+    }
 
     let unsubscribeEnquiries: (() => void) | null = null;
     let unsubscribeSubmissions: (() => void) | null = null;
@@ -571,7 +575,11 @@ const Dashboard = () => {
 
     // Initial data fetch - fetch everything immediately
     const setupDashboard = async () => {
-      setLoading(true);
+      // Only show loading on initial load, not when dependencies change
+      if (isInitialLoad.current) {
+        setLoading(true);
+        isInitialLoad.current = false;
+      }
       setResponsesReady(false); // Ensure it starts as false
       setResponsesSummary([]); // Clear any stale data
       
@@ -1391,7 +1399,7 @@ const Dashboard = () => {
               
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Dashboard.
               </h1>
@@ -1610,7 +1618,7 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Enquiries
                     </h2>
@@ -1743,7 +1751,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full ${
+                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                               expiredFlag
                                 ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
                                 : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
@@ -1853,7 +1861,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-4 sm:p-5 lg:p-4 xl:p-5 overflow-visible">
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
@@ -1969,7 +1977,7 @@ const Dashboard = () => {
                                   )}
 
                               {/* Spacer to maintain card height */}
-                              <div className="mb-12 sm:mb-16 lg:mb-10 xl:mb-12"></div>
+                              <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
 
                               {/* Plan Notice - Show plan-specific seller limit, positioned above response button */}
                               {(() => {
@@ -2144,7 +2152,7 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <Reply className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Responses
                     </h2>
@@ -2267,7 +2275,7 @@ const Dashboard = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
-                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
                               ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
                               : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
@@ -2377,7 +2385,7 @@ const Dashboard = () => {
                           </div>
                           
                           {/* Premium Content Area */}
-                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-3 sm:p-4 lg:p-3.5 xl:p-4">
+                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-6 min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
                             {/* Subtle background texture */}
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
@@ -2524,7 +2532,7 @@ const Dashboard = () => {
               <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                 {/* Header Section with Title - Centered */}
                 <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                     <Bookmark className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                     Saved Enquiries
                   </h2>
@@ -2750,7 +2758,7 @@ const Dashboard = () => {
               <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                 {/* Header Section with Title - Centered */}
                 <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                     <Activity className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                     Quick Actions
                   </h2>

@@ -696,7 +696,7 @@ const EnquiryDetail = () => {
               
             {/* Enquiry Title Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full">
                 {enquiry.title}.
               </h1>
             </div>

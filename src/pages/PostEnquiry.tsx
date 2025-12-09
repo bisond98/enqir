@@ -1745,7 +1745,7 @@ export default function PostEnquiry() {
               
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                       <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Post Your Enquiry.
               </h1>
@@ -2850,20 +2850,19 @@ export default function PostEnquiry() {
 
                   {/* Trust Badge Status - Enhanced for Verified Users */}
                   {!authLoading && isUserVerified && (
-                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/30 border-2 border-blue-200 rounded-xl">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/30 border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                      {/* Physical card depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      <div className="p-3 sm:p-4 bg-white border-[0.5px] border-black rounded-lg shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg pointer-events-none" />
+                        <div className="flex items-center space-x-3 relative z-10">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
+                          </div>
+                          <Label className="text-xs sm:text-sm font-black text-blue-800">
+                            Trust Badge Verified From Profile
+                          </Label>
                         </div>
-                        <Label className="text-sm sm:text-base font-semibold text-blue-800">
-                          Trust Badge Verified
-                        </Label>
-                      </div>
-                      <div className="p-3 sm:p-4 bg-white border-2 border-blue-200 rounded-lg">
-                        <p className="text-xs sm:text-sm text-blue-700 font-medium flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                          <span>Trust badge verified - no ID upload needed</span>
-                        </p>
                       </div>
                     </div>
                   )}

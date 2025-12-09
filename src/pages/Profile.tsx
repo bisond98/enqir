@@ -711,7 +711,7 @@ const Profile = () => {
             
             {/* Profile Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-tighter text-center drop-shadow-2xl">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl">
                     Profile.
               </h1>
             </div>
@@ -738,7 +738,7 @@ const Profile = () => {
         {/* Profile Form - Inside Container */}
         <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Profile Form */}
-        <Card className="mt-6 sm:mt-8 border-4 border-black lg:min-h-[200px]">
+        <Card className="mt-6 sm:mt-8 border-[0.5px] border-black lg:min-h-[200px]">
           <CardHeader className="p-4 sm:p-6 lg:p-5 lg:pb-4">
             <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
             <CardDescription className="text-[10px] sm:text-xs">It's better to know you better if you're here to scam others</CardDescription>
@@ -753,7 +753,7 @@ const Profile = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                  className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                   disabled={!isEditingProfile}
                   required
                 />
@@ -762,7 +762,7 @@ const Profile = () => {
                 <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700">Phone Number *</Label>
                 <div className="flex gap-1 sm:gap-2">
                   <Select value={countryCode} onValueChange={setCountryCode} disabled={!isEditingProfile}>
-                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black" disabled={!isEditingProfile}>
+                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={!isEditingProfile}>
                       <SelectValue placeholder="Code">
                         {countryCode && (
                           <span className="flex items-center gap-0.5 sm:gap-1">
@@ -789,7 +789,7 @@ const Profile = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter phone number"
-                    className="flex-1 h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                    className="flex-1 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                     disabled={!isEditingProfile}
                     required
                   />
@@ -813,7 +813,7 @@ const Profile = () => {
                 <Button 
                   onClick={handleEditProfile}
                   variant="outline"
-                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 border-4 border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/edit rounded-lg sm:rounded-xl"
+                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 border-[0.5px] border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/edit rounded-lg sm:rounded-xl"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
@@ -828,7 +828,7 @@ const Profile = () => {
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border-4 border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]">
+        <Card className="mt-4 sm:mt-6 border-[0.5px] border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]">
           {/* Card Header - Black Background */}
           <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 lg:px-5 lg:py-4 rounded-t-3xl sm:rounded-t-2xl">
             <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
@@ -955,7 +955,7 @@ const Profile = () => {
             
             {/* VERIFIED PROFILE - Show only success message */}
             {verificationStatus === 'approved' && (
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 border-4 border-blue-500 rounded-t-none rounded-b-xl text-center -m-4 sm:-m-5 lg:-m-5 lg:-mt-4 p-4 sm:p-5 lg:p-5 lg:pt-4">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 border-[0.5px] border-blue-500 rounded-t-none rounded-b-xl text-center -m-4 sm:-m-5 lg:-m-5 lg:-mt-4 p-4 sm:p-5 lg:p-5 lg:pt-4">
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-blue-400 rounded-full flex items-center justify-center mb-3 sm:mb-4">
                   <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                 </div>
@@ -1095,7 +1095,7 @@ const Profile = () => {
                           }
                           setIdVerificationResult(null);
                         }} disabled={verifyingId || isUploading}>
-                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-black" disabled={verifyingId || isUploading}>
+                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                         <SelectContent>
@@ -1130,7 +1130,7 @@ const Profile = () => {
                         setIdVerificationResult(null);
                       }}
                       placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                      className="h-8 sm:h-10 border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm"
+                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                       disabled={verifyingId || isUploading}
                     />
                     {idErrors.idNumber && !idVerificationResult && (
@@ -1234,7 +1234,7 @@ const Profile = () => {
                     {/* Upload Button - Full Width */}
                     <label
                       htmlFor="idFront"
-                      className={`w-full h-14 border-2 border-dashed rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation shadow-sm ${
+                      className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
                         verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
                           : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
@@ -1245,7 +1245,9 @@ const Profile = () => {
                         }
                       }}
                     >
-                      <div className="flex items-center gap-2">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                      <div className="flex items-center gap-2 relative z-10">
                         <Upload className="h-5 w-5 text-slate-600" />
                         <span className="text-sm text-slate-700 font-semibold">Upload</span>
                       </div>
@@ -1254,11 +1256,21 @@ const Profile = () => {
                   
                   {/* Image Upload Status - Text Only */}
                   {(idFront || idFrontUrl) && (
-                    <div className="w-full border-2 rounded-xl p-4 sm:p-3 flex items-center justify-between shadow-md" style={{ backgroundColor: '#000000', borderColor: '#000000' }}>
-                      <div className="flex items-center gap-2 sm:gap-2.5">
-                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-white flex-shrink-0" />
-                        <span className="text-sm sm:text-base font-semibold text-white">Image uploaded</span>
+                    <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black relative overflow-hidden">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                      <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
+                        {/* Success Icon with Animation */}
+                        <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
+                        </div>
+                        {/* Text Content */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] sm:text-lg font-bold text-white truncate leading-tight">ID Image Uploaded</p>
+                          <p className="text-[8px] sm:text-sm text-gray-300 mt-0">Ready for verification</p>
+                        </div>
                       </div>
+                      {/* Remove Button - Sleek Design */}
                       <button
                         type="button"
                         onClick={() => {
@@ -1266,7 +1278,7 @@ const Profile = () => {
                           setIdFrontUrl("");
                           setIdVerificationResult(null);
                         }}
-                        className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="rounded-lg p-1.5 sm:p-2 hover:opacity-90 active:opacity-80 transition-colors touch-manipulation shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center relative z-10"
                         style={{ backgroundColor: '#800020', color: 'white', borderColor: '#6b0019' }}
                         disabled={verifyingId}
                         aria-label="Remove image"
@@ -1456,7 +1468,7 @@ const Profile = () => {
                     verifyingId ||
                     (idErrors.idNumber && idErrors.idNumber.length > 0)
                   }
-                  className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                  className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -1498,7 +1510,7 @@ const Profile = () => {
               <Button
                 onClick={handleIdUpload}
                 disabled={isUploading}
-                className="w-full h-8 sm:h-10 text-xs sm:text-sm mt-4 bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-4 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                className="w-full h-8 sm:h-10 text-xs sm:text-sm mt-4 bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
               >
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -1560,7 +1572,7 @@ const Profile = () => {
             <Button
               onClick={handleRemoveTrustBadge}
               variant="destructive"
-              className="w-full sm:w-auto h-8 sm:h-10 text-[10px] sm:text-sm px-3 sm:px-6 !bg-red-600 !text-white hover:!bg-red-700 !border-2 !border-red-800"
+              className="w-full sm:w-auto h-8 sm:h-10 text-[10px] sm:text-sm px-3 sm:px-6 !bg-red-600 !text-white hover:!bg-red-700 !border-[0.5px] !border-red-800"
               style={{ backgroundColor: '#dc2626', borderColor: '#991b1b' }}
               disabled={isRemoving}
             >
