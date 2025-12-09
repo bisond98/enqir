@@ -369,14 +369,14 @@ const SignIn = () => {
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                      {loading ? (
+                          {loading ? (
                         <div className="flex items-center justify-center space-x-3 relative z-10">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Logging in...</span>
                         </div>
-                      ) : (
+                          ) : (
                         <span className="relative z-10">Log In</span>
-                      )}
+                          )}
                     </Button>
                   </form>
                   
@@ -441,14 +441,14 @@ const SignIn = () => {
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                      {loading ? (
+                          {loading ? (
                         <div className="flex items-center justify-center space-x-3 relative z-10">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Creating account...</span>
                         </div>
-                      ) : (
+                          ) : (
                         <span className="relative z-10">Create Account</span>
-                      )}
+                          )}
                     </Button>
                   </form>
                 </TabsContent>

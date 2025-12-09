@@ -26,6 +26,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   const [timeType, setTimeType] = useState<'quick' | 'custom'>('quick');
   const [quickTime, setQuickTime] = useState<string>('1hour');
   const [customDate, setCustomDate] = useState<Date | undefined>(new Date());
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
   const [customDuration, setCustomDuration] = useState<string>('1');
   const [customDurationType, setCustomDurationType] = useState<string>('hours');
   const [isMobile, setIsMobile] = useState(false);
@@ -89,6 +90,17 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       else if (Math.abs(diffMonths - 1) < 0.5) setQuickTime('1month');
     }
   }, [value]);
+
+  // Sync calendar month when popover opens or customDate changes
+  useEffect(() => {
+    if (isOpen && timeType === 'custom') {
+      if (customDate) {
+        setCalendarMonth(customDate);
+      } else {
+        setCalendarMonth(new Date());
+      }
+    }
+  }, [isOpen, timeType, customDate]);
 
   const handleQuickSelect = (option: string) => {
     setQuickTime(option);
@@ -279,14 +291,14 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       <>
         <Card className="border-0 shadow-none">
           {isDesktop && (
-            <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
-              <CardTitle className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+            <CardHeader className={`pb-3 px-4 sm:px-6 pt-4 sm:pt-6 ${isDesktop && timeType === 'custom' ? 'px-4 pt-4 pb-3' : isDesktop ? 'px-8 pt-6 pb-4' : ''}`}>
+              <CardTitle className={`font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black ${isDesktop && timeType === 'custom' ? 'text-3xl sm:text-4xl lg:text-5xl' : 'text-5xl sm:text-7xl lg:text-8xl xl:text-9xl'}`}>
                 Deadline
               </CardTitle>
               <p className="text-xs text-slate-500 mt-1">There's no such thing as forever.</p>
             </CardHeader>
           )}
-          <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop ? 'px-8 pb-8 space-y-6' : 'px-2 py-2'}`}>
+          <CardContent className={`space-y-4 sm:space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 ${isDesktop && timeType === 'custom' ? 'px-4 pb-4 space-y-4' : isDesktop ? 'px-8 pb-8 space-y-6' : 'px-2 py-2'}`}>
               {/* Time Type Toggle */}
             <div className={`flex space-x-2 sm:space-x-3 ${isDesktop ? 'space-x-4 mb-2' : ''}`}>
                 <Button
@@ -351,25 +363,28 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   ))}
                 </div>
               ) : (
-              <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : 'space-y-3'}`}>
+              <div className={`space-y-4 sm:space-y-6 ${isDesktop && timeType === 'custom' ? 'space-y-4' : isDesktop ? 'space-y-6' : 'space-y-3'}`}>
                 {/* Custom Date */}
                 <div className="w-full">
-                  <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
+                  <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-2' : 'text-xs mb-1.5'}`}>
                     Select Deadline Date
                   </Label>
-                  <div className="flex justify-center w-full">
+                  <div className={`flex justify-center w-full ${isDesktop ? '' : ''}`}>
                     <Calendar
                       mode="single"
                       selected={customDate}
+                      month={calendarMonth}
+                      onMonthChange={setCalendarMonth}
                       onSelect={(date) => {
                         if (date) {
                           // Simply set the selected date - no validation needed since disabled prop handles past dates
                           setCustomDate(date);
+                          // Update calendar month to show the selected date's month
+                          setCalendarMonth(date);
                         } else {
                           setCustomDate(undefined);
                         }
                       }}
-                      defaultMonth={customDate || new Date()}
                       showOutsideDays={false}
                       disabled={(date) => {
                         const today = new Date();
@@ -378,7 +393,14 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         checkDate.setHours(0, 0, 0, 0);
                         return checkDate < today;
                       }}
-                      className="rounded-md border w-full"
+                      className={`rounded-md border w-full ${isDesktop ? 'mx-auto' : ''}`}
+                      classNames={isDesktop ? {
+                        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 justify-center",
+                        month: "space-y-4 mx-auto",
+                        table: "w-full border-collapse space-y-1 mx-auto",
+                        head_row: "flex justify-center",
+                        row: "flex w-full mt-2 justify-center",
+                      } : undefined}
                     />
                   </div>
                 </div>
@@ -387,9 +409,9 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   <Button 
                     onClick={handleCustomApply} 
                     disabled={!customDate}
-                    className={`w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-base py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-black disabled:hover:via-black disabled:hover:to-gray-900 ${isDesktop ? 'h-11 text-base' : 'h-11 sm:h-9 text-base sm:text-sm'}`}
+                    className={`w-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 font-black text-base py-3.5 rounded-xl border-[0.5px] border-blue-700 shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:via-blue-700 disabled:hover:to-blue-800 ${isDesktop ? 'h-11 text-base' : 'h-11 sm:h-9 text-base sm:text-sm'}`}
                   >
-                    Apply Custom Date
+                    Apply
                   </Button>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                 </div>
@@ -467,7 +489,11 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[600px] p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black" align="start">
+          <PopoverContent 
+            className={`p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black ${timeType === 'custom' ? 'w-[420px]' : 'w-[700px]'} data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[transform,opacity]`} 
+            align="start"
+            sideOffset={8}
+          >
             <DeadlineContent />
         </PopoverContent>
       </Popover>

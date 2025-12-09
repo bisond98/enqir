@@ -1814,7 +1814,7 @@ export default function PostEnquiry() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                             className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
-                        style={{ fontSize: '16px' }}
+                        style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
                       />
                       {/* Physical button depth effect */}
@@ -1896,32 +1896,32 @@ export default function PostEnquiry() {
                                   
                                   return (
                                     <div key={cat.value}>
-                                      <div 
-                                        className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
-                                          isDisabled ? 'opacity-50' : ''
-                                        }`}
+                                    <div 
+                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
+                                        isDisabled ? 'opacity-50' : ''
+                                      }`}
                                       >
                                         <Checkbox
                                           id={`mobile-${cat.value}`}
                                           checked={isSelected}
                                           disabled={isDisabled}
                                           onCheckedChange={() => !isDisabled && handleCategoryToggle(cat.value)}
-                                          className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
+                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
                                         />
-                                        <Label
-                                          htmlFor={`mobile-${cat.value}`}
+                                      <Label
+                                        htmlFor={`mobile-${cat.value}`}
                                           onClick={(e) => {
                                             if (!isDisabled) {
                                               e.preventDefault();
                                               handleCategoryToggle(cat.value);
                                             }
                                           }}
-                                          className={`text-base flex-1 cursor-pointer ${
+                                        className={`text-base flex-1 cursor-pointer ${
                                             isDisabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700'
-                                          }`}
-                                        >
-                                          {cat.label}
-                                        </Label>
+                                        }`}
+                                      >
+                                        {cat.label}
+                                      </Label>
                                       </div>
                                       {isService && (
                                         <div className="px-4 py-2">
@@ -1948,14 +1948,14 @@ export default function PostEnquiry() {
                       <div className="hidden sm:block">
                         <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
                           <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
+                              <Button
+                                variant="outline"
                               className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative ${
-                                selectedCategories.length === 0 
-                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
-                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
-                            >
+                                  selectedCategories.length === 0 
+                                    ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                    : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                                } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                              >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
                                   <span className="text-[10px] text-slate-500">Select categories...</span>
@@ -1978,10 +1978,10 @@ export default function PostEnquiry() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent 
-                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm" 
+                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[transform,opacity]" 
                             align="start"
                             side="bottom"
-                            sideOffset={4}
+                            sideOffset={8}
                             alignOffset={0}
                             avoidCollisions={true}
                             collisionPadding={8}
@@ -2008,10 +2008,10 @@ export default function PostEnquiry() {
                                 
                                 return (
                                   <div key={cat.value}>
-                                    <div 
-                                      className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
-                                        isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                      }`}
+                                  <div 
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
+                                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                     >
                                       <Checkbox
                                         id={cat.value}
@@ -2856,13 +2856,13 @@ export default function PostEnquiry() {
                       <div className="p-3 sm:p-4 bg-white border-[0.5px] border-black rounded-lg shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg pointer-events-none" />
                         <div className="flex items-center space-x-3 relative z-10">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                            <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
-                          </div>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
+                        </div>
                           <Label className="text-xs sm:text-sm font-black text-blue-800">
                             Trust Badge Verified From Profile
-                          </Label>
-                        </div>
+                        </Label>
+                      </div>
                       </div>
                     </div>
                   )}

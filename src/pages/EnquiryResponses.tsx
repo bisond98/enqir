@@ -2663,36 +2663,36 @@ const EnquiryResponses = () => {
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
                   type="button"
-                  onClick={() => {
-                    // Go back to previous page (where user came from)
-                    if (window.history.length > 1) {
-                      navigate(-1);
-                    } else {
-                      // Fallback if no history, go to my-enquiries
-                      navigate('/my-enquiries');
-                    }
-                  }}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
+                    onClick={() => {
+                      // Go back to previous page (where user came from)
+                      if (window.history.length > 1) {
+                        navigate(-1);
+                      } else {
+                        // Fallback if no history, go to my-enquiries
+                        navigate('/my-enquiries');
+                      }
+                    }}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
                 <div className="w-10 h-10"></div>
+                </div>
               </div>
-            </div>
-            
-            {/* Chat Heading in Black Header */}
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              
+              {/* Chat Heading in Black Header */}
+              <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
-                <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
-                Chat.
-              </h1>
-            </div>
-            
+                  <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
+                  Chat.
+                  </h1>
+              </div>
+              
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-3 sm:p-4 lg:p-5">
               {/* Content Card - Black Background */}
@@ -2701,30 +2701,30 @@ const EnquiryResponses = () => {
                   {/* Title Row with Response Count Badge - Mobile Optimized */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
                     <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1">
-                      {enquiry.title}
-                    </h3>
-                    {/* Only show response count to enquiry owner */}
-                    {user && user.uid === enquiry.userId && (
+                        {enquiry.title}
+                      </h3>
+                      {/* Only show response count to enquiry owner */}
+                      {user && user.uid === enquiry.userId && (
                       <div className="flex items-center justify-center border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0">
                         <span className="text-xs sm:text-base font-black text-white">{approvedResponses.length}</span>
-                      </div>
-                    )}
-                  </div>
-                  
+                        </div>
+                      )}
+                    </div>
+                    
                   {/* Category and Type Row - Centered Badges */}
                   <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-center">
                     <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1">
                       <Tag className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
                       <span className="text-[7px] sm:text-[9px] text-white font-medium capitalize">{enquiry.category}</span>
-                    </div>
-                    {enquiry.isUrgent && (
+                      </div>
+                      {enquiry.isUrgent && (
                       <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600">
                         <Sparkles className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
                         <span className="text-[7px] sm:text-[9px] text-white font-medium">Urgent</span>
-                      </div>
-                    )}
-                  </div>
-                  
+                        </div>
+                      )}
+                    </div>
+                    
                   {/* Budget and Location Row - Horizontal Layout */}
                   <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 pt-2 border-t-2 border-black">
                     {/* Budget Section */}
@@ -2732,25 +2732,25 @@ const EnquiryResponses = () => {
                       <div className="text-left min-w-0 flex-1">
                         <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Budget</div>
                         <div className="text-[10px] sm:text-sm font-bold text-white truncate">{formatBudget(enquiry.budget)}</div>
+                        </div>
                       </div>
-                    </div>
-                    
+                      
                     {/* Location Section */}
-                    {enquiry.location && (
+                      {enquiry.location && (
                       <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0 justify-end">
                         <MapPin className="hidden sm:block h-4 w-4 text-white flex-shrink-0" />
                         <div className="text-right min-w-0 flex-1">
                           <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Location</div>
                           <div className="text-[10px] sm:text-sm font-bold text-white truncate">{enquiry.location}</div>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
         <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 py-4 sm:py-6 lg:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-8">
@@ -2789,7 +2789,7 @@ const EnquiryResponses = () => {
                             : 'bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                         style={{ border: 'none' }}
-                      >
+                    >
                       {/* Physical button depth effect */}
                       {!isSelected && (
                         <>
@@ -2798,24 +2798,24 @@ const EnquiryResponses = () => {
                         </>
                       )}
                       <CardContent className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
-                        {user?.uid === enquiry?.userId && (
+                            {user?.uid === enquiry?.userId && (
                           <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 lg:top-3 lg:left-3 z-20">
                             <div className="border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-[8px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl whitespace-nowrap flex-shrink-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/responsebadge">
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                              <span className="relative z-10">Response #{index + 1}</span>
-                            </div>
+                                <span className="relative z-10">Response #{index + 1}</span>
+                          </div>
                           </div>
                         )}
                         <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
                           <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
                           {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
                             <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
-                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-                              <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
-                            </div>
-                          )}
-                        </div>
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                                <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
+                              </div>
+                            )}
+                          </div>
                         <p className="text-black font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-black font-medium">
                           <span className="font-semibold text-blue-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>

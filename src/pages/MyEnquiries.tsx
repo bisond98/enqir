@@ -1060,10 +1060,10 @@ const MyEnquiries = () => {
                                 <>
                                   <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({responseCount})</span>
                                   {hasUnreadResponses(enquiry.id) && responseCount > 0 && (
-                                    <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
+                              <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
                                       {responseCount}
-                                    </div>
-                                  )}
+                              </div>
+                            )}
                                 </>
                               );
                             })()}

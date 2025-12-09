@@ -1388,15 +1388,15 @@ const SellerResponse = () => {
                   </span>
                 </Label>
                 <div className="relative">
-                  <Input
-                    id="title"
-                    value={title}
-                    readOnly
-                    disabled
+                <Input
+                  id="title"
+                  value={title}
+                  readOnly
+                  disabled
                     className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-gray-100 to-gray-200 cursor-not-allowed shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
                     style={{ fontSize: '16px' }}
-                    required
-                  />
+                  required
+                />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
@@ -1414,14 +1414,14 @@ const SellerResponse = () => {
                   Explain it like to a 5 year-old.
                 </p>
                 <div className="relative">
-                  <Textarea
-                    id="description"
-                    placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                <Textarea
+                  id="description"
+                  placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                     className={`min-h-[140px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                     style={{ fontSize: '16px' }}
-                  />
+                />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
@@ -1461,30 +1461,30 @@ const SellerResponse = () => {
                 )}
                 
                 <div className="relative">
-                  <Input
-                    id="price"
+                <Input
+                  id="price"
                     placeholder="Enter amount (e.g., 50000)"
-                    value={price}
-                    onChange={(e) => {
-                      // Remove non-numeric characters and format with commas
-                      const value = e.target.value.replace(/[^\d]/g, '');
-                      if (value) {
-                        const num = parseInt(value);
-                        setPrice(num.toLocaleString('en-IN'));
-                      } else {
-                        setPrice('');
-                      }
-                    }}
-                    onBlur={(e) => {
-                      // Add ₹ symbol when leaving the field
-                      if (e.target.value && !e.target.value.startsWith('₹')) {
-                        setPrice('₹' + e.target.value);
-                      }
-                    }}
+                  value={price}
+                  onChange={(e) => {
+                    // Remove non-numeric characters and format with commas
+                    const value = e.target.value.replace(/[^\d]/g, '');
+                    if (value) {
+                      const num = parseInt(value);
+                      setPrice(num.toLocaleString('en-IN'));
+                    } else {
+                      setPrice('');
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Add ₹ symbol when leaving the field
+                    if (e.target.value && !e.target.value.startsWith('₹')) {
+                      setPrice('₹' + e.target.value);
+                    }
+                  }}
                     className={`h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold ${errors.price ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                     style={{ fontSize: '16px' }}
-                    required
-                  />
+                  required
+                />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -1538,14 +1538,14 @@ const SellerResponse = () => {
                   Payment Terms, Delivery Details, Warranties, Or Any Special Conditions
                 </p>
                 <div className="relative">
-                  <Textarea
-                    id="notes"
-                    placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                <Textarea
+                  id="notes"
+                  placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
                     className="min-h-[120px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                     style={{ fontSize: '16px' }}
-                  />
+                />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
@@ -1608,7 +1608,7 @@ const SellerResponse = () => {
                               <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
                             </div>
                             <button
-                              type="button"
+                                type="button" 
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1621,13 +1621,13 @@ const SellerResponse = () => {
                             {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
                               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
                                 {uploadProgresses[index]}%
-                              </div>
+                            </div>
                             )}
                           </div>
                         ) : (
                           // Upload Area
                           <div className="flex flex-col items-center justify-center p-3 sm:p-4">
-                            {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 ? (
+                              {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 ? (
                               <>
                                 <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
                                 <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
@@ -1640,19 +1640,19 @@ const SellerResponse = () => {
                             )}
                             {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
                               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
-                                {uploadProgresses[index]}%
+                                  {uploadProgresses[index]}%
                               </div>
                             )}
                           </div>
                         )}
                       </label>
-                      
-                      {/* Error Message */}
-                      {errors[`image_${index}`] && (
+                        
+                        {/* Error Message */}
+                        {errors[`image_${index}`] && (
                         <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] p-1 text-center rounded-b-xl">
-                          Error
-                        </div>
-                      )}
+                            Error
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -1865,7 +1865,7 @@ const SellerResponse = () => {
                               <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>
                             </span>
                             <span className="text-[6px] sm:text-[7px] text-blue-600 font-medium whitespace-nowrap">Blue Badge For This Response.</span>
-                          </div>
+                      </div>
                         </div>
                         <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
                           (optional)
@@ -1927,26 +1927,26 @@ const SellerResponse = () => {
                               ID Document Type
                             </Label>
                             <div className="relative">
-                              <Select value={govIdType} onValueChange={(value) => {
-                                setGovIdType(value);
-                                if (govIdNumber && value) {
-                                  validateIdNumber(govIdNumber, value);
-                                } else {
-                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                }
-                                setIdVerificationResult(null);
-                              }} disabled={verifyingId}>
+                            <Select value={govIdType} onValueChange={(value) => {
+                              setGovIdType(value);
+                              if (govIdNumber && value) {
+                                validateIdNumber(govIdNumber, value);
+                              } else {
+                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                              }
+                              setIdVerificationResult(null);
+                            }} disabled={verifyingId}>
                                 <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
-                                  <SelectValue placeholder="Select ID Type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                                  <SelectItem value="pan">PAN Card</SelectItem>
-                                  <SelectItem value="passport">Passport</SelectItem>
-                                  <SelectItem value="driving_license">Driving License</SelectItem>
-                                  <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                                </SelectContent>
-                              </Select>
+                                <SelectValue placeholder="Select ID Type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                                <SelectItem value="pan">PAN Card</SelectItem>
+                                <SelectItem value="passport">Passport</SelectItem>
+                                <SelectItem value="driving_license">Driving License</SelectItem>
+                                <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                              </SelectContent>
+                            </Select>
                               {/* Physical button depth effect */}
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
                             </div>
@@ -1963,34 +1963,34 @@ const SellerResponse = () => {
                               ID Number
                             </Label>
                             <div className="relative">
-                              <Input
-                                id="govIdNumber"
-                                placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                                value={govIdNumber}
-                                onChange={(e) => {
-                                  let value = e.target.value.toUpperCase();
-                                  
-                                  // Auto-format Aadhaar: add space after every 4 digits
-                                  if (govIdType === 'aadhaar') {
-                                    // Remove all spaces first
-                                    const digitsOnly = value.replace(/\s/g, '');
-                                    // Add space after every 4 digits
-                                    value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                                  }
-                                  
-                                  setGovIdNumber(value);
-                                  // Clear verification result when user changes the ID number
-                                  setIdVerificationResult(null);
-                                  // Clear any existing errors for ID number
-                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                  // Validate the new value
-                                  if (govIdType) {
-                                    validateIdNumber(value, govIdType);
-                                  }
-                                }}
+                            <Input
+                              id="govIdNumber"
+                              placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                              value={govIdNumber}
+                              onChange={(e) => {
+                                let value = e.target.value.toUpperCase();
+                                
+                                // Auto-format Aadhaar: add space after every 4 digits
+                                if (govIdType === 'aadhaar') {
+                                  // Remove all spaces first
+                                  const digitsOnly = value.replace(/\s/g, '');
+                                  // Add space after every 4 digits
+                                  value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                                }
+                                
+                                setGovIdNumber(value);
+                                // Clear verification result when user changes the ID number
+                                setIdVerificationResult(null);
+                                // Clear any existing errors for ID number
+                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                // Validate the new value
+                                if (govIdType) {
+                                  validateIdNumber(value, govIdType);
+                                }
+                              }}
                                 className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
-                                disabled={verifyingId}
-                              />
+                              disabled={verifyingId}
+                            />
                               {/* Physical button depth effect */}
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                             </div>
