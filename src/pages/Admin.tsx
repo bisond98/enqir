@@ -2003,7 +2003,9 @@ const Admin = () => {
                                   <img 
                                     src={url} 
                                     alt={`Product ${index + 1}`} 
-                                            className="w-full h-16 sm:h-20 object-cover rounded-lg border-4 border-black hover:opacity-80 transition-opacity"
+                                    className="w-full h-16 sm:h-20 object-cover rounded-lg border-4 border-black hover:opacity-80 transition-opacity"
+                                    loading="lazy"
+                                    decoding="async"
                                     onClick={() => window.open(url, '_blank')}
                                   />
                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">

@@ -40,10 +40,40 @@
     <meta name="twitter:title" content="Enqir.in - AI-Powered Marketplace for Buyers & Sellers" />
     <meta name="twitter:description" content="Post your needs and discover curated opportunities. AI-powered marketplace connecting verified buyers with trusted sellers. Secure, private, free." />
     <meta name="twitter:image" content="https://enqir.in/og-image.png" />
+    
+    <!-- Structured Data (JSON-LD) for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Enqir.in",
+      "url": "https://enqir.in",
+      "description": "Post your needs and discover curated opportunities. AI-powered marketplace connecting verified buyers with trusted sellers. Secure, private, free.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://enqir.in/enquiries?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Enqir.in",
+      "url": "https://enqir.in",
+      "logo": "https://enqir.in/favicon.svg",
+      "description": "AI-powered marketplace connecting verified buyers with trusted sellers",
+      "sameAs": []
+    }
+    </script>
+    
+    <!-- Sitemap Reference -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root" role="main" aria-label="Enqir.in Application"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1166,6 +1166,8 @@ const MyEnquiries = () => {
               src={fullscreenImage} 
               alt="Fullscreen view"
               className="w-full h-full object-contain sm:rounded-lg"
+              loading="eager"
+              decoding="async"
               style={{ 
                 maxHeight: '100vh', 
                 maxWidth: '100vw',
