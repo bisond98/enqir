@@ -888,13 +888,14 @@ export default function EnquiryWall() {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   }, [isEnquiryOutdated, isDealClosed]);
 
-  const formatDate = (dateString: string) => {
+  // Memoize formatDate function
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric', 
       year: 'numeric' 
     });
-  };
+  }, []);
 
   // Format deadline as simple text (e.g., "13d 16h left")
   const formatDeadlineText = useCallback((deadline: any) => {

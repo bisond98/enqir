@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useContext, useRef } from "react";
+import { useState, useEffect, useMemo, useContext, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -1019,8 +1019,8 @@ const Dashboard = () => {
     };
   }, [user]);
 
-  // Handle deleting an enquiry
-  const handleDeleteEnquiry = async (enquiryId: string) => {
+  // Handle deleting an enquiry - memoized with useCallback
+  const handleDeleteEnquiry = useCallback(async (enquiryId: string) => {
     try {
       // Delete the enquiry document
       await deleteDoc(doc(db, 'enquiries', enquiryId));
@@ -1049,7 +1049,7 @@ const Dashboard = () => {
         variant: "destructive",
       });
     }
-  };
+  }, []);
 
   // Handle payment plan selection for upgrades
   // Note: Payment is already processed in PaymentPlanSelector via Razorpay
@@ -1101,16 +1101,16 @@ const Dashboard = () => {
     }
   };
 
-  // Handle upgrade button click
-  const handleUpgradeClick = (enquiry: Enquiry, e: React.MouseEvent) => {
+  // Handle upgrade button click - memoized with useCallback
+  const handleUpgradeClick = useCallback((enquiry: Enquiry, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedEnquiryForUpgrade(enquiry);
     setCurrentPlan(enquiry.selectedPlanId || 'free');
     setShowPaymentSelector(true);
-  };
+  }, []);
 
-  // Helper function to check if enquiry has unread responses
-  const hasUnreadResponses = (enquiryId: string) => {
+  // Helper function to check if enquiry has unread responses - memoized with useCallback
+  const hasUnreadResponses = useCallback((enquiryId: string) => {
     if (!user) return false;
     
     const responses = enquiryResponses[enquiryId] || [];
@@ -1132,7 +1132,7 @@ const Dashboard = () => {
         : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
       return responseTime > viewedTime;
     });
-  };
+  }, [user, enquiryResponses]);
 
   // Listen for response viewed events to update badges in real-time
   useEffect(() => {
@@ -1178,8 +1178,8 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Response limit functions based on payment plans
-  const getVisibleResponses = (enquiryId: string) => {
+  // Response limit functions based on payment plans - memoized with useCallback
+  const getVisibleResponses = useCallback((enquiryId: string) => {
     const responses = enquiryResponses[enquiryId] || [];
     const enquiry = enquiries.find(e => e.id === enquiryId);
     
@@ -1187,18 +1187,6 @@ const Dashboard = () => {
     
     // Get the selected plan for this enquiry
     const selectedPlanId = enquiry.selectedPlanId || 'free';
-    
-    // Debug logging
-    console.log('🔍 Dashboard getVisibleResponses DEBUG:', {
-      enquiryId,
-      totalResponses: responses.length,
-      selectedPlanId,
-      isPremiumUser: usageStats.premiumSubscription,
-      isPremiumEnquiry: enquiry.isPremium,
-      userEmail: user?.email,
-      enquiryTitle: enquiry.title,
-      enquiryBudget: enquiry.budget
-    });
     
     // Determine response limit based on plan
     let responseLimit = 2; // Default free plan
@@ -1223,25 +1211,14 @@ const Dashboard = () => {
     
     // If unlimited, return all responses
     if (responseLimit === -1) {
-      console.log('✅ Showing all responses (unlimited plan)');
       return responses;
     }
     
     // Return limited responses based on plan
-    const limitedResponses = responses.slice(0, responseLimit);
-    const lockedCount = Math.max(0, responses.length - responseLimit);
-    console.log(`📊 PLAN LIMIT RESULT:`, {
-      plan: selectedPlanId,
-      limit: responseLimit,
-      visible: limitedResponses.length,
-      locked: lockedCount,
-      total: responses.length,
-      status: lockedCount > 0 ? 'LIMITED' : 'ALL_VISIBLE'
-    });
-    return limitedResponses;
-  };
+    return responses.slice(0, responseLimit);
+  }, [enquiryResponses, enquiries]);
 
-  const getLockedResponses = (enquiryId: string) => {
+  const getLockedResponses = useCallback((enquiryId: string) => {
     const responses = enquiryResponses[enquiryId] || [];
     const enquiry = enquiries.find(e => e.id === enquiryId);
     
@@ -1273,28 +1250,41 @@ const Dashboard = () => {
     
     // If unlimited, no locked responses
     if (responseLimit === -1) {
-      console.log('No locked responses (unlimited plan)');
       return [];
     }
     
     // Show locked responses beyond the limit
-    const lockedResponses = responses.slice(responseLimit);
-    console.log(`Locked responses for ${selectedPlanId} plan:`, lockedResponses.length);
-    return lockedResponses;
-  };
+    return responses.slice(responseLimit);
+  }, [enquiryResponses, enquiries]);
 
-  const getRemainingResponseCount = (enquiryId: string) => {
+  const getRemainingResponseCount = useCallback((enquiryId: string) => {
     const responses = enquiryResponses[enquiryId] || [];
     const visibleResponses = getVisibleResponses(enquiryId);
     return Math.max(0, responses.length - visibleResponses.length);
-  };
+  }, [enquiryResponses, enquiries]);
 
-  const toggleResponseView = (enquiryId: string, responseIndex: number) => {
+  // Memoize active enquiries count calculation
+  const activeEnquiriesCount = useMemo(() => {
+    const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
+    const now = new Date();
+    return allEnqs.filter(e => {
+      // Must be live status
+      if (e.status !== 'live') return false;
+      // Must not be expired
+      if (e.deadline) {
+        const deadlineDate = e.deadline.toDate ? e.deadline.toDate() : new Date(e.deadline);
+        if (deadlineDate < now) return false;
+      }
+      return true;
+    }).length;
+  }, [allEnquiriesForStats, enquiries]);
+
+  const toggleResponseView = useCallback((enquiryId: string, responseIndex: number) => {
     setSelectedResponseIndex(prev => ({
       ...prev,
       [enquiryId]: responseIndex
     }));
-  };
+  }, []);
 
   // Test function for premium plan limits - can be called from browser console
   // Moved to after helper functions are defined
@@ -1651,20 +1641,7 @@ const Dashboard = () => {
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{(() => {
-                        const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
-                        const now = new Date();
-                        return allEnqs.filter(e => {
-                          // Must be live status
-                          if (e.status !== 'live') return false;
-                          // Must not be expired
-                          if (e.deadline) {
-                            const deadlineDate = e.deadline.toDate ? e.deadline.toDate() : new Date(e.deadline);
-                            if (deadlineDate < now) return false;
-                          }
-                          return true;
-                        }).length;
-                      })()}</h3>
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{activeEnquiriesCount}</h3>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
                     </div>
                   </div>

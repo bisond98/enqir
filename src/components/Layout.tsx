@@ -994,7 +994,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
       {/* Mobile Bottom Navigation */}
       {isMobile && showNavigation && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom">
+        <nav 
+          role="navigation" 
+          aria-label="Main navigation"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom"
+        >
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
             {navigationItems.filter(item => item.path !== "/").map((item) => {
               const Icon = item.icon;
@@ -1016,13 +1020,22 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <div
                     key={item.path}
                     onClick={handleClick}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Navigate to ${item.label}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleClick(e as any);
+                      }
+                    }}
                     className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                       isActive(item.path)
                         ? "text-pal-blue bg-pal-blue/10"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-5 w-5" aria-hidden="true" />
                     <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                   </div>
                 );
@@ -1032,13 +1045,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <Link
                   key={item.path}
                   to={item.path}
+                  aria-label={`Navigate to ${item.label}`}
                   className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 ${
                     isActive(item.path)
                       ? "text-pal-blue bg-pal-blue/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-5 w-5" aria-hidden="true" />
                   <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                 </Link>
               );
@@ -1052,6 +1066,19 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/settings");
                 }
               }}
+              role="button"
+              tabIndex={0}
+              aria-label={user ? "Navigate to Settings" : "Sign in to access Settings"}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (!user) {
+                    navigate("/signin");
+                  } else {
+                    navigate("/settings");
+                  }
+                }
+              }}
               className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                 isActive("/settings")
                   ? "text-pal-blue bg-pal-blue/10"
@@ -1062,7 +1089,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               <span className="text-[10px] font-medium truncate leading-tight">Settings</span>
             </div>
           </div>
-        </div>
+        </nav>
       )}
 
 
