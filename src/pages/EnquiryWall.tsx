@@ -1570,14 +1570,14 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] sm:border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
                                   <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] sm:border-2 border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-gray-600" />
@@ -1590,7 +1590,7 @@ export default function EnquiryWall() {
                             {/* Category */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
                               <div>
-                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] sm:border-2 border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
+                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                                 </Badge>
@@ -1609,7 +1609,7 @@ export default function EnquiryWall() {
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-[0.5px] sm:border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-black text-black text-sm sm:text-xl md:text-2xl relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs sm:text-lg md:text-xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
@@ -1617,7 +1617,7 @@ export default function EnquiryWall() {
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-gray-700 border-[0.5px] sm:border-2 border-black rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-gray-700 border-[0.5px] border-black rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-600" />
@@ -1626,7 +1626,7 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] sm:border-2 border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                 <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
@@ -1667,8 +1667,10 @@ export default function EnquiryWall() {
                                 )
                               ) : (
                                 <Link to="/signin" className="w-full sm:w-auto block">
-                                  <Button variant="outline" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md sm:rounded-xl">
-                                    Sign In to Respond
+                                  <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden">
+                                    {/* Physical button depth effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                    <span className="relative z-10">Sign In to Respond</span>
                                   </Button>
                                 </Link>
                               )}
@@ -1681,7 +1683,7 @@ export default function EnquiryWall() {
                             <div className="flex flex-wrap items-center gap-1.5 justify-start">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <span className="font-black text-black text-sm relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
@@ -1689,7 +1691,7 @@ export default function EnquiryWall() {
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1 text-gray-700 border-2 border-black rounded-lg px-1.5 py-0.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 text-gray-700 border-[0.5px] border-black rounded-lg px-1.5 py-0.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2 w-2 text-gray-600" />
@@ -1698,7 +1700,7 @@ export default function EnquiryWall() {
                               </div>
                             )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 border-2 border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 border-[0.5px] border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                 <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
@@ -1739,8 +1741,10 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin" className="w-full block">
-                                <Button variant="outline" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md">
-                                  Sign In to Respond
+                                <Button className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden">
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
+                                  <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>
                             )}
@@ -1782,8 +1786,10 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin">
-                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 transition-all duration-200 rounded-md sm:rounded-xl" variant="outline">
-                                  Sign In to Respond
+                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden">
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                  <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>
                             )}

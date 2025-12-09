@@ -567,6 +567,7 @@ const Dashboard = () => {
     let unsubscribeEnquiries: (() => void) | null = null;
     let unsubscribeSubmissions: (() => void) | null = null;
     let unsubscribeChats: (() => void) | null = null;
+    const responseUnsubscribers: {[key: string]: (() => void)} = {};
 
     // Initial data fetch - fetch everything immediately
     const setupDashboard = async () => {
@@ -624,7 +625,13 @@ const Dashboard = () => {
         if (isInitialSnapshot) {
           isInitialSnapshot = false;
           console.log('Dashboard: Skipping initial snapshot, data already loaded');
-          return;
+          // Still update if there are changes (new submissions added)
+          if (snapshot.docChanges().length > 0) {
+            console.log('Dashboard: Initial snapshot has changes, updating anyway');
+            // Continue processing below
+          } else {
+            return;
+          }
         }
         
         // Check which enquiries are deleted (for real-time updates)
@@ -727,141 +734,166 @@ const Dashboard = () => {
       // Loading already set to false after initial fetch above
       
       // Now set up real-time listener for user's enquiries
-      const enquiriesQuery = query(
-        collection(db, 'enquiries'),
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc'),
-        limit(10)
-      );
-      
-      unsubscribeEnquiries = onSnapshot(enquiriesQuery, (snapshot) => {
-      const enquiriesData: Enquiry[] = [];
-      const now = new Date();
-      
-      snapshot.forEach((doc) => {
-        const data = doc.data();
+      // Try with orderBy first, fallback to query without orderBy if index is missing
+      const setupEnquiriesListener = () => {
+        const enquiriesQueryWithOrder = query(
+          collection(db, 'enquiries'),
+          where('userId', '==', user.uid),
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        );
         
-        // Check if enquiry has expired
-        let isExpired = false;
-        if (data.deadline) {
-          const deadlineDate = data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline);
-          isExpired = deadlineDate < now;
-        }
-        
-        // Include all enquiries except pending payment
-        if (data.status !== 'pending_payment') {
-          enquiriesData.push({ id: doc.id, ...data } as Enquiry);
-        }
-      });
-      
-      // Sort by createdAt to ensure latest first
-      enquiriesData.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime(); // Descending order (latest first)
-      });
-      
-      setEnquiries(enquiriesData);
-      
-      // For stats, use the enquiries we already have (non-blocking background fetch for complete stats)
-      // Set initial stats from current data immediately
-      setAllEnquiriesForStats(enquiriesData);
-      
-      // Fetch ALL enquiries for accurate stats in background (non-blocking)
-      const allEnquiriesQuery = query(
-        collection(db, 'enquiries'),
-        where('userId', '==', user.uid)
-      );
-      
-      // Don't block - let this run in background
-      getDocs(allEnquiriesQuery).then((snapshot) => {
-        const allEnquiriesData: Enquiry[] = [];
-        const now = new Date();
-        
-        snapshot.forEach((doc) => {
-          const data = doc.data();
+        const handleSnapshot = (snapshot: any) => {
+          const enquiriesData: Enquiry[] = [];
+          const now = new Date();
           
-          // Check if enquiry has expired
-          let isExpired = false;
-          if (data.deadline) {
-            const deadlineDate = data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline);
-            isExpired = deadlineDate < now;
-          }
+          snapshot.forEach((doc: any) => {
+            const data = doc.data();
+            
+            // Check if enquiry has expired
+            let isExpired = false;
+            if (data.deadline) {
+              const deadlineDate = data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline);
+              isExpired = deadlineDate < now;
+            }
+            
+            // Include all enquiries except pending payment
+            if (data.status !== 'pending_payment') {
+              enquiriesData.push({ id: doc.id, ...data } as Enquiry);
+            }
+          });
           
-          // Include all enquiries except pending payment
-          if (data.status !== 'pending_payment') {
-            allEnquiriesData.push({ id: doc.id, ...data } as Enquiry);
-          }
-        });
-        
-        setAllEnquiriesForStats(allEnquiriesData);
-      }).catch((error) => {
-        console.error('Error fetching all enquiries for stats:', error);
-        // Keep using the limited enquiries for stats (already set above)
-      });
-      
-      // Only fetch responses for enquiries that have responses (optimized)
-      const fetchResponsesOptimized = async () => {
-        if (enquiriesData.length === 0) {
-          setEnquiryResponses({});
-          // Note: Don't touch responsesSummary here - it's managed by seller submissions listener
-          return;
-        }
-        
-        const responsesMap: {[key: string]: SellerSubmission[]} = {};
-        
-        // Fetch responses for all enquiries
-        const activeEnquiries = enquiriesData;
-        
-        if (activeEnquiries.length === 0) {
-          setEnquiryResponses({});
-          return;
-        }
-        
-        // Create parallel queries for active enquiries only
-        const responsePromises = activeEnquiries.map(async (enquiry) => {
-          try {
-            const responsesQuery = query(
-              collection(db, 'sellerSubmissions'),
-              where('enquiryId', '==', enquiry.id)
-            );
-            const responsesSnapshot = await getDocs(responsesQuery);
-            const responses: SellerSubmission[] = [];
-            responsesSnapshot.forEach((doc) => {
-              responses.push({ id: doc.id, ...doc.data() } as SellerSubmission);
+          // Sort by createdAt to ensure latest first
+          enquiriesData.sort((a, b) => {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime(); // Descending order (latest first)
+          });
+          
+          setEnquiries(enquiriesData);
+          
+          // For stats, use the enquiries we already have (non-blocking background fetch for complete stats)
+          // Set initial stats from current data immediately
+          setAllEnquiriesForStats(enquiriesData);
+          
+          // Fetch ALL enquiries for accurate stats in background (non-blocking)
+          const allEnquiriesQuery = query(
+            collection(db, 'enquiries'),
+            where('userId', '==', user.uid)
+          );
+          
+          // Don't block - let this run in background
+          getDocs(allEnquiriesQuery).then((snapshot) => {
+            const allEnquiriesData: Enquiry[] = [];
+            const now = new Date();
+            
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              
+              // Check if enquiry has expired
+              let isExpired = false;
+              if (data.deadline) {
+                const deadlineDate = data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline);
+                isExpired = deadlineDate < now;
+              }
+              
+              // Include all enquiries except pending payment
+              if (data.status !== 'pending_payment') {
+                allEnquiriesData.push({ id: doc.id, ...data } as Enquiry);
+              }
             });
-            return { enquiryId: enquiry.id, responses };
-          } catch (error) {
-            console.error('Error fetching responses for enquiry:', enquiry.id, error);
-            return { enquiryId: enquiry.id, responses: [] };
+            
+            setAllEnquiriesForStats(allEnquiriesData);
+          }).catch((error) => {
+            console.error('Error fetching all enquiries for stats:', error);
+            // Keep using the limited enquiries for stats (already set above)
+          });
+          
+          // Clean up old response listeners for enquiries that are no longer in the list
+          Object.keys(responseUnsubscribers).forEach((enquiryId) => {
+            if (!enquiriesData.some(e => e.id === enquiryId)) {
+              // Enquiry no longer exists, clean up its listener
+              if (responseUnsubscribers[enquiryId]) {
+                responseUnsubscribers[enquiryId]();
+                delete responseUnsubscribers[enquiryId];
+              }
+            }
+          });
+          
+          // Set up real-time listeners for each enquiry
+          enquiriesData.forEach((enquiry) => {
+            // Skip if listener already exists for this enquiry
+            if (responseUnsubscribers[enquiry.id]) {
+              return;
+            }
+            
+            try {
+              const responsesQuery = query(
+                collection(db, 'sellerSubmissions'),
+                where('enquiryId', '==', enquiry.id)
+              );
+              
+              // Set up real-time listener for this enquiry's responses
+              const unsubscribe = onSnapshot(
+                responsesQuery,
+                (snapshot) => {
+                  const responses: SellerSubmission[] = [];
+                  snapshot.forEach((doc) => {
+                    responses.push({ id: doc.id, ...doc.data() } as SellerSubmission);
+                  });
+                  
+                  // Update the responses map for this specific enquiry
+                  setEnquiryResponses((prev) => ({
+                    ...prev,
+                    [enquiry.id]: responses
+                  }));
+                  
+                  console.log(`Dashboard: Real-time update - ${responses.length} responses for enquiry ${enquiry.id}`);
+                },
+                (error) => {
+                  console.error(`Error in real-time listener for enquiry ${enquiry.id}:`, error);
+                }
+              );
+              
+              responseUnsubscribers[enquiry.id] = unsubscribe;
+            } catch (error) {
+              console.error('Error setting up response listener for enquiry:', enquiry.id, error);
+            }
+          });
+        };
+        
+        // Try with orderBy first
+        unsubscribeEnquiries = onSnapshot(enquiriesQueryWithOrder, handleSnapshot, (error: any) => {
+          // If index error, fallback to query without orderBy
+          if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
+            console.warn('Dashboard: Index missing for enquiries, using fallback query without orderBy');
+            const enquiriesQueryFallback = query(
+              collection(db, 'enquiries'),
+              where('userId', '==', user.uid)
+            );
+            
+            unsubscribeEnquiries = onSnapshot(enquiriesQueryFallback, (snapshot) => {
+              handleSnapshot(snapshot);
+            }, (fallbackError: any) => {
+              // Handle Firestore listener errors gracefully (including CORS)
+              if (fallbackError?.message?.includes('CORS') || fallbackError?.message?.includes('Access-Control-Allow-Origin')) {
+                console.warn('Firestore CORS error in enquiries listener. Real-time updates may be limited.');
+                return;
+              } else {
+                console.error('Error in enquiries listener (fallback):', fallbackError);
+              }
+            });
+          } else if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin')) {
+            // Silently handle CORS errors
+            console.warn('Firestore CORS error in enquiries listener. Real-time updates may be limited.');
+            return;
+          } else {
+            console.error('Error in enquiries listener:', error);
           }
         });
-        
-        // Wait for all queries to complete
-        const results = await Promise.all(responsePromises);
-        
-        // Build the responses map
-        results.forEach(({ enquiryId, responses }) => {
-          responsesMap[enquiryId] = responses;
-        });
-        
-        setEnquiryResponses(responsesMap);
-        // Note: responsesSummary is managed by the seller submissions listener
-        // and should NOT be updated here as it represents user's seller responses,
-        // not responses TO user's enquiries
       };
       
-      // Execute response fetching immediately to avoid setTimeout issues
-      fetchResponsesOptimized();
-      }, (error) => {
-        // Handle Firestore listener errors gracefully (including CORS and index errors)
-        if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin') || error?.code === 'failed-precondition') {
-          // Silently handle CORS and index errors - these are expected and don't affect functionality
-          return;
-        } else {
-          console.error('Error in enquiries listener:', error);
-        }
-      });
+      setupEnquiriesListener();
 
       // Set up real-time listener for chat messages
       try {
@@ -926,6 +958,8 @@ const Dashboard = () => {
       if (unsubscribeEnquiries) unsubscribeEnquiries();
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeChats) unsubscribeChats();
+      // Clean up all response listeners
+      Object.values(responseUnsubscribers).forEach(unsub => unsub());
     };
   }, [user, createNotification, isProfileVerified]);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
@@ -30,6 +30,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const { user, signOut, isProfileVerified, profileVerificationStatus } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
   const [unreadResponseCount, setUnreadResponseCount] = useState(0);
   
@@ -997,6 +998,33 @@ export default function Layout({ children, showNavigation = true }: { children: 
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
             {navigationItems.filter(item => item.path !== "/").map((item) => {
               const Icon = item.icon;
+              // Check if this is a protected route (Dashboard or Profile)
+              const isProtectedRoute = item.path === "/dashboard" || item.path === "/profile";
+              
+              const handleClick = (e: React.MouseEvent) => {
+                if (isProtectedRoute && !user) {
+                  e.preventDefault();
+                  navigate("/signin");
+                }
+              };
+
+              if (isProtectedRoute) {
+                return (
+                  <div
+                    key={item.path}
+                    onClick={handleClick}
+                    className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
+                      isActive(item.path)
+                        ? "text-pal-blue bg-pal-blue/10"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.path}
@@ -1012,9 +1040,16 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </Link>
               );
             })}
-            <Link
-              to="/settings"
-              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 ${
+            <div
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  navigate("/signin");
+                } else {
+                  navigate("/settings");
+                }
+              }}
+              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                 isActive("/settings")
                   ? "text-pal-blue bg-pal-blue/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1022,7 +1057,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
             >
               <Settings className="h-5 w-5" />
               <span className="text-[10px] font-medium truncate leading-tight">Settings</span>
-            </Link>
+            </div>
           </div>
         </div>
       )}
