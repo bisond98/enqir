@@ -64,12 +64,12 @@ const ForgotPassword = () => {
             <h1 className="text-xl sm:text-3xl font-bold text-foreground mb-2 sm:mb-3">
               Reset Password
             </h1>
-            <p className="text-xs sm:text-base text-muted-foreground px-2">
+            <p className="text-[10px] sm:text-xs text-muted-foreground px-2">
               Enter your email to receive a password reset link
             </p>
           </div>
 
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="shadow-xl border-[0.5px] border-black bg-white/80 backdrop-blur-sm">
             <CardContent className="px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8">
               {!isEmailSent ? (
                 <form onSubmit={handleSendResetEmail} className="space-y-4 sm:space-y-5">
@@ -87,39 +87,40 @@ const ForgotPassword = () => {
                       Email Address
                     </Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                       <Input
                         id="email"
                         type="email"
                         placeholder="Enter your email address"
-                        className="pl-10 h-11 text-sm border-gray-200 focus:border-pal-blue focus:ring-pal-blue/20"
+                        className="pl-10 h-11 text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                       />
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      We'll send a password reset link to this email
-                    </p>
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full h-11 text-sm font-semibold primary-gradient hover:shadow-glow transition-spring"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="h-4 w-4 mr-2" />
-                        Send Reset Link
-                      </>
-                    )}
-                  </Button>
+                  <div className="relative">
+                    <Button 
+                      type="submit" 
+                      disabled={loading}
+                      className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="h-4 w-4 mr-2" />
+                          Send Reset Link
+                        </>
+                      )}
+                    </Button>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                  </div>
                 </form>
               ) : (
                 <div className="text-center space-y-4 sm:space-y-6">
@@ -135,15 +136,15 @@ const ForgotPassword = () => {
                     <h3 className="text-lg sm:text-2xl font-bold text-foreground mb-2">
                     Check Your Email
                   </h3>
-                    <p className="text-xs sm:text-base text-muted-foreground px-1">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground px-1">
                       We've sent a password reset link to{" "}
                       <span className="font-semibold text-foreground break-all">{email}</span>
                   </p>
                   </div>
 
                   {/* Next Steps */}
-                  <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/50 rounded-lg p-3 sm:p-5 border border-blue-100">
-                    <p className="text-xs sm:text-base font-semibold text-foreground mb-2.5 sm:mb-4 text-left">
+                  <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-3 sm:p-5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                    <p className="text-xs sm:text-sm font-black text-foreground mb-2.5 sm:mb-4 text-left">
                       Next steps:
                     </p>
                     <ul className="space-y-2 sm:space-y-3 text-left">
@@ -184,15 +185,17 @@ const ForgotPassword = () => {
 
                   {/* Action Buttons */}
                   <div className="space-y-2.5 sm:space-y-3 pt-1">
-                    <Button 
-                      onClick={() => handleSendResetEmail()}
-                      variant="outline" 
-                      className="w-full h-11 text-sm border-2 hover:bg-pal-blue/5 hover:border-pal-blue transition-spring"
-                      disabled={loading}
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      Resend Email
-                    </Button>
+                    <div className="relative">
+                      <Button 
+                        onClick={() => handleSendResetEmail()}
+                        disabled={loading}
+                        className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
+                      >
+                        <Mail className="h-4 w-4 mr-2" />
+                        Resend Email
+                      </Button>
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                    </div>
                     
                     <Button 
                       onClick={handleBackToSignIn}

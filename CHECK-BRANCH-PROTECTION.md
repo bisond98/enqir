@@ -39,3 +39,4 @@ If branch protection is enabled on `main`, you can:
 - This prevents force pushes locally, but GitHub branch protection is separate
 - Need to check GitHub web interface for actual protection rules
 
+

@@ -15,3 +15,4 @@ rm -f .git/hooks/post-commit
 
 echo "✅ File locking removed. Deployment should work smoothly now."
 
+

@@ -109,6 +109,8 @@ export default function PostEnquiry() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoriesPopoverOpen, setCategoriesPopoverOpen] = useState(false);
+  const [categoriesSheetOpen, setCategoriesSheetOpen] = useState(false);
   const [budget, setBudget] = useState("");
   const [location, setLocation] = useState("");
   const [deadline, setDeadline] = useState<Date | null>(null);
@@ -1833,7 +1835,7 @@ export default function PostEnquiry() {
                     <div className="space-y-2.5">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
                       <div className="block sm:hidden">
-                        <Sheet>
+                        <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen}>
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
@@ -1871,35 +1873,61 @@ export default function PostEnquiry() {
                               <SheetTitle className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Categories</SheetTitle>
                               <p className="text-xs text-slate-500 text-left mt-1 sm:ml-0 ml-[0.15em]">upto 3.</p>
                             </SheetHeader>
+                            {selectedCategories.length > 0 && (
+                              <div className="px-4 pb-3 border-b border-black flex-shrink-0">
+                                <div className="relative">
+                                  <Button
+                                    type="button"
+                                    onClick={() => setCategoriesSheetOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-base py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
+                                  >
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
                             <div className="flex-1 overflow-y-auto overscroll-contain">
                               <div className="px-2 py-2 pb-20">
-                                {categories.map((cat) => {
+                                {categories.map((cat, index) => {
                                   const isSelected = selectedCategories.includes(cat.value);
                                   const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                  const isService = cat.value === "service";
                                   
                                   return (
-                                    <div 
-                                      key={cat.value} 
-                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
-                                        isDisabled ? 'opacity-50' : ''
-                                      }`}
-                                      onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
+                                    <div key={cat.value}>
+                                      <div 
+                                        className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
+                                          isDisabled ? 'opacity-50' : ''
+                                        }`}
                                       >
                                         <Checkbox
                                           id={`mobile-${cat.value}`}
                                           checked={isSelected}
                                           disabled={isDisabled}
-                                          onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
+                                          onCheckedChange={() => !isDisabled && handleCategoryToggle(cat.value)}
+                                          className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
                                         />
-                                      <Label
-                                        htmlFor={`mobile-${cat.value}`}
-                                        className={`text-base flex-1 cursor-pointer ${
-                                          isDisabled ? 'text-slate-400' : 'text-slate-700'
-                                        }`}
-                                      >
-                                        {cat.label}
-                                      </Label>
+                                        <Label
+                                          htmlFor={`mobile-${cat.value}`}
+                                          onClick={(e) => {
+                                            if (!isDisabled) {
+                                              e.preventDefault();
+                                              handleCategoryToggle(cat.value);
+                                            }
+                                          }}
+                                          className={`text-base flex-1 cursor-pointer ${
+                                            isDisabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700'
+                                          }`}
+                                        >
+                                          {cat.label}
+                                        </Label>
+                                      </div>
+                                      {isService && (
+                                        <div className="px-4 py-2">
+                                          <div className="border-t border-black border-[0.5px]"></div>
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })}
@@ -1918,17 +1946,16 @@ export default function PostEnquiry() {
                       
                       {/* Desktop: Use Popover - Enhanced */}
                       <div className="hidden sm:block">
-                        <Popover>
+                        <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
                           <PopoverTrigger asChild>
-                            <div className="relative">
-                              <Button
-                                variant="outline"
-                                className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative z-10 ${
-                                  selectedCategories.length === 0 
-                                    ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
-                                    : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                                } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
-                              >
+                            <Button
+                              variant="outline"
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative ${
+                                selectedCategories.length === 0 
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                            >
                               <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
                                 {selectedCategories.length === 0 ? (
                                   <span className="text-[10px] text-slate-500">Select categories...</span>
@@ -1949,9 +1976,6 @@ export default function PostEnquiry() {
                               </div>
                               <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
                             </Button>
-                            {/* Physical button depth effect */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
-                          </div>
                           </PopoverTrigger>
                           <PopoverContent 
                             className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm" 
@@ -1962,17 +1986,32 @@ export default function PostEnquiry() {
                             avoidCollisions={true}
                             collisionPadding={8}
                           >
+                            {selectedCategories.length > 0 && (
+                              <div className="p-3 border-b border-black bg-white">
+                                <div className="relative">
+                                  <Button
+                                    type="button"
+                                    onClick={() => setCategoriesPopoverOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-sm py-2.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
+                                  >
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
                             <div className="max-h-[calc(100vh-120px)] sm:max-h-60 overflow-y-auto overscroll-contain pb-4">
-                              {categories.map((cat) => {
+                              {categories.map((cat, index) => {
                                 const isSelected = selectedCategories.includes(cat.value);
                                 const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                const isService = cat.value === "service";
                                 
                                 return (
-                                  <div 
-                                    key={cat.value} 
-                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
-                                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                  <div key={cat.value}>
+                                    <div 
+                                      className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
+                                        isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                      }`}
                                     >
                                       <Checkbox
                                         id={cat.value}
@@ -1989,6 +2028,12 @@ export default function PostEnquiry() {
                                     >
                                       {cat.label}
                                     </Label>
+                                    </div>
+                                    {isService && (
+                                      <div className="px-3 py-2">
+                                        <div className="border-t border-black border-[0.5px]"></div>
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -2281,7 +2326,7 @@ export default function PostEnquiry() {
                   <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-[0.5px] border-black'} rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden border-2 border-black">
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
                         {/* Moving Tick - All Over Card */}
                         <div 
                           className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"

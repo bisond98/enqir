@@ -1744,7 +1744,7 @@ const SellerResponse = () => {
                   <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-2 border-black'} rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden border-2 border-black">
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
                         {/* Moving Tick - All Over Card */}
                         <div 
                           className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"

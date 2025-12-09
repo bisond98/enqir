@@ -142,7 +142,7 @@ const ResetPassword = () => {
             </p>
           </div>
 
-          <Card className="shadow-lg border-4 border-black">
+          <Card className="shadow-lg border-[0.5px] border-black">
             <CardHeader className="space-y-1">
               <div className="flex items-center justify-center space-x-2 mb-4">
                 <Shield className="h-6 w-6 text-pal-blue" />
@@ -151,10 +151,10 @@ const ResetPassword = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePasswordReset} className="space-y-4">
-                <Alert className="border-blue-200 bg-blue-50">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    <strong>Security tip:</strong> Choose a strong password that you don't use elsewhere.
+                <Alert className="border-[0.5px] border-black bg-gradient-to-br from-slate-50 to-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-xl">
+                  <AlertTriangle className="h-4 w-4 text-black" />
+                  <AlertDescription className="text-xs text-black">
+                    <strong className="font-black">Security tip:</strong> Choose a strong password that you don't use elsewhere.
                   </AlertDescription>
                 </Alert>
 
@@ -172,22 +172,23 @@ const ResetPassword = () => {
                     New Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter new password"
-                      className="pl-10 pr-10 border-2 border-black focus:border-black focus:ring-2 focus:ring-black"
+                      className="pl-10 pr-10 h-11 text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
                     />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent z-20"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
@@ -197,7 +198,7 @@ const ResetPassword = () => {
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] text-muted-foreground">
                     Must be at least 6 characters long
                   </p>
                 </div>
@@ -207,22 +208,23 @@ const ResetPassword = () => {
                     Confirm New Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm new password"
-                      className="pl-10 pr-10 border-2 border-black focus:border-black focus:ring-2 focus:ring-black"
+                      className="pl-10 pr-10 h-11 text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       minLength={6}
                     />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent z-20"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? (
@@ -232,28 +234,31 @@ const ResetPassword = () => {
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] text-muted-foreground">
                     Re-enter your new password to confirm
                   </p>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full primary-gradient hover:shadow-glow transition-spring"
-                  disabled={loading}
-                >
-                  {loading ? "Updating Password..." : "Update Password"}
-                </Button>
+                <div className="relative">
+                  <Button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
+                  >
+                    {loading ? "Updating Password..." : "Update Password"}
+                  </Button>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                </div>
               </form>
 
               <Separator className="my-6" />
               
-              <div className="text-center text-sm text-muted-foreground">
+              <div className="text-center text-[10px] text-muted-foreground">
                 <p>
                   Remember your password?{" "}
                   <Button 
                     variant="link" 
-                    className="p-0 h-auto text-pal-blue hover:underline"
+                    className="p-0 h-auto text-pal-blue hover:underline text-[10px]"
                     onClick={() => navigate("/signin")}
                   >
                     Sign in here

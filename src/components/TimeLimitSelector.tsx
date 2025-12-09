@@ -143,29 +143,34 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
 
   const handleCustomApply = () => {
     const now = new Date();
-      const duration = parseInt(customDuration) || 1;
-      const baseDate = customDate || now;
+    
+    // Use the selected date directly as the deadline
+    if (!customDate) {
+      // If no date selected, use now
+      onChange(now);
+      setIsOpen(false);
+      return;
+    }
+    
+    // Ensure selected date is not in the past and has proper time component
+    const selectedDate = new Date(customDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+    
     let deadline: Date;
-      
-      switch (customDurationType) {
-        case 'minutes':
-        deadline = addMinutes(baseDate, duration);
-        break;
-        case 'hours':
-        deadline = addHours(baseDate, duration);
-        break;
-        case 'days':
-        deadline = addDays(baseDate, duration);
-        break;
-        case 'weeks':
-        deadline = addWeeks(baseDate, duration);
-        break;
-        case 'months':
-        deadline = addMonths(baseDate, duration);
-        break;
-        default:
-        deadline = addHours(baseDate, duration);
-      }
+    
+    if (selectedDate.getTime() < today.getTime()) {
+      // If selected date is in the past, use now
+      deadline = now;
+    } else if (selectedDate.getTime() === today.getTime()) {
+      // If selected date is today, use current time
+      deadline = now;
+    } else {
+      // If selected date is in the future, use end of that day (23:59:59)
+      deadline = new Date(selectedDate);
+      deadline.setHours(23, 59, 59, 999);
+    }
     
     onChange(deadline);
     setIsOpen(false);
@@ -347,77 +352,48 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                 </div>
               ) : (
               <div className={`space-y-4 sm:space-y-6 ${isDesktop ? 'space-y-6' : 'space-y-3'}`}>
-                {/* Custom Date - Desktop: Side by side layout */}
-                <div className={isDesktop ? 'grid grid-cols-2 gap-6 items-start' : 'space-y-3'}>
-                  <div className={isDesktop ? '' : 'w-full'}>
-                    <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
-                      Start Date & Time
-                    </Label>
-                    <div className={isDesktop ? 'flex justify-start' : 'flex justify-center w-full'}>
+                {/* Custom Date */}
+                <div className="w-full">
+                  <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
+                    Select Deadline Date
+                  </Label>
+                  <div className="flex justify-center w-full">
                     <Calendar
                       mode="single"
                       selected={customDate}
-                      onSelect={setCustomDate}
-                        className={`rounded-md border w-full ${isDesktop ? 'w-auto' : 'max-w-full'}`}
+                      onSelect={(date) => {
+                        if (date) {
+                          // Simply set the selected date - no validation needed since disabled prop handles past dates
+                          setCustomDate(date);
+                        } else {
+                          setCustomDate(undefined);
+                        }
+                      }}
+                      defaultMonth={customDate || new Date()}
+                      showOutsideDays={false}
+                      disabled={(date) => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const checkDate = new Date(date);
+                        checkDate.setHours(0, 0, 0, 0);
+                        return checkDate < today;
+                      }}
+                      className="rounded-md border w-full"
                     />
-                    </div>
                   </div>
+                </div>
 
-                  {/* Custom Duration - Desktop: Show next to calendar */}
-                  <div className={isDesktop ? 'space-y-4' : 'w-full'}>
-                    <div>
-                      <Label className={`text-sm sm:text-xs text-slate-600 mb-2 block ${isDesktop ? 'text-sm font-medium mb-3' : 'text-xs mb-1.5'}`}>
-                        Add Duration
-                      </Label>
-                      <div className={`grid grid-cols-2 gap-2 sm:gap-2 ${isDesktop ? 'gap-4' : 'gap-2'}`}>
-                        <div>
-                      <Input
-                        type="number"
-                        value={customDuration}
-                        onChange={(e) => setCustomDuration(e.target.value)}
-                        min="1"
-                        max={durationTypes.find(d => d.value === customDurationType)?.max || 12}
-                            className={`text-base sm:text-sm h-11 sm:h-9 border border-black ${isDesktop ? 'h-10 text-base' : ''}`}
-                            placeholder="1"
-                      />
-                    </div>
-                    <div>
-                      <Select value={customDurationType} onValueChange={setCustomDurationType}>
-                            <SelectTrigger className={`text-base sm:text-sm h-11 sm:h-9 border border-black ${isDesktop ? 'h-10 text-base' : ''}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {durationTypes.map((type) => (
-                                <SelectItem key={type.value} value={type.value} className={`text-base sm:text-sm ${isDesktop ? 'text-base' : ''}`}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                        </div>
-                    </div>
-                  </div>
-
-                    {isDesktop && (
-                      <Button 
-                        onClick={handleCustomApply} 
-                        className={`w-full h-11 sm:h-9 text-base sm:text-sm font-medium ${isDesktop ? 'h-11 text-base bg-blue-600 hover:bg-blue-700' : ''}`}
-                      >
-                        Apply Custom Time
-                      </Button>
-                    )}
-                    </div>
-                  </div>
-
-                {!isDesktop && (
+                <div className="relative">
                   <Button 
                     onClick={handleCustomApply} 
-                    className="w-full h-11 sm:h-9 text-base sm:text-sm font-medium"
+                    disabled={!customDate}
+                    className={`w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-base py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-black disabled:hover:via-black disabled:hover:to-gray-900 ${isDesktop ? 'h-11 text-base' : 'h-11 sm:h-9 text-base sm:text-sm'}`}
                   >
-                    Apply Custom Time
+                    Apply Custom Date
                   </Button>
-                )}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                 </div>
+              </div>
               )}
 
             {/* Preview - Enhanced for desktop */}
