@@ -1855,13 +1855,6 @@ export default function PostEnquiry() {
 
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
-                    <div className="space-y-2 sm:space-y-2.5">
-                      <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
-                        <span className="text-blue-600">*</span>
-                        <span>Select at least one category</span>
-                      </Label>
-                    </div>
-                    
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
                     <div className="space-y-2.5">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
