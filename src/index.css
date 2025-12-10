@@ -81,7 +81,7 @@
       transform: rotate(360deg) translateZ(0) scale(1);
     }
   }
-
+  
   /* Ultra-smooth spinner */
   @keyframes spin-ultra-smooth {
     0% {

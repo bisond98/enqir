@@ -257,8 +257,8 @@ const EnquiryDetail = () => {
         updateDoc(doc(db, 'enquiries', id!), {
           views: increment(1)
         }).catch((viewError) => {
-          console.warn('Failed to increment view count:', viewError);
-          // Don't show error to user for view count increment failure
+        console.warn('Failed to increment view count:', viewError);
+        // Don't show error to user for view count increment failure
         })
       );
 
@@ -267,15 +267,15 @@ const EnquiryDetail = () => {
         backgroundTasks.push(
           (async () => {
             try {
-              // Try 'userProfiles' first (same as EnquiryWall)
-              let userDoc = await getDoc(doc(db, 'userProfiles', enquiryData.userId));
-              if (!userDoc.exists()) {
-                // Fallback to 'profiles' collection
-                userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
-              }
-              if (userDoc.exists()) {
-                setUserProfile({ ...userDoc.data() } as UserProfile);
-              }
+        // Try 'userProfiles' first (same as EnquiryWall)
+        let userDoc = await getDoc(doc(db, 'userProfiles', enquiryData.userId));
+        if (!userDoc.exists()) {
+          // Fallback to 'profiles' collection
+          userDoc = await getDoc(doc(db, 'profiles', enquiryData.userId));
+        }
+        if (userDoc.exists()) {
+          setUserProfile({ ...userDoc.data() } as UserProfile);
+        }
             } catch (profileError) {
               console.warn('Failed to load user profile:', profileError);
               // Don't block page load if profile fails
