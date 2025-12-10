@@ -1855,6 +1855,10 @@ export default function PostEnquiry() {
 
                   {/* Multiple Categories - Enhanced Professional Design */}
                   <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-2 sm:space-y-2.5">
+                      {/* Label removed - keeping spacing */}
+                    </div>
+                    
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
                     <div className="space-y-2.5">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
