@@ -155,6 +155,104 @@ export default function Layout({ children, showNavigation = true }: { children: 
             }
           });
           
+          // Also count approved responses that are ready to chat but have no messages yet
+          // These should show as "new chats" in the notification badge
+          try {
+            // Get all approved responses for enquiries where user is buyer
+            const buyerEnquiriesQuery = query(
+              collection(db, "enquiries"),
+              where("userId", "==", user.uid)
+            );
+            const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
+            
+            const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
+            
+            if (buyerEnquiryIds.length > 0) {
+              // Process in batches of 10 (Firestore 'in' limit)
+              for (let i = 0; i < buyerEnquiryIds.length; i += 10) {
+                const batch = buyerEnquiryIds.slice(i, i + 10);
+                const approvedResponsesQuery = query(
+                  collection(db, "sellerSubmissions"),
+                  where("enquiryId", "in", batch),
+                  where("status", "==", "approved")
+                );
+                const approvedResponsesSnapshot = await getDocs(approvedResponsesQuery);
+                
+                approvedResponsesSnapshot.docs.forEach((responseDoc) => {
+                  const responseData = responseDoc.data();
+                  const enquiryId = responseData.enquiryId;
+                  const sellerId = responseData.sellerId;
+                  
+                  if (!enquiryId || !sellerId) return;
+                  
+                  const threadKey = `${enquiryId}_${sellerId}`;
+                  
+                  // Skip if already counted (has unread messages)
+                  if (threadsWithUnread.has(threadKey)) return;
+                  
+                  // Check if this thread exists in activeThreads
+                  if (threadKeys.has(threadKey)) {
+                    // Check if there are any messages for this thread
+                    const hasMessages = snapshot.docs.some(msgDoc => {
+                      const msgData = msgDoc.data();
+                      return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
+                    });
+                    
+                    // If no messages, check if user has viewed this chat
+                    if (!hasMessages) {
+                      const readKey = `chat_read_${user.uid}_${threadKey}`;
+                      const lastViewedTime = localStorage.getItem(readKey);
+                      
+                      // If never viewed, count it as a new chat
+                      if (!lastViewedTime) {
+                        threadsWithUnread.add(threadKey);
+                      }
+                    }
+                  }
+                });
+              }
+            }
+            
+            // Also check for seller's approved responses
+            const sellerResponsesQuery = query(
+              collection(db, "sellerSubmissions"),
+              where("sellerId", "==", user.uid),
+              where("status", "==", "approved")
+            );
+            const sellerResponsesSnapshot = await getDocs(sellerResponsesQuery);
+            
+            sellerResponsesSnapshot.docs.forEach((responseDoc) => {
+              const responseData = responseDoc.data();
+              const enquiryId = responseData.enquiryId;
+              const sellerId = responseData.sellerId;
+              
+              if (!enquiryId || !sellerId) return;
+              
+              const threadKey = `${enquiryId}_${sellerId}`;
+              
+              // Skip if already counted
+              if (threadsWithUnread.has(threadKey)) return;
+              
+              if (threadKeys.has(threadKey)) {
+                const hasMessages = snapshot.docs.some(msgDoc => {
+                  const msgData = msgDoc.data();
+                  return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
+                });
+                
+                if (!hasMessages) {
+                  const readKey = `chat_read_${user.uid}_${threadKey}`;
+                  const lastViewedTime = localStorage.getItem(readKey);
+                  
+                  if (!lastViewedTime) {
+                    threadsWithUnread.add(threadKey);
+                  }
+                }
+              }
+            });
+          } catch (error) {
+            console.error("Error counting new ready-to-chat items:", error);
+          }
+          
           if (isMounted) {
             setUnreadChatCount(threadsWithUnread.size);
           }
@@ -284,6 +382,131 @@ export default function Layout({ children, showNavigation = true }: { children: 
           
           activeChatThreads.add(threadKey);
         });
+        
+        // Also count approved responses that are ready to chat but have no messages yet
+        try {
+          // Get all approved responses for enquiries where user is buyer
+          const buyerEnquiriesQuery = query(
+            collection(db, "enquiries"),
+            where("userId", "==", user.uid)
+          );
+          const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
+          
+          const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
+          
+          if (buyerEnquiryIds.length > 0) {
+            // Process in batches of 10 (Firestore 'in' limit)
+            for (let i = 0; i < buyerEnquiryIds.length; i += 10) {
+              const batch = buyerEnquiryIds.slice(i, i + 10);
+              const approvedResponsesQuery = query(
+                collection(db, "sellerSubmissions"),
+                where("enquiryId", "in", batch),
+                where("status", "==", "approved")
+              );
+              const approvedResponsesSnapshot = await getDocs(approvedResponsesQuery);
+              
+              approvedResponsesSnapshot.docs.forEach((responseDoc) => {
+                const responseData = responseDoc.data();
+                const enquiryId = responseData.enquiryId;
+                const sellerId = responseData.sellerId;
+                
+                if (!enquiryId || !sellerId) return;
+                
+                const threadKey = `${enquiryId}_${sellerId}`;
+                
+                // Skip if already in activeChatThreads (has messages)
+                if (activeChatThreads.has(threadKey)) return;
+                
+                // Check if there are any messages for this thread
+                const hasMessages = snapshot.docs.some(msgDoc => {
+                  const msgData = msgDoc.data();
+                  return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
+                });
+                
+                // If no messages, check if user has viewed this chat
+                if (!hasMessages) {
+                  const readKey = `chat_read_${user.uid}_${threadKey}`;
+                  const lastViewedTime = localStorage.getItem(readKey);
+                  
+                  // If never viewed, count it as a new chat
+                  if (!lastViewedTime) {
+                    // Verify user is involved and enquiry is active
+                    const enquiryData = enquiryDataMap.get(enquiryId);
+                    if (!enquiryData) return;
+                    
+                    const buyerId = enquiryData.userId;
+                    const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
+                    if (!isUserInvolved) return;
+                    
+                    // Check if enquiry is still active
+                    const now = new Date();
+                    if (enquiryData.deadline) {
+                      const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+                      if (deadline < now) return;
+                    }
+                    if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
+                    if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
+                    
+                    activeChatThreads.add(threadKey);
+                  }
+                }
+              });
+            }
+          }
+          
+          // Also check for seller's approved responses
+          const sellerResponsesQuery = query(
+            collection(db, "sellerSubmissions"),
+            where("sellerId", "==", user.uid),
+            where("status", "==", "approved")
+          );
+          const sellerResponsesSnapshot = await getDocs(sellerResponsesQuery);
+          
+          sellerResponsesSnapshot.docs.forEach((responseDoc) => {
+            const responseData = responseDoc.data();
+            const enquiryId = responseData.enquiryId;
+            const sellerId = responseData.sellerId;
+            
+            if (!enquiryId || !sellerId) return;
+            
+            const threadKey = `${enquiryId}_${sellerId}`;
+            
+            // Skip if already counted
+            if (activeChatThreads.has(threadKey)) return;
+            
+            const hasMessages = snapshot.docs.some(msgDoc => {
+              const msgData = msgDoc.data();
+              return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
+            });
+            
+            if (!hasMessages) {
+              const readKey = `chat_read_${user.uid}_${threadKey}`;
+              const lastViewedTime = localStorage.getItem(readKey);
+              
+              if (!lastViewedTime) {
+                // Verify enquiry is active
+                const enquiryData = enquiryDataMap.get(enquiryId);
+                if (!enquiryData) return;
+                
+                const buyerId = enquiryData.userId;
+                const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
+                if (!isUserInvolved) return;
+                
+                const now = new Date();
+                if (enquiryData.deadline) {
+                  const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+                  if (deadline < now) return;
+                }
+                if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
+                if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
+                
+                activeChatThreads.add(threadKey);
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error counting new ready-to-chat items:", error);
+        }
         
         if (isMounted) {
           setUnreadChatCount(activeChatThreads.size);

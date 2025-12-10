@@ -22,7 +22,7 @@ import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 // Lazy load pages for better performance and code splitting
 import { lazy, Suspense } from "react";
-import LoadingSpinner from "./components/LoadingSpinner";
+import { LoadingAnimation } from "./components/LoadingAnimation";
 
 // Critical pages loaded immediately (above the fold)
 import Landing from "./pages/Landing";
@@ -125,7 +125,7 @@ const App = () => {
                 <Sonner />
                 <BrowserRouter>
                 <ScrollToTop />
-                <Suspense fallback={<LoadingSpinner />}>
+                <Suspense fallback={<LoadingAnimation message="Loading..." />}>
                   <Routes>
                     <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                     <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />

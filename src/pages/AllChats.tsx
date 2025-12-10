@@ -125,11 +125,16 @@ export default function AllChats() {
   const openChat = (chat: ChatThread) => {
     if (chat.isDisabled || !chat.enquiryId) return;
     
-    // Mark chat as read when opening (only if it has actual messages)
-    if (chat.lastMessage && typeof chat.lastMessage !== 'string' && chat.lastMessage.text !== "Ready to chat - Click to start conversation") {
+    // Mark chat as read when opening (for both messages and ready-to-chat items)
+    if (chat.enquiryId && chat.sellerId && user?.uid) {
       const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
-      const readKey = `chat_read_${user?.uid}_${threadKey}`;
+      const readKey = `chat_read_${user.uid}_${threadKey}`;
       localStorage.setItem(readKey, Date.now().toString());
+      
+      // Dispatch event to notify other components (including Layout badge)
+      window.dispatchEvent(new CustomEvent('chatViewed', { 
+        detail: { enquiryId: chat.enquiryId, sellerId: chat.sellerId } 
+      }));
     }
     
     if (chat.sellerId) {

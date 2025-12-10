@@ -30,8 +30,8 @@ export default function MyChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { allChats: preloadedChats, loading: chatsLoading, refreshChats } = useChats();
-  const [allChats, setAllChats] = useState<ChatThread[]>(preloadedChats);
-  const [loading, setLoading] = useState(chatsLoading);
+  const [allChats, setAllChats] = useState<ChatThread[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
@@ -81,15 +81,23 @@ export default function MyChats() {
     }
   });
 
-  // Use preloaded chats from context
+  // Use preloaded chats from context - always sync when context updates
   useEffect(() => {
-    if (preloadedChats && preloadedChats.length > 0) {
+    // Always update chats when preloadedChats changes (even if empty)
+    // This ensures we get the latest data from the context
+    if (preloadedChats) {
       setAllChats(preloadedChats);
-      setLoading(false);
-    } else {
-      setLoading(chatsLoading);
     }
+    // Only set loading to false when context has finished loading
+    setLoading(chatsLoading);
   }, [preloadedChats, chatsLoading]);
+  
+  // Trigger refresh when component mounts to ensure fresh data
+  useEffect(() => {
+    if (user?.uid) {
+      refreshChats();
+    }
+  }, [user?.uid]);
 
   // Real-time listener for unread message counts - Optimized
   useEffect(() => {
