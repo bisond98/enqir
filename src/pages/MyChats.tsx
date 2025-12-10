@@ -305,12 +305,14 @@ export default function MyChats() {
   const openChat = (chat: ChatThread) => {
     if (chat.isDisabled) return;
     
-    // Handle admin chats - show message in My Chats view
+    // Handle admin chats - navigate to admin chat page
     if (chat.isAdminChat) {
       // Mark chat as read when opening
       markChatAsRead(chat);
-      // For admin chats, we'll show the message in a modal or just mark as read
-      // The message is already visible in the chat card
+      // Navigate to admin chat page (userId is the current user's ID for admin chat)
+      if (user?.uid) {
+        navigate(`/admin-chat/${user.uid}`);
+      }
       return;
     }
     
@@ -692,8 +694,14 @@ export default function MyChats() {
                     className="mb-2 sm:mb-3"
                   >
                     <Card
-                      className="border-2 sm:border-3 border-red-900 bg-gradient-to-br from-red-900 via-red-800 to-red-950 shadow-[0_6px_0_0_rgba(127,29,29,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] relative overflow-hidden"
+                      className="border-2 sm:border-3 border-red-900 bg-gradient-to-br from-red-900 via-red-800 to-red-950 shadow-[0_6px_0_0_rgba(127,29,29,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] relative overflow-hidden cursor-pointer hover:shadow-[0_8px_0_0_rgba(127,29,29,0.5)] transition-all duration-200"
                       style={{ backgroundColor: '#800020' }}
+                      onClick={() => {
+                        markChatAsRead(warning);
+                        if (user?.uid) {
+                          navigate(`/admin-chat/${user.uid}`);
+                        }
+                      }}
                     >
                       {/* Animated pulsing border effect */}
                       <motion.div

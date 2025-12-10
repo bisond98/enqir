@@ -2758,7 +2758,9 @@ const EnquiryResponses = () => {
             <div className="lg:col-span-1 order-2 lg:order-1">
               <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-3 sm:mb-4 lg:mb-5 text-center sm:text-left">
                 Approved Responses
-                <span className="text-[9px] sm:text-[10px] lg:text-xs font-serif font-bold text-slate-600 ml-1.5 italic">(select to chat)</span>
+                {user?.uid === enquiry?.userId && (
+                  <span className="text-[9px] sm:text-[10px] lg:text-xs font-serif font-bold text-slate-600 ml-1.5 italic">(select to chat)</span>
+                )}
               </h3>
               {approvedResponses.length === 0 ? (
                 <Card className="p-4 sm:p-6 lg:p-8 text-center border-[0.5px] border-black shadow-lg rounded-2xl">
