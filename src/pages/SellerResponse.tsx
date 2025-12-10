@@ -1110,53 +1110,79 @@ const SellerResponse = () => {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-8 sm:py-12 px-4">
           <div className="max-w-md lg:max-w-2xl xl:max-w-3xl w-full">
             <Card className="border-4 border-black shadow-xl">
-              <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 text-center">
-                {/* Success Icon */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 lg:mb-8 xl:mb-10">
-                  <Rocket className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 xl:h-14 xl:w-14 text-green-600" />
-                </div>
-                
-                {/* Main Content */}
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-4 lg:mb-6 xl:mb-8">
-                  Offer Submitted
-                </h1>
-                
-                <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-black mb-6 lg:mb-8 xl:mb-10">
-                  {isUserVerified ? 'Your offer is now live and visible to buyers' : 'Your offer is under review'}
-                </p>
-                
-                {/* Status Badge */}
-                {isUserVerified && (
-                  <div className="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 xl:px-5 xl:py-2.5 bg-blue-50 text-blue-700 rounded-full text-xs sm:text-sm lg:text-base xl:text-lg font-medium mb-6 lg:mb-8 xl:mb-10 border-2 border-blue-200">
-                    <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4 xl:h-5 xl:w-5 mr-1.5 text-blue-500" />
-                    Verified User
+              <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 text-center relative bg-gradient-to-br from-white to-slate-50/30">
+                {/* Countdown Container - Like Trust Badge */}
+                <div className="relative w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center">
+                  {/* Countdown - Large Transparent Overlapping */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div 
+                      className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-gray-200/40 tabular-nums animate-pulse select-none"
+                      style={{
+                        WebkitTextStroke: '2px rgba(0,0,0,0.1)',
+                        filter: 'blur(1px)'
+                      } as React.CSSProperties}
+                    >
+                      {redirectCountdown}
+                    </div>
                   </div>
-                )}
-                
-                {/* Next Steps - Simplified */}
-                <div className="bg-gray-50 rounded-lg p-4 sm:p-5 lg:p-8 xl:p-10 mb-6 lg:mb-8 xl:mb-10 text-left border-2 border-black">
-                  <p className="text-xs sm:text-sm lg:text-base xl:text-lg text-black leading-relaxed">
-                    {isUserVerified 
-                      ? 'Your offer is immediately visible to buyers. They can contact you directly through the platform.'
-                      : 'Our admin team will review your offer. You\'ll be notified once it\'s approved.'}
-                  </p>
+                  
+                  {/* Content Stack */}
+                  <div className="relative z-10 flex flex-col items-center space-y-5 sm:space-y-6 lg:space-y-8">
+                    {/* Heading */}
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-none text-black drop-shadow-lg" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      Offer Submitted
+                    </h1>
+                    
+                    {/* Subheading */}
+                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 font-semibold">
+                      Your offer is under review
+                    </p>
+                    
+                    {/* Countdown Number - Visible with styling */}
+                    <div className="relative">
+                      <div 
+                        className="text-[80px] sm:text-[120px] lg:text-[150px] xl:text-[180px] font-black text-black tabular-nums drop-shadow-2xl"
+                        style={{
+                          textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1)',
+                          animation: 'pulse 1.5s ease-in-out infinite'
+                        } as React.CSSProperties}
+                      >
+                        {redirectCountdown}
+                      </div>
+                      {/* Glow effect behind countdown */}
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center"
+                        style={{
+                          filter: 'blur(20px)',
+                          opacity: 0.3,
+                          zIndex: -1
+                        }}
+                      >
+                        <div className="text-[80px] sm:text-[120px] lg:text-[150px] xl:text-[180px] font-black text-blue-400 tabular-nums">
+                          {redirectCountdown}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Don't Press Back */}
+                    <p className="text-[10px] sm:text-xs text-red-600 font-bold tracking-wide uppercase">
+                      Don't press back
+                    </p>
+                  </div>
                 </div>
-                
-                {/* Redirect Info - Minimal */}
-                <p className="text-xs sm:text-sm lg:text-base text-black mb-6 lg:mb-8 xl:mb-10">
-                  Redirecting in {redirectCountdown} seconds...
-                </p>
                 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 xl:gap-5">
+                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 xl:gap-5 mt-6 lg:mt-8">
                   <Link to="/dashboard" className="flex-1">
-                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 border-2 border-black">
-                      Go to Dashboard
+                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                      <span className="relative z-10">Go to Dashboard</span>
                     </Button>
                   </Link>
                   <Link to="/enquiries" className="flex-1">
-                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4">
-                      Browse Enquiries
+                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                      <span className="relative z-10">Browse Enquiries</span>
                     </Button>
                   </Link>
                 </div>
@@ -1544,7 +1570,7 @@ const SellerResponse = () => {
                 <div className="relative">
                 <Textarea
                   id="notes"
-                  placeholder="• Payment terms (cash, installments, etc.)&#10;• Delivery/pickup details&#10;• Warranty or return policy&#10;• Special conditions or requirements"
+                  placeholder="Payment terms, delivery details, etc..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                     className="min-h-[120px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
@@ -1850,8 +1876,11 @@ const SellerResponse = () => {
                           <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                             Verifying your ID...
                           </p>
-                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
                             Your ID remains securely encrypted and will be verified within a few minutes.
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-red-600 font-semibold leading-tight">
+                            Don't press back
                           </p>
                         </div>
                       </div>
