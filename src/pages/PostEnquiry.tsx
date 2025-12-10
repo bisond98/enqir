@@ -1863,7 +1863,7 @@ export default function PostEnquiry() {
                     </div>
                     
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
-                    <div className="space-y-2.5">
+                    <div className="space-y-2.5 -mt-2 sm:-mt-2">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
                       <div className="block sm:hidden">
                         <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen}>
