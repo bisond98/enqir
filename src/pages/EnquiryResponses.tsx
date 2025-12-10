@@ -2700,7 +2700,7 @@ const EnquiryResponses = () => {
                 <div className="space-y-2.5 sm:space-y-3">
                   {/* Title Row with Response Count Badge - Mobile Optimized */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
-                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1 text-center">
                         {enquiry.title}
                       </h3>
                       {/* Only show response count to enquiry owner */}
@@ -2880,7 +2880,7 @@ const EnquiryResponses = () => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                            <h2 className="text-sm sm:text-base lg:text-lg font-bold text-white">Chat</h2>
+                            <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat</h2>
                             <span className="text-xs sm:text-sm text-white font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
@@ -2899,8 +2899,8 @@ const EnquiryResponses = () => {
                       
                       {/* Right: Action Buttons - Mobile Optimized */}
                       <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap relative" style={{ overflow: 'visible' }}>
-                        {/* Response Number Badge - Top Right */}
-                        {selectedResponse && (() => {
+                        {/* Response Number Badge - Top Right - Only show to buyers */}
+                        {selectedResponse && user?.uid === enquiry?.userId && (() => {
                           const visibleResponses = getVisibleResponses();
                           const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
                           const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
@@ -3130,21 +3130,21 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="mt-4 sm:mt-5 lg:mt-6 pt-2 sm:pt-2.5 lg:pt-3 border-t border-black bg-white -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4" style={{ borderTopWidth: '0.5px' }}>
+                    <div className="mt-4 sm:mt-5 lg:mt-6 pt-2 sm:pt-2.5 lg:pt-3 border-t border-black bg-green-950 -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4" style={{ borderTopWidth: '0.5px' }}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black truncate">
-                            {enquiry.title}
+                          <h3 className="text-xs sm:text-sm lg:text-base font-bold text-white truncate">
+                            {enquiry.title && enquiry.title.length > 10 ? enquiry.title.substring(0, 10) + '..' : enquiry.title}
                             {enquiry.isUrgent && (
                               <Badge variant="destructive" className="ml-1.5 sm:ml-2 lg:ml-2.5 text-xs sm:text-sm h-4 sm:h-5 lg:h-5 px-1.5 sm:px-2">
                                 Urgent
                               </Badge>
                             )}
                           </h3>
-                          <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-black font-medium truncate mt-0.5">{enquiry.description}</p>
+                          <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-white font-medium truncate mt-0.5">{enquiry.description}</p>
                         </div>
                         <div className="text-right ml-2 sm:ml-3 lg:ml-4 flex-shrink-0">
-                          <div className="text-sm sm:text-base lg:text-lg font-semibold text-black">{selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                          <div className="text-xs sm:text-sm lg:text-base font-semibold text-white">Your offer - {selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
                         </div>
                       </div>
                     </div>
@@ -3976,8 +3976,16 @@ const EnquiryResponses = () => {
                     <div className="w-12 h-12 lg:w-16 lg:h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-2 lg:mb-3">
                       <MessageSquare className="h-6 w-6 lg:h-8 lg:w-8 text-slate-500" />
                     </div>
-                    <h3 className="text-sm lg:text-base font-medium text-slate-700 mb-1">Select a response</h3>
-                    <p className="text-slate-500 text-xs lg:text-sm px-4">Choose from the left to start chatting</p>
+                    {user?.uid !== enquiry?.userId ? (
+                      <>
+                        <h3 className="text-sm lg:text-base font-medium text-slate-700 mb-1">Select response at the bottom to start chatting</h3>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="text-sm lg:text-base font-medium text-slate-700 mb-1">Select a response</h3>
+                        <p className="text-slate-500 text-xs lg:text-sm px-4">Choose from the left to start chatting</p>
+                      </>
+                    )}
                   </div>
                 </Card>
               )}
