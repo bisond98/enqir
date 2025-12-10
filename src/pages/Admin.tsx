@@ -1,15 +1,16 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { db } from '@/firebase';
 import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server } from 'lucide-react';
+import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, Ban, Shield } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
@@ -109,6 +110,13 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [processingVerification, setProcessingVerification] = useState<string | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [warningMessage, setWarningMessage] = useState('');
+  const [suspendReason, setSuspendReason] = useState('');
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [reports, setReports] = useState<any[]>([]);
+  const [loadingReports, setLoadingReports] = useState(false);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
     confidenceThreshold: 80,
@@ -780,6 +788,251 @@ const Admin = () => {
     loadProfileVerifications();
   }, [authUser]);
 
+  // Load users for user management
+  useEffect(() => {
+    if (!authUser || !isAuthorized) return;
+    
+    const loadUsers = async () => {
+      setLoadingUsers(true);
+      try {
+        console.log('🔍 Admin: Loading users from userProfiles collection...');
+        
+        // Try to load from userProfiles collection
+        const usersQuery = query(collection(db, 'userProfiles'));
+        const snapshot = await getDocs(usersQuery);
+        console.log('🔍 Admin: Found', snapshot.docs.length, 'users in userProfiles');
+        
+        let usersList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          userId: doc.id,
+          ...doc.data()
+        }));
+        
+        // If no users found in userProfiles, try to get unique user IDs from enquiries
+        if (usersList.length === 0) {
+          console.log('🔍 Admin: No users in userProfiles, trying to get from enquiries...');
+          const enquiriesQuery = query(collection(db, 'enquiries'));
+          const enquiriesSnapshot = await getDocs(enquiriesQuery);
+          
+          const uniqueUserIds = new Set<string>();
+          enquiriesSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.userId) {
+              uniqueUserIds.add(data.userId);
+            }
+          });
+          
+          console.log('🔍 Admin: Found', uniqueUserIds.size, 'unique user IDs from enquiries');
+          
+          // Try to get user profiles for these IDs
+          const userProfilePromises = Array.from(uniqueUserIds).map(async (userId) => {
+            try {
+              const userProfileDoc = await getDoc(doc(db, 'userProfiles', userId));
+              if (userProfileDoc.exists()) {
+                return {
+                  id: userId,
+                  userId: userId,
+                  ...userProfileDoc.data()
+                };
+              } else {
+                // If profile doesn't exist, create a basic user object
+                return {
+                  id: userId,
+                  userId: userId,
+                  fullName: 'Unknown User',
+                  email: userId.substring(0, 20) + '...'
+                };
+              }
+            } catch (error) {
+              console.error('Error fetching user profile for', userId, error);
+              return null;
+            }
+          });
+          
+          const userProfiles = await Promise.all(userProfilePromises);
+          usersList = userProfiles.filter(user => user !== null) as any[];
+        }
+        
+        // Fetch last enquiry and response for each user
+        console.log('🔍 Admin: Fetching last activity for', usersList.length, 'users...');
+        const usersWithActivity = await Promise.all(usersList.map(async (user) => {
+          try {
+            let lastEnquiry = null;
+            let lastResponse = null;
+            
+            // Get last enquiry by this user - try without orderBy first to avoid index issues
+            try {
+              const enquiriesQuery = query(
+                collection(db, 'enquiries'),
+                where('userId', '==', user.id)
+              );
+              const enquiriesSnapshot = await getDocs(enquiriesQuery);
+              console.log(`🔍 Admin: Found ${enquiriesSnapshot.docs.length} enquiries for user ${user.id}`);
+              
+              if (!enquiriesSnapshot.empty) {
+                // Sort manually by createdAt
+                const sortedDocs = enquiriesSnapshot.docs.sort((a, b) => {
+                  const aData = a.data();
+                  const bData = b.data();
+                  const aTime = aData.createdAt?.toDate?.()?.getTime() || 
+                               (aData.createdAt ? new Date(aData.createdAt).getTime() : 0) ||
+                               (aData.timestamp?.toDate?.()?.getTime() || 0);
+                  const bTime = bData.createdAt?.toDate?.()?.getTime() || 
+                               (bData.createdAt ? new Date(bData.createdAt).getTime() : 0) ||
+                               (bData.timestamp?.toDate?.()?.getTime() || 0);
+                  return bTime - aTime; // Descending order
+                });
+                
+                const enquiryDoc = sortedDocs[0];
+                const enquiryData = enquiryDoc.data();
+                lastEnquiry = {
+                  id: enquiryDoc.id,
+                  title: enquiryData.title || enquiryData.enquiryTitle || 'Untitled',
+                  createdAt: enquiryData.createdAt || enquiryData.timestamp,
+                  status: enquiryData.status || 'unknown'
+                };
+                console.log(`✅ Admin: Last enquiry for user ${user.id}:`, lastEnquiry.title);
+              }
+            } catch (enquiryError: any) {
+              console.error(`❌ Admin: Error fetching enquiries for user ${user.id}:`, enquiryError);
+            }
+            
+            // Get last response by this user (as seller) - try without orderBy first
+            try {
+              const responsesQuery = query(
+                collection(db, 'sellerSubmissions'),
+                where('sellerId', '==', user.id)
+              );
+              const responsesSnapshot = await getDocs(responsesQuery);
+              console.log(`🔍 Admin: Found ${responsesSnapshot.docs.length} responses for user ${user.id}`);
+              
+              if (!responsesSnapshot.empty) {
+                // Sort manually by createdAt
+                const sortedDocs = responsesSnapshot.docs.sort((a, b) => {
+                  const aData = a.data();
+                  const bData = b.data();
+                  const aTime = aData.createdAt?.toDate?.()?.getTime() || 
+                               (aData.createdAt ? new Date(aData.createdAt).getTime() : 0) ||
+                               (aData.timestamp?.toDate?.()?.getTime() || 0) ||
+                               (aData.updatedAt?.toDate?.()?.getTime() || 0);
+                  const bTime = bData.createdAt?.toDate?.()?.getTime() || 
+                               (bData.createdAt ? new Date(bData.createdAt).getTime() : 0) ||
+                               (bData.timestamp?.toDate?.()?.getTime() || 0) ||
+                               (bData.updatedAt?.toDate?.()?.getTime() || 0);
+                  return bTime - aTime; // Descending order
+                });
+                
+                const responseDoc = sortedDocs[0];
+                const responseData = responseDoc.data();
+                lastResponse = {
+                  id: responseDoc.id,
+                  title: responseData.title || responseData.enquiryTitle || 'Untitled Response',
+                  createdAt: responseData.createdAt || responseData.timestamp || responseData.updatedAt,
+                  status: responseData.status || 'unknown'
+                };
+                console.log(`✅ Admin: Last response for user ${user.id}:`, lastResponse.title);
+              }
+            } catch (responseError: any) {
+              console.error(`❌ Admin: Error fetching responses for user ${user.id}:`, responseError);
+            }
+            
+            return {
+              ...user,
+              lastEnquiry,
+              lastResponse
+            };
+          } catch (error) {
+            console.error('❌ Admin: Error fetching activity for user', user.id, error);
+            return {
+              ...user,
+              lastEnquiry: null,
+              lastResponse: null
+            };
+          }
+        }));
+        
+        console.log('🔍 Admin: Total users loaded with activity:', usersWithActivity.length);
+        setUsers(usersWithActivity);
+      } catch (error) {
+        console.error('❌ Admin: Error loading users:', error);
+        toast({ 
+          title: 'Error', 
+          description: 'Failed to load users. Please refresh the page.', 
+          variant: 'destructive' 
+        });
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    
+    loadUsers();
+  }, [authUser, isAuthorized]);
+
+  // Load user reports - ISOLATED FUNCTION, doesn't affect existing features
+  const loadReports = async () => {
+    setLoadingReports(true);
+    try {
+      const reportsQuery = query(
+        collection(db, 'userReports'),
+        orderBy('timestamp', 'desc')
+      );
+      const snapshot = await getDocs(reportsQuery);
+      
+      const reportsList = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data();
+          
+          // Get user names if not already stored
+          let reportedUserName = data.reportedUserName;
+          let reporterName = data.reporterName;
+          
+          if (!reportedUserName) {
+            try {
+              const userDoc = await getDoc(doc(db, 'userProfiles', data.reportedUserId));
+              if (userDoc.exists()) {
+                reportedUserName = userDoc.data().fullName || userDoc.data().email || data.reportedUserId;
+              }
+            } catch (err) {
+              console.error('Error fetching reported user:', err);
+            }
+          }
+          
+          if (!reporterName) {
+            try {
+              const reporterDoc = await getDoc(doc(db, 'userProfiles', data.reportedBy));
+              if (reporterDoc.exists()) {
+                reporterName = reporterDoc.data().fullName || reporterDoc.data().email || data.reportedBy;
+              }
+            } catch (err) {
+              console.error('Error fetching reporter:', err);
+            }
+          }
+          
+          return {
+            id: docSnap.id,
+            ...data,
+            reportedUserName: reportedUserName || data.reportedUserId,
+            reporterName: reporterName || data.reportedBy
+          };
+        })
+      );
+      
+      setReports(reportsList);
+    } catch (error) {
+      console.error('Error loading reports:', error);
+      toast({ title: 'Error', description: 'Failed to load reports', variant: 'destructive' });
+    } finally {
+      setLoadingReports(false);
+    }
+  };
+
+  // Load reports when authorized - ISOLATED, doesn't affect existing features
+  useEffect(() => {
+    if (isAuthorized) {
+      loadReports();
+    }
+  }, [isAuthorized]);
+
   const approveEnquiry = async (id: string) => {
     try {
       console.log('🔍 Admin: Attempting to approve enquiry:', id);
@@ -1169,6 +1422,161 @@ const Admin = () => {
       // }
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to reject seller response', variant: 'destructive' });
+    }
+  };
+
+  // Send warning to user
+  const sendWarningToUser = async (userId: string, message: string) => {
+    try {
+      if (!message.trim()) {
+        toast({ title: 'Error', description: 'Warning message cannot be empty', variant: 'destructive' });
+        return;
+      }
+
+      // Create admin message in chatMessages collection
+      await addDoc(collection(db, 'chatMessages'), {
+        enquiryId: 'admin_warning', // Special ID for admin warning messages
+        sellerId: 'admin', // Special seller ID for admin
+        senderId: 'admin',
+        senderName: 'Admin',
+        senderType: 'admin',
+        message: `⚠️ WARNING FROM ADMIN: ${message}`,
+        isSystemMessage: true,
+        isAdminMessage: true,
+        adminMessageType: 'warning',
+        timestamp: serverTimestamp(),
+        recipientId: userId // Store recipient ID so it appears in their My Chats
+      });
+
+      // Update user profile with warning
+      const userProfileRef = doc(db, 'userProfiles', userId);
+      const userProfileSnap = await getDoc(userProfileRef);
+      const currentWarnings = userProfileSnap.exists() ? (userProfileSnap.data().warnings || 0) : 0;
+      
+      await updateDoc(userProfileRef, {
+        warnings: currentWarnings + 1,
+        lastWarningAt: serverTimestamp(),
+        lastWarningMessage: message,
+        updatedAt: serverTimestamp()
+      });
+
+      // Create notification
+      await createNotificationForUser(userId, 'admin_warning', {
+        title: '⚠️ Warning from Admin',
+        message: `You have received a warning: ${message}`,
+        priority: 'high',
+        actionUrl: '/my-chats',
+        actionText: 'View Message'
+      });
+
+      toast({ title: 'Warning Sent', description: 'Warning message has been sent to user' });
+      setWarningMessage('');
+      setSelectedUser(null);
+      
+      // Refresh users list
+      const usersQuery = query(collection(db, 'userProfiles'));
+      const snapshot = await getDocs(usersQuery);
+      const usersList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        userId: doc.id,
+        ...doc.data()
+      }));
+      setUsers(usersList);
+    } catch (error) {
+      console.error('Error sending warning:', error);
+      toast({ title: 'Error', description: 'Failed to send warning', variant: 'destructive' });
+    }
+  };
+
+  // Suspend user
+  const suspendUser = async (userId: string, reason: string) => {
+    try {
+      if (!reason.trim()) {
+        toast({ title: 'Error', description: 'Suspension reason cannot be empty', variant: 'destructive' });
+        return;
+      }
+
+      // Create admin message in chatMessages collection (appears in My Chats)
+      const suspensionMessage = await addDoc(collection(db, 'chatMessages'), {
+        enquiryId: 'admin_suspension', // Special ID for admin suspension messages
+        sellerId: 'admin', // Special seller ID for admin
+        senderId: 'admin',
+        senderName: 'Admin',
+        senderType: 'admin',
+        message: 'Account suspended, malpractice detected',
+        isSystemMessage: true,
+        isAdminMessage: true,
+        adminMessageType: 'suspension',
+        timestamp: serverTimestamp(),
+        recipientId: userId, // Store recipient ID so it appears in their My Chats
+        suspensionReason: reason // Store the reason
+      });
+
+      // Update user profile with suspension status
+      const userProfileRef = doc(db, 'userProfiles', userId);
+      await updateDoc(userProfileRef, {
+        isSuspended: true,
+        suspendedAt: serverTimestamp(),
+        suspensionReason: reason,
+        suspendedBy: authUser?.uid,
+        updatedAt: serverTimestamp()
+      });
+
+      // Create notification with badge (high priority for visibility)
+      await createNotificationForUser(userId, 'admin_suspension', {
+        title: '🚫 Account Suspended',
+        message: 'Account suspended, malpractice detected',
+        priority: 'high', // This ensures notification badge appears
+        actionUrl: '/my-chats',
+        actionText: 'View Message',
+        isAdminMessage: true,
+        adminMessageId: suspensionMessage.id
+      });
+
+      toast({ title: 'User Suspended', description: 'User account has been suspended and notified' });
+      setSuspendReason('');
+      setSelectedUser(null);
+      
+      // Refresh users list
+      const usersQuery = query(collection(db, 'userProfiles'));
+      const snapshot = await getDocs(usersQuery);
+      const usersList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        userId: doc.id,
+        ...doc.data()
+      }));
+      setUsers(usersList);
+    } catch (error) {
+      console.error('Error suspending user:', error);
+      toast({ title: 'Error', description: 'Failed to suspend user', variant: 'destructive' });
+    }
+  };
+
+  // Unsuspend user
+  const unsuspendUser = async (userId: string) => {
+    try {
+      const userProfileRef = doc(db, 'userProfiles', userId);
+      await updateDoc(userProfileRef, {
+        isSuspended: false,
+        unsuspendedAt: serverTimestamp(),
+        unsuspendedBy: authUser?.uid,
+        updatedAt: serverTimestamp()
+      });
+
+      toast({ title: 'User Unsuspended', description: 'User account has been reactivated' });
+      
+      // Refresh users list
+      const usersQuery = query(collection(db, 'userProfiles'));
+      const snapshot = await getDocs(usersQuery);
+      const usersList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        userId: doc.id,
+        ...doc.data()
+      }));
+      setUsers(usersList);
+    } catch (error) {
+      console.error('Error unsuspending user:', error);
+      toast({ title: 'Error', description: 'Failed to unsuspend user', variant: 'destructive' });
     }
   };
 
@@ -2298,6 +2706,446 @@ const Admin = () => {
               </div>
                 </>
               )}
+
+              {/* User Management Section */}
+              <Card className="bg-black border border-gray-900 shadow-lg overflow-hidden mb-6">
+                <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-b border-gray-900 px-5 sm:px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-900/30 border border-purple-500/30 rounded-lg flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">User Management</h2>
+                      <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                        Send warnings or suspend user accounts
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-purple-900/30 text-purple-400 border border-purple-500/30">
+                      {loadingUsers ? 'Loading...' : `${users.length} user${users.length !== 1 ? 's' : ''}`}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        setLoadingUsers(true);
+                        try {
+                          const usersQuery = query(collection(db, 'userProfiles'));
+                          const snapshot = await getDocs(usersQuery);
+                          const usersList = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            userId: doc.id,
+                            ...doc.data()
+                          }));
+                          setUsers(usersList);
+                          toast({ title: 'Refreshed', description: `Loaded ${usersList.length} users` });
+                        } catch (error) {
+                          console.error('Error refreshing users:', error);
+                          toast({ title: 'Error', description: 'Failed to refresh users', variant: 'destructive' });
+                        } finally {
+                          setLoadingUsers(false);
+                        }
+                      }}
+                      className="text-xs border-gray-700 text-black hover:bg-gray-800"
+                      disabled={loadingUsers}
+                    >
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 sm:p-6">
+                  {loadingUsers ? (
+                    <div className="text-center py-12">
+                      <p className="text-sm text-gray-300">Loading users...</p>
+                    </div>
+                  ) : users.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-sm text-gray-300 mb-2">No users found</p>
+                      <p className="text-xs text-gray-500">Users will appear here once they create profiles or post enquiries.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {users.slice(0, 20).map((user) => (
+                        <Card key={user.id} className="border border-gray-900 bg-black hover:shadow-lg transition-all">
+                          <CardContent className="p-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="text-sm sm:text-base font-semibold text-white">
+                                    {user.fullName || 'Unknown User'}
+                                  </h3>
+                                  {user.isSuspended && (
+                                    <Badge className="bg-red-900/30 text-red-400 border border-red-500/30 text-xs">
+                                      Suspended
+                                    </Badge>
+                                  )}
+                                  {user.warnings > 0 && (
+                                    <Badge className="bg-amber-900/30 text-amber-400 border border-amber-500/30 text-xs">
+                                      {user.warnings} Warning{user.warnings !== 1 ? 's' : ''}
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="mb-2">
+                                  <p className="text-[10px] text-gray-500 mb-0.5">Login Email:</p>
+                                  <p className="text-xs sm:text-sm text-white font-medium">{user.email || 'Email not available'}</p>
+                                </div>
+                                {user.suspensionReason && (
+                                  <p className="text-xs text-red-400 mt-1">
+                                    Suspension: {user.suspensionReason}
+                                  </p>
+                                )}
+                                
+                                {/* Last Activity */}
+                                <div className="mt-3 space-y-2">
+                                  {user.lastEnquiry && (
+                                    <div className="p-2 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                                      <div className="flex items-start gap-2">
+                                        <MessageSquare className="h-3 w-3 text-blue-400 mt-0.5 flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-[10px] text-blue-300 font-medium mb-0.5">Last Enquiry</p>
+                                          <p className="text-xs text-blue-200 truncate">{user.lastEnquiry.title}</p>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge 
+                                              className={`text-[9px] px-1.5 py-0.5 ${
+                                                user.lastEnquiry.status === 'live' ? 'bg-green-900/30 text-green-400 border-green-500/30' :
+                                                user.lastEnquiry.status === 'pending' ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' :
+                                                'bg-gray-900/30 text-gray-400 border-gray-500/30'
+                                              }`}
+                                            >
+                                              {user.lastEnquiry.status}
+                                            </Badge>
+                                            {user.lastEnquiry.createdAt && (
+                                              <span className="text-[9px] text-gray-500">
+                                                {user.lastEnquiry.createdAt.toDate ? 
+                                                  user.lastEnquiry.createdAt.toDate().toLocaleDateString() : 
+                                                  'Recently'}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {user.lastResponse && (
+                                    <div className="p-2 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                                      <div className="flex items-start gap-2">
+                                        <Crown className="h-3 w-3 text-purple-400 mt-0.5 flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-[10px] text-purple-300 font-medium mb-0.5">Last Response</p>
+                                          <p className="text-xs text-purple-200 truncate">{user.lastResponse.title}</p>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge 
+                                              className={`text-[9px] px-1.5 py-0.5 ${
+                                                user.lastResponse.status === 'approved' ? 'bg-green-900/30 text-green-400 border-green-500/30' :
+                                                user.lastResponse.status === 'pending' ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' :
+                                                'bg-gray-900/30 text-gray-400 border-gray-500/30'
+                                              }`}
+                                            >
+                                              {user.lastResponse.status}
+                                            </Badge>
+                                            {user.lastResponse.createdAt && (
+                                              <span className="text-[9px] text-gray-500">
+                                                {user.lastResponse.createdAt.toDate ? 
+                                                  user.lastResponse.createdAt.toDate().toLocaleDateString() : 
+                                                  'Recently'}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {!user.lastEnquiry && !user.lastResponse && (
+                                    <p className="text-xs text-gray-500 italic">No activity yet</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setWarningMessage('');
+                                  }}
+                                  className="text-xs border-gray-700 text-black hover:bg-gray-800"
+                                >
+                                  <AlertTriangle className="h-3 w-3 mr-1" />
+                                  Warn
+                                </Button>
+                                {user.isSuspended ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => unsuspendUser(user.id)}
+                                    className="text-xs border-green-700 text-green-400 hover:bg-green-900/20"
+                                  >
+                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                    Unsuspend
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => {
+                                      setSelectedUser(user);
+                                      setSuspendReason('');
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    <Ban className="h-3 w-3 mr-1" />
+                                    Suspend
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Warning Modal */}
+              {selectedUser && !selectedUser.isSuspended && (
+                <>
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998]" onClick={() => setSelectedUser(null)}></div>
+                  <div className="fixed inset-x-0 top-1/2 -translate-y-1/2 z-[9999] px-4 sm:px-0">
+                    <Card className="max-w-md mx-auto bg-black border border-gray-900 shadow-2xl">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-white">Send Warning</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedUser(null)}
+                            className="text-gray-400 hover:text-white"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-400">
+                          User: {selectedUser.fullName || 'Unknown User'}
+                          {selectedUser.email && (
+                            <span className="block text-xs text-gray-500 mt-1">Email: {selectedUser.email}</span>
+                          )}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-gray-300">Warning Message</Label>
+                          <Textarea
+                            value={warningMessage}
+                            onChange={(e) => setWarningMessage(e.target.value)}
+                            placeholder="Enter warning message..."
+                            className="mt-2 bg-black border-gray-800 text-white"
+                            rows={4}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => sendWarningToUser(selectedUser.id, warningMessage)}
+                            className="flex-1 bg-amber-600 hover:bg-amber-700"
+                            disabled={!warningMessage.trim()}
+                          >
+                            <AlertTriangle className="h-4 w-4 mr-2" />
+                            Send Warning
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setSelectedUser(null)}
+                            className="border-gray-700 text-gray-300"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
+              )}
+
+              {/* Suspend Modal */}
+              {selectedUser && selectedUser.isSuspended === false && (
+                <>
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998]" onClick={() => setSelectedUser(null)}></div>
+                  <div className="fixed inset-x-0 top-1/2 -translate-y-1/2 z-[9999] px-4 sm:px-0">
+                    <Card className="max-w-md mx-auto bg-black border border-red-900 shadow-2xl">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-white">Suspend User</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedUser(null)}
+                            className="text-gray-400 hover:text-white"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-400">
+                          User: {selectedUser.fullName || 'Unknown User'}
+                          {selectedUser.email && (
+                            <span className="block text-xs text-gray-500 mt-1">Email: {selectedUser.email}</span>
+                          )}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-gray-300">Suspension Reason</Label>
+                          <Textarea
+                            value={suspendReason}
+                            onChange={(e) => setSuspendReason(e.target.value)}
+                            placeholder="Enter reason for suspension..."
+                            className="mt-2 bg-black border-gray-800 text-white"
+                            rows={4}
+                          />
+                        </div>
+                        <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+                          <p className="text-xs text-red-400">
+                            ⚠️ This will suspend the user account and send them a notification. The message "Account suspended, malpractice detected" will appear in their My Chats.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => suspendUser(selectedUser.id, suspendReason)}
+                            variant="destructive"
+                            className="flex-1"
+                            disabled={!suspendReason.trim()}
+                          >
+                            <Ban className="h-4 w-4 mr-2" />
+                            Suspend Account
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setSelectedUser(null)}
+                            className="border-gray-700 text-gray-300"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
+              )}
+
+              {/* User Reports Section - ISOLATED, doesn't affect existing features */}
+              <Card className="bg-black border border-gray-900 shadow-lg overflow-hidden mb-6">
+                <div className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border-b border-gray-900 px-5 sm:px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-900/30 border border-orange-500/30 rounded-lg flex items-center justify-center">
+                      <AlertTriangle className="h-5 w-5 text-orange-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">User Reports</h2>
+                      <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                        View reports submitted by users
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-orange-900/30 text-orange-400 border border-orange-500/30">
+                      {loadingReports ? 'Loading...' : `${reports.length} report${reports.length !== 1 ? 's' : ''}`}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={loadReports}
+                      className="text-xs border-gray-700 text-black hover:bg-gray-800"
+                      disabled={loadingReports}
+                    >
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 sm:p-6">
+                  {loadingReports ? (
+                    <div className="text-center py-12">
+                      <p className="text-sm text-gray-300">Loading reports...</p>
+                    </div>
+                  ) : reports.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-sm text-gray-300 mb-2">No reports found</p>
+                      <p className="text-xs text-gray-500">Reports will appear here when users report other users.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {reports.map((report) => (
+                        <Card key={report.id} className="border border-gray-900 bg-black hover:shadow-lg transition-all">
+                          <CardContent className="p-4">
+                            <div className="space-y-3">
+                              {/* Header */}
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge className={`text-xs ${
+                                      report.status === 'pending' 
+                                        ? 'bg-amber-900/30 text-amber-400 border-amber-500/30'
+                                        : report.status === 'reviewed'
+                                        ? 'bg-green-900/30 text-green-400 border-green-500/30'
+                                        : 'bg-gray-900/30 text-gray-400 border-gray-500/30'
+                                    }`}>
+                                      {report.status}
+                                    </Badge>
+                                    {report.timestamp && (
+                                      <span className="text-xs text-gray-500">
+                                        {report.timestamp.toDate ? 
+                                          report.timestamp.toDate().toLocaleString() : 
+                                          'Recently'}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Report Details */}
+                              <div className="space-y-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                                  <div>
+                                    <span className="text-gray-400">Reported By:</span>
+                                    <span className="text-white ml-2 font-medium">{report.reporterName}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-400">Reported User:</span>
+                                    <span className="text-white ml-2 font-medium">{report.reportedUserName}</span>
+                                  </div>
+                                </div>
+
+                                {report.enquiryId && (
+                                  <div className="p-2 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                                    <p className="text-[10px] text-blue-300 font-medium mb-0.5">Related Enquiry</p>
+                                    <p className="text-xs text-blue-200">{report.enquiryTitle || report.enquiryId}</p>
+                                    <p className="text-[10px] text-blue-400 mt-1">Enquiry ID: {report.enquiryId}</p>
+                                  </div>
+                                )}
+
+                                <div className="p-2 bg-red-900/20 border border-red-500/30 rounded-lg">
+                                  <p className="text-[10px] text-red-300 font-medium mb-1">Reason</p>
+                                  <p className="text-sm text-red-200 font-semibold">{report.reason}</p>
+                                </div>
+
+                                {report.reportDetails && (
+                                  <div className="p-2 bg-gray-900/30 border border-gray-700 rounded-lg">
+                                    <p className="text-[10px] text-gray-300 font-medium mb-1">Additional Details</p>
+                                    <p className="text-xs text-gray-200 whitespace-pre-wrap">{report.reportDetails}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
               {/* Clear Data Section - Clean White Design */}
               <Card className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 shadow-sm overflow-hidden">

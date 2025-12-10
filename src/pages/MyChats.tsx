@@ -5,9 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, AlertTriangle, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -22,6 +23,7 @@ interface ChatThread {
   enquiryData?: any; // Store enquiry data to check status
   isDisabled?: boolean; // Mark if chat should be disabled
   unreadCount?: number; // Count of unread messages in this thread
+  isAdminChat?: boolean; // Mark if this is an admin message (suspension/warning)
 }
 
 export default function MyChats() {
@@ -39,7 +41,8 @@ export default function MyChats() {
   });
   
   // Track if animation has been initialized to prevent double animation
-  const hasAnimated = useRef(false);
+  // Use a combination of viewMode and chats length to track unique animation states
+  const animatedStateRef = useRef<string>('');
   
   // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
   // Exclude disabled/expired chats from unread counts
@@ -54,12 +57,22 @@ export default function MyChats() {
   const handleToggleView = (mode: 'buyer' | 'seller') => {
     setViewMode(mode);
     localStorage.setItem('chatsViewMode', mode);
-    // Reset animation flag when switching views
-    hasAnimated.current = false;
   };
 
-  // Filter chats based on view mode (show all chats including disabled ones)
+  // Separate admin warnings from regular chats - warnings are never disabled/expired
+  const adminWarnings = allChats.filter(chat => 
+    chat.isAdminChat && chat.enquiryTitle?.includes('Warning')
+  ).map(warning => ({
+    ...warning,
+    isDisabled: false // Warnings are never disabled
+  }));
+  
+  // Filter chats based on view mode (exclude admin warnings - they're shown separately)
   const chats = allChats.filter(chat => {
+    // Exclude admin warnings from regular chat list
+    if (chat.isAdminChat && chat.enquiryTitle?.includes('Warning')) {
+      return false;
+    }
     // Filter by view mode (don't exclude disabled chats - show them as disabled)
     if (viewMode === 'buyer') {
       return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
@@ -77,11 +90,6 @@ export default function MyChats() {
       setLoading(chatsLoading);
     }
   }, [preloadedChats, chatsLoading]);
-
-  // Reset animation flag when view mode changes
-  useEffect(() => {
-    hasAnimated.current = false;
-  }, [viewMode]);
 
   // Real-time listener for unread message counts - Optimized
   useEffect(() => {
@@ -253,8 +261,60 @@ export default function MyChats() {
     }));
   };
 
+  // Delete warning message (only after 24 hours)
+  const deleteWarning = async (warning: ChatThread) => {
+    if (!user?.uid) return;
+    
+    try {
+      // Find and delete the admin message from Firestore
+      const adminMessagesQuery = query(
+        collection(db, 'chatMessages'),
+        where('recipientId', '==', user.uid),
+        where('isAdminMessage', '==', true),
+        where('adminMessageType', '==', 'warning')
+      );
+      const snapshot = await getDocs(adminMessagesQuery);
+      
+      const deletePromises = snapshot.docs.map(async (docSnap) => {
+        const messageData = docSnap.data();
+        // Match by message content or timestamp to find the right warning
+        const messageTime = messageData.timestamp?.toDate ? messageData.timestamp.toDate() : new Date(messageData.timestamp);
+        const warningTime = warning.updatedAt?.toDate ? warning.updatedAt.toDate() : new Date(warning.updatedAt);
+        
+        // Check if timestamps match (within 1 second tolerance)
+        if (Math.abs(messageTime.getTime() - warningTime.getTime()) < 1000) {
+          await deleteDoc(docSnap.ref);
+        }
+      });
+      
+      await Promise.all(deletePromises);
+      
+      // Remove from local state
+      setAllChats(prevChats => prevChats.filter(c => c.id !== warning.id));
+      
+      // Refresh chats
+      if (refreshChats) {
+        refreshChats();
+      }
+    } catch (error) {
+      console.error('Error deleting warning:', error);
+      alert('Failed to delete warning. Please try again.');
+    }
+  };
+
   const openChat = (chat: ChatThread) => {
-    if (chat.isDisabled || !chat.enquiryId) return;
+    if (chat.isDisabled) return;
+    
+    // Handle admin chats - show message in My Chats view
+    if (chat.isAdminChat) {
+      // Mark chat as read when opening
+      markChatAsRead(chat);
+      // For admin chats, we'll show the message in a modal or just mark as read
+      // The message is already visible in the chat card
+      return;
+    }
+    
+    if (!chat.enquiryId) return;
     
     // Mark chat as read when opening
     markChatAsRead(chat);
@@ -611,6 +671,142 @@ export default function MyChats() {
 
         {/* Content - Inside Container */}
         <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+          {/* Pinned Warning Tile - Standout Message (Red Styled) */}
+          {adminWarnings.length > 0 && (
+            <div className="mb-3 sm:mb-4">
+              {adminWarnings.map((warning) => {
+                const warningMessage = typeof warning.lastMessage === 'string' 
+                  ? warning.lastMessage 
+                  : warning.lastMessage?.text || '';
+                const warningTime = warning.updatedAt?.toDate ? warning.updatedAt.toDate() : new Date(warning.updatedAt);
+                const now = new Date();
+                const hoursSinceWarning = (now.getTime() - warningTime.getTime()) / (1000 * 60 * 60);
+                const canDelete = hoursSinceWarning >= 24; // Can delete after 24 hours
+                
+                return (
+                  <motion.div
+                    key={warning.id}
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="mb-2 sm:mb-3"
+                  >
+                    <Card
+                      className="border-2 sm:border-3 border-red-900 bg-gradient-to-br from-red-900 via-red-800 to-red-950 shadow-[0_6px_0_0_rgba(127,29,29,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] relative overflow-hidden"
+                      style={{ backgroundColor: '#800020' }}
+                    >
+                      {/* Animated pulsing border effect */}
+                      <motion.div
+                        className="absolute inset-0 border-2 sm:border-3 border-red-700 rounded-lg"
+                        animate={{
+                          opacity: [0.5, 0.9, 0.5],
+                          scale: [1, 1.01, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      
+                      {/* Shimmer effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                        animate={{
+                          x: ['-100%', '200%'],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                      />
+                      
+                      <CardContent className="p-3 sm:p-4 relative z-10">
+                        <div className="flex items-start gap-2.5 sm:gap-3">
+                          {/* Icon - Left aligned */}
+                          <motion.div 
+                            className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center shadow-lg border-2 border-white/30 backdrop-blur-sm mt-0.5"
+                            animate={{
+                              scale: [1, 1.08, 1],
+                              rotate: [0, 3, -3, 0],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            <AlertTriangle className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
+                          </motion.div>
+                          
+                          {/* Main Content - Center aligned */}
+                          <div className="flex-1 min-w-0 flex flex-col">
+                            {/* Header Row - Title and Badge */}
+                            <div className="flex items-center justify-between mb-1.5 sm:mb-2 gap-2">
+                              <h3 className="text-xs sm:text-base font-black text-white drop-shadow-lg leading-tight flex-1">
+                                Warning from Admin
+                              </h3>
+                              <Badge className="bg-white/20 text-white border border-white/30 text-[8px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 sm:py-1 font-bold shadow-md backdrop-blur-sm flex-shrink-0">
+                                Important
+                              </Badge>
+                            </div>
+                            
+                            {/* Message Text - Full width, properly aligned */}
+                            <p className="text-[11px] sm:text-sm text-white mb-2 sm:mb-2.5 leading-relaxed font-semibold drop-shadow-md pr-1">
+                              {warningMessage.replace('⚠️ WARNING FROM ADMIN: ', '')}
+                            </p>
+                            
+                            {/* Footer Row - Timestamp and Countdown */}
+                            <div className="flex items-center gap-2 text-[9px] sm:text-[11px] text-white/90 font-medium">
+                              <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                              <span className="flex-shrink-0">
+                                {warningTime.toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                              {!canDelete && (
+                                <span className="text-white/80 flex-shrink-0">
+                                  • {Math.ceil(24 - hoursSinceWarning)}h left
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Close Button - Right aligned */}
+                          <div className="flex-shrink-0 pt-0.5">
+                            {canDelete ? (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  if (window.confirm('Are you sure you want to delete this warning?')) {
+                                    deleteWarning(warning);
+                                  }
+                                }}
+                                className="text-white hover:text-white hover:bg-white/20 h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all border border-white/30 rounded-full flex items-center justify-center"
+                              >
+                                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              </Button>
+                            ) : (
+                              <div className="h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center">
+                                <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white/30 border-2 border-white/50" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+          
           {loading ? (
             <p className="text-sm text-gray-500">Loading chats…</p>
           ) : chats.length === 0 ? (
@@ -633,18 +829,22 @@ export default function MyChats() {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
                 
-                // Only animate on first render of this view
-                const shouldAnimate = !hasAnimated.current;
+                // Create a unique state key for this view mode and chats combination
+                const currentStateKey = `${viewMode}_${chats.length}_${chats.map(c => c.id).join('_')}`;
+                const hasAnimatedThisState = animatedStateRef.current === currentStateKey;
+                
+                // Only animate if we haven't animated this exact state before
+                const shouldAnimate = !hasAnimatedThisState && chats.length > 0;
                 
                 return (
                   <motion.div
                     key={chat.id}
                     initial={shouldAnimate ? { 
                       opacity: 0, 
-                      y: 50, 
-                      scale: 0.8,
-                      rotateX: -15,
-                      rotateY: 10
+                      y: 30, 
+                      scale: 0.9,
+                      rotateX: -8,
+                      rotateY: 5
                     } : {
                       opacity: 1,
                       y: 0,
@@ -661,28 +861,31 @@ export default function MyChats() {
                     }}
                     transition={shouldAnimate ? { 
                       type: "spring",
-                      stiffness: 100,
-                      damping: 15,
-                      delay: index * 0.08,
-                      duration: 0.6
+                      stiffness: 60,
+                      damping: 25,
+                      mass: 0.7,
+                      delay: index * 0.04,
+                      duration: 0.9,
+                      ease: [0.22, 1, 0.36, 1]
                     } : {
                       duration: 0
                     }}
                     onAnimationComplete={() => {
-                      // Mark as animated after first animation completes
+                      // Mark this state as animated after the last card animates
                       if (shouldAnimate && index === chats.length - 1) {
-                        hasAnimated.current = true;
+                        animatedStateRef.current = currentStateKey;
                       }
                     }}
                     whileHover={!isDisabled ? { 
-                      y: -8,
-                      scale: 1.05,
-                      rotateY: 5,
-                      rotateX: 2,
+                      y: -6,
+                      scale: 1.03,
+                      rotateY: 3,
+                      rotateX: 1,
                       transition: { 
                         type: "spring",
-                        stiffness: 300,
-                        damping: 20
+                        stiffness: 250,
+                        damping: 25,
+                        mass: 0.8
                       }
                     } : {}}
                     whileTap={!isDisabled ? { 
@@ -693,13 +896,25 @@ export default function MyChats() {
                     style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      className={`border-[0.5px] ${
+                        chat.isAdminChat 
+                          ? 'border-red-500 bg-gradient-to-br from-red-50 via-red-50 to-red-100' 
+                          : 'border-black bg-gradient-to-br from-white via-white to-gray-50'
+                      } rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
                         isDisabled 
                           ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
                           : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
                       }`}
                       onClick={() => !isDisabled && openChat(chat)}
                     >
+                      {/* Admin Message Badge */}
+                      {chat.isAdminChat && (
+                        <div className="absolute top-2 right-2 z-20">
+                          <Badge className="bg-red-600 text-white text-[9px] px-2 py-0.5 animate-pulse">
+                            Admin
+                          </Badge>
+                        </div>
+                      )}
                       {/* Physical button depth effect */}
                       {!isDisabled && (
                         <>
@@ -799,7 +1014,11 @@ export default function MyChats() {
                           
                           {!isDisabled && (chat.unreadCount || 0) > 0 && (
                             <motion.span 
-                              className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20"
+                              className={`absolute -top-1 -right-1 sm:top-0 sm:right-0 ${
+                                chat.isAdminChat 
+                                  ? 'bg-gradient-to-br from-red-600 to-red-700' 
+                                  : 'bg-gradient-to-br from-red-500 to-red-600'
+                              } text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20`}
                               animate={{
                                 scale: [1, 1.3, 1],
                                 rotate: [0, 10, -10, 0],
@@ -815,7 +1034,7 @@ export default function MyChats() {
                                 transition: { duration: 0.3 }
                               }}
                             >
-                              1
+                              {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                             </motion.span>
                           )}
                         </div>

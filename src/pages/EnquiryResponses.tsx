@@ -2996,6 +2996,25 @@ const EnquiryResponses = () => {
                                 <span className="relative z-10">End Chat</span>
                               </DropdownMenuItem>
                               
+                              {/* Report User - For both buyers and sellers */}
+                              <DropdownMenuSeparator className="my-1 sm:my-1.5 bg-gray-300" />
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  if (selectedResponse && enquiryId && user?.uid) {
+                                    const otherUserId = user.uid === enquiry?.userId 
+                                      ? selectedResponse.sellerId 
+                                      : enquiry?.userId;
+                                    const otherUserName = user.uid === enquiry?.userId
+                                      ? (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller')
+                                      : (userProfiles[enquiry?.userId]?.fullName || 'Buyer');
+                                    navigate(`/report-user/${otherUserId}?enquiryId=${enquiryId}&sellerId=${selectedResponse.sellerId}&userName=${encodeURIComponent(otherUserName)}`);
+                                  }
+                                }}
+                                className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-red-700 hover:bg-red-50 relative overflow-hidden"
+                              >
+                                <span className="relative z-10">Report</span>
+                              </DropdownMenuItem>
+                              
                               {/* Block/Unblock User - For both buyers and sellers */}
                               <DropdownMenuSeparator className="my-1 sm:my-1.5 bg-gray-300" />
                               {isBlocked ? (
@@ -3064,6 +3083,25 @@ const EnquiryResponses = () => {
                                 className="text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-orange-700 hover:bg-orange-50 relative overflow-hidden"
                               >
                                 <span className="relative z-10">End Chat</span>
+                              </DropdownMenuItem>
+                              
+                              {/* Report User - For both buyers and sellers */}
+                              <DropdownMenuSeparator className="my-1.5 bg-gray-300" />
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  if (selectedResponse && enquiryId && user?.uid) {
+                                    const otherUserId = user.uid === enquiry?.userId 
+                                      ? selectedResponse.sellerId 
+                                      : enquiry?.userId;
+                                    const otherUserName = user.uid === enquiry?.userId
+                                      ? (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller')
+                                      : (userProfiles[enquiry?.userId]?.fullName || 'Buyer');
+                                    navigate(`/report-user/${otherUserId}?enquiryId=${enquiryId}&sellerId=${selectedResponse.sellerId}&userName=${encodeURIComponent(otherUserName)}`);
+                                  }
+                                }}
+                                className="text-sm font-black px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer min-touch text-slate-600 hover:text-red-700 hover:bg-red-50 relative overflow-hidden"
+                              >
+                                <span className="relative z-10">Report</span>
                               </DropdownMenuItem>
                               
                               {/* Block/Unblock User - For both buyers and sellers */}

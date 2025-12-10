@@ -15,6 +15,7 @@ interface ChatThread {
   enquiryData?: any;
   isDisabled?: boolean;
   unreadCount?: number;
+  isAdminChat?: boolean;
 }
 
 interface ChatContextType {
@@ -336,6 +337,50 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.warn("Error loading ready-to-chat enquiries:", err);
       }
 
+      // 4. Load admin messages (suspensions, warnings) - Real-time via onSnapshot
+      // Note: This is handled separately in useEffect with onSnapshot for real-time updates
+      try {
+        const adminMessagesQuery = query(
+          collection(db, 'chatMessages'),
+          where('recipientId', '==', user.uid),
+          where('isAdminMessage', '==', true)
+        );
+        const adminMessagesSnapshot = await getDocs(adminMessagesQuery);
+        
+        adminMessagesSnapshot.forEach((messageDoc) => {
+          const messageData = messageDoc.data();
+          const adminChatId = `admin_${messageData.adminMessageType}_${messageDoc.id}`;
+          
+          // Determine title based on message type
+          let title = 'Admin Message';
+          if (messageData.adminMessageType === 'suspension') {
+            title = '🚫 Account Suspended';
+          } else if (messageData.adminMessageType === 'warning') {
+            title = '⚠️ Warning from Admin';
+          }
+          
+          // Create admin chat thread
+          chatThreadMap.set(adminChatId, {
+            id: adminChatId,
+            enquiryId: messageData.enquiryId || 'admin',
+            sellerId: 'admin',
+            enquiryTitle: title,
+            participants: ['admin', user.uid],
+            updatedAt: messageData.timestamp,
+            lastMessage: {
+              text: messageData.message || '',
+              senderId: 'admin',
+              timestamp: messageData.timestamp
+            },
+            isBuyerChat: true, // Show in buyer chats
+            isAdminChat: true, // Mark as admin chat
+            unreadCount: 1 // Show as unread for notification badge
+          });
+        });
+      } catch (err) {
+        console.warn("Error loading admin messages:", err);
+      }
+
       // Convert map to array and fetch missing enquiry titles and data
       const threads = Array.from(chatThreadMap.values());
       
@@ -343,27 +388,33 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         threads.map(async (thread) => {
           if (thread.enquiryId) {
             // Only fetch if we don't already have enquiryData
-            if (!thread.enquiryData) {
+            // IMPORTANT: Skip fetching enquiry data for admin warnings (they don't need it)
+            if (!thread.enquiryData && !(thread.isAdminChat && thread.enquiryTitle?.includes('Warning'))) {
               try {
                 const enquiryDoc = await getDoc(doc(db, "enquiries", thread.enquiryId));
                 if (enquiryDoc.exists()) {
                   thread.enquiryData = enquiryDoc.data();
                   thread.enquiryTitle = thread.enquiryData.title || "Untitled Enquiry";
                 } else {
-                  // Enquiry deleted
-                  thread.enquiryTitle = "Enquiry Not Found";
-                  thread.isDisabled = true;
+                  // Enquiry deleted - but NOT for admin warnings
+                  if (!thread.isAdminChat) {
+                    thread.enquiryTitle = "Enquiry Not Found";
+                    thread.isDisabled = true;
+                  }
                 }
               } catch (err) {
                 console.error("Error fetching enquiry data:", err);
-                if (!thread.enquiryTitle) {
+                if (!thread.enquiryTitle && !thread.isAdminChat) {
                   thread.enquiryTitle = "Loading...";
                 }
               }
             }
             
             // Check if chat should be disabled (using existing or newly fetched enquiryData)
-            if (thread.enquiryData) {
+            // IMPORTANT: Admin warnings are NEVER disabled
+            if (thread.isAdminChat && thread.enquiryTitle?.includes('Warning')) {
+              thread.isDisabled = false; // Warnings are never disabled
+            } else if (thread.enquiryData) {
               const enquiryData = thread.enquiryData;
               
               // 1. Check if deal is closed
@@ -382,8 +433,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               else if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') {
                 thread.isDisabled = true;
               }
-            } else if (!thread.enquiryData && thread.enquiryId) {
+            } else if (!thread.enquiryData && thread.enquiryId && !thread.isAdminChat) {
               // If we couldn't fetch enquiry data, mark as disabled (likely deleted)
+              // But NOT for admin warnings
               thread.isDisabled = true;
             }
           }
@@ -423,7 +475,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }, 500);
     };
     
-    // Listen to chat messages changes
+    // Listen to chat messages changes (includes admin messages)
     const unsubscribeChatMessages = onSnapshot(
       query(collection(db, "chatMessages")),
       () => {
@@ -431,6 +483,21 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       },
       (error) => {
         console.error("Error listening to chat messages:", error);
+      }
+    );
+    
+    // Real-time listener specifically for admin messages (warnings/suspensions)
+    const unsubscribeAdminMessages = onSnapshot(
+      query(
+        collection(db, 'chatMessages'),
+        where('recipientId', '==', user.uid),
+        where('isAdminMessage', '==', true)
+      ),
+      () => {
+        refreshChats(); // Refresh when admin messages change
+      },
+      (error) => {
+        console.error("Error listening to admin messages:", error);
       }
     );
 
@@ -452,6 +519,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearTimeout(timeoutId);
       unsubscribeChatMessages();
       unsubscribeSellerSubmissions();
+      unsubscribeAdminMessages();
     };
   }, [user?.uid]);
 
@@ -469,3 +537,4 @@ export const useChats = () => {
   }
   return context;
 };
+

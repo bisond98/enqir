@@ -95,6 +95,35 @@ export default function Layout({ children, showNavigation = true }: { children: 
             const enquiryId = messageData.enquiryId;
             const sellerId = messageData.sellerId;
             const senderId = messageData.senderId;
+            const recipientId = messageData.recipientId;
+            const isAdminMessage = messageData.isAdminMessage;
+            
+            // Handle admin messages (warnings, suspensions)
+            if (isAdminMessage && recipientId === user.uid) {
+              // Admin message for this user
+              const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
+              
+              // Check if already marked as unread
+              if (threadsWithUnread.has(adminThreadKey)) return;
+              
+              const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
+              const lastViewedTime = localStorage.getItem(readKey);
+              
+              const messageTime = messageData.timestamp?.toDate 
+                ? messageData.timestamp.toDate().getTime() 
+                : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+              
+              if (lastViewedTime) {
+                const viewedTime = parseInt(lastViewedTime, 10);
+                if (messageTime > viewedTime) {
+                  threadsWithUnread.add(adminThreadKey);
+                }
+              } else {
+                // Never viewed - mark as unread
+                threadsWithUnread.add(adminThreadKey);
+              }
+              return; // Processed admin message, skip regular message logic
+            }
             
             if (!enquiryId || !sellerId || !senderId) return;
             if (messageData.isSystemMessage) return;
@@ -146,6 +175,37 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const enquiryId = messageData.enquiryId;
           const sellerId = messageData.sellerId;
           const senderId = messageData.senderId;
+          const recipientId = messageData.recipientId;
+          const isAdminMessage = messageData.isAdminMessage;
+          
+          // Handle admin messages (warnings, suspensions)
+          if (isAdminMessage && recipientId === user.uid) {
+            // Admin message for this user - add to count directly
+            const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
+            const messageTime = messageData.timestamp?.toDate 
+              ? messageData.timestamp.toDate().getTime() 
+              : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+            
+            // Check if user has viewed this admin message
+            const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
+            const lastViewedTime = localStorage.getItem(readKey);
+            
+            if (lastViewedTime) {
+              const viewedTime = parseInt(lastViewedTime, 10);
+              if (messageTime <= viewedTime) return; // Already viewed
+            }
+            
+            // Track the admin message thread
+            const existing = messageThreads.get(adminThreadKey);
+            if (!existing || messageTime > existing.timestamp) {
+              messageThreads.set(adminThreadKey, { 
+                enquiryId: enquiryId || 'admin', 
+                sellerId: sellerId || 'admin', 
+                timestamp: messageTime 
+              });
+            }
+            return; // Processed admin message, skip regular message logic
+          }
           
           if (!enquiryId || !sellerId || !senderId) return;
           if (messageData.isSystemMessage) return;
@@ -197,6 +257,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
         const now = new Date();
         
         messageThreads.forEach((thread, threadKey) => {
+          // Handle admin messages separately (they don't have enquiry data)
+          if (threadKey.startsWith('admin_')) {
+            activeChatThreads.add(threadKey);
+            return;
+          }
+          
           const enquiryData = enquiryDataMap.get(thread.enquiryId);
           if (!enquiryData) return; // Enquiry deleted
           

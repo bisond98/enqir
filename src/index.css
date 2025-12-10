@@ -27,12 +27,23 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
+    -webkit-overflow-scrolling: touch;
+    /* GPU acceleration for smooth scrolling */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   /* Optimize all scrollable elements */
   * {
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+  }
+  
+  /* Prevent scroll jank */
+  body {
+    overflow-x: hidden;
+    /* GPU acceleration */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   /* Optimize images and media for better performance */
@@ -47,7 +58,11 @@
   [class*="motion-"],
   button:hover,
   a:hover {
-    will-change: transform;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transform: translateZ(0);
     backface-visibility: hidden;
   }
@@ -272,13 +287,30 @@
   /* Optimize all transitions and animations for ultra-smooth feel */
   * {
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    transition-duration: 0.3s;
+    transition-duration: 0.2s;
   }
   
   /* Smoother transitions for interactive elements */
   button, a, input, select, textarea {
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    transition-duration: 0.25s;
+    transition-duration: 0.15s;
+    transition-property: transform, opacity, background-color, border-color, color;
+    will-change: transform, opacity;
+  }
+  
+  /* Ultra-smooth hover transitions */
+  button:hover, a:hover, [role="button"]:hover {
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Optimize all motion components */
+  [class*="motion"], [data-framer-component] {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   /* Optimize scroll performance */
@@ -294,24 +326,46 @@
   /* Performance: Optimize cards and interactive elements */
   .card,
   [class*="Card"] {
-    contain: layout style;
+    contain: layout style paint;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   /* Performance: Reduce repaints on hover */
   button,
   a,
   [role="button"] {
-    will-change: transform;
+    will-change: transform, opacity;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    contain: layout style;
   }
   
   /* Performance: Optimize images */
   img {
     content-visibility: auto;
     will-change: auto;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  /* Smooth image loading */
+  img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  img[loading="lazy"].loaded {
+    opacity: 1;
   }
   
   /* Performance: Smooth scrolling with optimization */
@@ -360,6 +414,11 @@
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
     will-change: scroll-position;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    contain: layout style paint;
   }
   
   /* Reduce layout shifts */
@@ -372,7 +431,16 @@
   /* Optimize animations */
   @media (prefers-reduced-motion: no-preference) {
     * {
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    
+    /* GPU-accelerated animations */
+    [class*="animate"], [class*="motion"] {
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
   }
   
@@ -391,6 +459,13 @@
   /* Optimize image loading performance */
   img[loading="lazy"] {
     content-visibility: auto;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  img[loading="lazy"].loaded,
+  img[loading="lazy"][src]:not([src=""]) {
+    opacity: 1;
   }
   
   /* Optimize cards and containers */
