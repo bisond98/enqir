@@ -325,7 +325,7 @@ const SignIn = () => {
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
@@ -346,7 +346,7 @@ const SignIn = () => {
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -397,7 +397,7 @@ const SignIn = () => {
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
@@ -418,7 +418,7 @@ const SignIn = () => {
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}

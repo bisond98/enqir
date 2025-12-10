@@ -140,7 +140,7 @@ const Settings = () => {
                       savePrivacySetting('profileVisibility', value);
                     }}
                   >
-                    <SelectTrigger className="border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm">
+                    <SelectTrigger className="border-2 border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xs sm:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="text-xs sm:text-sm">

@@ -3881,7 +3881,7 @@ const EnquiryResponses = () => {
                               }
                             }}
                             disabled={!canUserChat(selectedResponse) || isBlocked}
-                            className={`resize-none border border-gray-800 focus:border focus:border-gray-800 focus:ring-gray-800 rounded-lg sm:rounded-xl px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
+                            className={`resize-none border border-gray-800 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg sm:rounded-xl px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500 ${
                               (!canUserChat(selectedResponse) || isBlocked) ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''
                             }`}
                             rows={1}

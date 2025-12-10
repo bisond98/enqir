@@ -85,14 +85,6 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
                   <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="0.8s"/>
                 </line>
               </g>
-              
-              {/* Loading spinner */}
-              <circle cx="0" cy="-25" r="30" fill="none" stroke="#E5E7EB" strokeWidth="2"/>
-              <circle cx="0" cy="-25" r="30" fill="none" stroke="#1F2937" strokeWidth="2" 
-                strokeDasharray="47 94" transform="rotate(-90 0 -25)" opacity="0">
-                <animateTransform attributeName="transform" type="rotate" values="-90 0 -25; 270 0 -25" dur="1.5s" repeatCount="indefinite" begin="0s"/>
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="0s"/>
-              </circle>
             </g>
             
             {/* Arrow 1 - Animated */}

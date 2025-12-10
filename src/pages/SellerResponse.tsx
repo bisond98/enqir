@@ -1307,7 +1307,7 @@ const SellerResponse = () => {
           )}
 
           {/* Enhanced Enquiry Display */}
-          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-[0.5px] border-black rounded-2xl">
+          <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -1375,7 +1375,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-[0.5px] border-black rounded-2xl">
+            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -1423,7 +1423,7 @@ const SellerResponse = () => {
                   value={title}
                   readOnly
                   disabled
-                    className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-gray-100 to-gray-200 cursor-not-allowed shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
+                    className="h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-gray-100 to-gray-200 cursor-not-allowed shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
                     style={{ fontSize: '16px' }}
                   required
                 />
@@ -1434,22 +1434,22 @@ const SellerResponse = () => {
 
               {/* Enhanced Product Description */}
               <div className="space-y-3">
-                <Label htmlFor="description" className="text-base sm:text-lg font-black text-black flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
+                <Label htmlFor="description" className="text-base sm:text-lg font-black text-black flex items-center whitespace-nowrap">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black flex-shrink-0" />
                   <span className="text-black">
                     Detailed Description *
                   </span>
+                  <span className="text-[10px] sm:text-sm text-black invisible ml-2 whitespace-nowrap">
+                    Explain it like to a 5 year-old.
+                  </span>
                 </Label>
-                <p className="text-[10px] sm:text-sm text-black">
-                  Explain it like to a 5 year-old.
-                </p>
                 <div className="relative">
                 <Textarea
                   id="description"
                   placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                    className={`min-h-[140px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    className={`min-h-[140px] text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus-visible:border-red-500 focus-visible:border-2' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
                   {/* Physical button depth effect */}
@@ -1511,7 +1511,7 @@ const SellerResponse = () => {
                       setPrice('₹' + e.target.value);
                     }
                   }}
-                    className={`h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold ${errors.price ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                    className={`h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold ${errors.price ? 'border-red-500 focus-visible:border-red-500 focus-visible:border-2' : ''}`}
                     style={{ fontSize: '16px' }}
                   required
                 />
@@ -1528,7 +1528,7 @@ const SellerResponse = () => {
                       {errors.price}
                     </span>
                   )}
-                  <span className="text-[8px] sm:text-sm text-black ml-auto">
+                  <span className="text-[8px] sm:text-sm text-black ml-auto invisible">
                     Attracts buyers. Ahhh… Whatever -Your Product, Your Price
                   </span>
                 </div>
@@ -1548,9 +1548,6 @@ const SellerResponse = () => {
                     style={{ width: `${formProgress}%` }}
                   />
                 </div>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">
-                  Fill in the details and price to share your offer
-                </p>
               </div>
 
               {/* Separator */}
@@ -1573,7 +1570,7 @@ const SellerResponse = () => {
                   placeholder="Payment terms, delivery details, etc..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                    className="min-h-[120px] text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    className="min-h-[120px] text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                     style={{ fontSize: '16px' }}
                 />
                   {/* Physical button depth effect */}
@@ -1969,7 +1966,7 @@ const SellerResponse = () => {
                               }
                               setIdVerificationResult(null);
                             }} disabled={verifyingId}>
-                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
                                 <SelectValue placeholder="Select ID Type" />
                               </SelectTrigger>
                               <SelectContent>
@@ -2021,7 +2018,7 @@ const SellerResponse = () => {
                                   validateIdNumber(value, govIdType);
                                 }
                               }}
-                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
                               disabled={verifyingId}
                             />
                               {/* Physical button depth effect */}

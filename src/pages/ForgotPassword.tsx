@@ -92,7 +92,7 @@ const ForgotPassword = () => {
                         id="email"
                         type="email"
                         placeholder="Enter your email address"
-                        className="pl-10 h-11 text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        className="pl-10 h-11 text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
