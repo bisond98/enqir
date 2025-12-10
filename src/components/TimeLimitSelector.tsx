@@ -171,7 +171,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
     selectedDate.setHours(0, 0, 0, 0);
     
     let deadline: Date;
-    
+      
     if (selectedDate.getTime() < today.getTime()) {
       // If selected date is in the past, use now
       deadline = now;
@@ -182,7 +182,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       // If selected date is in the future, use end of that day (23:59:59)
       deadline = new Date(selectedDate);
       deadline.setHours(23, 59, 59, 999);
-    }
+      }
     
     onChange(deadline);
     setIsOpen(false);
@@ -368,7 +368,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                 <div className="w-full">
                   <Label className={`text-sm sm:text-xs text-slate-600 mb-2 sm:mb-1 block ${isDesktop ? 'text-sm font-medium mb-2' : 'text-xs mb-1.5'}`}>
                     Select Deadline Date
-                  </Label>
+                    </Label>
                   <div className={`flex justify-center w-full ${isDesktop ? '' : ''}`}>
                     <Calendar
                       mode="single"
@@ -402,8 +402,8 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                         row: "flex w-full mt-2 justify-center",
                       } : undefined}
                     />
+                    </div>
                   </div>
-                </div>
 
                 <div className="relative">
                   <Button 
@@ -415,7 +415,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
                   </Button>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                 </div>
-              </div>
+                </div>
               )}
 
             {/* Preview - Enhanced for desktop */}

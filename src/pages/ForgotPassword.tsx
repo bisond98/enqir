@@ -102,23 +102,23 @@ const ForgotPassword = () => {
                   </div>
 
                   <div className="relative">
-                    <Button 
-                      type="submit" 
-                      disabled={loading}
+                  <Button 
+                    type="submit" 
+                    disabled={loading}
                       className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Mail className="h-4 w-4 mr-2" />
-                          Send Reset Link
-                        </>
-                      )}
-                    </Button>
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-4 w-4 mr-2" />
+                        Send Reset Link
+                      </>
+                    )}
+                  </Button>
                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                   </div>
                 </form>
@@ -186,14 +186,14 @@ const ForgotPassword = () => {
                   {/* Action Buttons */}
                   <div className="space-y-2.5 sm:space-y-3 pt-1">
                     <div className="relative">
-                      <Button 
-                        onClick={() => handleSendResetEmail()}
-                        disabled={loading}
+                    <Button 
+                      onClick={() => handleSendResetEmail()}
+                      disabled={loading}
                         className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
-                      >
-                        <Mail className="h-4 w-4 mr-2" />
-                        Resend Email
-                      </Button>
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Resend Email
+                    </Button>
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                     </div>
                     

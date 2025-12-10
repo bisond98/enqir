@@ -240,13 +240,13 @@ const ResetPassword = () => {
                 </div>
 
                 <div className="relative">
-                  <Button 
-                    type="submit" 
-                    disabled={loading}
+                <Button 
+                  type="submit" 
+                  disabled={loading}
                     className="w-full primary-gradient font-black text-sm py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-glow h-11"
-                  >
-                    {loading ? "Updating Password..." : "Update Password"}
-                  </Button>
+                >
+                  {loading ? "Updating Password..." : "Update Password"}
+                </Button>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
                 </div>
               </form>
