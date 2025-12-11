@@ -267,7 +267,7 @@ const EnquiryResponses = () => {
         setLoading(false);
       } catch (error) {
         console.error('Error loading data:', error);
-        toast({ title: 'Error', description: 'Failed to load enquiry data', variant: 'destructive' });
+        // Error toast removed - silently handle errors
         setLoading(false);
       }
     };
