@@ -233,10 +233,13 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
     // Payment will only happen when user clicks "Post Enquiry" button in the form
     // For free plans, call immediately
     // For paid plans in new enquiries, just store the selection - payment happens on form submit
-    // For upgrades, just select the plan - payment will happen when clicking "Upgrade Now" button
+    // For upgrades with paid plans, process payment immediately when selecting
     if (plan.price === 0 || !isUpgrade) {
       // Just notify parent of selection - NO payment processing
       onPlanSelect(plan.id, plan.price);
+    } else if (isUpgrade && plan.price > 0 && user) {
+      // For upgrades with paid plans, process payment immediately
+      handleUpgradeNow(plan.id);
     }
   };
 
@@ -342,7 +345,8 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                 <Button
                   type="button"
                   size="sm"
-                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-[0.5px] border-black transition-all duration-200 hover:scale-105 active:scale-95 ${
+                  disabled={isProcessingPayment}
+                  className={`w-full h-9 sm:h-10 md:h-9 text-xs sm:text-sm font-black min-h-[44px] sm:min-h-[40px] relative overflow-hidden group/select border-[0.5px] border-black transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed ${
                     selectedPlan === plan.id
                       ? 'bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                       : 'bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
@@ -350,15 +354,25 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // Only select the plan - payment will happen when user clicks "Post Enquiry" button
-                    handlePlanSelect(plan);
+                    if (!isProcessingPayment) {
+                      // For upgrades with paid plans, this will trigger payment immediately
+                      // For new enquiries, this just selects the plan
+                      handlePlanSelect(plan);
+                    }
                   }}
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/select:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                  <span className="relative z-10">{selectedPlan === plan.id ? '✓ Selected' : 'Select'}</span>
+                  <span className="relative z-10">
+                    {isProcessingPayment && selectedPlan === plan.id ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Processing...</span>
+                      </span>
+                    ) : selectedPlan === plan.id ? '✓ Selected' : 'Select'}
+                  </span>
                 </Button>
               </div>
             </CardContent>
@@ -366,44 +380,6 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         ))}
       </div>
 
-      {selectedPlan !== currentPlanId && (() => {
-        const selectedPlanObj = availablePlans.find(p => p.id === selectedPlan);
-        if (!selectedPlanObj) return null;
-        
-        // Only show button for upgrades with paid plans
-        if (isUpgrade && selectedPlanObj.price > 0) {
-          return (
-            <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-6 md:mb-8 flex items-center justify-center w-full">
-              <Button
-                size="sm"
-                disabled={isProcessingPayment}
-                className="h-12 sm:h-11 md:h-10 text-sm sm:text-base md:text-lg font-black bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white px-8 sm:px-10 md:px-12 min-h-[48px] sm:min-h-[44px] md:min-h-[40px] border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-200 rounded-xl sm:rounded-2xl mx-auto disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group/upgrade hover:scale-105 active:scale-95"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (user && !isProcessingPayment) {
-                    // For upgrades, process payment via Razorpay
-                    handleUpgradeNow(selectedPlanObj.id);
-                  }
-                }}
-              >
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl sm:rounded-2xl" />
-                {isProcessingPayment ? (
-                  <span className="flex items-center justify-center gap-2 relative z-10">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Opening Razorpay...</span>
-                  </span>
-                ) : (
-                  <span className="relative z-10">Upgrade Now</span>
-                )}
-              </Button>
-            </div>
-          );
-        }
-        return null;
-      })()}
 
       {/* Payment Modal */}
       {selectedPlanData && (

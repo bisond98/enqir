@@ -2844,13 +2844,6 @@ const EnquiryResponses = () => {
                         className="w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl bg-green-950 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]"
                         style={{ border: 'none' }}
                     >
-                      {/* Physical button depth effect */}
-                      {!isSelected && (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                        </>
-                      )}
                       <CardContent className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
                             {user?.uid === enquiry?.userId && (
                           <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 lg:top-3 lg:left-3 z-20">
