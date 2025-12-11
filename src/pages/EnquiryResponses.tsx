@@ -2478,11 +2478,10 @@ const EnquiryResponses = () => {
 
       setShowPaymentSelector(false);
       
-      // Show loading and redirect after 500ms
+      // Show loading and redirect to detailed responses page after 500ms
       setIsRedirecting(true);
       setTimeout(() => {
-        navigate(`/enquiry/${enquiryId}/responses`);
-        window.location.reload();
+        navigate(`/enquiry/${enquiryId}/detailed-responses`);
       }, 500);
     } catch (error) {
       console.error('Error updating plan:', error);
