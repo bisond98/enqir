@@ -25,8 +25,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    // Only force in development, not production builds (faster)
-    force: mode === 'development',
+    force: true, // Force dependency pre-bundling
   },
   
   plugins: [
@@ -65,13 +64,23 @@ export default defineConfig(({ mode }) => ({
     },
     // Optimize chunk size
     chunkSizeWarningLimit: 1000,
-    // Disable source maps for faster builds
+    // Enable source maps for production debugging (optional)
     sourcemap: false,
-    // Use esbuild minifier (much faster than terser, ~10x speed improvement)
-    // esbuild automatically handles syntax, identifiers, and whitespace minification
-    minify: 'esbuild',
+    // Minify with optimized settings
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console for debugging
+        drop_debugger: true,
+        pure_funcs: ['console.log'], // Remove console.log in production
+        passes: 2, // Run compression twice for better results
+      },
+      mangle: {
+        safari10: true, // Fix Safari 10+ issues
+      },
+    },
     // Target modern browsers for better optimization
-    target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+    target: 'es2015',
     // Optimize CSS
     cssCodeSplit: true,
     // Report compressed size

@@ -33,8 +33,6 @@ import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
-import { validateText, validateBudget, validateLocation, sanitizeInput } from "@/utils/validation";
-import { trackEnquiryPosted } from "@/utils/analytics";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -1222,36 +1220,11 @@ export default function PostEnquiry() {
       return;
     }
 
-    // Validate and sanitize required fields
-    const titleValidation = validateText(title.trim(), 3, 200);
-    const descriptionValidation = validateText(description.trim(), 5, 5000);
-    const budgetValidation = validateBudget(budget.trim());
-    const locationValidation = validateLocation(location.trim());
-    
-    if (!titleValidation.isValid || !descriptionValidation.isValid || 
-        (selectedCategories.length === 0 && !category) || 
-        !budgetValidation.isValid || !locationValidation.isValid) {
-      const errors = [
-        !titleValidation.isValid && titleValidation.error,
-        !descriptionValidation.isValid && descriptionValidation.error,
-        (selectedCategories.length === 0 && !category) && 'Please select at least one category',
-        !budgetValidation.isValid && budgetValidation.error,
-        !locationValidation.isValid && locationValidation.error
-      ].filter(Boolean).join(', ');
-      
-      toast({
-        title: "Validation Error",
-        description: errors || 'Please fill in all required fields correctly.',
-        variant: "destructive",
-      });
+    // Validate required fields
+    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !location.trim()) {
+      alert('Please fill in all required fields (title, description, categories, budget, location).');
       return;
     }
-    
-    // Use sanitized values
-    const sanitizedTitle = titleValidation.sanitized;
-    const sanitizedDescription = descriptionValidation.sanitized;
-    const sanitizedBudget = budgetValidation.sanitized;
-    const sanitizedLocation = locationValidation.sanitized;
 
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
@@ -1388,12 +1361,12 @@ export default function PostEnquiry() {
       
       // Only include government ID fields if they exist
       const enquiryData: any = {
-        title: sanitizedTitle,
-        description: sanitizedDescription,
+        title: title.trim(),
+        description: description.trim(),
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other', // Primary category (first selected)
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
-        budget: sanitizedBudget ? parseFloat(sanitizedBudget.replace(/[^\d]/g, '')) : null,
-        location: sanitizedLocation,
+        budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+        location: location.trim(),
         deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
@@ -1413,7 +1386,7 @@ export default function PostEnquiry() {
         shares: 0,
         views: 0,
         userLikes: [],
-        notes: sanitizeInput(notes.trim()),
+        notes: notes.trim(),
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified
       };
@@ -1444,10 +1417,6 @@ export default function PostEnquiry() {
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
-        
-        // Track analytics event
-        trackEnquiryPosted(docRef.id, enquiryData.category || 'other', enquiryData.isPremium || false);
-        
         // Mark as submitted immediately after successful creation to prevent duplicates
         setIsSubmitted(true);
         setSubmittedEnquiryId(docRef.id);
@@ -1844,7 +1813,7 @@ export default function PostEnquiry() {
                         placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                            className="h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:border-black focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                            className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
                       />
@@ -1863,7 +1832,7 @@ export default function PostEnquiry() {
                     </div>
                     
                     {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
-                    <div className="space-y-2.5 -mt-2 sm:-mt-2">
+                    <div className="space-y-2.5">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
                       <div className="block sm:hidden">
                         <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen}>
@@ -2096,7 +2065,7 @@ export default function PostEnquiry() {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={5}
-                        className="border border-black focus-visible:border-2 focus-visible:border-black focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -2216,7 +2185,7 @@ export default function PostEnquiry() {
                               setBudget('₹' + e.target.value);
                             }
                           }}
-                          className="h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:border-black focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2238,7 +2207,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:border-black focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2287,7 +2256,7 @@ export default function PostEnquiry() {
                         <Textarea
                           id="notes"
                           placeholder="Additional requirements or preferences..."
-                          className="border border-black focus-visible:border-2 focus-visible:border-black focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           value={notes}
                           onChange={(e) => setNotes(e.target.value)}
                           rows={4}
@@ -2459,11 +2428,8 @@ export default function PostEnquiry() {
                           <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                             Verifying your ID...
                           </p>
-                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
                             Your ID remains securely encrypted and will be verified within a few minutes.
-                          </p>
-                          <p className="text-[7px] sm:text-[10px] text-red-600 font-semibold leading-tight">
-                            Don't press back
                           </p>
                         </div>
                       </div>
@@ -2552,7 +2518,7 @@ export default function PostEnquiry() {
                             }
                             setIdVerificationResult(null);
                           }} disabled={verifyingId}>
-                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
                               <SelectValue placeholder="Select ID Type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -2604,7 +2570,7 @@ export default function PostEnquiry() {
                                     validateIdNumber(value, govIdType);
                                   }
                             }}
-                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
                             disabled={verifyingId}
                           />
                           {/* Physical button depth effect */}

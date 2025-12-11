@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
+import { useUsage } from "@/contexts/UsageContext";
 import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, AlertTriangle, X } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -23,15 +23,18 @@ interface ChatThread {
   enquiryData?: any; // Store enquiry data to check status
   isDisabled?: boolean; // Mark if chat should be disabled
   unreadCount?: number; // Count of unread messages in this thread
-  isAdminChat?: boolean; // Mark if this is an admin message (suspension/warning)
+  isAdminChat?: boolean; // Mark if this is an admin chat (warning/suspension)
 }
 
 export default function MyChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { allChats: preloadedChats, loading: chatsLoading, refreshChats } = useChats();
-  const [allChats, setAllChats] = useState<ChatThread[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { usageStats } = useUsage();
+  const [allChats, setAllChats] = useState<ChatThread[]>(preloadedChats);
+  const [loading, setLoading] = useState(chatsLoading);
+  const [enquiryDataMap, setEnquiryDataMap] = useState<Map<string, any>>(new Map());
+  const [responsePositionMap, setResponsePositionMap] = useState<Map<string, number>>(new Map());
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
@@ -41,63 +44,185 @@ export default function MyChats() {
   });
   
   // Track if animation has been initialized to prevent double animation
-  // Use a combination of viewMode and chats length to track unique animation states
-  const animatedStateRef = useRef<string>('');
+  const hasAnimated = useRef(false);
   
-  // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
+  // Track dismissed admin warnings
+  const [dismissedWarnings, setDismissedWarnings] = useState<Set<string>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dismissedAdminWarnings');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    }
+    return new Set();
+  });
+  
+  const handleDismissWarning = (chatId: string) => {
+    const newDismissed = new Set(dismissedWarnings);
+    newDismissed.add(chatId);
+    setDismissedWarnings(newDismissed);
+    localStorage.setItem('dismissedAdminWarnings', JSON.stringify(Array.from(newDismissed)));
+  };
+  
+  // Calculate unread counts for buyer and seller chats (sum actual message counts)
   // Exclude disabled/expired chats from unread counts
   const buyerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === true && !chat.isDisabled && (chat.unreadCount || 0) > 0)
-    .length;
+    .filter(chat => chat.isBuyerChat === true && !chat.isDisabled)
+    .reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
   
   const sellerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === false && !chat.isDisabled && (chat.unreadCount || 0) > 0)
-    .length;
+    .filter(chat => chat.isBuyerChat === false && !chat.isDisabled)
+    .reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
 
   const handleToggleView = (mode: 'buyer' | 'seller') => {
     setViewMode(mode);
     localStorage.setItem('chatsViewMode', mode);
+    // Reset animation flag when switching views
+    hasAnimated.current = false;
   };
 
-  // Separate admin warnings from regular chats - warnings are never disabled/expired
-  const adminWarnings = allChats.filter(chat => 
-    chat.isAdminChat && chat.enquiryTitle?.includes('Warning')
-  ).map(warning => ({
-    ...warning,
-    isDisabled: false // Warnings are never disabled
-  }));
-  
-  // Filter chats based on view mode (exclude admin warnings - they're shown separately)
-  const chats = allChats.filter(chat => {
-    // Exclude admin warnings from regular chat list
-    if (chat.isAdminChat && chat.enquiryTitle?.includes('Warning')) {
-      return false;
-    }
-    // Filter by view mode (don't exclude disabled chats - show them as disabled)
+  // Separate admin warning chats from regular chats (exclude dismissed ones)
+  // Show warnings in both buyer and seller views
+  const adminWarningChats = allChats.filter(chat => 
+    chat.isAdminChat === true && 
+    !dismissedWarnings.has(chat.id)
+  );
+  const regularChats = allChats.filter(chat => !chat.isAdminChat);
+
+  // Filter regular chats based on view mode and premium status
+  const chats = regularChats.filter(chat => {
+    // Filter by view mode
     if (viewMode === 'buyer') {
-      return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
+      if (chat.isBuyerChat !== true) return false;
+      
+      // For buyer chats, check if seller is in locked position
+      if (chat.enquiryId && chat.sellerId) {
+        const enquiryData = enquiryDataMap.get(chat.enquiryId);
+        if (enquiryData) {
+          const selectedPlanId = enquiryData.selectedPlanId || 'free';
+          const isPremium = usageStats?.premiumSubscription || selectedPlanId === 'premium' || selectedPlanId === 'pro';
+          
+          // If premium, show all chats
+          if (isPremium) return true;
+          
+          // Get seller's position
+          const sellerPosition = responsePositionMap.get(`${chat.enquiryId}_${chat.sellerId}`);
+          if (sellerPosition !== undefined) {
+            // Determine response limit based on plan
+            let responseLimit = 2; // Default free plan
+            switch (selectedPlanId) {
+              case 'free':
+                responseLimit = 2;
+                break;
+              case 'basic':
+                responseLimit = 5;
+                break;
+              case 'standard':
+                responseLimit = 10;
+                break;
+              case 'premium':
+              case 'pro':
+                responseLimit = -1; // Unlimited
+                break;
+              default:
+                responseLimit = 2;
+            }
+            
+            // Hide chats with sellers beyond the limit
+            if (responseLimit !== -1 && sellerPosition > responseLimit) {
+              return false;
+            }
+          }
+        }
+      }
+      
+      return true; // User's own enquiries (buyer chats)
     } else {
       return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
     }
   });
 
-  // Use preloaded chats from context - always sync when context updates
+  // Use preloaded chats from context
   useEffect(() => {
-    // Always update chats when preloadedChats changes (even if empty)
-    // This ensures we get the latest data from the context
-    if (preloadedChats) {
+    if (preloadedChats && preloadedChats.length > 0) {
       setAllChats(preloadedChats);
+      setLoading(false);
+    } else {
+      setLoading(chatsLoading);
     }
-    // Only set loading to false when context has finished loading
-    setLoading(chatsLoading);
   }, [preloadedChats, chatsLoading]);
-  
-  // Trigger refresh when component mounts to ensure fresh data
+
+  // Fetch enquiry data and response positions for premium filtering
   useEffect(() => {
-    if (user?.uid) {
-      refreshChats();
-    }
-  }, [user?.uid]);
+    if (!user?.uid || allChats.length === 0) return;
+
+    const fetchEnquiryData = async () => {
+      const enquiryMap = new Map<string, any>();
+      const positionMap = new Map<string, number>();
+      const enquiryIds = new Set<string>();
+
+      // Collect all unique enquiry IDs from buyer chats
+      allChats.forEach(chat => {
+        if (chat.isBuyerChat && chat.enquiryId) {
+          enquiryIds.add(chat.enquiryId);
+        }
+      });
+
+      // Fetch enquiry data and responses for each enquiry
+      const promises = Array.from(enquiryIds).map(async (enquiryId) => {
+        try {
+          // Fetch enquiry
+          const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+          if (enquiryDoc.exists()) {
+            enquiryMap.set(enquiryId, enquiryDoc.data());
+          }
+
+          // Fetch approved responses and calculate positions
+          const responsesQuery = query(
+            collection(db, 'sellerSubmissions'),
+            where('enquiryId', '==', enquiryId),
+            where('status', '==', 'approved')
+          );
+          const responsesSnapshot = await getDocs(responsesQuery);
+          
+          const responses: Array<{ sellerId: string; createdAt: any }> = [];
+          responsesSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.sellerId) {
+              responses.push({
+                sellerId: data.sellerId,
+                createdAt: data.createdAt
+              });
+            }
+          });
+
+          // Sort by createdAt (oldest first) to get response order
+          responses.sort((a, b) => {
+            const aTime = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+            const bTime = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+            return aTime - bTime;
+          });
+
+          // Map sellerId to response position (1-indexed)
+          responses.forEach((response, index) => {
+            const threadKey = `${enquiryId}_${response.sellerId}`;
+            positionMap.set(threadKey, index + 1);
+          });
+        } catch (error) {
+          console.error(`Error fetching data for enquiry ${enquiryId}:`, error);
+        }
+      });
+
+      await Promise.all(promises);
+      setEnquiryDataMap(enquiryMap);
+      setResponsePositionMap(positionMap);
+    };
+
+    fetchEnquiryData();
+  }, [user?.uid, allChats]);
+
+  // Reset animation flag when view mode changes
+  useEffect(() => {
+    hasAnimated.current = false;
+  }, [viewMode]);
 
   // Real-time listener for unread message counts - Optimized
   useEffect(() => {
@@ -112,7 +237,7 @@ export default function MyChats() {
         const chatMessagesQuery = query(collection(db, "chatMessages"));
         const snapshot = await getDocs(chatMessagesQuery);
         
-        const threadsWithUnread = new Set<string>();
+        const threadsWithUnread = new Map<string, number>();
         
         // Create a set of existing chat thread keys for quick lookup (exclude disabled/expired chats)
         const existingThreadKeys = new Set<string>();
@@ -123,7 +248,7 @@ export default function MyChats() {
           }
         });
         
-        // Process all messages to find threads with unread messages
+        // Process all messages to count unread messages per thread
         snapshot.docs.forEach((docSnap) => {
           const messageData = docSnap.data();
           const enquiryId = messageData.enquiryId;
@@ -138,12 +263,10 @@ export default function MyChats() {
           // Only process if this thread exists in our chats
           if (!existingThreadKeys.has(threadKey)) return;
           
-          // If already marked as unread, skip further processing
-          if (threadsWithUnread.has(threadKey)) return;
-          
           const readKey = `chat_read_${user.uid}_${threadKey}`;
           const lastViewedTime = localStorage.getItem(readKey);
           
+          let isUnread = false;
           if (lastViewedTime) {
             // Only count messages that arrived after last view
             const messageTime = messageData.timestamp?.toDate 
@@ -152,26 +275,58 @@ export default function MyChats() {
             const viewedTime = parseInt(lastViewedTime, 10);
             
             if (messageTime > viewedTime) {
-              threadsWithUnread.add(threadKey);
+              isUnread = true;
             }
           } else {
             // Never viewed - all messages are unread
-            threadsWithUnread.add(threadKey);
+            isUnread = true;
+          }
+          
+          if (isUnread) {
+            const currentCount = threadsWithUnread.get(threadKey) || 0;
+            threadsWithUnread.set(threadKey, currentCount + 1);
+          }
+        });
+        
+        // Count "ready to chat" items (approved responses with no messages yet)
+        allChats.forEach(chat => {
+          if (!chat.enquiryId || !chat.sellerId || chat.isDisabled) return;
+          
+          const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
+          
+          // Skip if already has unread messages
+          if (threadsWithUnread.has(threadKey)) return;
+          
+          // Check if this is a "ready to chat" item (no messages yet)
+          const hasMessages = snapshot.docs.some(msgDoc => {
+            const msgData = msgDoc.data();
+            return msgData.enquiryId === chat.enquiryId && msgData.sellerId === chat.sellerId;
+          });
+          
+          if (!hasMessages) {
+            // Check if user has viewed this chat
+            const readKey = `chat_read_${user.uid}_${threadKey}`;
+            const lastViewedTime = localStorage.getItem(readKey);
+            
+            // If never viewed, count as 1 new chat
+            if (!lastViewedTime) {
+              threadsWithUnread.set(threadKey, 1);
+            }
           }
         });
         
         if (!isMounted) return;
         
-        // Update chats with unread status (1 if has unread, 0 if not)
+        // Update chats with actual unread message counts
         setAllChats(prevChats => {
           const updated = prevChats.map(chat => {
             const threadKey = chat.enquiryId && chat.sellerId 
               ? `${chat.enquiryId}_${chat.sellerId}` 
               : chat.id;
-            const hasUnread = threadsWithUnread.has(threadKey);
+            const unreadCount = threadsWithUnread.get(threadKey) || 0;
             return {
               ...chat,
-              unreadCount: hasUnread ? 1 : 0
+              unreadCount: unreadCount
             };
           });
           
@@ -210,10 +365,10 @@ export default function MyChats() {
       }
     );
 
-    // Listen for chat viewed events
-    const handleChatViewed = () => {
-      debouncedUpdate();
-    };
+  // Listen for chat viewed events - update immediately when chat is viewed
+  const handleChatViewed = () => {
+    updateUnreadCounts(); // Update immediately (not debounced) when chat is viewed
+  };
     
     window.addEventListener('chatViewed', handleChatViewed);
 
@@ -269,62 +424,8 @@ export default function MyChats() {
     }));
   };
 
-  // Delete warning message (only after 24 hours)
-  const deleteWarning = async (warning: ChatThread) => {
-    if (!user?.uid) return;
-    
-    try {
-      // Find and delete the admin message from Firestore
-      const adminMessagesQuery = query(
-        collection(db, 'chatMessages'),
-        where('recipientId', '==', user.uid),
-        where('isAdminMessage', '==', true),
-        where('adminMessageType', '==', 'warning')
-      );
-      const snapshot = await getDocs(adminMessagesQuery);
-      
-      const deletePromises = snapshot.docs.map(async (docSnap) => {
-        const messageData = docSnap.data();
-        // Match by message content or timestamp to find the right warning
-        const messageTime = messageData.timestamp?.toDate ? messageData.timestamp.toDate() : new Date(messageData.timestamp);
-        const warningTime = warning.updatedAt?.toDate ? warning.updatedAt.toDate() : new Date(warning.updatedAt);
-        
-        // Check if timestamps match (within 1 second tolerance)
-        if (Math.abs(messageTime.getTime() - warningTime.getTime()) < 1000) {
-          await deleteDoc(docSnap.ref);
-        }
-      });
-      
-      await Promise.all(deletePromises);
-      
-      // Remove from local state
-      setAllChats(prevChats => prevChats.filter(c => c.id !== warning.id));
-      
-      // Refresh chats
-      if (refreshChats) {
-        refreshChats();
-      }
-    } catch (error) {
-      console.error('Error deleting warning:', error);
-      alert('Failed to delete warning. Please try again.');
-    }
-  };
-
   const openChat = (chat: ChatThread) => {
-    if (chat.isDisabled) return;
-    
-    // Handle admin chats - navigate to admin chat page
-    if (chat.isAdminChat) {
-      // Mark chat as read when opening
-      markChatAsRead(chat);
-      // Navigate to admin chat page (userId is the current user's ID for admin chat)
-      if (user?.uid) {
-        navigate(`/admin-chat/${user.uid}`);
-      }
-      return;
-    }
-    
-    if (!chat.enquiryId) return;
+    if (chat.isDisabled || !chat.enquiryId) return;
     
     // Mark chat as read when opening
     markChatAsRead(chat);
@@ -596,7 +697,7 @@ export default function MyChats() {
                               }}
                             />
                             
-                            {/* Unread Badge - Buyer */}
+                            {/* Unread Badge - Buyer (Right side) */}
                             {viewMode === 'buyer' && buyerUnreadCount > 0 && (
                             <motion.span 
                                 className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
@@ -614,10 +715,10 @@ export default function MyChats() {
                             </motion.span>
                           )}
                             
-                            {/* Unread Badge - Seller */}
+                            {/* Unread Badge - Seller (Left side) */}
                             {viewMode === 'seller' && sellerUnreadCount > 0 && (
                             <motion.span 
-                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
+                                className="absolute -top-1 -left-1 sm:-top-1.5 sm:-left-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
                               animate={{
                                   scale: [1, 1.3, 1],
                                   rotate: [0, 15, -15, 0]
@@ -681,148 +782,6 @@ export default function MyChats() {
 
         {/* Content - Inside Container */}
         <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Pinned Warning Tile - Standout Message (Red Styled) */}
-          {adminWarnings.length > 0 && (
-            <div className="mb-3 sm:mb-4">
-              {adminWarnings.map((warning) => {
-                const warningMessage = typeof warning.lastMessage === 'string' 
-                  ? warning.lastMessage 
-                  : warning.lastMessage?.text || '';
-                const warningTime = warning.updatedAt?.toDate ? warning.updatedAt.toDate() : new Date(warning.updatedAt);
-                const now = new Date();
-                const hoursSinceWarning = (now.getTime() - warningTime.getTime()) / (1000 * 60 * 60);
-                const canDelete = hoursSinceWarning >= 24; // Can delete after 24 hours
-                
-                return (
-                  <motion.div
-                    key={warning.id}
-                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="mb-2 sm:mb-3"
-                  >
-                    <Card
-                      className="border-2 sm:border-3 border-red-900 bg-gradient-to-br from-red-900 via-red-800 to-red-950 shadow-[0_6px_0_0_rgba(127,29,29,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] relative overflow-hidden cursor-pointer hover:shadow-[0_8px_0_0_rgba(127,29,29,0.5)] transition-all duration-200"
-                      style={{ backgroundColor: '#800020' }}
-                      onClick={() => {
-                        markChatAsRead(warning);
-                        if (user?.uid) {
-                          navigate(`/admin-chat/${user.uid}`);
-                        }
-                      }}
-                    >
-                      {/* Animated pulsing border effect */}
-                      <motion.div
-                        className="absolute inset-0 border-2 sm:border-3 border-red-700 rounded-lg"
-                        animate={{
-                          opacity: [0.5, 0.9, 0.5],
-                          scale: [1, 1.01, 1],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                      
-                      {/* Shimmer effect */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                        animate={{
-                          x: ['-100%', '200%'],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "linear"
-                        }}
-                      />
-                      
-                      <CardContent className="p-3 sm:p-4 relative z-10">
-                        <div className="flex items-start gap-2.5 sm:gap-3">
-                          {/* Icon - Left aligned */}
-                          <motion.div 
-                            className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center shadow-lg border-2 border-white/30 backdrop-blur-sm mt-0.5"
-                            animate={{
-                              scale: [1, 1.08, 1],
-                              rotate: [0, 3, -3, 0],
-                            }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          >
-                            <AlertTriangle className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
-                          </motion.div>
-                          
-                          {/* Main Content - Center aligned */}
-                          <div className="flex-1 min-w-0 flex flex-col">
-                            {/* Header Row - Title and Badge */}
-                            <div className="flex items-center justify-between mb-1.5 sm:mb-2 gap-2">
-                              <h3 className="text-xs sm:text-base font-black text-white drop-shadow-lg leading-tight flex-1">
-                                Warning from Admin
-                              </h3>
-                              <Badge className="bg-white/20 text-white border border-white/30 text-[8px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 sm:py-1 font-bold shadow-md backdrop-blur-sm flex-shrink-0">
-                                Important
-                              </Badge>
-                            </div>
-                            
-                            {/* Message Text - Full width, properly aligned */}
-                            <p className="text-[11px] sm:text-sm text-white mb-2 sm:mb-2.5 leading-relaxed font-semibold drop-shadow-md pr-1">
-                              {warningMessage.replace('⚠️ WARNING FROM ADMIN: ', '')}
-                            </p>
-                            
-                            {/* Footer Row - Timestamp and Countdown */}
-                            <div className="flex items-center gap-2 text-[9px] sm:text-[11px] text-white/90 font-medium">
-                              <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
-                              <span className="flex-shrink-0">
-                                {warningTime.toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </span>
-                              {!canDelete && (
-                                <span className="text-white/80 flex-shrink-0">
-                                  • {Math.ceil(24 - hoursSinceWarning)}h left
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {/* Close Button - Right aligned */}
-                          <div className="flex-shrink-0 pt-0.5">
-                            {canDelete ? (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  if (window.confirm('Are you sure you want to delete this warning?')) {
-                                    deleteWarning(warning);
-                                  }
-                                }}
-                                className="text-white hover:text-white hover:bg-white/20 h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all border border-white/30 rounded-full flex items-center justify-center"
-                              >
-                                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                              </Button>
-                            ) : (
-                              <div className="h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center">
-                                <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white/30 border-2 border-white/50" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-          
           {loading ? (
             <p className="text-sm text-gray-500">Loading chats…</p>
           ) : chats.length === 0 ? (
@@ -840,27 +799,60 @@ export default function MyChats() {
               </div>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-              {chats.map((chat, index) => {
+            <div className="space-y-4 sm:space-y-6">
+              {/* Pinned Admin Warning Chats */}
+              {adminWarningChats.length > 0 && (
+                <div className="space-y-2 sm:space-y-3">
+                  {adminWarningChats.map((chat, adminIndex) => {
+                    const warningMessage = typeof chat.lastMessage === 'string' 
+                      ? chat.lastMessage 
+                      : (chat.lastMessage?.text || '');
+                    
+                    return (
+                      <Card
+                        key={chat.id}
+                        className="border-[0.5px] border-[#5C0014] bg-[#5C0014] rounded-lg sm:rounded-xl shadow-[0_4px_0_0_rgba(92,0,20,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(92,0,20,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden mx-2 sm:mx-0"
+                      >
+                        <div className="p-3 sm:p-4 lg:p-5 pr-8 sm:pr-10 relative">
+                          <p className="text-[10px] sm:text-xs text-white leading-relaxed">
+                            {warningMessage}
+                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleDismissWarning(chat.id);
+                            }}
+                            className="absolute top-2 right-2 sm:top-3 sm:right-3 text-white hover:text-gray-200 active:text-gray-300 transition-colors p-1.5 sm:p-1 min-w-[24px] min-h-[24px] flex items-center justify-center touch-manipulation"
+                            aria-label="Close warning"
+                          >
+                            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </button>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {/* Regular Chats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+                {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
                 
-                // Create a unique state key for this view mode and chats combination
-                const currentStateKey = `${viewMode}_${chats.length}_${chats.map(c => c.id).join('_')}`;
-                const hasAnimatedThisState = animatedStateRef.current === currentStateKey;
-                
-                // Only animate if we haven't animated this exact state before
-                const shouldAnimate = !hasAnimatedThisState && chats.length > 0;
+                // Only animate on first render of this view
+                const shouldAnimate = !hasAnimated.current;
                 
                 return (
                   <motion.div
                     key={chat.id}
                     initial={shouldAnimate ? { 
                       opacity: 0, 
-                      y: 30, 
-                      scale: 0.9,
-                      rotateX: -8,
-                      rotateY: 5
+                      y: 50, 
+                      scale: 0.8,
+                      rotateX: -15,
+                      rotateY: 10
                     } : {
                       opacity: 1,
                       y: 0,
@@ -877,31 +869,28 @@ export default function MyChats() {
                     }}
                     transition={shouldAnimate ? { 
                       type: "spring",
-                      stiffness: 60,
-                      damping: 25,
-                      mass: 0.7,
-                      delay: index * 0.04,
-                      duration: 0.9,
-                      ease: [0.22, 1, 0.36, 1]
+                      stiffness: 100,
+                      damping: 15,
+                      delay: index * 0.08,
+                      duration: 0.6
                     } : {
                       duration: 0
                     }}
                     onAnimationComplete={() => {
-                      // Mark this state as animated after the last card animates
+                      // Mark as animated after first animation completes
                       if (shouldAnimate && index === chats.length - 1) {
-                        animatedStateRef.current = currentStateKey;
+                        hasAnimated.current = true;
                       }
                     }}
                     whileHover={!isDisabled ? { 
-                      y: -6,
-                      scale: 1.03,
-                      rotateY: 3,
-                      rotateX: 1,
+                      y: -8,
+                      scale: 1.05,
+                      rotateY: 5,
+                      rotateX: 2,
                       transition: { 
                         type: "spring",
-                        stiffness: 250,
-                        damping: 25,
-                        mass: 0.8
+                        stiffness: 300,
+                        damping: 20
                       }
                     } : {}}
                     whileTap={!isDisabled ? { 
@@ -912,25 +901,13 @@ export default function MyChats() {
                     style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-[0.5px] ${
-                        chat.isAdminChat 
-                          ? 'border-red-500 bg-gradient-to-br from-red-50 via-red-50 to-red-100' 
-                          : 'border-black bg-gradient-to-br from-white via-white to-gray-50'
-                      } rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
                         isDisabled 
                           ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
                           : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
                       }`}
                       onClick={() => !isDisabled && openChat(chat)}
                     >
-                      {/* Admin Message Badge */}
-                      {chat.isAdminChat && (
-                        <div className="absolute top-2 right-2 z-20">
-                          <Badge className="bg-red-600 text-white text-[9px] px-2 py-0.5 animate-pulse">
-                            Admin
-                          </Badge>
-                        </div>
-                      )}
                       {/* Physical button depth effect */}
                       {!isDisabled && (
                         <>
@@ -1030,11 +1007,7 @@ export default function MyChats() {
                           
                           {!isDisabled && (chat.unreadCount || 0) > 0 && (
                             <motion.span 
-                              className={`absolute -top-1 -right-1 sm:top-0 sm:right-0 ${
-                                chat.isAdminChat 
-                                  ? 'bg-gradient-to-br from-red-600 to-red-700' 
-                                  : 'bg-gradient-to-br from-red-500 to-red-600'
-                              } text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20`}
+                              className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20 px-1"
                               animate={{
                                 scale: [1, 1.3, 1],
                                 rotate: [0, 10, -10, 0],
@@ -1050,7 +1023,7 @@ export default function MyChats() {
                                 transition: { duration: 0.3 }
                               }}
                             >
-                              {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
+                              {chat.unreadCount || 0}
                             </motion.span>
                           )}
                         </div>
@@ -1244,6 +1217,7 @@ export default function MyChats() {
                   </motion.div>
                 );
               })}
+              </div>
             </div>
           )}
           
@@ -1287,20 +1261,3 @@ export default function MyChats() {
     </Layout>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

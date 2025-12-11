@@ -21,6 +21,8 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
 import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import PaymentPlanSelector from "@/components/PaymentPlanSelector";
+import { PAYMENT_PLANS } from "@/config/paymentPlans";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,6 +130,9 @@ const EnquiryResponses = () => {
   const [uploadingFiles, setUploadingFiles] = useState<{[key: string]: boolean}>({});
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [showEndChatConfirm, setShowEndChatConfirm] = useState(false);
   const [showBlockUserConfirm, setShowBlockUserConfirm] = useState(false);
   const [showCloseDealConfirm, setShowCloseDealConfirm] = useState(false);
@@ -206,6 +211,8 @@ const EnquiryResponses = () => {
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);
+          // Set current plan for payment selector
+          setCurrentPlan(enquiryData.selectedPlanId || 'free');
           console.log('EnquiryResponses: Fetched enquiry:', enquiryData);
         } else {
           // Enquiry doesn't exist - set loading to false so error message can show
@@ -229,13 +236,13 @@ const EnquiryResponses = () => {
           }
         });
         
-        // Filter approved responses and sort
+        // Filter approved responses and sort (oldest first to keep positions stable)
         const approvedResponses = responsesData
           .filter(response => response.status === 'approved')
           .sort((a, b) => {
             const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
             const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-            return dateB.getTime() - dateA.getTime();
+            return dateA.getTime() - dateB.getTime(); // Ascending order (oldest first)
           });
         
         console.log('EnquiryResponses: Fetched approved responses:', approvedResponses);
@@ -247,6 +254,13 @@ const EnquiryResponses = () => {
           if (targetResponse) {
             setSelectedResponse(targetResponse);
             console.log('EnquiryResponses: Auto-selected seller from URL:', getSafeLogData({ sellerName: targetResponse.sellerName }));
+          }
+        } else if (user && enquiryData && user.uid !== enquiryData.userId) {
+          // If user is a seller (not the buyer), auto-select their own response
+          const sellerResponse = approvedResponses.find(response => response.sellerId === user.uid);
+          if (sellerResponse && !selectedResponse) {
+            setSelectedResponse(sellerResponse);
+            console.log('EnquiryResponses: Auto-selected seller\'s own response');
           }
         }
         
@@ -276,7 +290,20 @@ const EnquiryResponses = () => {
           console.log('EnquiryResponses: User not authorized to chat with this seller');
         }
       }
+    } else if (user && enquiry && user.uid !== enquiry.userId && approvedResponses.length > 0) {
+      // If user is a seller (not the buyer) and no response is selected, auto-select their own response
+      // Check if response is already selected to avoid overriding buyer's manual selection
+      const currentSelectedSellerId = selectedResponse?.sellerId;
+      if (!currentSelectedSellerId || currentSelectedSellerId !== user.uid) {
+        const sellerResponse = approvedResponses.find(response => response.sellerId === user.uid);
+        if (sellerResponse) {
+          setSelectedResponse(sellerResponse);
+          console.log('EnquiryResponses: Auto-selected seller\'s own response');
+        }
+      }
     }
+    // Note: Removed selectedResponse from dependencies to prevent interference with buyer's manual selection
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sellerIdFromUrl, approvedResponses, user, enquiry]);
 
   // Load calls enabled state from Firestore
@@ -2399,25 +2426,13 @@ const EnquiryResponses = () => {
   const canUserChat = (response: SellerSubmission) => {
     if (!enquiry || !user) return false;
     
-    // For non-premium enquiries, only allow chat with first 2 responses
-    if (!enquiry.isPremium && !usageStats.premiumSubscription) {
-      const responseIndex = approvedResponses.findIndex(r => r.id === response.id);
-      if (responseIndex >= 2) return false;
-    }
-    
-    // Buyer can chat with any allowed seller
+    // Buyer can chat with any seller (visibility is controlled by getVisibleResponses, not chat)
     if (user.uid === enquiry.userId) return true;
     
     // Seller can only chat if they're the response owner
     if (user.uid !== response.sellerId) return false;
     
-    // For non-premium enquiries, only first 2 sellers can chat
-    if (!enquiry.isPremium && !usageStats.premiumSubscription) {
-      const userIndex = approvedResponses.findIndex(r => r.sellerId === user.uid);
-      return userIndex < 2; // 0-indexed, so 0 and 1 are first 2
-    }
-    
-    // For premium enquiries, all sellers can chat
+    // All sellers can chat with buyer (no position or premium restrictions)
     return true;
   };
 
@@ -2426,17 +2441,58 @@ const EnquiryResponses = () => {
       return;
     }
     
+    // Always allow buyers to switch responses
+    // For sellers, they can only select their own response (but this is already filtered in getVisibleResponses)
     setSelectedResponse(response);
+    console.log('EnquiryResponses: Response clicked:', response.id, 'Seller:', response.sellerId);
   };
 
   const handlePremiumUpgrade = () => {
-    if (!enquiryId) return;
-    purchasePremiumEnquiry(enquiryId);
-    setShowPremiumModal(false);
-    toast({
-      title: "Premium Unlocked! 🎉",
-      description: "You can now view all responses for this enquiry",
-    });
+    if (!enquiryId || !enquiry) return;
+    // Always use selectedPlanId if available, otherwise default to 'free'
+    setCurrentPlan(enquiry.selectedPlanId || 'free');
+    setShowPaymentSelector(true);
+  };
+
+
+  const handlePlanSelect = async (planId: string, price: number) => {
+    if (!enquiryId || !enquiry || !user) return;
+
+    try {
+      // Payment was already processed via Razorpay in PaymentPlanSelector
+      // Just update the enquiry to reflect the new plan
+      const plan = PAYMENT_PLANS.find(p => p.id === planId);
+      if (!plan) throw new Error('Plan not found');
+      
+      const enquiryRef = doc(db, 'enquiries', enquiryId);
+      await updateDoc(enquiryRef, {
+        selectedPlanId: planId,
+        selectedPlanPrice: price,
+        isPremium: price > 0
+      });
+
+      toast({
+        title: `${plan.name} Plan Activated! 🎉`,
+        description: `Your enquiry now has ${plan.responses === -1 ? 'unlimited' : plan.responses} responses!`,
+      });
+
+      setShowPaymentSelector(false);
+      
+      // Show loading and redirect after 500ms
+      setIsRedirecting(true);
+      setTimeout(() => {
+        navigate(`/enquiry/${enquiryId}/responses`);
+        window.location.reload();
+      }, 500);
+    } catch (error) {
+      console.error('Error updating plan:', error);
+      toast({
+        title: "Update Failed",
+        description: "Payment was successful but there was an error updating the enquiry. Please refresh the page.",
+        variant: "destructive"
+      });
+      setIsRedirecting(false);
+    }
   };
 
   const handleMonthlyUpgrade = () => {
@@ -2537,7 +2593,7 @@ const EnquiryResponses = () => {
               <div className="relative bg-black border border-black rounded-xl sm:rounded-2xl lg:rounded-3xl p-5 sm:p-8 lg:p-10 overflow-hidden">
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
-                  <div className="flex justify-center items-center gap-3 sm:gap-4 lg:gap-5">
+                  <div className="flex flex-col items-center gap-2 sm:gap-2.5 lg:gap-3">
                     <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter drop-shadow-2xl inline-flex items-center gap-2">
                       <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                       Chat.
@@ -2686,11 +2742,11 @@ const EnquiryResponses = () => {
               </div>
               
               {/* Chat Heading in Black Header */}
-              <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 gap-2 sm:gap-2.5">
+                <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
                   <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                   Chat.
-                  </h1>
+                </h1>
               </div>
               
             {/* Content Card - Black Background */}
@@ -2698,30 +2754,30 @@ const EnquiryResponses = () => {
               {/* Content Card - Black Background */}
               <div className="bg-black border border-black rounded-lg p-3 sm:p-4 lg:p-5">
                 <div className="space-y-2.5 sm:space-y-3">
-                  {/* Title Row with Response Count Badge - Mobile Optimized */}
+                  {/* Title Row - Mobile Optimized */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
                     <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1 text-center">
                         {enquiry.title}
                       </h3>
-                      {/* Only show response count to enquiry owner */}
-                      {user && user.uid === enquiry.userId && (
-                      <div className="flex items-center justify-center border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0">
-                        <span className="text-xs sm:text-base font-black text-white">{approvedResponses.length}</span>
-                        </div>
-                      )}
                     </div>
                     
                   {/* Category and Type Row - Centered Badges */}
-                  <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-center">
-                    <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1">
-                      <Tag className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
-                      <span className="text-[7px] sm:text-[9px] text-white font-medium capitalize">{enquiry.category}</span>
-                      </div>
-                      {enquiry.isUrgent && (
-                      <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600">
-                        <Sparkles className="h-2.5 w-2.5 sm:h-3.5 w-3.5 text-white flex-shrink-0" />
-                        <span className="text-[7px] sm:text-[9px] text-white font-medium">Urgent</span>
+                  <div className="flex flex-col items-center gap-2 sm:gap-2.5">
+                    <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-center">
+                      <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1">
+                        <Tag className="h-2 w-2 sm:h-2.5 w-2.5 text-white flex-shrink-0" />
+                        <span className="text-[6px] sm:text-[7px] text-white font-medium capitalize">{enquiry.category}</span>
                         </div>
+                        {enquiry.isUrgent && (
+                        <div className="inline-flex items-center gap-1 border-2 border-black rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600">
+                          <Sparkles className="h-2 w-2 sm:h-2.5 w-2.5 text-white flex-shrink-0" />
+                          <span className="text-[6px] sm:text-[7px] text-white font-medium">Urgent</span>
+                          </div>
+                        )}
+                      </div>
+                      {/* Only show response count to enquiry owner - under category */}
+                      {user && user.uid === enquiry.userId && (
+                        <span className="text-[10px] sm:text-[12px] text-white font-medium">Total Responses - {approvedResponses.length}</span>
                       )}
                     </div>
                     
@@ -2730,7 +2786,7 @@ const EnquiryResponses = () => {
                     {/* Budget Section */}
                     <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0">
                       <div className="text-left min-w-0 flex-1">
-                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Budget</div>
+                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Your Budget</div>
                         <div className="text-[10px] sm:text-sm font-bold text-white truncate">{formatBudget(enquiry.budget)}</div>
                         </div>
                       </div>
@@ -2778,18 +2834,14 @@ const EnquiryResponses = () => {
                     return (
                     <div key={response.id}>
                     <div
-                      className={`cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-white relative overflow-visible group/card ${
+                      className={`cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-green-950 relative overflow-visible group/card ${
                         isSelected ? 'ring-4 ring-black ring-offset-2' : ''
                       }`}
                       style={{ border: isSelected ? '2px solid black' : '1.5px solid black' }}
                       onClick={() => handleResponseClick(response)}
                     >
                       <div
-                        className={`w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl ${
-                          isSelected
-                            ? 'bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                            : 'bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]'
-                        }`}
+                        className="w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl bg-green-950 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98]"
                         style={{ border: 'none' }}
                     >
                       {/* Physical button depth effect */}
@@ -2802,7 +2854,7 @@ const EnquiryResponses = () => {
                       <CardContent className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
                             {user?.uid === enquiry?.userId && (
                           <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 lg:top-3 lg:left-3 z-20">
-                            <div className="border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-[8px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl whitespace-nowrap flex-shrink-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/responsebadge">
+                            <div className="border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[8px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl whitespace-nowrap flex-shrink-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/responsebadge">
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responsebadge:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                 <span className="relative z-10">Response #{index + 1}</span>
@@ -2810,7 +2862,7 @@ const EnquiryResponses = () => {
                           </div>
                         )}
                         <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
-                          <h4 className="font-bold text-black line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
+                          <h4 className="font-bold text-white line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
                           {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
                             <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
                                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
@@ -2818,9 +2870,9 @@ const EnquiryResponses = () => {
                               </div>
                             )}
                           </div>
-                        <p className="text-black font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
-                        <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-black font-medium">
-                          <span className="font-semibold text-blue-600">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
+                        <p className="text-white font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
+                        <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-white font-medium">
+                          <span className="font-semibold text-white">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                         </div>
                       </CardContent>
                       </div>
@@ -2881,6 +2933,15 @@ const EnquiryResponses = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                             <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat</h2>
+                            {/* Selected Response Count - Only show for buyers */}
+                            {selectedResponse && user && user.uid === enquiry?.userId && (() => {
+                              const visibleResponses = getVisibleResponses();
+                              const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
+                              const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
+                              return responseNumber ? (
+                                <span className="text-xs sm:text-sm text-white font-medium">#Response {responseNumber}</span>
+                              ) : null;
+                            })()}
                             <span className="text-xs sm:text-sm text-white font-medium">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
@@ -3130,24 +3191,20 @@ const EnquiryResponses = () => {
                     </div>
                     
                     {/* Enquiry Summary - Mobile Responsive */}
-                    <div className="mt-4 sm:mt-5 lg:mt-6 pt-2 sm:pt-2.5 lg:pt-3 border-t border-black bg-green-950 -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4" style={{ borderTopWidth: '0.5px' }}>
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xs sm:text-sm lg:text-base font-bold text-white truncate">
-                            {enquiry.title && enquiry.title.length > 10 ? enquiry.title.substring(0, 10) + '..' : enquiry.title}
-                            {enquiry.isUrgent && (
-                              <Badge variant="destructive" className="ml-1.5 sm:ml-2 lg:ml-2.5 text-xs sm:text-sm h-4 sm:h-5 lg:h-5 px-1.5 sm:px-2">
-                                Urgent
-                              </Badge>
-                            )}
-                          </h3>
-                          <p className="hidden sm:block text-xs sm:text-sm lg:text-base text-white font-medium truncate mt-0.5">{enquiry.description}</p>
-                        </div>
-                        <div className="text-right ml-2 sm:ml-3 lg:ml-4 flex-shrink-0">
-                          <div className="text-xs sm:text-sm lg:text-base font-semibold text-white">Your offer - {selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}</div>
+                    {selectedResponse && (
+                      <div className="mt-4 sm:mt-5 lg:mt-6 pt-2 sm:pt-2.5 lg:pt-3 border-t border-black bg-green-950 -mx-2.5 sm:-mx-3 lg:-mx-4 px-2.5 sm:px-3 lg:px-4 -mb-2.5 sm:-mb-3 lg:-mb-4 pb-2.5 sm:pb-3 lg:pb-4" style={{ borderTopWidth: '0.5px' }}>
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="text-center flex-shrink-0">
+                            <div className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
+                              {user && user.uid === enquiry?.userId 
+                                ? `Their offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
+                                : `Your offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
+                              }
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </CardHeader>
 
 
@@ -3952,8 +4009,8 @@ const EnquiryResponses = () => {
                   </div>
                 </Card>
 
-                {/* Show chat restriction message only when user can't chat */}
-                {!canUserChat(selectedResponse) && (
+                {/* Only show restriction if seller is trying to chat with someone else's response */}
+                {selectedResponse && user?.uid !== selectedResponse.sellerId && user?.uid !== enquiry?.userId && (
                   <Card className="border border-slate-200 shadow-sm h-[500px] lg:h-[600px] flex items-center justify-center bg-amber-50/30">
                     <div className="text-center">
                       <div className="w-12 h-12 lg:w-16 lg:h-16 bg-amber-200 rounded-full flex items-center justify-center mx-auto mb-2 lg:mb-3">
@@ -3961,10 +4018,7 @@ const EnquiryResponses = () => {
                       </div>
                       <h3 className="text-sm lg:text-base font-medium text-amber-800 mb-1">Chat Not Available</h3>
                       <p className="text-amber-700 text-xs lg:text-sm px-4">
-                        {enquiry?.isPremium 
-                          ? "You can only chat with your own response" 
-                          : "Only the first 2 sellers can chat with the buyer for non-premium enquiries"
-                        }
+                        You can only chat with your own response
                       </p>
                     </div>
                   </Card>
@@ -3993,14 +4047,30 @@ const EnquiryResponses = () => {
           </div>
         </div>
       </div>
-      {user && enquiry && user.uid === enquiry.userId && enquiry.isPremium !== true && approvedResponses.length > 2 && (
-        <div className="my-4 text-center">
-          <p className="text-amber-700 text-sm mb-2">Upgrade to Premium to view all {approvedResponses.length} responses.</p>
-          <Button variant="default" onClick={handlePremiumUpgrade} className="bg-blue-600 hover:bg-blue-700 text-white">
-            Upgrade to Premium (₹99+)
-          </Button>
-        </div>
-      )}
+      {user && enquiry && user.uid === enquiry.userId && (() => {
+        const selectedPlanId = enquiry.selectedPlanId || 'free';
+        const plan = PAYMENT_PLANS.find(p => p.id === selectedPlanId);
+        const responseLimit = plan?.responses || 2;
+        const hasMoreResponses = approvedResponses.length > responseLimit;
+        const isUnlimited = responseLimit === -1;
+        
+        return !isUnlimited && hasMoreResponses && (
+          <div className="my-4 text-center">
+            <p className="text-black text-[10px] sm:text-xs font-bold mb-2">Upgrade to Premium to view all responses.</p>
+            <Button 
+              variant="default" 
+              onClick={handlePremiumUpgrade} 
+              className="bg-blue-600 hover:bg-blue-700 text-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/upgrade font-bold px-4 py-2"
+            >
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+              <span className="relative z-10">Upgrade to Premium</span>
+            </Button>
+          </div>
+        );
+      })()}
 
       {/* Additional Tile - Hidden */}
       {/* <div className="mt-6">
@@ -4316,6 +4386,50 @@ const EnquiryResponses = () => {
             </Card>
           </div>
         </>
+      )}
+
+      {/* Payment Plan Selector Modal */}
+      {showPaymentSelector && enquiry && (
+        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
+          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+            
+            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
+              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
+                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
+                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
+                </div>
+                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{enquiry.title}"</span>
+              </DialogTitle>
+              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
+                Upgrade to unlock more curated, verified sellers.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
+              <PaymentPlanSelector
+                currentPlanId={currentPlan}
+                enquiryId={enquiryId || ''}
+                userId={user?.uid || ''}
+                onPlanSelect={handlePlanSelect}
+                isUpgrade={true}
+                enquiryCreatedAt={enquiry.createdAt}
+                className="max-w-4xl mx-auto w-full"
+                user={user}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Loading overlay during payment redirect */}
+      {isRedirecting && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl max-w-md w-[90%] mx-auto">
+            <LoadingAnimation message="Payment successful! Redirecting..." />
+          </div>
+        </div>
       )}
     </Layout>
   );

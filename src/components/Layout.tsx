@@ -87,7 +87,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const chatMessagesQuery = query(collection(db, "chatMessages"));
           const snapshot = await getDocs(chatMessagesQuery);
           
-          const threadsWithUnread = new Set<string>();
+          const threadsWithUnread = new Map<string, number>(); // Map<threadKey, unreadCount>
           
           // Process only messages from user's threads
           snapshot.docs.forEach((docSnap) => {
@@ -103,9 +103,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
               // Admin message for this user
               const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
               
-              // Check if already marked as unread
-              if (threadsWithUnread.has(adminThreadKey)) return;
-              
               const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
               const lastViewedTime = localStorage.getItem(readKey);
               
@@ -116,11 +113,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
               if (lastViewedTime) {
                 const viewedTime = parseInt(lastViewedTime, 10);
                 if (messageTime > viewedTime) {
-                  threadsWithUnread.add(adminThreadKey);
+                  // Count admin messages
+                  const currentCount = threadsWithUnread.get(adminThreadKey) || 0;
+                  threadsWithUnread.set(adminThreadKey, currentCount + 1);
                 }
               } else {
-                // Never viewed - mark as unread
-                threadsWithUnread.add(adminThreadKey);
+                // Never viewed - count as unread
+                const currentCount = threadsWithUnread.get(adminThreadKey) || 0;
+                threadsWithUnread.set(adminThreadKey, currentCount + 1);
               }
               return; // Processed admin message, skip regular message logic
             }
@@ -134,9 +134,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
             // Only check threads we know the user is involved in
             if (!threadKeys.has(threadKey)) return;
             
-            // Check if already marked as unread
-            if (threadsWithUnread.has(threadKey)) return;
-            
             const readKey = `chat_read_${user.uid}_${threadKey}`;
             const lastViewedTime = localStorage.getItem(readKey);
             
@@ -147,11 +144,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
             if (lastViewedTime) {
               const viewedTime = parseInt(lastViewedTime, 10);
               if (messageTime > viewedTime) {
-                threadsWithUnread.add(threadKey);
+                // Count actual messages instead of just marking thread
+                const currentCount = threadsWithUnread.get(threadKey) || 0;
+                threadsWithUnread.set(threadKey, currentCount + 1);
               }
             } else {
-              // Never viewed - mark as unread
-              threadsWithUnread.add(threadKey);
+              // Never viewed - count all messages as unread
+              const currentCount = threadsWithUnread.get(threadKey) || 0;
+              threadsWithUnread.set(threadKey, currentCount + 1);
             }
           });
           
@@ -203,9 +203,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       const readKey = `chat_read_${user.uid}_${threadKey}`;
                       const lastViewedTime = localStorage.getItem(readKey);
                       
-                      // If never viewed, count it as a new chat
+                      // If never viewed, count it as 1 new chat
                       if (!lastViewedTime) {
-                        threadsWithUnread.add(threadKey);
+                        threadsWithUnread.set(threadKey, 1);
                       }
                     }
                   }
@@ -244,7 +244,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   const lastViewedTime = localStorage.getItem(readKey);
                   
                   if (!lastViewedTime) {
-                    threadsWithUnread.add(threadKey);
+                    // Count as 1 new chat (ready to chat)
+                    threadsWithUnread.set(threadKey, 1);
                   }
                 }
               }
@@ -254,7 +255,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
           }
           
           if (isMounted) {
-            setUnreadChatCount(threadsWithUnread.size);
+            // Sum all unread message counts + new chats
+            const totalUnreadMessages = Array.from(threadsWithUnread.values()).reduce((sum, count) => sum + count, 0);
+            setUnreadChatCount(totalUnreadMessages);
           }
           return; // Exit early - we used preloaded data!
         }
@@ -264,8 +267,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
         const chatMessagesQuery = query(collection(db, "chatMessages"));
         const snapshot = await getDocs(chatMessagesQuery);
         
-        // First pass: Filter messages and collect unique enquiry IDs
-        const messageThreads = new Map<string, { enquiryId: string; sellerId: string; timestamp: number }>();
+        // First pass: Count unread messages per thread
+        const messageThreads = new Map<string, { enquiryId: string; sellerId: string; unreadCount: number }>();
         const enquiryIds = new Set<string>();
         
         snapshot.docs.forEach((docSnap) => {
@@ -278,7 +281,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           
           // Handle admin messages (warnings, suspensions)
           if (isAdminMessage && recipientId === user.uid) {
-            // Admin message for this user - add to count directly
+            // Admin message for this user
             const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
             const messageTime = messageData.timestamp?.toDate 
               ? messageData.timestamp.toDate().getTime() 
@@ -288,18 +291,23 @@ export default function Layout({ children, showNavigation = true }: { children: 
             const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
             const lastViewedTime = localStorage.getItem(readKey);
             
+            let isUnread = false;
             if (lastViewedTime) {
               const viewedTime = parseInt(lastViewedTime, 10);
-              if (messageTime <= viewedTime) return; // Already viewed
+              if (messageTime > viewedTime) {
+                isUnread = true;
+              }
+            } else {
+              isUnread = true; // Never viewed
             }
             
-            // Track the admin message thread
-            const existing = messageThreads.get(adminThreadKey);
-            if (!existing || messageTime > existing.timestamp) {
+            if (isUnread) {
+              const existing = messageThreads.get(adminThreadKey);
+              const currentCount = existing?.unreadCount || 0;
               messageThreads.set(adminThreadKey, { 
                 enquiryId: enquiryId || 'admin', 
                 sellerId: sellerId || 'admin', 
-                timestamp: messageTime 
+                unreadCount: currentCount + 1
               });
             }
             return; // Processed admin message, skip regular message logic
@@ -318,15 +326,25 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const readKey = `chat_read_${user.uid}_${threadKey}`;
           const lastViewedTime = localStorage.getItem(readKey);
           
+          let isUnread = false;
           if (lastViewedTime) {
             const viewedTime = parseInt(lastViewedTime, 10);
-            if (messageTime <= viewedTime) return; // Already viewed
+            if (messageTime > viewedTime) {
+              isUnread = true;
+            }
+          } else {
+            isUnread = true; // Never viewed
           }
           
-          // Track the latest message for this thread
-          const existing = messageThreads.get(threadKey);
-          if (!existing || messageTime > existing.timestamp) {
-            messageThreads.set(threadKey, { enquiryId, sellerId, timestamp: messageTime });
+          if (isUnread) {
+            // Count messages per thread
+            const existing = messageThreads.get(threadKey);
+            const currentCount = existing?.unreadCount || 0;
+            messageThreads.set(threadKey, { 
+              enquiryId, 
+              sellerId, 
+              unreadCount: currentCount + 1 
+            });
             enquiryIds.add(enquiryId);
           }
         });
@@ -351,13 +369,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
         });
         
         // Second pass: Filter threads by user involvement and enquiry status
-        const activeChatThreads = new Set<string>();
+        const activeChatThreads = new Map<string, number>(); // Map<threadKey, unreadCount>
         const now = new Date();
         
         messageThreads.forEach((thread, threadKey) => {
           // Handle admin messages separately (they don't have enquiry data)
           if (threadKey.startsWith('admin_')) {
-            activeChatThreads.add(threadKey);
+            activeChatThreads.set(threadKey, thread.unreadCount);
             return;
           }
           
@@ -380,7 +398,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           // Check if enquiry status would close the chat
           if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
           
-          activeChatThreads.add(threadKey);
+          activeChatThreads.set(threadKey, thread.unreadCount);
         });
         
         // Also count approved responses that are ready to chat but have no messages yet
@@ -428,27 +446,30 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   const readKey = `chat_read_${user.uid}_${threadKey}`;
                   const lastViewedTime = localStorage.getItem(readKey);
                   
-                  // If never viewed, count it as a new chat
-                  if (!lastViewedTime) {
-                    // Verify user is involved and enquiry is active
-                    const enquiryData = enquiryDataMap.get(enquiryId);
-                    if (!enquiryData) return;
-                    
-                    const buyerId = enquiryData.userId;
-                    const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
-                    if (!isUserInvolved) return;
-                    
-                    // Check if enquiry is still active
-                    const now = new Date();
-                    if (enquiryData.deadline) {
-                      const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
-                      if (deadline < now) return;
+                    // If never viewed, count it as 1 new chat
+                    if (!lastViewedTime) {
+                      // Verify user is involved and enquiry is active
+                      const enquiryData = enquiryDataMap.get(enquiryId);
+                      if (!enquiryData) return;
+                      
+                      const buyerId = enquiryData.userId;
+                      const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
+                      if (!isUserInvolved) return;
+                      
+                      // Check if enquiry is still active
+                      const now = new Date();
+                      if (enquiryData.deadline) {
+                        const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
+                        if (deadline < now) return;
+                      }
+                      if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
+                      if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
+                      
+                      // Skip if already counted (has unread messages)
+                      if (!activeChatThreads.has(threadKey)) {
+                        activeChatThreads.set(threadKey, 1);
+                      }
                     }
-                    if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
-                    if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
-                    
-                    activeChatThreads.add(threadKey);
-                  }
                 }
               });
             }
@@ -500,7 +521,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
                 if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
                 
-                activeChatThreads.add(threadKey);
+                // Skip if already counted (has unread messages)
+                if (!activeChatThreads.has(threadKey)) {
+                  activeChatThreads.set(threadKey, 1);
+                }
               }
             }
           });
@@ -509,7 +533,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
         }
         
         if (isMounted) {
-          setUnreadChatCount(activeChatThreads.size);
+          // Sum all unread message counts + new chats
+          const totalUnreadMessages = Array.from(activeChatThreads.values()).reduce((sum, count) => sum + count, 0);
+          setUnreadChatCount(totalUnreadMessages);
         }
       } catch (error) {
         console.error("Error counting unread chats:", error);

@@ -754,7 +754,7 @@ const Profile = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="h-8 sm:h-10 border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                  className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                   disabled={!isEditingProfile}
                   required
                 />
@@ -763,7 +763,7 @@ const Profile = () => {
                 <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700">Phone Number *</Label>
                 <div className="flex gap-1 sm:gap-2">
                   <Select value={countryCode} onValueChange={setCountryCode} disabled={!isEditingProfile}>
-                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={!isEditingProfile}>
+                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={!isEditingProfile}>
                       <SelectValue placeholder="Code">
                         {countryCode && (
                           <span className="flex items-center gap-0.5 sm:gap-1">
@@ -790,7 +790,7 @@ const Profile = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter phone number"
-                    className="flex-1 h-8 sm:h-10 border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                    className="flex-1 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                     disabled={!isEditingProfile}
                     required
                   />
@@ -947,11 +947,8 @@ const Profile = () => {
                   <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                     Verifying your ID...
                   </p>
-                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
+                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
                     Your ID remains securely encrypted and will be verified within a few minutes.
-                  </p>
-                  <p className="text-[7px] sm:text-[10px] text-red-600 font-semibold leading-tight">
-                    Don't press back
                   </p>
                 </div>
               </div>
@@ -1099,7 +1096,7 @@ const Profile = () => {
                           }
                           setIdVerificationResult(null);
                         }} disabled={verifyingId || isUploading}>
-                      <SelectTrigger className="h-8 sm:h-10 border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
+                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                         <SelectContent>
@@ -1134,7 +1131,7 @@ const Profile = () => {
                         setIdVerificationResult(null);
                       }}
                       placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                      className="h-8 sm:h-10 border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                       disabled={verifyingId || isUploading}
                     />
                     {idErrors.idNumber && !idVerificationResult && (

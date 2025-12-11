@@ -888,14 +888,13 @@ export default function EnquiryWall() {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   }, [isEnquiryOutdated, isDealClosed]);
 
-  // Memoize formatDate function
-  const formatDate = useCallback((dateString: string) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric', 
       year: 'numeric' 
     });
-  }, []);
+  };
 
   // Format deadline as simple text (e.g., "13d 16h left")
   const formatDeadlineText = useCallback((deadline: any) => {
@@ -987,7 +986,7 @@ export default function EnquiryWall() {
                   }}
                   onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-black focus:ring-4 focus:ring-black/20 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
@@ -1347,14 +1346,14 @@ export default function EnquiryWall() {
 
             <div className={`${
               viewMode === 'grid' 
-                ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3' 
+                ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 items-stretch' 
                 : 'space-y-3 sm:space-y-4'
             }`}>
               {displayEnquiries.map((enquiry) => (
-                <div key={enquiry.id} className={viewMode === 'grid' ? 'flex flex-col' : 'block'}>
+                <div key={enquiry.id} className="block">
                   <Link
                     to={isEnquiryDisabled(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
-                    className={viewMode === 'grid' ? 'flex flex-col flex-1' : 'block'}
+                    className="block"
                     onClick={(e) => {
                       if (isEnquiryDisabled(enquiry)) {
                         e.preventDefault();
@@ -1363,14 +1362,10 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-black bg-white rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[240px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
-                    } transition-all duration-300 cursor-pointer ${
-                      isEnquiryDisabled(enquiry) 
-                        ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' 
-                        : viewMode === 'list' 
-                          ? 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 active:scale-[0.97] active:shadow-lg border-2' 
-                          : 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 active:scale-[0.97] active:shadow-lg border-2'
-                    } sm:transition-all sm:duration-300 sm:hover:-translate-y-0.5 sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-[1.02] sm:active:scale-[0.98]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } : {}}>
+                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border border-black bg-white flex flex-col rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                    } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
+                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l border-l-green-500'
+                    }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -1413,51 +1408,43 @@ export default function EnquiryWall() {
                           </div>
                         </div>
                       )}
-                      {/* Subtle gradient overlay for mobile - Professional depth */}
+                      {/* Physical button depth effect */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/20 to-transparent rounded-2xl pointer-events-none sm:hidden" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
                       )}
-                      {/* Additional subtle border highlight for mobile */}
+                      {/* Shimmer effect */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 rounded-2xl border border-white/60 pointer-events-none sm:hidden" />
-                      )}
-                      {/* Physical button depth effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
-                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
-                      )}
-                      {/* Shimmer effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
-                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className={`bg-black ${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`}>
+                      <div className="bg-black px-2 sm:px-4 py-1 sm:py-2.5 border-b border-black relative z-10">
                         <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2 sm:gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2">
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
                                 {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                                   <>
-                                    <div className={`flex items-center justify-center w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full shadow-md ${
+                                    <div className={`flex items-center justify-center w-2 h-2 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
                                       isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
                                     }`}>
-                                      <Check className="h-1.5 w-1.5 sm:h-2 sm:w-2 text-white" />
+                                      <Check className="h-0.5 w-0.5 sm:h-2 sm:w-2 text-white" />
                                     </div>
-                                    <span className={`text-[9px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
+                                    <span className={`text-[7px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-blue-300'
                                     }`}>Verified</span>
                                   </>
                                 )}
                           </div>
-                          <div className="flex items-center gap-1.5 sm:gap-2">
+                          <div className="flex items-center gap-0.5 sm:gap-2">
                             {!isEnquiryDisabled(enquiry) && (
-                              <Badge className="text-[9px] sm:text-[10px] px-2 sm:px-2 py-1 sm:py-1 bg-green-500 text-white border-0 shadow-md font-semibold rounded-md">Live</Badge>
+                              <Badge className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
                             )}
                             {isDealClosed(enquiry) && (
-                              <Badge variant="outline" className="text-[9px] sm:text-[10px] px-2 sm:px-2 py-1 sm:py-1 text-gray-400 border-gray-500 bg-black rounded-md">Deal Closed</Badge>
+                              <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
                             )}
                             {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                              <Badge variant="outline" className="text-[9px] sm:text-[10px] px-2 sm:px-2 py-1 sm:py-1 text-gray-400 border-gray-500 bg-black rounded-md">Expired</Badge>
+                              <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Expired</Badge>
                             )}
                           </div>
                         </div>
@@ -1467,13 +1454,13 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-3.5 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
-                            <div className="space-y-2 sm:space-y-3">
+                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
+                            <div className="space-y-1.5 sm:space-y-3">
                               {/* Need Label */}
-                              <span className="text-[9px] sm:text-[10px] text-gray-600 font-bold tracking-wide uppercase">Need</span>
+                              <span className="text-[8px] sm:text-[10px] text-gray-900 font-bold tracking-wide">Need</span>
                               
                               {/* Title */}
-                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-2 text-black text-center ${
+                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
                                     isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                   }`}>
                                     {enquiry.title}
@@ -1482,7 +1469,7 @@ export default function EnquiryWall() {
                               {/* "before [date]" below title, right aligned */}
                               {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
                                 <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-medium whitespace-nowrap">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                     before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
                                   </span>
                                   <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
@@ -1492,26 +1479,26 @@ export default function EnquiryWall() {
                               )}
                               
                               {/* Badges Row */}
-                              <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+                              <div className="flex items-center gap-0.5 sm:gap-2 flex-wrap">
                                   {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                    <Badge className="text-[8px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
+                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
                                       <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                       Urgent
                                     </Badge>
                                   )}
                                   {isDealClosed(enquiry) && (
-                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
+                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
                                   )}
                                   {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
+                                    <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Expired</Badge>
                                   )}
                                 </div>
                               </div>
                               
                             {/* Description - Lower position for mobile list view */}
                             {enquiry.description && (
-                              <div className="flex justify-center pt-4 pb-1 sm:pt-0 sm:pb-0 sm:my-3">
-                                <p className="text-[8px] sm:text-[8px] text-gray-900 font-medium leading-tight line-clamp-2 text-center max-w-full">
+                              <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
+                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-2 text-center max-w-full">
                                 {enquiry.description}
                               </p>
                             </div>
@@ -1519,28 +1506,26 @@ export default function EnquiryWall() {
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className={`${viewMode === 'grid' ? 'p-3 sm:p-3.5 lg:p-4 xl:p-4.5' : 'p-4 sm:p-5 lg:p-6 xl:p-7'} relative z-10`}>
-                          <div className={`${viewMode === 'grid' ? 'space-y-2 sm:space-y-2 lg:space-y-2.5' : 'space-y-2.5 sm:space-y-3 lg:space-y-4'}`}>
+                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
+                          <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
                             {/* Need Label */}
-                            <div className="flex items-center justify-center">
-                              <span className="text-[8px] sm:text-[9px] text-gray-500 font-bold tracking-wider uppercase">Need</span>
-                            </div>
+                            <span className="text-[8px] sm:text-[10px] text-gray-500 font-semibold tracking-wide">Need</span>
                             
                             {/* Title */}
-                            <div className={`${viewMode === 'grid' ? 'mb-1 sm:mb-1.5' : 'mb-1.5 sm:mb-3'}`}>
-                              <h3 className={`${viewMode === 'grid' ? 'text-base sm:text-lg lg:text-xl' : 'text-lg sm:text-2xl lg:text-3xl'} font-black tracking-tight leading-tight text-black text-center ${
+                            <div className="mb-1.5 sm:mb-3">
+                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
                                   isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
                                 }`}>
-                                  {enquiry.title.length > 13 ? enquiry.title.substring(0, 13) + '...' : enquiry.title}
+                                  {enquiry.title}
                                 </h3>
                               
-                              {/* "before [date]" below title, centered */}
+                              {/* "before [date]" below title, right aligned */}
                               {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className={`flex flex-col items-center ${viewMode === 'grid' ? 'mt-1 sm:mt-1' : 'mt-1 sm:mt-1'} gap-0.5 sm:gap-0.5`}>
-                                  <span className="text-[8px] sm:text-[9px] text-gray-600 font-medium whitespace-nowrap">
+                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                     before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
                                   </span>
-                                  <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-red-600">
+                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
                                     {formatDeadlineText(enquiry.deadline)}
                                   </span>
                                 </div>
@@ -1549,63 +1534,63 @@ export default function EnquiryWall() {
                                 {/* Show verified badge if: 
                                     1. User has profile-level verification (applies to all enquiries), OR
                                     2. This specific enquiry has ID images (enquiry-specific verification) */}
-                                {viewMode !== 'grid' && ((userProfiles[enquiry.userId]?.isProfileVerified || 
+                                {((userProfiles[enquiry.userId]?.isProfileVerified || 
                                    userProfiles[enquiry.userId]?.isVerified || 
                                    userProfiles[enquiry.userId]?.trustBadge || 
                                    userProfiles[enquiry.userId]?.isIdentityVerified) || 
                                   enquiry.idFrontImage || enquiry.idBackImage) && (
-                                <div className={`flex items-center justify-center ${viewMode === 'grid' ? 'mt-1 sm:mt-1' : 'mt-1.5 sm:mt-1.5'}`}>
-                                  <div className={`flex items-center justify-center ${viewMode === 'grid' ? 'w-3 h-3 sm:w-3.5 sm:h-3.5' : 'w-3.5 h-3.5 sm:w-5 sm:h-5'} rounded-full flex-shrink-0 shadow-md ${
+                                <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
+                                  <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                   }`}>
-                                    <Check className={`${viewMode === 'grid' ? 'h-1.5 w-1.5 sm:h-1.5 sm:w-1.5' : 'h-1.5 w-1.5 sm:h-3 sm:w-3'} text-white`} />
+                                    <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
                                   </div>
                                   </div>
                                 )}
                               </div>
                             
                             {/* Badges */}
-                            <div className={`flex items-center ${viewMode === 'grid' ? 'gap-1 sm:gap-1' : 'gap-1.5 sm:gap-2'} flex-wrap justify-center`}>
+                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                               {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                <Badge className={`text-[8px] sm:text-[10px] ${viewMode === 'grid' ? 'px-1.5 sm:px-1.5 py-0.5 sm:py-0.5' : 'px-2 sm:px-2 py-0.5 sm:py-0.5'} bg-red-500 text-white border-0 shadow-md font-semibold flex-shrink-0 rounded-md`}>
-                                  <span className={`${viewMode === 'grid' ? 'w-0.5 h-0.5 sm:w-1 h-1' : 'w-1 h-1 sm:w-1.5 sm:h-1.5'} bg-white rounded-full inline-block ${viewMode === 'grid' ? 'mr-0.5 sm:mr-0.5' : 'mr-0.5 sm:mr-1'}`}></span>
+                                <Badge className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
+                                  <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                   Urgent
                                 </Badge>
                               )}
                               {isDealClosed(enquiry) && (
-                                <Badge variant="outline" className={`text-[8px] sm:text-[10px] ${viewMode === 'grid' ? 'px-1.5 sm:px-1.5 py-0.5 sm:py-0.5' : 'px-2 sm:px-2 py-0.5 sm:py-0.5'} text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0 rounded-md`}>Deal Closed</Badge>
+                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Deal Closed</Badge>
                               )}
                               {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                <Badge variant="outline" className={`text-[8px] sm:text-[10px] ${viewMode === 'grid' ? 'px-1.5 sm:px-1.5 py-0.5 sm:py-0.5' : 'px-2 sm:px-2 py-0.5 sm:py-0.5'} text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0 rounded-md`}>Expired</Badge>
+                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
                               )}
                             </div>
                             
                             {/* Description - Hidden in grid view */}
                             
                             {/* Budget and Location - Grouped together */}
-                            <div className={`flex flex-col ${viewMode === 'grid' ? 'gap-1.5 sm:gap-1.5' : 'gap-2 sm:gap-2.5'}`}>
+                            <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className={`flex items-center ${viewMode === 'grid' ? 'gap-1 sm:gap-1.5' : 'gap-1.5 sm:gap-2'} bg-white rounded-lg sm:rounded-xl ${viewMode === 'grid' ? 'px-2 sm:px-2 py-1 sm:py-1' : 'px-2.5 sm:px-3 py-1.5 sm:py-1.5'} border border-gray-200 shadow-sm relative overflow-hidden`}>
+                                <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <span className={`font-black text-black ${viewMode === 'grid' ? 'text-sm sm:text-lg md:text-xl' : 'text-base sm:text-2xl md:text-3xl'} relative z-10`}>₹</span>
-                                  <span className={`truncate font-black text-gray-900 ${viewMode === 'grid' ? 'text-xs sm:text-base md:text-lg' : 'text-sm sm:text-xl md:text-2xl'} relative z-10`}>{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
+                                  <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
-                                <div className={`flex items-center ${viewMode === 'grid' ? 'gap-1 sm:gap-1.5' : 'gap-1.5 sm:gap-2'} ${viewMode === 'grid' ? 'px-2 sm:px-2 py-1 sm:py-1' : 'px-2.5 sm:px-3 py-1.5 sm:py-1.5'} border border-gray-200 rounded-lg sm:rounded-xl bg-white shadow-sm relative overflow-hidden`}>
+                                <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] border-black rounded-lg sm:rounded-xl bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <div className={`flex items-center justify-center ${viewMode === 'grid' ? 'w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4' : 'w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6'} rounded-full bg-gray-100 flex-shrink-0 relative z-10`}>
-                                    <MapPin className={`${viewMode === 'grid' ? 'h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5' : 'h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4'} text-gray-600`} />
+                                  <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
+                                    <MapPin className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-gray-600" />
                                   </div>
-                                  <span className={`truncate ${viewMode === 'grid' ? 'text-[9px] sm:text-[10px] md:text-xs' : 'text-[11px] sm:text-sm md:text-base'} font-medium text-gray-700 relative z-10`}>{enquiry.location}</span>
+                                  <span className="truncate text-[10px] sm:text-sm md:text-base font-semibold text-gray-700 relative z-10">{enquiry.location}</span>
                                 </div>
                               )}
                             </div>
                             
                             {/* Category */}
-                            <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between ${viewMode === 'grid' ? 'gap-1 sm:gap-1.5 pt-1.5 sm:pt-1.5' : 'gap-1.5 sm:gap-3 pt-2 sm:pt-2'} border-t border-gray-200`}>
-                              <div className="flex justify-center sm:justify-start">
-                                <Badge variant="secondary" className={`text-[8px] sm:text-[9px] md:text-[10px] ${viewMode === 'grid' ? 'px-2 sm:px-2 md:px-2 py-0.5 sm:py-0.5 md:py-0.5' : 'px-2.5 sm:px-2.5 md:px-3 py-1 sm:py-1 md:py-1.5'} bg-white text-gray-900 border border-gray-200 font-bold shadow-sm rounded-lg sm:rounded-xl relative overflow-hidden`}>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
+                              <div>
+                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 border-[0.5px] border-black font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                                 </Badge>
@@ -1615,7 +1600,7 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-3.5 sm:p-5 lg:p-6 xl:p-7 bg-gray-50/50 flex flex-col justify-start sm:justify-center flex-1 min-h-0 rounded-b-2xl sm:rounded-b-none' : viewMode === 'grid' ? 'flex-1 flex flex-col p-3 sm:p-4 lg:p-5 xl:p-6 justify-between rounded-b-2xl sm:rounded-b-none min-h-0' : 'flex-1 flex flex-col p-4 sm:p-5 lg:p-6 xl:p-7 justify-between rounded-b-2xl sm:rounded-b-none'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : viewMode === 'grid' ? { flex: '1 1 auto', minHeight: 0 } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
                           {/* Desktop Layout */}
@@ -1693,12 +1678,12 @@ export default function EnquiryWall() {
                           </div>
                           
                           {/* Mobile Layout - Budget, Location, Category and Button at Bottom */}
-                          <div className="block sm:hidden w-full mt-auto space-y-3 pt-3">
+                          <div className="block sm:hidden w-full mt-auto space-y-2 pt-4">
                             {/* Budget, Location, Category - Mobile Only */}
-                            <div className="flex flex-wrap items-center gap-2 justify-start">
+                            <div className="flex flex-wrap items-center gap-1.5 justify-start">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 bg-white rounded-lg px-2.5 py-1 border border-gray-200 shadow-sm flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <span className="font-black text-black text-sm relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
@@ -1706,16 +1691,16 @@ export default function EnquiryWall() {
                               )}
                               {/* Location */}
                               {enquiry.location && (
-                                <div className="flex items-center gap-1 text-gray-700 border border-gray-200 rounded-lg px-2.5 py-1 bg-white shadow-sm flex-shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-1 text-gray-700 border-[0.5px] border-black rounded-lg px-1.5 py-0.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                  <div className="flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
+                                  <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
                                     <MapPin className="h-2 w-2 text-gray-600" />
                                 </div>
-                                  <span className="text-[10px] font-medium whitespace-nowrap relative z-10">{enquiry.location}</span>
+                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
                               </div>
                             )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[9px] px-2.5 py-1 bg-white text-gray-900 border border-gray-200 font-bold shadow-sm rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 border-[0.5px] border-black font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                 <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
@@ -1727,40 +1712,38 @@ export default function EnquiryWall() {
                               <button 
                                 type="button"
                                 disabled
-                                className="w-full h-10 text-xs font-bold border-2 border-black text-white cursor-not-allowed transition-all duration-200 rounded-lg"
+                                className="w-full h-6 text-[8px] font-bold border-2 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
                                 style={{ backgroundColor: '#000000' }}
                               >
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
                               isDealClosed(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-10 text-xs font-semibold border-2 border-gray-300 bg-white text-gray-500 rounded-lg" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                   Deal Closed
                                 </Button>
                               ) : isEnquiryOutdated(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-10 text-xs font-semibold border-2 border-gray-300 bg-white text-gray-500 rounded-lg" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                   Expired
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-10 text-xs font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 rounded-lg relative overflow-hidden"
+                                className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg" />
-                                <span className="relative z-10 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
+                                <span className="relative z-10 flex items-center">
                                   Sell
-                                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                                  <ArrowRight className="h-2 w-2 ml-0.5" />
                                 </span>
                               </Button>
                               )
                             ) : (
                               <Link to="/signin" className="w-full block">
-                                <Button className="w-full h-10 text-xs font-black bg-black hover:bg-gray-900 text-white border border-black shadow-md hover:shadow-lg active:shadow-sm transition-all duration-300 rounded-lg relative overflow-hidden active:scale-[0.97]">
-                                  {/* Subtle gradient overlay */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent rounded-lg pointer-events-none" />
+                                <Button className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden">
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
                                   <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>
@@ -1769,43 +1752,43 @@ export default function EnquiryWall() {
                           </div>
                           </>
                         ) : (
-                          <div className={`${viewMode === 'grid' ? 'space-y-0 sm:space-y-0 mt-auto pt-2 sm:pt-2.5' : 'space-y-0 sm:space-y-2.5 mt-3 sm:mt-6 lg:mt-8'}`}>
+                          <div className="space-y-1.5 sm:space-y-2.5 mt-auto sm:mt-6 lg:mt-8">
                             {isOwnEnquiry(enquiry) ? (
                               <button 
                                 type="button"
                                 disabled
-                                className={`w-full ${viewMode === 'grid' ? 'h-8 sm:h-8' : 'h-10 sm:h-10'} ${viewMode === 'grid' ? 'text-[10px] sm:text-[10px]' : 'text-xs sm:text-xs'} font-bold border-2 sm:border-4 border-black text-white cursor-not-allowed transition-all duration-200 ${viewMode === 'grid' ? 'rounded-lg sm:rounded-lg' : 'rounded-xl sm:rounded-xl'}`}
+                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 sm:border-4 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
                                 style={{ backgroundColor: '#022c22' }}
                               >
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
                               isDealClosed(enquiry) ? (
-                                <Button variant="outline" size="sm" className={`w-full ${viewMode === 'grid' ? 'h-8 sm:h-8' : 'h-10 sm:h-10'} ${viewMode === 'grid' ? 'text-[10px] sm:text-[10px]' : 'text-xs sm:text-xs'} font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 ${viewMode === 'grid' ? 'rounded-lg sm:rounded-lg' : 'rounded-xl sm:rounded-xl'}`} disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
                                   Deal Closed
                                 </Button>
                               ) : isEnquiryOutdated(enquiry) ? (
-                                <Button variant="outline" size="sm" className={`w-full ${viewMode === 'grid' ? 'h-8 sm:h-8' : 'h-10 sm:h-10'} ${viewMode === 'grid' ? 'text-[10px] sm:text-[10px]' : 'text-xs sm:text-xs'} font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 ${viewMode === 'grid' ? 'rounded-lg sm:rounded-lg' : 'rounded-xl sm:rounded-xl'}`} disabled>
+                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
                                   Expired
                                 </Button>
                               ) : (
                               <Button 
-                                className={`w-full ${viewMode === 'grid' ? 'h-8 sm:h-8' : 'h-10 sm:h-10'} ${viewMode === 'grid' ? 'text-[10px] sm:text-[10px]' : 'text-xs sm:text-xs'} font-black bg-black hover:bg-gray-900 text-white border border-black ${viewMode === 'grid' ? 'shadow-md hover:shadow-lg active:shadow-sm rounded-lg sm:rounded-lg' : 'shadow-lg hover:shadow-xl active:shadow-md rounded-xl sm:rounded-xl'} transition-all duration-300 relative overflow-hidden active:scale-[0.97]`}
+                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                {/* Subtle gradient overlay */}
-                                <div className={`absolute inset-0 bg-gradient-to-b from-white/15 to-transparent ${viewMode === 'grid' ? 'rounded-lg sm:rounded-lg' : 'rounded-xl sm:rounded-xl'} pointer-events-none`} />
-                                <span className="relative z-10 flex items-center justify-center">
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                <span className="relative z-10 flex items-center">
                                   Sell
-                                  <ArrowRight className={`${viewMode === 'grid' ? 'h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 ml-1 sm:ml-1' : 'h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 ml-1.5 sm:ml-2'}`} />
+                                  <ArrowRight className="h-2 w-2 sm:h-3.5 sm:w-3.5 ml-1 sm:ml-2" />
                                 </span>
                               </Button>
                               )
                             ) : (
                               <Link to="/signin">
-                                <Button className={`w-full ${viewMode === 'grid' ? 'h-8 sm:h-8' : 'h-10 sm:h-10'} ${viewMode === 'grid' ? 'text-[10px] sm:text-[10px]' : 'text-xs sm:text-xs'} font-black bg-black hover:bg-gray-900 text-white border border-black ${viewMode === 'grid' ? 'shadow-md hover:shadow-lg active:shadow-sm rounded-lg sm:rounded-lg' : 'shadow-lg hover:shadow-xl active:shadow-md rounded-xl sm:rounded-xl'} transition-all duration-300 relative overflow-hidden active:scale-[0.97]`}>
-                                  {/* Subtle gradient overlay */}
-                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/15 to-transparent ${viewMode === 'grid' ? 'rounded-lg sm:rounded-lg' : 'rounded-xl sm:rounded-xl'} pointer-events-none`} />
+                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden">
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
                                   <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>

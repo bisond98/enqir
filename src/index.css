@@ -29,9 +29,10 @@
     scroll-padding-top: 2rem;
   }
   
-  /* Prevent scroll jank */
-  body {
-    overflow-x: hidden;
+  /* Optimize all scrollable elements */
+  * {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
   
   /* Optimize images and media for better performance */
@@ -43,8 +44,12 @@
   /* GPU acceleration for animated elements */
   [class*="animate-"], 
   [class*="transition-"],
-  [class*="motion-"] {
+  [class*="motion-"],
+  button:hover,
+  a:hover {
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   
   /* Optimize scrollable containers */
@@ -264,20 +269,49 @@
     will-change: scroll-position;
   }
   
-  /* Smoother transitions for interactive elements */
-  button, a {
+  /* Optimize all transitions and animations for ultra-smooth feel */
+  * {
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.3s;
+  }
+  
+  /* Smoother transitions for interactive elements */
+  button, a, input, select, textarea {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.25s;
   }
   
   /* Optimize scroll performance */
   .overflow-y-auto,
-  .overflow-x-auto {
+  .overflow-x-auto,
+  [class*="overflow"] {
     -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    will-change: scroll-position;
+    contain: layout style paint;
+  }
+  
+  /* Performance: Optimize cards and interactive elements */
+  .card,
+  [class*="Card"] {
+    contain: layout style;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Performance: Reduce repaints on hover */
+  button,
+  a,
+  [role="button"] {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   /* Performance: Optimize images */
   img {
-    image-rendering: -webkit-optimize-contrast;
+    content-visibility: auto;
+    will-change: auto;
   }
   
   /* Performance: Smooth scrolling with optimization */
@@ -325,6 +359,7 @@
   .overflow-y-auto,
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
   }
   
   /* Reduce layout shifts */
@@ -334,6 +369,38 @@
     height: auto;
   }
   
+  /* Optimize animations */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+  
+  /* Optimize images */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: auto;
+    /* Lazy loading optimization */
+    loading: lazy;
+    /* GPU acceleration for image transforms */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Optimize image loading performance */
+  img[loading="lazy"] {
+    content-visibility: auto;
+  }
+  
+  /* Optimize cards and containers */
+  [class*="Card"],
+  [class*="card"],
+  .card {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
   
   /* Fix for mobile Safari */
   @supports (-webkit-touch-callout: none) {
@@ -369,6 +436,10 @@
       min-height: 44px;
       min-width: 44px;
       touch-action: manipulation;
+      /* Performance: GPU acceleration for touch interactions */
+      will-change: transform;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
     
     /* Better spacing for mobile */

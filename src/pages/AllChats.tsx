@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
+import { useUsage } from "@/contexts/UsageContext";
 import { db } from "@/firebase";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Clock, ArrowLeft } from "lucide-react";
@@ -28,9 +29,12 @@ export default function AllChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { allChats: preloadedChats, loading: chatsLoading } = useChats();
+  const { usageStats } = useUsage();
   const [allChats, setAllChats] = useState<ChatThread[]>(preloadedChats);
   const [loading, setLoading] = useState(chatsLoading);
   const [responseNumbers, setResponseNumbers] = useState<Map<string, number>>(new Map());
+  const [enquiryDataMap, setEnquiryDataMap] = useState<Map<string, any>>(new Map());
+  const [responsePositionMap, setResponsePositionMap] = useState<Map<string, number>>(new Map());
 
   // Use preloaded chats from context - update whenever context changes
   useEffect(() => {
@@ -98,8 +102,271 @@ export default function AllChats() {
     fetchResponseNumbers();
   }, [user?.uid, allChats]);
 
+  // Fetch enquiry data and response positions for premium filtering
+  useEffect(() => {
+    if (!user?.uid || allChats.length === 0) return;
+
+    const fetchEnquiryData = async () => {
+      const enquiryMap = new Map<string, any>();
+      const positionMap = new Map<string, number>();
+      const enquiryIds = new Set<string>();
+
+      // Collect all unique enquiry IDs from buyer chats
+      allChats.forEach(chat => {
+        if (chat.isBuyerChat && chat.enquiryId) {
+          enquiryIds.add(chat.enquiryId);
+        }
+      });
+
+      // Fetch enquiry data and responses for each enquiry
+      const promises = Array.from(enquiryIds).map(async (enquiryId) => {
+        try {
+          // Fetch enquiry
+          const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+          if (enquiryDoc.exists()) {
+            enquiryMap.set(enquiryId, enquiryDoc.data());
+          }
+
+          // Fetch approved responses and calculate positions
+          const responsesQuery = query(
+            collection(db, 'sellerSubmissions'),
+            where('enquiryId', '==', enquiryId),
+            where('status', '==', 'approved')
+          );
+          const responsesSnapshot = await getDocs(responsesQuery);
+          
+          const responses: Array<{ sellerId: string; createdAt: any }> = [];
+          responsesSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.sellerId) {
+              responses.push({
+                sellerId: data.sellerId,
+                createdAt: data.createdAt
+              });
+            }
+          });
+
+          // Sort by createdAt (oldest first) to get response order
+          responses.sort((a, b) => {
+            const aTime = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+            const bTime = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+            return aTime - bTime;
+          });
+
+          // Map sellerId to response position (1-indexed)
+          responses.forEach((response, index) => {
+            const threadKey = `${enquiryId}_${response.sellerId}`;
+            positionMap.set(threadKey, index + 1);
+          });
+        } catch (error) {
+          console.error(`Error fetching data for enquiry ${enquiryId}:`, error);
+        }
+      });
+
+      await Promise.all(promises);
+      setEnquiryDataMap(enquiryMap);
+      setResponsePositionMap(positionMap);
+    };
+
+    fetchEnquiryData();
+  }, [user?.uid, allChats]);
+
+  // Real-time listener for unread message counts
+  useEffect(() => {
+    if (!user?.uid || allChats.length === 0) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let isMounted = true;
+
+    const updateUnreadCounts = async () => {
+      try {
+        // Get all chat messages
+        const chatMessagesQuery = query(collection(db, "chatMessages"));
+        const snapshot = await getDocs(chatMessagesQuery);
+        
+        const threadsWithUnread = new Map<string, number>();
+        
+        // Create a set of existing chat thread keys for quick lookup (exclude disabled/expired chats)
+        const existingThreadKeys = new Set<string>();
+        allChats.forEach(chat => {
+          if (chat.enquiryId && chat.sellerId && !chat.isDisabled) {
+            const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
+            existingThreadKeys.add(threadKey);
+          }
+        });
+        
+        // Process all messages to count unread messages per thread
+        snapshot.docs.forEach((docSnap) => {
+          const messageData = docSnap.data();
+          const enquiryId = messageData.enquiryId;
+          const sellerId = messageData.sellerId;
+          const senderId = messageData.senderId;
+          
+          if (!enquiryId || !sellerId || !senderId) return;
+          if (messageData.isSystemMessage || senderId === user.uid) return;
+          
+          const threadKey = `${enquiryId}_${sellerId}`;
+          
+          // Only process if this thread exists in our chats
+          if (!existingThreadKeys.has(threadKey)) return;
+          
+          const readKey = `chat_read_${user.uid}_${threadKey}`;
+          const lastViewedTime = localStorage.getItem(readKey);
+          
+          let isUnread = false;
+          if (lastViewedTime) {
+            // Only count messages that arrived after last view
+            const messageTime = messageData.timestamp?.toDate 
+              ? messageData.timestamp.toDate().getTime() 
+              : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
+            const viewedTime = parseInt(lastViewedTime, 10);
+            
+            if (messageTime > viewedTime) {
+              isUnread = true;
+            }
+          } else {
+            // Never viewed - all messages are unread
+            isUnread = true;
+          }
+          
+          if (isUnread) {
+            const currentCount = threadsWithUnread.get(threadKey) || 0;
+            threadsWithUnread.set(threadKey, currentCount + 1);
+          }
+        });
+        
+        // Count "ready to chat" items (approved responses with no messages yet)
+        allChats.forEach(chat => {
+          if (!chat.enquiryId || !chat.sellerId || chat.isDisabled) return;
+          
+          const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
+          
+          // Skip if already has unread messages
+          if (threadsWithUnread.has(threadKey)) return;
+          
+          // Check if this is a "ready to chat" item (no messages yet)
+          const hasMessages = snapshot.docs.some(msgDoc => {
+            const msgData = msgDoc.data();
+            return msgData.enquiryId === chat.enquiryId && msgData.sellerId === chat.sellerId;
+          });
+          
+          if (!hasMessages) {
+            // Check if user has viewed this chat
+            const readKey = `chat_read_${user.uid}_${threadKey}`;
+            const lastViewedTime = localStorage.getItem(readKey);
+            
+            // If never viewed, count as 1 new chat
+            if (!lastViewedTime) {
+              threadsWithUnread.set(threadKey, 1);
+            }
+          }
+        });
+        
+        if (!isMounted) return;
+        
+        // Update chats with actual unread message counts
+        setAllChats(prevChats => {
+          const updated = prevChats.map(chat => {
+            const threadKey = chat.enquiryId && chat.sellerId 
+              ? `${chat.enquiryId}_${chat.sellerId}` 
+              : chat.id;
+            const unreadCount = threadsWithUnread.get(threadKey) || 0;
+            return {
+              ...chat,
+              unreadCount: unreadCount
+            };
+          });
+          return updated;
+        });
+      } catch (error) {
+        console.error("Error updating unread counts:", error);
+      }
+    };
+
+    // Debounced update function
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        updateUnreadCounts();
+      }, 200); // 200ms debounce
+    };
+
+    // Initial count
+    updateUnreadCounts();
+    
+    // Set up real-time listener (with debouncing)
+    const unsubscribe = onSnapshot(
+      query(collection(db, "chatMessages")),
+      () => {
+        debouncedUpdate();
+      },
+      (error) => {
+        console.error("Error listening to chat messages for unread counts:", error);
+      }
+    );
+
+    // Listen for chat viewed events - refresh immediately
+    const handleChatViewed = () => {
+      updateUnreadCounts(); // Update immediately when chat is viewed
+    };
+    
+    window.addEventListener('chatViewed', handleChatViewed);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+      unsubscribe();
+      window.removeEventListener('chatViewed', handleChatViewed);
+    };
+  }, [user?.uid, allChats]);
+
+  // Filter chats to hide locked ones for free plan buyers
+  const filteredChats = allChats.filter(chat => {
+    // For buyer chats, check if seller is in locked position
+    if (chat.isBuyerChat && chat.enquiryId && chat.sellerId) {
+      const enquiryData = enquiryDataMap.get(chat.enquiryId);
+      if (enquiryData) {
+        const selectedPlanId = enquiryData.selectedPlanId || 'free';
+        const isPremium = usageStats?.premiumSubscription || selectedPlanId === 'premium' || selectedPlanId === 'pro';
+        
+        // If premium, show all chats
+        if (isPremium) return true;
+        
+        // Get seller's position
+        const sellerPosition = responsePositionMap.get(`${chat.enquiryId}_${chat.sellerId}`);
+        if (sellerPosition !== undefined) {
+          // Determine response limit based on plan
+          let responseLimit = 2; // Default free plan
+          switch (selectedPlanId) {
+            case 'free':
+              responseLimit = 2;
+              break;
+            case 'basic':
+              responseLimit = 5;
+              break;
+            case 'standard':
+              responseLimit = 10;
+              break;
+            case 'premium':
+            case 'pro':
+              responseLimit = -1; // Unlimited
+              break;
+            default:
+              responseLimit = 2;
+          }
+          
+          // Hide chats with sellers beyond the limit
+          if (responseLimit !== -1 && sellerPosition > responseLimit) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  });
+
   // Sort chats by latest (most recent first)
-  const sortedChats = [...allChats].sort((a, b) => {
+  const sortedChats = [...filteredChats].sort((a, b) => {
     const aTime = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : (a.updatedAt ? new Date(a.updatedAt).getTime() : 0);
     const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : (b.updatedAt ? new Date(b.updatedAt).getTime() : 0);
     return bTime - aTime; // Latest first
@@ -126,12 +393,24 @@ export default function AllChats() {
     if (chat.isDisabled || !chat.enquiryId) return;
     
     // Mark chat as read when opening (for both messages and ready-to-chat items)
-    if (chat.enquiryId && chat.sellerId && user?.uid) {
+    if (chat.enquiryId && chat.sellerId) {
       const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
-      const readKey = `chat_read_${user.uid}_${threadKey}`;
+      const readKey = `chat_read_${user?.uid}_${threadKey}`;
       localStorage.setItem(readKey, Date.now().toString());
       
-      // Dispatch event to notify other components (including Layout badge)
+      // Update local state to remove unread count immediately
+      setAllChats(prevChats => 
+        prevChats.map(c => {
+          if (c.enquiryId === chat.enquiryId && c.sellerId === chat.sellerId) {
+            return { ...c, unreadCount: 0 };
+          }
+          return c;
+        })
+      );
+    }
+    
+    // Dispatch chatViewed event to update notification badge
+    if (chat.enquiryId && chat.sellerId) {
       window.dispatchEvent(new CustomEvent('chatViewed', { 
         detail: { enquiryId: chat.enquiryId, sellerId: chat.sellerId } 
       }));
@@ -297,7 +576,7 @@ export default function AllChats() {
                             
                             {!isDisabled && (chat.unreadCount || 0) > 0 && (
                               <motion.span 
-                                className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[8px] sm:text-[9px] font-bold rounded-full min-w-[16px] h-4 sm:min-w-[18px] sm:h-4.5 flex items-center justify-center border-2 border-white shadow-lg z-20"
+                                className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[8px] sm:text-[9px] font-bold rounded-full min-w-[16px] h-4 sm:min-w-[18px] sm:h-4.5 flex items-center justify-center border-2 border-white shadow-lg z-20 px-1"
                                 animate={{
                                   scale: [1, 1.2, 1],
                                 }}
@@ -307,7 +586,7 @@ export default function AllChats() {
                                   ease: "easeInOut"
                                 }}
                               >
-                                1
+                                {chat.unreadCount || 0}
                               </motion.span>
                             )}
                           </div>
@@ -396,8 +675,3 @@ export default function AllChats() {
     </Layout>
   );
 }
-
-
-
-
-
