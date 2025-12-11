@@ -2063,12 +2063,21 @@ export default function PostEnquiry() {
                         id="description"
                         placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 500) {
+                            setDescription(value);
+                          }
+                        }}
                         rows={5}
+                        maxLength={500}
                         className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px' }}
                         required
                       />
+                      <p className="text-xs text-gray-500 mt-1 text-right">
+                        {description.length}/500 characters
+                      </p>
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                     </div>
@@ -2323,7 +2332,7 @@ export default function PostEnquiry() {
 
                   {/* Trust Badge Card - Matching SellerResponse Design */}
                   {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-[0.5px] border-black'} rounded-xl w-full max-w-full overflow-visible`}>
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
                       <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
@@ -2428,8 +2437,11 @@ export default function PostEnquiry() {
                           <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                             Verifying your ID...
                           </p>
-                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
                             Your ID remains securely encrypted and will be verified within a few minutes.
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                            Don't press back
                           </p>
                         </div>
                       </div>

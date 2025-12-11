@@ -55,7 +55,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg border-4 border-black shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"
+          className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"
         >
           <svg viewBox="0 0 500 280" className="w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6" preserveAspectRatio="xMidYMid meet">
             {/* Step 1: User Posting Enquiry */}

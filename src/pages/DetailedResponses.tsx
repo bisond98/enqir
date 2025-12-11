@@ -15,6 +15,7 @@ import VerificationBadge from "@/components/VerificationBadge";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { processPayment, savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan, getUserPaymentPlan, canViewAllResponses, getResponseViewLimit } from "@/services/paymentService";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { PAYMENT_PLANS, getUpgradeOptions } from "@/config/paymentPlans";
 
 interface Enquiry {
   id: string;
@@ -64,7 +65,6 @@ const DetailedResponses = () => {
     
     try {
       const { updateDoc, serverTimestamp } = await import('firebase/firestore');
-      const { PAYMENT_PLANS, getUpgradeOptions } = await import('@/config/paymentPlans');
       
       // Payment was already processed via Razorpay in PaymentPlanSelector
       // Just update the enquiry to reflect the new plan
@@ -309,7 +309,7 @@ const DetailedResponses = () => {
                   : 'bg-black'
               }`}>
                 <div className="flex items-center justify-between gap-2 mb-1 sm:mb-2">
-                  <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-white">
+                  <h1 className="text-xs sm:text-sm lg:text-base font-semibold text-white">
                     {enquiry.title}
                   </h1>
                   {isEnquiryExpired && (

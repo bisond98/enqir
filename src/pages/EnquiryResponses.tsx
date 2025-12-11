@@ -2478,10 +2478,10 @@ const EnquiryResponses = () => {
 
       setShowPaymentSelector(false);
       
-      // Show loading and redirect to detailed responses page after 500ms
+      // Show loading and redirect to responses page after 500ms
       setIsRedirecting(true);
       setTimeout(() => {
-        navigate(`/enquiry/${enquiryId}/detailed-responses`);
+        navigate(`/enquiry/${enquiryId}/responses-page`);
       }, 500);
     } catch (error) {
       console.error('Error updating plan:', error);
@@ -2854,11 +2854,14 @@ const EnquiryResponses = () => {
                           </div>
                         )}
                         <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
-                          <h4 className="font-bold text-white line-clamp-2 text-sm sm:text-base lg:text-lg text-center w-full">{response.title}</h4>
+                          <h4 className="font-bold text-white text-[10px] sm:text-xs lg:text-sm text-center w-full">
+                            {response.title && response.title.length > 20 
+                              ? `${response.title.substring(0, 20)}...` 
+                              : response.title}
+                          </h4>
                           {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
-                            <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
+                            <div className="flex items-center justify-center mt-1">
                                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-                                <span className="text-[9px] sm:text-[10px] font-bold text-blue-600">Trust Badge</span>
                               </div>
                             )}
                           </div>
@@ -4028,8 +4031,11 @@ const EnquiryResponses = () => {
                       </>
                     ) : (
                       <>
-                        <h3 className="text-sm lg:text-base font-medium text-slate-700 mb-1">Select a response</h3>
-                        <p className="text-slate-500 text-xs lg:text-sm px-4">Choose from the left to start chatting</p>
+                        <h3 className="text-sm lg:text-base font-medium text-slate-700 mb-1">Select approved responses</h3>
+                        <p className="text-slate-500 text-xs lg:text-sm px-4">
+                          <span className="lg:hidden">Choose from the bottom to start chatting</span>
+                          <span className="hidden lg:inline">Choose from the left to start chatting</span>
+                        </p>
                       </>
                     )}
                   </div>

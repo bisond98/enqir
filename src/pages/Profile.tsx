@@ -829,7 +829,7 @@ const Profile = () => {
         </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border-[0.5px] border-black shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]">
+        <Card className={`mt-4 sm:mt-6 ${verifyingId ? '' : 'border-[0.5px] border-black'} shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]`}>
           {/* Card Header - Black Background */}
           <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 lg:px-5 lg:py-4 rounded-t-3xl sm:rounded-t-2xl">
             <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
@@ -947,8 +947,11 @@ const Profile = () => {
                   <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
                     Verifying your ID...
                   </p>
-                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
                     Your ID remains securely encrypted and will be verified within a few minutes.
+                  </p>
+                  <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                    Don't press back
                   </p>
                 </div>
               </div>

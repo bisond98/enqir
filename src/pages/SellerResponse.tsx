@@ -1434,7 +1434,7 @@ const SellerResponse = () => {
 
               {/* Enhanced Product Description */}
               <div className="space-y-3">
-                <Label htmlFor="description" className="text-base sm:text-lg font-black text-black flex items-center whitespace-nowrap">
+                <Label htmlFor="description" className="text-sm sm:text-base font-black text-black flex items-center whitespace-nowrap">
                   <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black flex-shrink-0" />
                   <span className="text-black">
                     Detailed Description *
@@ -1448,14 +1448,23 @@ const SellerResponse = () => {
                   id="description"
                   placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 500) {
+                      setDescription(value);
+                    }
+                  }}
+                  maxLength={500}
                     className={`min-h-[140px] text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus-visible:border-red-500 focus-visible:border-2' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-xs text-gray-500">
+                    {description.length}/500 characters
+                  </p>
                   {errors.description && (
                     <span className="text-xs text-red-500 flex items-center">
                       <AlertTriangle className="h-3 w-3 mr-1" />
@@ -1768,7 +1777,7 @@ const SellerResponse = () => {
 
                 {/* ID Upload Form - Only show for unverified users - Matching Buyer Form Design */}
                 {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white ${verifyingId ? 'border-0' : 'border-2 border-black'} rounded-xl w-full max-w-full overflow-visible`}>
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white rounded-xl w-full max-w-full overflow-visible`}>
                     {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
                     {verifyingId && (
                       <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
@@ -1875,6 +1884,9 @@ const SellerResponse = () => {
                           </p>
                           <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
                             Your ID remains securely encrypted and will be verified within a few minutes.
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                            Don't press back
                           </p>
                           <p className="text-[7px] sm:text-[10px] text-red-600 font-semibold leading-tight">
                             Don't press back

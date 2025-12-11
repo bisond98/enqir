@@ -431,7 +431,29 @@ export default function EnquiryWall() {
         const liveEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return true; // No deadline = live
           try {
-            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            let deadlineDate: Date;
+            
+            // Handle Firestore Timestamp (has toDate method)
+            if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+              deadlineDate = enquiry.deadline.toDate();
+            }
+            // Handle Firestore Timestamp object (has seconds and nanoseconds)
+            else if (enquiry.deadline?.seconds !== undefined) {
+              deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+            }
+            // Handle Date object
+            else if (enquiry.deadline instanceof Date) {
+              deadlineDate = enquiry.deadline;
+            }
+            // Handle string or number
+            else {
+              deadlineDate = new Date(enquiry.deadline);
+            }
+            
+            if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+              return true; // If invalid, assume live
+            }
+            
             return deadlineDate.getTime() >= now.getTime();
           } catch {
             return true; // If error, assume live
@@ -441,7 +463,29 @@ export default function EnquiryWall() {
         const expiredEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return false; // No deadline = not expired
           try {
-            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            let deadlineDate: Date;
+            
+            // Handle Firestore Timestamp (has toDate method)
+            if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+              deadlineDate = enquiry.deadline.toDate();
+            }
+            // Handle Firestore Timestamp object (has seconds and nanoseconds)
+            else if (enquiry.deadline?.seconds !== undefined) {
+              deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+            }
+            // Handle Date object
+            else if (enquiry.deadline instanceof Date) {
+              deadlineDate = enquiry.deadline;
+            }
+            // Handle string or number
+            else {
+              deadlineDate = new Date(enquiry.deadline);
+            }
+            
+            if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+              return false; // If invalid, assume not expired
+            }
+            
             return deadlineDate.getTime() < now.getTime();
           } catch {
             return false; // If error, assume not expired
@@ -873,8 +917,37 @@ export default function EnquiryWall() {
   // Helper to check if an enquiry is expired (uses currentTime state for real-time updates)
   const isEnquiryOutdated = useCallback((enquiry: Enquiry) => {
     if (!enquiry.deadline) return false;
-    const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-    return currentTime > deadline;
+    
+    try {
+      let deadlineDate: Date;
+      
+      // Handle Firestore Timestamp (has toDate method)
+      if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+        deadlineDate = enquiry.deadline.toDate();
+      }
+      // Handle Firestore Timestamp object (has seconds and nanoseconds)
+      else if (enquiry.deadline?.seconds !== undefined) {
+        deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+      }
+      // Handle Date object
+      else if (enquiry.deadline instanceof Date) {
+        deadlineDate = enquiry.deadline;
+      }
+      // Handle string or number
+      else {
+        deadlineDate = new Date(enquiry.deadline);
+      }
+      
+      if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+        console.error('Invalid deadline in isEnquiryOutdated for enquiry:', enquiry.id, enquiry.deadline);
+        return false; // If invalid, assume not outdated
+      }
+      
+      return currentTime > deadlineDate;
+    } catch (error) {
+      console.error('Error checking if enquiry is outdated:', error, enquiry.id, enquiry.deadline);
+      return false; // If error, assume not outdated
+    }
   }, [currentTime]);
 
   // Helper to check if an enquiry is deal closed (case-insensitive)
@@ -888,19 +961,83 @@ export default function EnquiryWall() {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   }, [isEnquiryOutdated, isDealClosed]);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
+  const formatDate = (dateString: string | Date | any) => {
+    try {
+      let date: Date;
+      
+      // Handle Firestore Timestamp (has toDate method)
+      if (dateString?.toDate && typeof dateString.toDate === 'function') {
+        date = dateString.toDate();
+      }
+      // Handle Firestore Timestamp object (has seconds and nanoseconds)
+      else if (dateString?.seconds !== undefined) {
+        date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
+      }
+      // Handle Date object
+      else if (dateString instanceof Date) {
+        date = dateString;
+      }
+      // Handle string
+      else if (typeof dateString === 'string') {
+        date = new Date(dateString);
+      }
+      // Handle number (timestamp)
+      else if (typeof dateString === 'number') {
+        date = new Date(dateString);
+      }
+      else {
+        console.error('Invalid date format:', dateString, typeof dateString);
+        return 'Invalid date';
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        console.error('Invalid date value:', dateString);
+        return 'Invalid date';
+      }
+      
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString);
+      return 'Invalid date';
+    }
   };
 
   // Format deadline as simple text (e.g., "13d 16h left")
   const formatDeadlineText = useCallback((deadline: any) => {
     if (!deadline) return '';
     
-    const deadlineDate = deadline.toDate ? deadline.toDate() : new Date(deadline);
+    let deadlineDate: Date;
+    try {
+      // Handle Firestore Timestamp (has toDate method)
+      if (deadline?.toDate && typeof deadline.toDate === 'function') {
+        deadlineDate = deadline.toDate();
+      }
+      // Handle Firestore Timestamp object (has seconds and nanoseconds)
+      else if (deadline?.seconds !== undefined) {
+        deadlineDate = new Date(deadline.seconds * 1000 + (deadline.nanoseconds || 0) / 1000000);
+      }
+      // Handle Date object
+      else if (deadline instanceof Date) {
+        deadlineDate = deadline;
+      }
+      // Handle string or number
+      else {
+        deadlineDate = new Date(deadline);
+      }
+      
+      if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+        console.error('Invalid deadline date:', deadline);
+        return '';
+      }
+    } catch (error) {
+      console.error('Error parsing deadline:', error, deadline);
+      return '';
+    }
+    
     const diff = deadlineDate.getTime() - currentTime.getTime();
     
     if (diff <= 0) return 'Expired';
@@ -1362,10 +1499,14 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border border-black bg-white flex flex-col rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
-                    } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
-                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l border-l-green-500'
-                    }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
+                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-black bg-white rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                    } transition-all duration-300 cursor-pointer ${
+                      isEnquiryDisabled(enquiry) 
+                        ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' 
+                        : viewMode === 'list' 
+                          ? 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 active:scale-[0.97] active:shadow-lg border-2' 
+                          : 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 active:scale-[0.97] active:shadow-lg border-2'
+                    } sm:transition-all sm:duration-300 sm:hover:-translate-y-0.5 sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-[1.02] sm:active:scale-[0.98]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -1408,18 +1549,26 @@ export default function EnquiryWall() {
                           </div>
                         </div>
                       )}
-                      {/* Physical button depth effect */}
+                      {/* Subtle gradient overlay for mobile - Professional depth */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/20 to-transparent rounded-2xl pointer-events-none sm:hidden" />
                       )}
-                      {/* Shimmer effect */}
+                      {/* Additional subtle border highlight for mobile */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
+                        <div className="absolute inset-0 rounded-2xl border border-white/60 pointer-events-none sm:hidden" />
+                      )}
+                      {/* Physical button depth effect - Desktop only */}
+                      {!isEnquiryDisabled(enquiry) && (
+                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+                      )}
+                      {/* Shimmer effect - Desktop only */}
+                      {!isEnquiryDisabled(enquiry) && (
+                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className="bg-black px-2 sm:px-4 py-1 sm:py-2.5 border-b border-black relative z-10">
+                      <div className={`bg-black ${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`}>
                         <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="flex items-center gap-2 sm:gap-2">
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
@@ -1467,16 +1616,47 @@ export default function EnquiryWall() {
                                   </h3>
                               
                               {/* "before [date]" below title, right aligned */}
-                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
-                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
-                                  </span>
-                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
-                                    {formatDeadlineText(enquiry.deadline)}
-                                  </span>
-                                </div>
-                              )}
+                              {enquiry.deadline && (() => {
+                                try {
+                                  let deadlineDate: Date;
+                                  
+                                  // Handle Firestore Timestamp (has toDate method)
+                                  if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+                                    deadlineDate = enquiry.deadline.toDate();
+                                  }
+                                  // Handle Firestore Timestamp object (has seconds and nanoseconds)
+                                  else if (enquiry.deadline?.seconds !== undefined) {
+                                    deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+                                  }
+                                  // Handle Date object
+                                  else if (enquiry.deadline instanceof Date) {
+                                    deadlineDate = enquiry.deadline;
+                                  }
+                                  // Handle string or number
+                                  else {
+                                    deadlineDate = new Date(enquiry.deadline);
+                                  }
+                                  
+                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                                    console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                                    return null;
+                                  }
+                                  
+                                  return (
+                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                        before {formatDate(deadlineDate.toISOString())}
+                                      </span>
+                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                        {formatDeadlineText(enquiry.deadline)}
+                                      </span>
+                                    </div>
+                                  );
+                                } catch (error) {
+                                  console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                                  return null;
+                                }
+                              })()}
                               
                               {/* Badges Row */}
                               <div className="flex items-center gap-0.5 sm:gap-2 flex-wrap">
@@ -1520,16 +1700,47 @@ export default function EnquiryWall() {
                                 </h3>
                               
                               {/* "before [date]" below title, right aligned */}
-                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
-                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
-                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
-                                  </span>
-                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
-                                    {formatDeadlineText(enquiry.deadline)}
-                                  </span>
-                                </div>
-                              )}
+                              {enquiry.deadline && (() => {
+                                try {
+                                  let deadlineDate: Date;
+                                  
+                                  // Handle Firestore Timestamp (has toDate method)
+                                  if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+                                    deadlineDate = enquiry.deadline.toDate();
+                                  }
+                                  // Handle Firestore Timestamp object (has seconds and nanoseconds)
+                                  else if (enquiry.deadline?.seconds !== undefined) {
+                                    deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+                                  }
+                                  // Handle Date object
+                                  else if (enquiry.deadline instanceof Date) {
+                                    deadlineDate = enquiry.deadline;
+                                  }
+                                  // Handle string or number
+                                  else {
+                                    deadlineDate = new Date(enquiry.deadline);
+                                  }
+                                  
+                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                                    console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                                    return null;
+                                  }
+                                  
+                                  return (
+                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                        before {formatDate(deadlineDate.toISOString())}
+                                      </span>
+                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                        {formatDeadlineText(enquiry.deadline)}
+                                      </span>
+                                    </div>
+                                  );
+                                } catch (error) {
+                                  console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                                  return null;
+                                }
+                              })()}
                               
                                 {/* Show verified badge if: 
                                     1. User has profile-level verification (applies to all enquiries), OR
