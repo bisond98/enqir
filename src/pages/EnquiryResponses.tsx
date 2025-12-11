@@ -2785,7 +2785,7 @@ const EnquiryResponses = () => {
                     {/* Budget Section */}
                     <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0">
                       <div className="text-left min-w-0 flex-1">
-                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Your Budget</div>
+                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Buyer's Budget</div>
                         <div className="text-[10px] sm:text-sm font-bold text-white truncate">{formatBudget(enquiry.budget)}</div>
                         </div>
                       </div>
@@ -3502,50 +3502,50 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Payment: 50% advance, 50% on delivery")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/payment"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/payment"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/payment:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/payment:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Payment</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Delivery: 3-5 days")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/delivery"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/delivery"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delivery:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/delivery:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Delivery</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Bulk discounts available")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bulk"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/bulk"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/bulk:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/bulk:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Bulk</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Quality guarantee included")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/quality"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/quality"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/quality:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/quality:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Quality</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we schedule a meetup to discuss details?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/meetup:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Meetup</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("I sell samples for testing")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/samples"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/samples:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/samples:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Samples</span>
                             </button>
                             {/* Spacer for mobile to balance padding */}
@@ -3557,42 +3557,42 @@ const EnquiryResponses = () => {
                           <>
                             <button
                               onClick={() => setNewMessage("Can you provide more details about pricing?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/pricing"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/pricing"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/pricing:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/pricing:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Pricing</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What's the delivery timeline?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/timeline"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/timeline"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/timeline:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/timeline:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Timeline</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can you share more images?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/images"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/images"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/images:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/images:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Images</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("What are the payment terms?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/terms"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/terms"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/terms:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/terms:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Terms</span>
                             </button>
                             <button
                               onClick={() => setNewMessage("Can we meet in person to discuss?")}
-                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-gradient-to-b from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-black border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup2"
+                              className="flex-shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3 text-[8px] sm:text-[9px] lg:text-[10px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl font-normal min-touch transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/meetup2"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/meetup2:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/meetup2:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               <span className="relative z-10">Meetup</span>
                             </button>
                             <button

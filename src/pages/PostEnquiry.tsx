@@ -2695,9 +2695,9 @@ export default function PostEnquiry() {
                       
                           {/* Image Upload Status - Sleek Design */}
                       {(idFrontImage || idFrontUrl) && (
-                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-gradient-to-r from-black via-gray-900 to-black relative overflow-hidden">
+                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-white relative overflow-hidden">
                               {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                               <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
                                 {/* Success Icon with Animation */}
                                 <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
@@ -2706,8 +2706,8 @@ export default function PostEnquiry() {
                                 
                                 {/* Text Content */}
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-[11px] sm:text-lg font-bold text-white truncate leading-tight">ID Image Uploaded</p>
-                                  <p className="text-[8px] sm:text-sm text-gray-300 mt-0">Ready for verification</p>
+                                  <p className="text-[11px] sm:text-lg font-bold text-black truncate leading-tight">ID Image Uploaded</p>
+                                  <p className="text-[8px] sm:text-sm text-gray-600 mt-0">Ready for verification</p>
                                 </div>
                               </div>
                               
@@ -2830,7 +2830,7 @@ export default function PostEnquiry() {
                             }
                           }}
                               disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                          className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-4 !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                          className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
                         >
                           {/* Physical button depth effect */}
                           <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />

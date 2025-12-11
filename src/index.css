@@ -46,18 +46,28 @@
   [class*="transition-"],
   [class*="motion-"],
   button:hover,
-  a:hover {
-    will-change: transform;
+  a:hover,
+  [class*="hover:"] {
+    will-change: transform, opacity;
     transform: translateZ(0);
+    -webkit-transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
   }
   
   /* Optimize scrollable containers */
   [class*="overflow-auto"],
   [class*="overflow-scroll"],
-  [class*="overflow-y-auto"] {
+  [class*="overflow-y-auto"],
+  [class*="overflow-x-auto"] {
     -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
     will-change: scroll-position;
+    contain: layout style paint;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   @keyframes spin {
@@ -271,14 +281,25 @@
   
   /* Optimize all transitions and animations for ultra-smooth feel */
   * {
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.2s;
   }
   
   /* Smoother transitions for interactive elements */
   button, a, input, select, textarea {
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    transition-duration: 0.25s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.15s;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Optimize hover states for smoother interactions */
+  button:hover, a:hover, [role="button"]:hover {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   /* Optimize scroll performance */
@@ -294,18 +315,26 @@
   /* Performance: Optimize cards and interactive elements */
   .card,
   [class*="Card"] {
-    contain: layout style;
+    contain: layout style paint;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   /* Performance: Reduce repaints on hover */
   button,
   a,
   [role="button"] {
-    will-change: transform;
+    will-change: transform, opacity;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    transition-property: transform, opacity, box-shadow, background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.15s;
   }
   
   /* Performance: Optimize images */
@@ -318,6 +347,14 @@
   html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+  
+  /* Optimize body scrolling */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
   
   @media (prefers-reduced-motion: reduce) {
@@ -359,7 +396,12 @@
   .overflow-y-auto,
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
     will-change: scroll-position;
+    contain: layout style paint;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    scroll-behavior: smooth;
   }
   
   /* Reduce layout shifts */
@@ -374,6 +416,28 @@
     * {
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
+    
+    /* Smooth scale transforms */
+    [class*="scale-"],
+    [class*="hover:scale-"],
+    [class*="active:scale-"] {
+      will-change: transform;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    
+    /* Smooth translate transforms */
+    [class*="translate-"],
+    [class*="hover:-translate-"],
+    [class*="hover:translate-"] {
+      will-change: transform;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
   }
   
   /* Optimize images */
@@ -384,6 +448,16 @@
     /* Lazy loading optimization */
     loading: lazy;
     /* GPU acceleration for image transforms */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Optimize images on hover/transform */
+  img:hover,
+  img[class*="hover:"] {
+    will-change: transform;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
@@ -400,6 +474,12 @@
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    contain: layout style paint;
+    transition-property: transform, opacity, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.2s;
   }
   
   /* Fix for mobile Safari */
@@ -1264,29 +1344,37 @@
 @layer utilities {
   /* Mobile-First Animations */
   .animate-slide-up {
-    animation: slideUp 0.6s ease-out forwards;
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .animate-slide-down {
-    animation: slideDown 0.6s ease-out forwards;
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     will-change: opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s ease-out forwards;
+    animation: scaleIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .animate-float {
@@ -1467,18 +1555,18 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translate3d(0, 20px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translate3d(0, -30px, 0);
+    transform: translate3d(0, -20px, 0);
   }
   to {
     opacity: 1;
@@ -1498,11 +1586,11 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale3d(0.9, 0.9, 1);
+    transform: scale3d(0.95, 0.95, 1) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1) translateZ(0);
   }
 }
 
@@ -1836,11 +1924,19 @@
 
   /* Mobile-First Animations */
   .animate-mobile {
-    @apply transition-all duration-200 ease-out;
+    @apply transition-all duration-150 ease-out;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
   }
 
   .hover-mobile {
-    @apply hover:scale-105 hover:shadow-lg transition-all duration-200;
+    @apply hover:scale-105 hover:shadow-lg transition-all duration-150;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   /* Touch-Friendly Dropdowns */
