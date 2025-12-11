@@ -60,25 +60,28 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
           <Button
             onClick={handleSignOut}
             disabled={isLoading}
-            className="w-full sm:flex-1 text-white font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/logout"
+            variant="outline"
+            className="w-full sm:flex-1 !bg-black !text-white !border-black hover:!bg-black hover:!text-white hover:!border-black font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/logout"
             style={{ 
-              backgroundColor: '#000000', 
-              color: '#ffffff', 
-              borderColor: '#000000',
+              backgroundColor: '#000000 !important', 
+              color: '#ffffff !important', 
+              borderColor: '#000000 !important',
               borderWidth: '0.5px',
-              backgroundImage: 'none'
+              backgroundImage: 'none !important'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#1f2937';
+              e.currentTarget.style.setProperty('background-color', '#000000', 'important');
+              e.currentTarget.style.setProperty('color', '#ffffff', 'important');
+              e.currentTarget.style.setProperty('border-color', '#000000', 'important');
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#000000';
+              e.currentTarget.style.setProperty('background-color', '#000000', 'important');
+              e.currentTarget.style.setProperty('color', '#ffffff', 'important');
+              e.currentTarget.style.setProperty('border-color', '#000000', 'important');
             }}
           >
-            {/* Physical button depth effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-            {/* Shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/logout:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+            {/* Physical button depth effect - Removed for pure black */}
+            {/* Shimmer effect - Removed for pure black */}
             {isLoading ? (
               <div className="flex items-center justify-center gap-2 relative z-10">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
