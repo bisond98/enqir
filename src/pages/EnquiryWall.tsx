@@ -618,7 +618,7 @@ export default function EnquiryWall() {
   }, [enquiries]);
 
   // AI-powered search function
-  const handleAISearch = async (term: string) => {
+  const handleAISearch = useCallback(async (term: string) => {
     if (!term.trim()) {
       setAiSearchResults(null);
       setIsAISearching(false);
@@ -635,7 +635,7 @@ export default function EnquiryWall() {
     } finally {
       setIsAISearching(false);
     }
-  };
+  }, [enquiries]);
 
   // Generate suggestions from actual enquiry data
   const generateSuggestions = (searchValue: string): string[] => {
@@ -715,15 +715,30 @@ export default function EnquiryWall() {
         setSearchSuggestions(suggestions);
         setShowSuggestions(suggestions.length > 0);
         
-        // Perform AI search
-        await handleAISearch(value);
+        // Perform AI search - call directly to avoid dependency issues
+        if (!value.trim()) {
+          setAiSearchResults(null);
+          setIsAISearching(false);
+          return;
+        }
+        
+        setIsAISearching(true);
+        try {
+          const searchResults = await AISearchService.searchEnquiries(enquiries, value);
+          setAiSearchResults(searchResults);
+        } catch (error) {
+          console.error('AI Search Error:', error);
+          setAiSearchResults(null);
+        } finally {
+          setIsAISearching(false);
+        }
       } else {
         setSearchSuggestions([]);
         setShowSuggestions(false);
         setAiSearchResults(null);
       }
     }, 300),
-    []
+    [enquiries]
   );
 
   // Handle search input with AI suggestions (optimized with debouncing)
@@ -853,29 +868,59 @@ export default function EnquiryWall() {
     }
   };
 
-  // Get final results - AI search completely overrides original search (memoized for performance)
+  // Get final results - Regular search always works, AI search enhances results (memoized for performance)
   const finalResults = useMemo(() => {
-    let results: Enquiry[] = [];
+    const searchLower = searchTerm?.toLowerCase().trim() || '';
     
-    // If AI search is active, use AI results only
-    if (aiSearchResults) {
-      results = aiSearchResults.results;
-    } else {
-      // If no AI search, use original filtering logic
-      results = enquiries.filter(enquiry => {
-        const matchesSearch = !searchTerm || 
-          enquiry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          enquiry.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === "all" || 
-          enquiry.category === selectedCategory || 
-          (enquiry.categories && enquiry.categories.includes(selectedCategory));
-        return matchesSearch && matchesCategory;
-      });
+    // Always apply regular search filtering first
+    let results = enquiries.filter(enquiry => {
+      // Enhanced search matching - check multiple fields
+      const matchesSearch = !searchLower || (() => {
+        // Check title/heading - prioritize exact title matches
+        if (enquiry.title) {
+          const titleLower = enquiry.title.toLowerCase().trim();
+          if (titleLower.includes(searchLower)) return true;
+          // Also check if search term matches any word in title
+          const titleWords = titleLower.split(/\s+/);
+          if (titleWords.some(word => word.includes(searchLower) || searchLower.includes(word))) return true;
+        }
+        // Check description
+        if (enquiry.description && enquiry.description.toLowerCase().includes(searchLower)) return true;
+        // Check category
+        if (enquiry.category && enquiry.category.toLowerCase().includes(searchLower)) return true;
+        // Check categories array
+        if (enquiry.categories && Array.isArray(enquiry.categories)) {
+          if (enquiry.categories.some(cat => cat && cat.toLowerCase().includes(searchLower))) return true;
+        }
+        // Check location
+        if (enquiry.location && enquiry.location.toLowerCase().includes(searchLower)) return true;
+        // Check budget (if search term matches budget string)
+        if (enquiry.budget) {
+          const budgetStr = typeof enquiry.budget === 'string' ? enquiry.budget : String(enquiry.budget);
+          if (budgetStr.includes(searchTerm)) return true;
+        }
+        return false;
+      })();
+      
+      const matchesCategory = selectedCategory === "all" || 
+        enquiry.category === selectedCategory || 
+        (enquiry.categories && enquiry.categories.includes(selectedCategory));
+      return matchesSearch && matchesCategory;
+    });
+    
+    // If AI search is active, combine AI results with regular search results
+    // Both work together - regular search for exact matches, AI search for semantic matches
+    if (aiSearchResults && aiSearchResults.results && aiSearchResults.results.length > 0) {
+      // Combine both results - regular search results first (exact matches), then AI results
+      const regularResultIds = new Set(results.map(e => e.id));
+      const aiResults = aiSearchResults.results.filter(e => !regularResultIds.has(e.id));
+      // Merge: regular search results first (exact matches), then AI results (semantic matches)
+      results = [...results, ...aiResults];
     }
     
     // Sort: User's enquiries in selected category first, then others
     if (selectedCategory !== "all") {
-      return [...results].sort((a, b) => {
+      results = [...results].sort((a, b) => {
         // Check if enquiry matches the selected category
         const aMatchesCategory = a.category === selectedCategory || 
           (a.categories && a.categories.includes(selectedCategory));
@@ -1140,7 +1185,7 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
                 <div className="relative">
                 <input
                   ref={searchInputRef}
@@ -1173,17 +1218,27 @@ export default function EnquiryWall() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                 </div>
                 {isAISearching ? (
-                  <div className="absolute right-10 sm:right-12 top-1/2 transform -translate-y-1/2 z-10">
+                  <div className="absolute right-10 sm:right-12 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => handleSearchChange(searchTerm)}
-                    className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 z-10 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSearchChange(searchTerm);
+                    }}
+                    className="absolute right-2 sm:right-3 top-1/2 z-50 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation cursor-pointer"
                     aria-label="Search"
+                    style={{ 
+                      pointerEvents: 'auto',
+                      transform: 'translateY(-50%)',
+                      top: '50%',
+                      willChange: 'auto'
+                    }}
                   >
-                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black pointer-events-none" />
                   </button>
                 )}
                 

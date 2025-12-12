@@ -93,7 +93,26 @@ export default function MyChats() {
     if (viewMode === 'buyer') {
       if (chat.isBuyerChat !== true) return false;
       
-      // For buyer chats, check if seller is in locked position
+      // Check if this is a "ready to chat" item (no actual messages yet)
+      const isReadyToChat = chat.lastMessage?.text === "Ready to chat - Click to start conversation" ||
+        (!chat.lastMessage || (chat.unreadCount === 0 && chat.lastMessage?.text?.includes("Ready to chat")));
+      
+      // Always show "ready to chat" items regardless of premium limits
+      // These are new approved responses that haven't been viewed yet
+      if (isReadyToChat) {
+        // Check if user has viewed this chat
+        if (chat.enquiryId && chat.sellerId) {
+          const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
+          const readKey = `chat_read_${user?.uid}_${threadKey}`;
+          const lastViewedTime = localStorage.getItem(readKey);
+          // If not viewed, always show it (this matches the notification badge logic)
+          if (!lastViewedTime) return true;
+        } else {
+          return true;
+        }
+      }
+      
+      // For buyer chats with messages, check if seller is in locked position
       if (chat.enquiryId && chat.sellerId) {
         const enquiryData = enquiryDataMap.get(chat.enquiryId);
         if (enquiryData) {
@@ -126,7 +145,7 @@ export default function MyChats() {
                 responseLimit = 2;
             }
             
-            // Hide chats with sellers beyond the limit
+            // Hide chats with sellers beyond the limit (only for chats with messages)
             if (responseLimit !== -1 && sellerPosition > responseLimit) {
               return false;
             }
