@@ -1944,13 +1944,13 @@ const Landing = () => {
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
                         type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
-                        duration: isShuffling ? 0.4 : undefined,
+                        duration: isShuffling ? 0.5 : undefined,
                         // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
-                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
-                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
-                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
-                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
-                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
+                        stiffness: isShuffling ? undefined : (isMobile ? 90 : 70), // Reduced for smoother motion
+                        damping: isShuffling ? undefined : (isMobile ? 22 : 18), // Increased damping for smoother stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.5 : 0.7), // Adjusted for smoother response
+                        ease: isShuffling ? [0.4, 0, 0.2, 1] : undefined, // Smoother easing curve
+                        delay: isShuffling ? index * 0.05 : 0 // Faster stagger for smoother loading
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
@@ -2031,11 +2031,12 @@ const Landing = () => {
                 scale: isHovered ? 1.02 : 1,
               }}
               transition={{ 
-                duration: 0.5, 
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.6, 
+                ease: [0.4, 0, 0.2, 1],
                 type: "spring",
-                stiffness: 300,
-                damping: 30
+                stiffness: 180,
+                damping: 25,
+                mass: 0.8
               }}
               style={{ 
                 backgroundColor: 'white',
@@ -2043,12 +2044,12 @@ const Landing = () => {
                 perspective: '1000px',
                 willChange: 'transform',
                 filter: isHovered 
-                  ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' 
-                  : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+                  ? 'drop-shadow(0 8px 20px rgba(0,0,0,0.12))' 
+                  : 'drop-shadow(0 3px 8px rgba(0,0,0,0.08))',
                 boxShadow: isHovered 
-                  ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
-                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
-                transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
+                  ? '0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.02)'
+                  : '0 8px 16px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.6), inset 0 -1px 2px rgba(0,0,0,0.015)',
+                transition: 'filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
               }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}

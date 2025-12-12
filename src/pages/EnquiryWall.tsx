@@ -9,6 +9,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
@@ -52,6 +58,7 @@ export default function EnquiryWall() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scroll sound effect refs
@@ -569,7 +576,12 @@ export default function EnquiryWall() {
         // Batch fetch profiles for better performance
         const profilePromises = userIds.map(async (userId) => {
           try {
-            const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+            // Try 'userProfiles' first
+            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+            if (!profileDoc.exists()) {
+              // Fallback to 'profiles' collection
+              profileDoc = await getDoc(doc(db, 'profiles', userId));
+            }
             if (profileDoc.exists()) {
               return { userId, data: profileDoc.data() };
             }
@@ -906,8 +918,29 @@ export default function EnquiryWall() {
   
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
-    return showCategoryFallback ? enquiries : filteredEnquiries;
-  }, [showCategoryFallback, enquiries, filteredEnquiries]);
+    let results = showCategoryFallback ? enquiries : filteredEnquiries;
+    
+    // Filter by trust badge if enabled - match the exact conditions for blue tick display
+    if (showTrustBadgeOnly) {
+      results = results.filter(enquiry => {
+        const profile = userProfiles[enquiry.userId];
+        // Match the exact conditions used to display the blue tick in the card header
+        // Grid view: userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage
+        // List view: (userProfiles[enquiry.userId]?.isProfileVerified || userProfiles[enquiry.userId]?.isVerified || userProfiles[enquiry.userId]?.trustBadge || userProfiles[enquiry.userId]?.isIdentityVerified) || enquiry.idFrontImage || enquiry.idBackImage
+        const hasTrustBadge = 
+          profile?.isProfileVerified || 
+          profile?.isVerified ||
+          profile?.trustBadge ||
+          profile?.isIdentityVerified ||
+          enquiry.idFrontImage || 
+          enquiry.idBackImage;
+        
+        return hasTrustBadge;
+      });
+    }
+    
+    return results;
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles]);
 
   // Memoize helper functions for better performance
   const isOwnEnquiry = useCallback((enquiry: Enquiry) => {
@@ -1391,10 +1424,51 @@ export default function EnquiryWall() {
             <h3 className="text-sm sm:text-xl font-semibold text-foreground">
               {displayEnquiries.length} enquiries
             </h3>
-            <div 
-              className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
-              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            >
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Trust Badge Filter */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 flex items-center justify-center ${
+                      showTrustBadgeOnly ? "border border-blue-800" : ""
+                    }`}
+                    style={{
+                      borderWidth: showTrustBadgeOnly ? '1px' : '0px'
+                    }}
+                    title="Filter enquiries"
+                  >
+                    <Filter 
+                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0"
+                      style={{
+                        fill: showTrustBadgeOnly ? '#3b82f6' : '#ffffff'
+                      }}
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
+                  showTrustBadgeOnly 
+                    ? "bg-[#800020] border-[#6b0019]" 
+                    : "bg-blue-600 border-blue-700"
+                }`}>
+                  <DropdownMenuCheckboxItem
+                    checked={showTrustBadgeOnly}
+                    onCheckedChange={setShowTrustBadgeOnly}
+                    className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-sm sm:text-base text-white flex items-center justify-center text-center [&>span]:hidden ${
+                      showTrustBadgeOnly 
+                        ? "hover:bg-[#6b0019] hover:text-white focus:bg-[#6b0019] focus:text-white" 
+                        : "hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white"
+                    }`}
+                  >
+                    {showTrustBadgeOnly ? "Remove filter" : "Trust badge only"}
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Grid/List Toggle */}
+              <div 
+                className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              >
               {/* Track background */}
               <div className="relative w-16 h-6 sm:w-20 sm:h-7 flex items-center">
                 {/* Icons on sides */}
@@ -1423,6 +1497,7 @@ export default function EnquiryWall() {
                 >
                   <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-gray-300 rounded-full"></div>
             </motion.div>
+              </div>
               </div>
             </div>
           </div>

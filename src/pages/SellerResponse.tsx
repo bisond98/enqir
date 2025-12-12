@@ -1221,10 +1221,13 @@ const SellerResponse = () => {
               </h1>
             </div>
             
-            <div className="text-center mb-3 sm:mb-4 lg:mb-6">
-              <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white/90 max-w-2xl mx-auto px-2">
-                Share your offer for: <span className="font-semibold">"{enquiry?.title}".</span>
-              </p>
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white/90 max-w-2xl mx-auto px-2">
+                  Share your offer for: <span className="font-semibold">"{enquiry?.title}".</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
