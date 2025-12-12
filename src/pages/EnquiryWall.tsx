@@ -58,7 +58,7 @@ export default function EnquiryWall() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(true);
+  const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scroll sound effect refs
