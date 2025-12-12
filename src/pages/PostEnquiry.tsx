@@ -1813,7 +1813,7 @@ export default function PostEnquiry() {
                         placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                            className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                            className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
                       />
@@ -2071,7 +2071,7 @@ export default function PostEnquiry() {
                         }}
                         rows={5}
                         maxLength={500}
-                        className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -2194,7 +2194,7 @@ export default function PostEnquiry() {
                               setBudget('₹' + e.target.value);
                             }
                           }}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2216,7 +2216,7 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
@@ -2265,7 +2265,7 @@ export default function PostEnquiry() {
                         <Textarea
                           id="notes"
                           placeholder="Additional requirements or preferences..."
-                          className="border border-black focus:border-black focus:ring-4 focus:ring-black/20 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           value={notes}
                           onChange={(e) => setNotes(e.target.value)}
                           rows={4}
@@ -2582,7 +2582,7 @@ export default function PostEnquiry() {
                                     validateIdNumber(value, govIdType);
                                   }
                             }}
-                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
                             disabled={verifyingId}
                           />
                           {/* Physical button depth effect */}
