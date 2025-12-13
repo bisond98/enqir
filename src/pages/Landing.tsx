@@ -854,8 +854,8 @@ const Landing = () => {
         }
       });
       
-      // Set all live enquiries for count and search (includes expired for count/search)
-      setAllLiveEnquiries(uniqueItems);
+      // Set all live enquiries for count and search (only non-expired enquiries)
+      setAllLiveEnquiries(liveEnquiries);
       
       // Set display enquiries - only live (not expired) enquiries for the 3 cards
       // Store all live enquiries for shuffling (not just first 3)
@@ -1756,9 +1756,9 @@ const Landing = () => {
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs sm:text-xs font-bold text-black">
-                  {allLiveEnquiries.length} Live Enquiries
+                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
+                  {allLiveEnquiries.length} real buyers waiting for the right seller
                 </span>
               </div>
             </div>

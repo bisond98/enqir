@@ -54,6 +54,7 @@ export default function EnquiryWall() {
   const { user: authUser } = useAuth();
   const [searchParams] = useSearchParams();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -500,6 +501,9 @@ export default function EnquiryWall() {
         });
         
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
+        
+        // Set live enquiries count for display
+        setLiveEnquiriesCount(liveEnquiries.length);
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -960,6 +964,44 @@ export default function EnquiryWall() {
   const showCategoryFallback = useMemo(() => {
     return filteredEnquiries.length === 0 && selectedCategory !== "all" && !aiSearchResults;
   }, [filteredEnquiries.length, selectedCategory, aiSearchResults]);
+  
+  // Count trust badge enquiries from live enquiries
+  const trustBadgeEnquiriesCount = useMemo(() => {
+    const now = new Date();
+    const liveEnquiries = enquiries.filter(enquiry => {
+      // Only count live (non-expired) enquiries
+      if (!enquiry.deadline) return true;
+      try {
+        let deadlineDate: Date;
+        if (enquiry.deadline?.toDate) {
+          deadlineDate = enquiry.deadline.toDate();
+        } else if (enquiry.deadline?.seconds !== undefined) {
+          deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+        } else if (enquiry.deadline instanceof Date) {
+          deadlineDate = enquiry.deadline;
+        } else {
+          deadlineDate = new Date(enquiry.deadline);
+        }
+        if (!deadlineDate || isNaN(deadlineDate.getTime())) return true;
+        return deadlineDate.getTime() >= now.getTime();
+      } catch {
+        return true;
+      }
+    });
+    
+    // Filter to only trust badge enquiries
+    return liveEnquiries.filter(enquiry => {
+      const profile = userProfiles[enquiry.userId];
+      const hasTrustBadge = 
+        profile?.isProfileVerified || 
+        profile?.isVerified ||
+        profile?.trustBadge ||
+        profile?.isIdentityVerified ||
+        enquiry.idFrontImage || 
+        enquiry.idBackImage;
+      return hasTrustBadge;
+    }).length;
+  }, [enquiries, userProfiles]);
   
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
@@ -1476,9 +1518,15 @@ export default function EnquiryWall() {
 
           {/* View Toggle */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h3 className="text-sm sm:text-xl font-semibold text-foreground">
-              {displayEnquiries.length} enquiries
-            </h3>
+            <div className="inline-flex items-center gap-1 sm:gap-2">
+              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
+                {showTrustBadgeOnly 
+                  ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
+                  : `${liveEnquiriesCount} real buyers waiting for the right seller`
+                }
+              </span>
+            </div>
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Trust Badge Filter */}
               <DropdownMenu>
@@ -1808,7 +1856,7 @@ export default function EnquiryWall() {
                             {/* Description - Lower position for mobile list view */}
                             {enquiry.description && (
                               <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
-                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-2 text-center max-w-full">
+                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-5 text-center max-w-xs sm:max-w-sm">
                                 {enquiry.description}
                               </p>
                             </div>

@@ -701,6 +701,28 @@ const EnquiryDetail = () => {
               </h1>
             </div>
             
+            {/* Deadline Date with Countdown in Header */}
+            {enquiry.deadline && formatDeadlineReadable(enquiry.deadline) && (
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap px-2">
+                <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 md:px-5 py-2.5 sm:py-3 shadow-lg">
+                  <span className="text-[10px] sm:text-xs text-gray-300 font-normal">before</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
+                    <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                    <span>{formatDeadlineReadable(enquiry.deadline)}</span>
+                  </span>
+                  <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Clock className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-gray-300 flex-shrink-0" />
+                    <CountdownTimer 
+                      deadline={enquiry.deadline} 
+                      showIcon={false} 
+                      className="[&_*]:!text-white [&_*]:!border-red-600 [&_*]:!bg-red-600 [&_*]:!font-semibold" 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
@@ -733,34 +755,6 @@ const EnquiryDetail = () => {
                     {getStatusBadge(enquiry.status)}
                   </div>
                   
-                  {/* Deadline Row - Creative Design */}
-                  {enquiry.deadline && (
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap px-2">
-                    <span className="text-[10px] sm:text-xs lg:text-sm font-normal text-gray-300">before</span>
-                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 md:px-5 py-2.5 sm:py-3 shadow-lg">
-                        {/* Countdown Timer with Icon */}
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                        <Clock className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-gray-300 flex-shrink-0" />
-                          <CountdownTimer 
-                            deadline={enquiry.deadline} 
-                            showIcon={false} 
-                          className="[&_*]:!text-white [&_*]:!border-gray-600 [&_*]:!bg-gray-800 [&_*]:!font-semibold" 
-                          />
-                        </div>
-                        
-                        {/* Date Separator and Display */}
-                        {formatDeadlineReadable(enquiry.deadline) && (
-                          <>
-                          <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
-                          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
-                            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                              <span>{formatDeadlineReadable(enquiry.deadline)}</span>
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

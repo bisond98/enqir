@@ -706,90 +706,90 @@ const HelpGuide = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
             <CardHeader className="bg-black text-white rounded-t-2xl relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-white">
-                  <ShoppingCart className="h-5 w-5 text-black" />
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-white">
+                  <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
                 </div>
-                <CardTitle className="text-base sm:text-lg font-black text-white">
+                <CardTitle className="text-sm sm:text-base font-black text-white">
                   For Buyers - How It Works
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
-                  <div className="flex items-start gap-4 mb-3 relative z-10">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
                       1
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Post Your Enquiry</p>
+                      <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Post Your Enquiry</p>
                     </div>
                   </div>
                   <div className="relative z-10 pl-0">
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Go to "Post Enquiry", fill in what you need, your budget, and location.</p>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Go to "Post Enquiry", fill in what you need, your budget, and location.</p>
                   </div>
                 </div>
-                <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
-                  <div className="flex items-start gap-4 mb-3 relative z-10">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
                       2
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Choose Premium (Optional)</p>
+                      <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Choose Premium (Optional)</p>
                     </div>
                   </div>
                   <div className="relative z-10 pl-0">
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Get more than 2 responses from different sellers with different offers. Select what's better for you.</p>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Get more than 2 responses from different sellers with different offers. Select what's better for you.</p>
                   </div>
                 </div>
-                <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
-                  <div className="flex items-start gap-4 mb-3 relative z-10">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
                       3
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Add Trust Badge (Optional)</p>
+                      <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Add Trust Badge (Optional)</p>
                     </div>
                   </div>
                   <div className="relative z-10 pl-0">
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Complete KYC in your profile - all your enquiries get trust badge automatically. You can remove it anytime. Or complete KYC in enquiry form for that enquiry only.</p>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Complete KYC in your profile - all your enquiries get trust badge automatically. You can remove it anytime. Or complete KYC in enquiry form for that enquiry only.</p>
                   </div>
                 </div>
-                <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
-                  <div className="flex items-start gap-4 mb-3 relative z-10">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
                       4
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">AI Verifies Instantly</p>
+                      <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">AI Verifies Instantly</p>
                     </div>
                   </div>
                   <div className="relative z-10 pl-0">
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Our AI verifies your enquiry and matches you with the right sellers automatically.</p>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Our AI verifies your enquiry and matches you with the right sellers automatically.</p>
                   </div>
                 </div>
-                <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
-                  <div className="flex items-start gap-4 mb-3 relative z-10">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
                       5
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Track from Dashboard</p>
+                      <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Track from Dashboard</p>
                     </div>
                   </div>
                   <div className="relative z-10 pl-0">
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Track all your enquiries from the dashboard.</p>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Track all your enquiries from the dashboard.</p>
                   </div>
                 </div>
                 <div className="group/step flex flex-col p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
@@ -816,81 +816,81 @@ const HelpGuide = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
             <CardHeader className="bg-black text-white rounded-t-2xl relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-white">
-                  <Store className="h-5 w-5 text-black" />
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-white">
+                  <Store className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
                 </div>
-                <CardTitle className="text-base sm:text-lg font-black text-white">
+                <CardTitle className="text-sm sm:text-base font-black text-white">
                   For Sellers - How It Works
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 relative z-10">
-              <div className="space-y-4">
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+              <div className="space-y-3">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     1
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">Browse Live Enquiries</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Go to "Live Enquiries" and find enquiries that match what you sell.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Browse Live Enquiries</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Go to "Live Enquiries" and find enquiries that match what you sell.</p>
                   </div>
                 </div>
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     2
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">Send Your Offer</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Click "Respond" on any enquiry, add your price, description, and upload product images.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Send Your Offer</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Click "Respond" on any enquiry, add your price, description, and upload product images.</p>
                   </div>
                 </div>
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     3
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">Add Trust Badge (Optional)</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Complete KYC in your profile - all your responses get trust badge automatically. You can remove it anytime. Or complete KYC in response form for that response only.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Add Trust Badge (Optional)</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Complete KYC in your profile - all your responses get trust badge automatically. You can remove it anytime. Or complete KYC in response form for that response only.</p>
                   </div>
                 </div>
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     4
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">AI Auto-Approves</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Our AI instantly approves quality responses, so buyers see your offer faster.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">AI Auto-Approves</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Our AI instantly approves quality responses, so buyers see your offer faster.</p>
                   </div>
                 </div>
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     5
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">Get Chatted</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Buyers will chat with you about their needs. Answer questions and share details.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Get Chatted</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Buyers will chat with you about their needs. Answer questions and share details.</p>
                   </div>
                 </div>
-                <div className="group/step flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
+                <div className="group/step flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border-[1px] border-gray-300 shadow-[0_2px_4px_rgba(0,0,0,0.08),inset_0_1px_2px_rgba(255,255,255,0.8)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all duration-300 hover:border-gray-400 hover:-translate-y-0.5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-gray-50/30 rounded-xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
+                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-black to-gray-800 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-[0_3px_6px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] group-hover/step:scale-110 transition-transform duration-300">
                     6
                   </div>
                   <div className="flex-1 relative z-10">
-                    <p className="text-sm sm:text-base font-black text-gray-900 mb-2 group-hover/step:text-black transition-colors">Close the Sale</p>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Finalize terms with buyers and complete the sale.</p>
+                    <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Close the Sale</p>
+                    <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Finalize terms with buyers and complete the sale.</p>
                   </div>
                 </div>
               </div>
@@ -937,30 +937,30 @@ const HelpGuide = () => {
                   id={section.id}
                   className="border-[0.5px] border-black bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300"
                 >
-                  <CardHeader className="bg-black text-white pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-lg bg-white">
-                        <Icon className="h-6 w-6 text-black" />
+                  <CardHeader className="bg-black text-white pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-white">
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
                       </div>
-                      <CardTitle className="text-base sm:text-lg font-black text-white">
+                      <CardTitle className="text-sm sm:text-base font-black text-white">
                         {section.title}
                       </CardTitle>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 sm:p-6 space-y-6">
+                  <CardContent className="p-3 sm:p-4 space-y-4">
                     {section.content.map((item, index) => (
-                      <div key={index} className="border-l-4 border-black pl-4 sm:pl-6">
-                        <h3 className="text-lg sm:text-xl font-black text-black mb-2">
+                      <div key={index} className="border-l-4 border-black pl-3 sm:pl-4">
+                        <h3 className="text-sm sm:text-base font-black text-black mb-1.5">
                           {item.title}
                         </h3>
-                        <p className="text-sm sm:text-base text-gray-700 mb-4">
+                        <p className="text-xs sm:text-sm text-gray-700 mb-3">
                           {item.description}
                         </p>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           {item.steps.map((step, stepIndex) => (
                             <div key={stepIndex} className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-black flex-shrink-0 mt-0.5" />
-                              <p className="text-sm text-gray-700 flex-1">{step}</p>
+                              <CheckCircle className="h-4 w-4 text-black flex-shrink-0 mt-0.5" />
+                              <p className="text-xs sm:text-sm text-gray-700 flex-1">{step}</p>
                             </div>
                           ))}
                         </div>
@@ -976,13 +976,13 @@ const HelpGuide = () => {
           <div className="mt-8 sm:mt-12">
             <Card className="border-[0.5px] border-black bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-2xl overflow-hidden">
               <CardHeader className="bg-black text-white rounded-t-2xl">
-                <CardTitle className="text-base sm:text-lg font-black text-white text-center">
+                <CardTitle className="text-sm sm:text-base font-black text-white text-center">
                   Ready to Get Started?
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 sm:p-8 text-center">
-                <p className="text-sm sm:text-base text-gray-700 mb-6">
-                  Join thousands of users buying and selling on Enqir
+              <CardContent className="p-4 sm:p-5 text-center">
+                <p className="text-xs sm:text-sm text-gray-700 mb-4">
+                  do Enqir
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
                   <Button
