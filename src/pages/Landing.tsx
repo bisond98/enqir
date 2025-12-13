@@ -1686,7 +1686,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -1944,13 +1944,13 @@ const Landing = () => {
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
                         type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
-                        duration: isShuffling ? 0.5 : undefined,
+                        duration: isShuffling ? 0.4 : undefined,
                         // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
-                        stiffness: isShuffling ? undefined : (isMobile ? 90 : 70), // Reduced for smoother motion
-                        damping: isShuffling ? undefined : (isMobile ? 22 : 18), // Increased damping for smoother stop
-                        mass: isShuffling ? undefined : (isMobile ? 0.5 : 0.7), // Adjusted for smoother response
-                        ease: isShuffling ? [0.4, 0, 0.2, 1] : undefined, // Smoother easing curve
-                        delay: isShuffling ? index * 0.05 : 0 // Faster stagger for smoother loading
+                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
+                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
+                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
+                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
@@ -2031,12 +2031,11 @@ const Landing = () => {
                 scale: isHovered ? 1.02 : 1,
               }}
               transition={{ 
-                duration: 0.6, 
-                ease: [0.4, 0, 0.2, 1],
+                duration: 0.5, 
+                ease: [0.22, 1, 0.36, 1],
                 type: "spring",
-                stiffness: 180,
-                damping: 25,
-                mass: 0.8
+                stiffness: 300,
+                damping: 30
               }}
               style={{ 
                 backgroundColor: 'white',
@@ -2044,12 +2043,12 @@ const Landing = () => {
                 perspective: '1000px',
                 willChange: 'transform',
                 filter: isHovered 
-                  ? 'drop-shadow(0 8px 20px rgba(0,0,0,0.12))' 
-                  : 'drop-shadow(0 3px 8px rgba(0,0,0,0.08))',
+                  ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' 
+                  : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
                 boxShadow: isHovered 
-                  ? '0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.02)'
-                  : '0 8px 16px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.6), inset 0 -1px 2px rgba(0,0,0,0.015)',
-                transition: 'filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+                  ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
+                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
               }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
@@ -2460,7 +2459,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',
@@ -2882,19 +2881,20 @@ const Landing = () => {
               </g>
             </svg>
             
-            {/* Help Guide Button */}
-            <div className="text-center mt-6 sm:mt-8">
-              <Button
-                onClick={() => navigate('/help-guide')}
-                className="group w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-gradient-to-b from-black to-gray-900 text-white hover:bg-gradient-to-b hover:from-gray-900 hover:to-black text-xs sm:text-base py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden font-black"
-              >
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                <span className="relative z-10">Learn More</span>
-                <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
-              </Button>
+            {/* Help Guide Button - Smaller and lean for mobile, grey/white color */}
+            <div className="text-center mt-4 sm:mt-6">
+              <Link to="/help-guide" className="w-full sm:w-auto group">
+                <button
+                  className="w-full sm:w-auto border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black py-2 sm:py-2.5 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white sm:min-w-[180px] relative overflow-hidden text-xs sm:text-sm"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <span className="relative z-10">Learn More</span>
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
