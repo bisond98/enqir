@@ -52,7 +52,16 @@ import AllChats from "./pages/AllChats";
 import ReportUser from "./pages/ReportUser";
 import HelpGuide from "./pages/HelpGuide";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    },
+  },
+});
 
 // Global fix to ensure body scroll is always enabled
 if (typeof window !== 'undefined') {

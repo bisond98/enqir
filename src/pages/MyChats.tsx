@@ -8,7 +8,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X, ArrowLeftRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -555,12 +555,13 @@ export default function MyChats() {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
-        {/* Header - Matching Seller Form Background - Full Width */}
+        {/* Header - Matching Dashboard Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
+                <div className="w-10 h-10"></div>
                 <div className="w-10 h-10"></div>
               </div>
             </div>
@@ -577,13 +578,21 @@ export default function MyChats() {
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-snug">
                     See all conversations you're currently having with buyers and sellers.
                   </p>
                 </div>
-            
                   {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
+                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
+                    {/* Both-sided Arrow Indicator */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="mb-2 sm:mb-3"
+                    >
+                      <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                    </motion.div>
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
