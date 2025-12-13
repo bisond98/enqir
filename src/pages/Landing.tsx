@@ -2886,10 +2886,10 @@ const Landing = () => {
             <div className="text-center mt-6 sm:mt-8">
               <Button
                 onClick={() => navigate('/help-guide')}
-                className="bg-black text-white hover:bg-gray-800 text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
+                className="bg-black text-white hover:bg-gray-800 text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
               >
-                Learn How to Use Enqir
-                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
+                Learn More
+                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
               </Button>
             </div>
           </div>
