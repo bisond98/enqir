@@ -303,22 +303,47 @@ const HelpGuide = () => {
     };
   }, [showPath]);
 
-  // Dismiss path on scroll
+  // Dismiss path on scroll - only on actual intentional scroll
   useEffect(() => {
     if (!showPath) return;
 
+    let lastScrollY = window.scrollY || window.pageYOffset;
+    let scrollTimeout: NodeJS.Timeout;
+
     const handleScroll = () => {
-      setShowPath(false);
+      const currentScrollY = window.scrollY || window.pageYOffset;
+      const scrollDelta = Math.abs(currentScrollY - lastScrollY);
+      
+      // Only dismiss if there's significant scroll movement (more than 20px)
+      // Use a timeout to debounce and ensure it's intentional scrolling
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (scrollDelta > 20) {
+          setShowPath(false);
+        }
+      }, 100);
+      
+      lastScrollY = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('wheel', handleScroll, { passive: true });
-    window.addEventListener('touchmove', handleScroll, { passive: true });
+    const handleWheel = (e: WheelEvent) => {
+      // Only dismiss on significant intentional wheel scroll (more than 30px)
+      if (Math.abs(e.deltaY) > 30 || Math.abs(e.deltaX) > 30) {
+        setShowPath(false);
+      }
+    };
+
+    // Small delay before enabling scroll detection to avoid initial page load triggers
+    const enableTimeout = setTimeout(() => {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('wheel', handleWheel, { passive: true });
+    }, 500);
 
     return () => {
+      clearTimeout(enableTimeout);
+      clearTimeout(scrollTimeout);
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('wheel', handleScroll);
-      window.removeEventListener('touchmove', handleScroll);
+      window.removeEventListener('wheel', handleWheel);
     };
   }, [showPath]);
 
@@ -952,7 +977,6 @@ const HelpGuide = () => {
             <div 
               className="fixed inset-0 bg-black/60 z-[65] transition-opacity duration-300"
               onClick={() => setShowPath(false)}
-              onTouchStart={() => setShowPath(false)}
             />
             
             {/* Animated Robot - Creative animated design */}
@@ -960,8 +984,6 @@ const HelpGuide = () => {
               <div 
                 className="fixed inset-0 z-[67] pointer-events-none"
                 style={{ overflow: 'visible' }}
-                onClick={() => setShowPath(false)}
-                onTouchStart={() => setShowPath(false)}
               >
                 <div 
                   ref={robotRef}
@@ -1179,7 +1201,6 @@ const HelpGuide = () => {
             <div 
               className="fixed inset-0 z-[66] pointer-events-none"
               onClick={() => setShowPath(false)}
-              onTouchStart={() => setShowPath(false)}
             >
               <svg 
                 className="absolute inset-0 w-full h-full pointer-events-auto cursor-pointer"
