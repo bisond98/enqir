@@ -50,6 +50,7 @@ import ContactUs from "./pages/ContactUs";
 import MyChats from "./pages/MyChats";
 import AllChats from "./pages/AllChats";
 import ReportUser from "./pages/ReportUser";
+import HelpGuide from "./pages/HelpGuide";
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,7 @@ const App = () => {
                   <Route path="/shipping" element={<ShippingPolicy />} />
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/contact-us" element={<ContactUs />} />
+                  <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
                   <Route path="/report-user/:userId" element={<ErrorBoundary><AuthGuard><ReportUser /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

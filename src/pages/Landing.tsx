@@ -2881,6 +2881,17 @@ const Landing = () => {
                 <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
+            
+            {/* Help Guide Button */}
+            <div className="text-center mt-6 sm:mt-8">
+              <Button
+                onClick={() => navigate('/help-guide')}
+                className="bg-black text-white hover:bg-gray-800 text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
+              >
+                Learn How to Use Enqir
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
       </section>
