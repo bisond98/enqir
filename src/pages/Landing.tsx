@@ -2886,10 +2886,14 @@ const Landing = () => {
             <div className="text-center mt-6 sm:mt-8">
               <Button
                 onClick={() => navigate('/help-guide')}
-                className="bg-black text-white hover:bg-gray-800 text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
+                className="group w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-gradient-to-b from-black to-gray-900 text-white hover:bg-gradient-to-b hover:from-gray-900 hover:to-black text-xs sm:text-base py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden font-black"
               >
-                Learn More
-                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                <span className="relative z-10">Learn More</span>
+                <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
               </Button>
             </div>
           </div>
