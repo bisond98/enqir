@@ -11,6 +11,7 @@ export default {
 	safelist: [
 		'pb-3',
 		'-mt-1.5',
+		'-mt-3',
 		'mt-auto',
 		'pb-2',
 		'pb-1',
