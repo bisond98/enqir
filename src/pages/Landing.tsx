@@ -1686,7 +1686,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -2109,7 +2109,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className="px-2.5 pt-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0" style={{ paddingBottom: windowWidth < 640 ? '1.75rem' : undefined }}>
+                      <div className="px-2.5 pt-2.5 pb-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
                       {/* Title - Professional Typography */}
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2117,11 +2117,10 @@ const Landing = () => {
                         {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
                       </h3>
                       
-                      {/* Mobile View - Optimized spacing with equal gaps */}
-                      <div className="flex flex-col w-full gap-3 sm:gap-1.5 flex-1">
-                        {/* Budget - Mobile optimized */}
+                      {/* Budget and Location - Stacked on Both Mobile and Desktop */}
+                      <div className="flex flex-col w-full gap-1.5 mb-1.5">
                         {enquiry.budget && (
-                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-black sm:border-[0.5px] w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border-[0.5px] border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
                             <div className="flex items-center gap-0.5">
                               <span className="text-xs sm:text-sm font-normal text-black flex-shrink-0">₹</span>
@@ -2129,9 +2128,8 @@ const Landing = () => {
                             </div>
                           </div>
                         )}
-                        {/* Location - Mobile optimized */}
                         {enquiry.location && (
-                          <div className="flex items-center justify-between text-gray-700 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between text-gray-700 border-[0.5px] border-black rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2139,28 +2137,31 @@ const Landing = () => {
                             </div>
                           </div>
                         )}
-                        {/* Deadline Date - Mobile optimized */}
-                        <div className="flex items-center justify-between text-gray-600 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
-                          <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
-                          <div className="flex items-center gap-1 sm:gap-1.5">
-                            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
-                            <span className="text-[10px] sm:text-xs font-normal text-black truncate min-w-0">
-                              {enquiry.deadline ? (enquiry.deadline.toDate ? formatDate(enquiry.deadline.toDate().toISOString()) : formatDate(new Date(enquiry.deadline).toISOString())) : 'N/A'}
+                      </div>
+                      
+                      {/* Meta Information - Professional Grouping */}
+                      <div className="flex flex-col w-full gap-1.5">
+                          <div className="flex items-center justify-between text-gray-600 border-[0.5px] border-black rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
+                            <div className="flex items-center gap-1 sm:gap-1.5">
+                              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
+                              <span className="text-[10px] sm:text-xs font-normal text-black truncate min-w-0">
+                                {enquiry.deadline ? (enquiry.deadline.toDate ? formatDate(enquiry.deadline.toDate().toISOString()) : formatDate(new Date(enquiry.deadline).toISOString())) : 'N/A'}
                             </span>
                           </div>
                         </div>
-                        {/* Deadline Timer - Mobile optimized */}
+                        {/* Deadline Timer */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                          <div className="border border-black sm:border-[0.5px] rounded-lg w-full flex items-center justify-between px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
-                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
+                            <div className="border-[0.5px] border-black rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                              <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className="text-[9px] sm:text-[10px]"
+                                className="text-[9px] sm:text-[10px]"
                             />
                           </div>
                         )}
                         
-                        {/* Sell Button - Mobile only */}
+                        {/* Sell Button - Mobile only (inside meta container) */}
                         <div className="block sm:hidden w-full">
                           {user ? (
                             (() => {
@@ -2205,7 +2206,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full mt-auto" style={{ marginTop: windowWidth < 640 ? '-0.5rem' : undefined }}>
+                        <div className="block sm:hidden w-full border-t border-black pt-1.5">
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
@@ -2216,7 +2217,7 @@ const Landing = () => {
                                 }
                               }}
                               disabled={!user || isEnquiryOutdated(enquiry)}
-                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black sm:border-[0.5px] ${
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border-[0.5px] border-black ${
                                 savedEnquiries.includes(enquiry.id) 
                                   ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
                                   : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
@@ -2234,7 +2235,7 @@ const Landing = () => {
                                 }
                               }}
                               disabled={isEnquiryOutdated(enquiry)}
-                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black sm:border-[0.5px] ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
                             >
                               <Share2 className="h-3 w-3 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" />
                               <span className="font-semibold">Share</span>
@@ -2458,7 +2459,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',
