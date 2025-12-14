@@ -10,6 +10,7 @@ export default {
 	],
 	safelist: [
 		'pb-3',
+		'pb-4',
 		'-mt-1.5',
 		'-mt-3',
 		'mt-auto',
