@@ -15,6 +15,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import { ChatProvider } from "./contexts/ChatContext";
 import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
@@ -107,12 +108,13 @@ const App = () => {
         <TooltipProvider>
           <ConditionalAuthProvider>
             <NotificationProvider>
-              <UsageProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                <ScrollToTop />
-                <Routes>
+              <ChatProvider>
+                <UsageProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                  <ScrollToTop />
+                  <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiries" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
@@ -147,9 +149,10 @@ const App = () => {
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </UsageProvider>
+                  </Routes>
+                </BrowserRouter>
+              </UsageProvider>
+            </ChatProvider>
           </NotificationProvider>
         </ConditionalAuthProvider>
       </TooltipProvider>
