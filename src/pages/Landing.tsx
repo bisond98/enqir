@@ -2205,7 +2205,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full mt-auto -mt-2.5">
+                        <div className="block sm:hidden w-full mt-auto -mt-4">
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
