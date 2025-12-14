@@ -25,6 +25,7 @@ import SellerResponse from "./pages/SellerResponse";
 import MyEnquiries from "./pages/MyEnquiries";
 import MyResponses from "./pages/MyResponses";
 import SavedEnquiries from "./pages/SavedEnquiries";
+import MyChats from "./pages/MyChats";
 import EnquiryResponses from "./pages/EnquiryResponses";
 import DetailedResponses from "./pages/DetailedResponses";
 import EnquiryResponsesPage from "./pages/EnquiryResponsesPage";
@@ -128,6 +129,7 @@ const App = () => {
                   <Route path="/data-clear" element={<DataClear />} />
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                  <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
