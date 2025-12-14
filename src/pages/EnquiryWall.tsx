@@ -9,12 +9,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
@@ -54,12 +48,10 @@ export default function EnquiryWall() {
   const { user: authUser } = useAuth();
   const [searchParams] = useSearchParams();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
-  const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scroll sound effect refs
@@ -439,29 +431,7 @@ export default function EnquiryWall() {
         const liveEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return true; // No deadline = live
           try {
-            let deadlineDate: Date;
-            
-            // Handle Firestore Timestamp (has toDate method)
-            if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-              deadlineDate = enquiry.deadline.toDate();
-            }
-            // Handle Firestore Timestamp object (has seconds and nanoseconds)
-            else if (enquiry.deadline?.seconds !== undefined) {
-              deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-            }
-            // Handle Date object
-            else if (enquiry.deadline instanceof Date) {
-              deadlineDate = enquiry.deadline;
-            }
-            // Handle string or number
-            else {
-              deadlineDate = new Date(enquiry.deadline);
-            }
-            
-            if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-              return true; // If invalid, assume live
-            }
-            
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
             return deadlineDate.getTime() >= now.getTime();
           } catch {
             return true; // If error, assume live
@@ -471,29 +441,7 @@ export default function EnquiryWall() {
         const expiredEnquiries = activeEnquiries.filter(enquiry => {
           if (!enquiry.deadline) return false; // No deadline = not expired
           try {
-            let deadlineDate: Date;
-            
-            // Handle Firestore Timestamp (has toDate method)
-            if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-              deadlineDate = enquiry.deadline.toDate();
-            }
-            // Handle Firestore Timestamp object (has seconds and nanoseconds)
-            else if (enquiry.deadline?.seconds !== undefined) {
-              deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-            }
-            // Handle Date object
-            else if (enquiry.deadline instanceof Date) {
-              deadlineDate = enquiry.deadline;
-            }
-            // Handle string or number
-            else {
-              deadlineDate = new Date(enquiry.deadline);
-            }
-            
-            if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-              return false; // If invalid, assume not expired
-            }
-            
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
             return deadlineDate.getTime() < now.getTime();
           } catch {
             return false; // If error, assume not expired
@@ -501,9 +449,6 @@ export default function EnquiryWall() {
         });
         
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
-        
-        // Set live enquiries count for display
-        setLiveEnquiriesCount(liveEnquiries.length);
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -580,12 +525,7 @@ export default function EnquiryWall() {
         // Batch fetch profiles for better performance
         const profilePromises = userIds.map(async (userId) => {
           try {
-            // Try 'userProfiles' first
-            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
-            if (!profileDoc.exists()) {
-              // Fallback to 'profiles' collection
-              profileDoc = await getDoc(doc(db, 'profiles', userId));
-            }
+            const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
             if (profileDoc.exists()) {
               return { userId, data: profileDoc.data() };
             }
@@ -622,7 +562,7 @@ export default function EnquiryWall() {
   }, [enquiries]);
 
   // AI-powered search function
-  const handleAISearch = useCallback(async (term: string) => {
+  const handleAISearch = async (term: string) => {
     if (!term.trim()) {
       setAiSearchResults(null);
       setIsAISearching(false);
@@ -639,7 +579,7 @@ export default function EnquiryWall() {
     } finally {
       setIsAISearching(false);
     }
-  }, [enquiries]);
+  };
 
   // Generate suggestions from actual enquiry data
   const generateSuggestions = (searchValue: string): string[] => {
@@ -719,30 +659,15 @@ export default function EnquiryWall() {
         setSearchSuggestions(suggestions);
         setShowSuggestions(suggestions.length > 0);
         
-        // Perform AI search - call directly to avoid dependency issues
-        if (!value.trim()) {
-          setAiSearchResults(null);
-          setIsAISearching(false);
-          return;
-        }
-        
-        setIsAISearching(true);
-        try {
-          const searchResults = await AISearchService.searchEnquiries(enquiries, value);
-          setAiSearchResults(searchResults);
-        } catch (error) {
-          console.error('AI Search Error:', error);
-          setAiSearchResults(null);
-        } finally {
-          setIsAISearching(false);
-        }
+        // Perform AI search
+        await handleAISearch(value);
       } else {
         setSearchSuggestions([]);
         setShowSuggestions(false);
         setAiSearchResults(null);
       }
     }, 300),
-    [enquiries]
+    []
   );
 
   // Handle search input with AI suggestions (optimized with debouncing)
@@ -872,59 +797,29 @@ export default function EnquiryWall() {
     }
   };
 
-  // Get final results - Regular search always works, AI search enhances results (memoized for performance)
+  // Get final results - AI search completely overrides original search (memoized for performance)
   const finalResults = useMemo(() => {
-    const searchLower = searchTerm?.toLowerCase().trim() || '';
+    let results: Enquiry[] = [];
     
-    // Always apply regular search filtering first
-    let results = enquiries.filter(enquiry => {
-      // Enhanced search matching - check multiple fields
-      const matchesSearch = !searchLower || (() => {
-        // Check title/heading - prioritize exact title matches
-        if (enquiry.title) {
-          const titleLower = enquiry.title.toLowerCase().trim();
-          if (titleLower.includes(searchLower)) return true;
-          // Also check if search term matches any word in title
-          const titleWords = titleLower.split(/\s+/);
-          if (titleWords.some(word => word.includes(searchLower) || searchLower.includes(word))) return true;
-        }
-        // Check description
-        if (enquiry.description && enquiry.description.toLowerCase().includes(searchLower)) return true;
-        // Check category
-        if (enquiry.category && enquiry.category.toLowerCase().includes(searchLower)) return true;
-        // Check categories array
-        if (enquiry.categories && Array.isArray(enquiry.categories)) {
-          if (enquiry.categories.some(cat => cat && cat.toLowerCase().includes(searchLower))) return true;
-        }
-        // Check location
-        if (enquiry.location && enquiry.location.toLowerCase().includes(searchLower)) return true;
-        // Check budget (if search term matches budget string)
-        if (enquiry.budget) {
-          const budgetStr = typeof enquiry.budget === 'string' ? enquiry.budget : String(enquiry.budget);
-          if (budgetStr.includes(searchTerm)) return true;
-        }
-        return false;
-      })();
-      
-      const matchesCategory = selectedCategory === "all" || 
-        enquiry.category === selectedCategory || 
-        (enquiry.categories && enquiry.categories.includes(selectedCategory));
-      return matchesSearch && matchesCategory;
-    });
-    
-    // If AI search is active, combine AI results with regular search results
-    // Both work together - regular search for exact matches, AI search for semantic matches
-    if (aiSearchResults && aiSearchResults.results && aiSearchResults.results.length > 0) {
-      // Combine both results - regular search results first (exact matches), then AI results
-      const regularResultIds = new Set(results.map(e => e.id));
-      const aiResults = aiSearchResults.results.filter(e => !regularResultIds.has(e.id));
-      // Merge: regular search results first (exact matches), then AI results (semantic matches)
-      results = [...results, ...aiResults];
+    // If AI search is active, use AI results only
+    if (aiSearchResults) {
+      results = aiSearchResults.results;
+    } else {
+      // If no AI search, use original filtering logic
+      results = enquiries.filter(enquiry => {
+        const matchesSearch = !searchTerm || 
+          enquiry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          enquiry.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === "all" || 
+          enquiry.category === selectedCategory || 
+          (enquiry.categories && enquiry.categories.includes(selectedCategory));
+        return matchesSearch && matchesCategory;
+      });
     }
     
     // Sort: User's enquiries in selected category first, then others
     if (selectedCategory !== "all") {
-      results = [...results].sort((a, b) => {
+      return [...results].sort((a, b) => {
         // Check if enquiry matches the selected category
         const aMatchesCategory = a.category === selectedCategory || 
           (a.categories && a.categories.includes(selectedCategory));
@@ -965,69 +860,10 @@ export default function EnquiryWall() {
     return filteredEnquiries.length === 0 && selectedCategory !== "all" && !aiSearchResults;
   }, [filteredEnquiries.length, selectedCategory, aiSearchResults]);
   
-  // Count trust badge enquiries from live enquiries
-  const trustBadgeEnquiriesCount = useMemo(() => {
-    const now = new Date();
-    const liveEnquiries = enquiries.filter(enquiry => {
-      // Only count live (non-expired) enquiries
-      if (!enquiry.deadline) return true;
-      try {
-        let deadlineDate: Date;
-        if (enquiry.deadline?.toDate) {
-          deadlineDate = enquiry.deadline.toDate();
-        } else if (enquiry.deadline?.seconds !== undefined) {
-          deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-        } else if (enquiry.deadline instanceof Date) {
-          deadlineDate = enquiry.deadline;
-        } else {
-          deadlineDate = new Date(enquiry.deadline);
-        }
-        if (!deadlineDate || isNaN(deadlineDate.getTime())) return true;
-        return deadlineDate.getTime() >= now.getTime();
-      } catch {
-        return true;
-      }
-    });
-    
-    // Filter to only trust badge enquiries
-    return liveEnquiries.filter(enquiry => {
-      const profile = userProfiles[enquiry.userId];
-      const hasTrustBadge = 
-        profile?.isProfileVerified || 
-        profile?.isVerified ||
-        profile?.trustBadge ||
-        profile?.isIdentityVerified ||
-        enquiry.idFrontImage || 
-        enquiry.idBackImage;
-      return hasTrustBadge;
-    }).length;
-  }, [enquiries, userProfiles]);
-  
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
-    let results = showCategoryFallback ? enquiries : filteredEnquiries;
-    
-    // Filter by trust badge if enabled - match the exact conditions for blue tick display
-    if (showTrustBadgeOnly) {
-      results = results.filter(enquiry => {
-        const profile = userProfiles[enquiry.userId];
-        // Match the exact conditions used to display the blue tick in the card header
-        // Grid view: userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage
-        // List view: (userProfiles[enquiry.userId]?.isProfileVerified || userProfiles[enquiry.userId]?.isVerified || userProfiles[enquiry.userId]?.trustBadge || userProfiles[enquiry.userId]?.isIdentityVerified) || enquiry.idFrontImage || enquiry.idBackImage
-        const hasTrustBadge = 
-          profile?.isProfileVerified || 
-          profile?.isVerified ||
-          profile?.trustBadge ||
-          profile?.isIdentityVerified ||
-          enquiry.idFrontImage || 
-          enquiry.idBackImage;
-        
-        return hasTrustBadge;
-      });
-    }
-    
-    return results;
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles]);
+    return showCategoryFallback ? enquiries : filteredEnquiries;
+  }, [showCategoryFallback, enquiries, filteredEnquiries]);
 
   // Memoize helper functions for better performance
   const isOwnEnquiry = useCallback((enquiry: Enquiry) => {
@@ -1037,37 +873,8 @@ export default function EnquiryWall() {
   // Helper to check if an enquiry is expired (uses currentTime state for real-time updates)
   const isEnquiryOutdated = useCallback((enquiry: Enquiry) => {
     if (!enquiry.deadline) return false;
-    
-    try {
-      let deadlineDate: Date;
-      
-      // Handle Firestore Timestamp (has toDate method)
-      if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-        deadlineDate = enquiry.deadline.toDate();
-      }
-      // Handle Firestore Timestamp object (has seconds and nanoseconds)
-      else if (enquiry.deadline?.seconds !== undefined) {
-        deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-      }
-      // Handle Date object
-      else if (enquiry.deadline instanceof Date) {
-        deadlineDate = enquiry.deadline;
-      }
-      // Handle string or number
-      else {
-        deadlineDate = new Date(enquiry.deadline);
-      }
-      
-      if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-        console.error('Invalid deadline in isEnquiryOutdated for enquiry:', enquiry.id, enquiry.deadline);
-        return false; // If invalid, assume not outdated
-      }
-      
-      return currentTime > deadlineDate;
-    } catch (error) {
-      console.error('Error checking if enquiry is outdated:', error, enquiry.id, enquiry.deadline);
-      return false; // If error, assume not outdated
-    }
+    const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+    return currentTime > deadline;
   }, [currentTime]);
 
   // Helper to check if an enquiry is deal closed (case-insensitive)
@@ -1081,83 +888,19 @@ export default function EnquiryWall() {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   }, [isEnquiryOutdated, isDealClosed]);
 
-  const formatDate = (dateString: string | Date | any) => {
-    try {
-      let date: Date;
-      
-      // Handle Firestore Timestamp (has toDate method)
-      if (dateString?.toDate && typeof dateString.toDate === 'function') {
-        date = dateString.toDate();
-      }
-      // Handle Firestore Timestamp object (has seconds and nanoseconds)
-      else if (dateString?.seconds !== undefined) {
-        date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
-      }
-      // Handle Date object
-      else if (dateString instanceof Date) {
-        date = dateString;
-      }
-      // Handle string
-      else if (typeof dateString === 'string') {
-        date = new Date(dateString);
-      }
-      // Handle number (timestamp)
-      else if (typeof dateString === 'number') {
-        date = new Date(dateString);
-      }
-      else {
-        console.error('Invalid date format:', dateString, typeof dateString);
-        return 'Invalid date';
-      }
-      
-      if (!date || isNaN(date.getTime())) {
-        console.error('Invalid date value:', dateString);
-        return 'Invalid date';
-      }
-      
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
-    } catch (error) {
-      console.error('Error formatting date:', error, dateString);
-      return 'Invalid date';
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
   };
 
   // Format deadline as simple text (e.g., "13d 16h left")
   const formatDeadlineText = useCallback((deadline: any) => {
     if (!deadline) return '';
     
-    let deadlineDate: Date;
-    try {
-      // Handle Firestore Timestamp (has toDate method)
-      if (deadline?.toDate && typeof deadline.toDate === 'function') {
-        deadlineDate = deadline.toDate();
-      }
-      // Handle Firestore Timestamp object (has seconds and nanoseconds)
-      else if (deadline?.seconds !== undefined) {
-        deadlineDate = new Date(deadline.seconds * 1000 + (deadline.nanoseconds || 0) / 1000000);
-      }
-      // Handle Date object
-      else if (deadline instanceof Date) {
-        deadlineDate = deadline;
-      }
-      // Handle string or number
-      else {
-        deadlineDate = new Date(deadline);
-      }
-      
-      if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-        console.error('Invalid deadline date:', deadline);
-        return '';
-      }
-    } catch (error) {
-      console.error('Error parsing deadline:', error, deadline);
-      return '';
-    }
-    
+    const deadlineDate = deadline.toDate ? deadline.toDate() : new Date(deadline);
     const diff = deadlineDate.getTime() - currentTime.getTime();
     
     if (diff <= 0) return 'Expired';
@@ -1227,7 +970,7 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
             <div className="max-w-2xl mx-auto">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" />
                 <div className="relative">
                 <input
                   ref={searchInputRef}
@@ -1260,27 +1003,17 @@ export default function EnquiryWall() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                 </div>
                 {isAISearching ? (
-                  <div className="absolute right-10 sm:right-12 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
+                  <div className="absolute right-10 sm:right-12 top-1/2 transform -translate-y-1/2 z-10">
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSearchChange(searchTerm);
-                    }}
-                    className="absolute right-2 sm:right-3 top-1/2 z-50 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation cursor-pointer"
+                    onClick={() => handleSearchChange(searchTerm)}
+                    className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 z-10 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation"
                     aria-label="Search"
-                    style={{ 
-                      pointerEvents: 'auto',
-                      transform: 'translateY(-50%)',
-                      top: '50%',
-                      willChange: 'auto'
-                    }}
                   >
-                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black pointer-events-none" />
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
                   </button>
                 )}
                 
@@ -1518,60 +1251,13 @@ export default function EnquiryWall() {
 
           {/* View Toggle */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <div className="inline-flex items-center gap-1 sm:gap-2">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
-                {showTrustBadgeOnly 
-                  ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
-                  : `${liveEnquiriesCount} real buyers waiting for the right seller`
-                }
-              </span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Trust Badge Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 flex items-center justify-center ${
-                      showTrustBadgeOnly ? "border border-blue-800" : ""
-                    }`}
-                    style={{
-                      borderWidth: showTrustBadgeOnly ? '1px' : '0px'
-                    }}
-                    title="Filter enquiries"
-                  >
-                    <Filter 
-                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0"
-                      style={{
-                        fill: showTrustBadgeOnly ? '#3b82f6' : '#ffffff'
-                      }}
-                    />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
-                  showTrustBadgeOnly 
-                    ? "bg-[#800020] border-[#6b0019]" 
-                    : "bg-blue-600 border-blue-700"
-                }`}>
-                  <DropdownMenuCheckboxItem
-                    checked={showTrustBadgeOnly}
-                    onCheckedChange={setShowTrustBadgeOnly}
-                    className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-sm sm:text-base text-white flex items-center justify-center text-center [&>span]:hidden ${
-                      showTrustBadgeOnly 
-                        ? "hover:bg-[#6b0019] hover:text-white focus:bg-[#6b0019] focus:text-white" 
-                        : "hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white"
-                    }`}
-                  >
-                    {showTrustBadgeOnly ? "Remove filter" : "Trust badge only"}
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Grid/List Toggle */}
-              <div 
-                className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              >
+            <h3 className="text-sm sm:text-xl font-semibold text-foreground">
+              {displayEnquiries.length} enquiries
+            </h3>
+            <div 
+              className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+            >
               {/* Track background */}
               <div className="relative w-16 h-6 sm:w-20 sm:h-7 flex items-center">
                 {/* Icons on sides */}
@@ -1601,7 +1287,6 @@ export default function EnquiryWall() {
                   <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-gray-300 rounded-full"></div>
             </motion.div>
               </div>
-              </div>
             </div>
           </div>
 
@@ -1610,12 +1295,12 @@ export default function EnquiryWall() {
             <>
             {/* Category Fallback Message */}
             {showCategoryFallback && (
-              <div className="mb-4 p-3 sm:p-4 bg-[#5C0014] border border-[#5C0014] rounded-lg sm:rounded-xl">
+              <div className="mb-4 p-3 sm:p-4 bg-black border border-black rounded-lg sm:rounded-xl">
                 <div className="text-center">
                   <p className="text-white font-semibold text-xs sm:text-base">
                     No enquiries found in "{selectedCategory.replace('-', ' ')}" category
                   </p>
-                  <p className="text-white/70 text-[8px] sm:text-[9px] mt-1">
+                  <p className="text-white text-[10px] sm:text-sm mt-1">
                     Showing all enquiries below
                   </p>
                 </div>
@@ -1677,14 +1362,10 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-black bg-white rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
-                    } transition-all duration-300 cursor-pointer ${
-                      isEnquiryDisabled(enquiry) 
-                        ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' 
-                        : viewMode === 'list' 
-                          ? 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 active:scale-[0.97] active:shadow-lg border-2' 
-                          : 'rounded-2xl shadow-xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 active:scale-[0.97] active:shadow-lg border-2'
-                    } sm:transition-all sm:duration-300 sm:hover:-translate-y-0.5 sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-[1.02] sm:active:scale-[0.98]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } : {}}>
+                      viewMode === 'grid' ? 'h-full lg:min-h-[500px] xl:min-h-[550px] border border-black bg-white flex flex-col rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                    } transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] ${
+                      isEnquiryDisabled(enquiry) ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : viewMode === 'list' ? '' : 'border-l border-l-green-500'
+                    }`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -1727,26 +1408,18 @@ export default function EnquiryWall() {
                           </div>
                         </div>
                       )}
-                      {/* Subtle gradient overlay for mobile - Professional depth */}
+                      {/* Physical button depth effect */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/20 to-transparent rounded-2xl pointer-events-none sm:hidden" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
                       )}
-                      {/* Additional subtle border highlight for mobile */}
+                      {/* Shimmer effect */}
                       {!isEnquiryDisabled(enquiry) && (
-                        <div className="absolute inset-0 rounded-2xl border border-white/60 pointer-events-none sm:hidden" />
-                      )}
-                      {/* Physical button depth effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
-                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
-                      )}
-                      {/* Shimmer effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
-                        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className={`bg-black ${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`}>
+                      <div className="bg-black px-2 sm:px-4 py-1 sm:py-2.5 border-b border-black relative z-10">
                         <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2 sm:gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2">
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
@@ -1794,47 +1467,16 @@ export default function EnquiryWall() {
                                   </h3>
                               
                               {/* "before [date]" below title, right aligned */}
-                              {enquiry.deadline && (() => {
-                                try {
-                                  let deadlineDate: Date;
-                                  
-                                  // Handle Firestore Timestamp (has toDate method)
-                                  if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-                                    deadlineDate = enquiry.deadline.toDate();
-                                  }
-                                  // Handle Firestore Timestamp object (has seconds and nanoseconds)
-                                  else if (enquiry.deadline?.seconds !== undefined) {
-                                    deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-                                  }
-                                  // Handle Date object
-                                  else if (enquiry.deadline instanceof Date) {
-                                    deadlineDate = enquiry.deadline;
-                                  }
-                                  // Handle string or number
-                                  else {
-                                    deadlineDate = new Date(enquiry.deadline);
-                                  }
-                                  
-                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                                    console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                    return null;
-                                  }
-                                  
-                                  return (
-                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
-                                        before {formatDate(deadlineDate.toISOString())}
-                                      </span>
-                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
-                                        {formatDeadlineText(enquiry.deadline)}
-                                      </span>
-                                    </div>
-                                  );
-                                } catch (error) {
-                                  console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                  return null;
-                                }
-                              })()}
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
+                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
+                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                    {formatDeadlineText(enquiry.deadline)}
+                                  </span>
+                                </div>
+                              )}
                               
                               {/* Badges Row */}
                               <div className="flex items-center gap-0.5 sm:gap-2 flex-wrap">
@@ -1856,7 +1498,7 @@ export default function EnquiryWall() {
                             {/* Description - Lower position for mobile list view */}
                             {enquiry.description && (
                               <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
-                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-5 text-center max-w-xs sm:max-w-sm">
+                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-2 text-center max-w-full">
                                 {enquiry.description}
                               </p>
                             </div>
@@ -1878,47 +1520,16 @@ export default function EnquiryWall() {
                                 </h3>
                               
                               {/* "before [date]" below title, right aligned */}
-                              {enquiry.deadline && (() => {
-                                try {
-                                  let deadlineDate: Date;
-                                  
-                                  // Handle Firestore Timestamp (has toDate method)
-                                  if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-                                    deadlineDate = enquiry.deadline.toDate();
-                                  }
-                                  // Handle Firestore Timestamp object (has seconds and nanoseconds)
-                                  else if (enquiry.deadline?.seconds !== undefined) {
-                                    deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-                                  }
-                                  // Handle Date object
-                                  else if (enquiry.deadline instanceof Date) {
-                                    deadlineDate = enquiry.deadline;
-                                  }
-                                  // Handle string or number
-                                  else {
-                                    deadlineDate = new Date(enquiry.deadline);
-                                  }
-                                  
-                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                                    console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                    return null;
-                                  }
-                                  
-                                  return (
-                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
-                                        before {formatDate(deadlineDate.toISOString())}
-                                      </span>
-                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
-                                        {formatDeadlineText(enquiry.deadline)}
-                                      </span>
-                                    </div>
-                                  );
-                                } catch (error) {
-                                  console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                  return null;
-                                }
-                              })()}
+                              {enquiry.deadline && !isEnquiryDisabled(enquiry) && (
+                                <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                  <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                    before {formatDate(enquiry.deadline.toDate ? enquiry.deadline.toDate().toISOString() : enquiry.deadline)}
+                                  </span>
+                                  <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                    {formatDeadlineText(enquiry.deadline)}
+                                  </span>
+                                </div>
+                              )}
                               
                                 {/* Show verified badge if: 
                                     1. User has profile-level verification (applies to all enquiries), OR
