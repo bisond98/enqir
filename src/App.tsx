@@ -15,7 +15,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
-import { ChatProvider } from "./contexts/ChatContext";
 import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
@@ -47,21 +46,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import ContactUs from "./pages/ContactUs";
-import MyChats from "./pages/MyChats";
-import AllChats from "./pages/AllChats";
-import ReportUser from "./pages/ReportUser";
 import HelpGuide from "./pages/HelpGuide";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 // Global fix to ensure body scroll is always enabled
 if (typeof window !== 'undefined') {
@@ -119,11 +106,10 @@ const App = () => {
         <TooltipProvider>
           <ConditionalAuthProvider>
             <NotificationProvider>
-              <ChatProvider>
-                <UsageProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
+              <UsageProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
@@ -143,8 +129,6 @@ const App = () => {
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
-                  <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
-                  <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
@@ -159,17 +143,15 @@ const App = () => {
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
-                  <Route path="/report-user/:userId" element={<ErrorBoundary><AuthGuard><ReportUser /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-                </UsageProvider>
-              </ChatProvider>
-            </NotificationProvider>
-          </ConditionalAuthProvider>
-        </TooltipProvider>
-      </QueryClientProvider>
+            </UsageProvider>
+          </NotificationProvider>
+        </ConditionalAuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
     </ThemeProvider>
   );
 };
