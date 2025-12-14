@@ -2109,7 +2109,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className="px-2.5 pt-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0" style={{ paddingBottom: windowWidth < 640 ? '1.5rem' : undefined }}>
+                      <div className="px-2.5 pt-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0" style={{ paddingBottom: windowWidth < 640 ? '1.75rem' : undefined }}>
                       {/* Title - Professional Typography */}
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2205,7 +2205,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full mt-auto" style={{ marginTop: windowWidth < 640 ? '-0.75rem' : undefined }}>
+                        <div className="block sm:hidden w-full mt-auto" style={{ marginTop: windowWidth < 640 ? '-0.5rem' : undefined }}>
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
