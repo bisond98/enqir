@@ -1944,17 +1944,21 @@ const Landing = () => {
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
                         type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
-                        duration: isShuffling ? 0.4 : undefined,
-                        // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
-                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
-                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
-                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
-                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
-                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
+                        duration: isShuffling ? 0.6 : undefined,
+                        // Ultra-smooth spring physics - desktop optimized for buttery smooth animations
+                        stiffness: isShuffling ? undefined : (isMobile ? 40 : 30), // Even lower stiffness for desktop - ultra-smooth motion
+                        damping: isShuffling ? undefined : (isMobile ? 28 : 30), // Higher damping for desktop - smoother, less bouncy stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.6 : 1.0), // Heavier mass for desktop - smoother, more fluid movement
+                        ease: isShuffling ? [0.22, 1, 0.36, 1] : undefined, // Ultra-smooth easing curve (cubic-bezier)
+                        delay: isShuffling ? index * 0.04 : 0 // Smoother stagger
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
                         willChange: 'transform, opacity',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                        WebkitTransform: 'translateZ(0)',
                         perspective: '1000px',
                         perspectiveOrigin: 'center center',
                         // Position cards right-to-left: middle card centered below "Live Needs"
@@ -2121,7 +2125,7 @@ const Landing = () => {
                       <div className="flex flex-col w-full gap-3 sm:gap-1.5 flex-1">
                         {/* Budget - Mobile optimized */}
                         {enquiry.budget && (
-                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border-[0.5px] border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-black sm:border-[0.5px] w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
                             <div className="flex items-center gap-0.5">
                               <span className="text-xs sm:text-sm font-normal text-black flex-shrink-0">₹</span>
@@ -2131,7 +2135,7 @@ const Landing = () => {
                         )}
                         {/* Location - Mobile optimized */}
                         {enquiry.location && (
-                          <div className="flex items-center justify-between text-gray-700 border-[0.5px] border-black rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between text-gray-700 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2140,7 +2144,7 @@ const Landing = () => {
                           </div>
                         )}
                         {/* Deadline Date - Mobile optimized */}
-                        <div className="flex items-center justify-between text-gray-600 border-[0.5px] border-black rounded-lg w-full px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                        <div className="flex items-center justify-between text-gray-600 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                           <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
                           <div className="flex items-center gap-1 sm:gap-1.5">
                             <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2151,7 +2155,7 @@ const Landing = () => {
                         </div>
                         {/* Deadline Timer - Mobile optimized */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                          <div className="border-[0.5px] border-black rounded-lg w-full flex items-center justify-between px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="border border-black sm:border-[0.5px] rounded-lg w-full flex items-center justify-between px-2 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
@@ -2205,7 +2209,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full mt-auto">
+                        <div className="block sm:hidden w-full mt-auto -mt-2.5">
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
@@ -2216,7 +2220,7 @@ const Landing = () => {
                                 }
                               }}
                               disabled={!user || isEnquiryOutdated(enquiry)}
-                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border-[0.5px] border-black ${
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black sm:border-[0.5px] ${
                                 savedEnquiries.includes(enquiry.id) 
                                   ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
                                   : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
@@ -2234,7 +2238,7 @@ const Landing = () => {
                                 }
                               }}
                               disabled={isEnquiryOutdated(enquiry)}
-                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black sm:border-[0.5px] ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
                             >
                               <Share2 className="h-3 w-3 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" />
                               <span className="font-semibold">Share</span>
@@ -2246,10 +2250,47 @@ const Landing = () => {
                         <Badge variant="secondary" className="invisible sm:block bg-gray-100 text-black border border-black font-semibold rounded-lg shadow-sm w-full text-center text-[9px] sm:text-[10px] px-1.5 py-0.5 sm:px-2 sm:py-1">
                           {enquiry.category}
                         </Badge>
-                      </div>
-                      
-                      {/* Primary Action Button - Desktop only */}
-                      <div className="hidden sm:block mt-auto border-t border-black w-full pt-1.5 pb-0 sm:pt-2">
+                        
+                        {/* Footer - Save and Share - Desktop only (moved before Sell button) */}
+                        <div className="hidden sm:block w-full">
+                        <div className="flex items-center gap-2 justify-between">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
+                          </button>
+                        </div>
+                        </div>
+                        
+                        {/* Primary Action Button - Desktop only (moved after Save/Share) */}
+                        <div className="hidden sm:block w-full">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
@@ -2296,43 +2337,6 @@ const Landing = () => {
                             <span className="relative z-10">Sign In</span>
                           </button>
                         )}
-                      </div>
-                      
-                      {/* Footer - Save and Share - Desktop only */}
-                      <div className="hidden sm:block mt-2 pt-2 pb-3 border-t border-black">
-                        <div className="flex items-center gap-2 justify-between">
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleSave(enquiry.id, e);
-                              }
-                            }}
-                            disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
-                              savedEnquiries.includes(enquiry.id) 
-                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
-                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
-                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
-                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleShare(enquiry, e);
-                              }
-                            }}
-                            disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
-                            <span className="font-semibold">Share</span>
-                          </button>
                         </div>
                       </div>
                       </div>
