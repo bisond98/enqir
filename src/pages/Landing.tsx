@@ -854,8 +854,8 @@ const Landing = () => {
         }
       });
       
-      // Set all live enquiries for count and search (only non-expired enquiries)
-      setAllLiveEnquiries(liveEnquiries);
+      // Set all live enquiries for count and search (includes expired for count/search)
+      setAllLiveEnquiries(uniqueItems);
       
       // Set display enquiries - only live (not expired) enquiries for the 3 cards
       // Store all live enquiries for shuffling (not just first 3)
@@ -1756,9 +1756,9 @@ const Landing = () => {
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
-                  {allLiveEnquiries.length} real buyers waiting for the right seller
+                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs sm:text-xs font-bold text-black">
+                  {allLiveEnquiries.length} Live Enquiries
                 </span>
               </div>
             </div>
@@ -1944,21 +1944,17 @@ const Landing = () => {
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
                         type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
-                        duration: isShuffling ? 0.6 : undefined,
-                        // Ultra-smooth spring physics - desktop optimized for buttery smooth animations
-                        stiffness: isShuffling ? undefined : (isMobile ? 40 : 30), // Even lower stiffness for desktop - ultra-smooth motion
-                        damping: isShuffling ? undefined : (isMobile ? 28 : 30), // Higher damping for desktop - smoother, less bouncy stop
-                        mass: isShuffling ? undefined : (isMobile ? 0.6 : 1.0), // Heavier mass for desktop - smoother, more fluid movement
-                        ease: isShuffling ? [0.22, 1, 0.36, 1] : undefined, // Ultra-smooth easing curve (cubic-bezier)
-                        delay: isShuffling ? index * 0.04 : 0 // Smoother stagger
+                        duration: isShuffling ? 0.4 : undefined,
+                        // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
+                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
+                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
+                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
+                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
                         willChange: 'transform, opacity',
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)',
-                        WebkitTransform: 'translateZ(0)',
                         perspective: '1000px',
                         perspectiveOrigin: 'center center',
                         // Position cards right-to-left: middle card centered below "Live Needs"
@@ -2250,47 +2246,10 @@ const Landing = () => {
                         <Badge variant="secondary" className="invisible sm:block bg-gray-100 text-black border border-black font-semibold rounded-lg shadow-sm w-full text-center text-[9px] sm:text-[10px] px-1.5 py-0.5 sm:px-2 sm:py-1">
                           {enquiry.category}
                         </Badge>
-                        
-                        {/* Footer - Save and Share - Desktop only (moved before Sell button) */}
-                        <div className="hidden sm:block w-full">
-                        <div className="flex items-center gap-2 justify-between">
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleSave(enquiry.id, e);
-                              }
-                            }}
-                            disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
-                              savedEnquiries.includes(enquiry.id) 
-                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
-                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
-                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
-                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleShare(enquiry, e);
-                              }
-                            }}
-                            disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
-                            <span className="font-semibold">Share</span>
-                          </button>
-                        </div>
-                        </div>
-                        
-                        {/* Primary Action Button - Desktop only (moved after Save/Share) */}
-                        <div className="hidden sm:block w-full">
+                      </div>
+                      
+                      {/* Primary Action Button - Desktop only */}
+                      <div className="hidden sm:block mt-auto border-t border-black w-full pt-1.5 pb-0 sm:pt-2">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
@@ -2337,6 +2296,43 @@ const Landing = () => {
                             <span className="relative z-10">Sign In</span>
                           </button>
                         )}
+                      </div>
+                      
+                      {/* Footer - Save and Share - Desktop only */}
+                      <div className="hidden sm:block mt-2 pt-2 pb-3 border-t border-black">
+                        <div className="flex items-center gap-2 justify-between">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
+                          </button>
                         </div>
                       </div>
                       </div>
@@ -2462,7 +2458,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',
@@ -2883,22 +2879,6 @@ const Landing = () => {
                 <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
-            
-            {/* Help Guide Button - Smaller and lean for mobile, grey/white color */}
-            <div className="text-center mt-4 sm:mt-6">
-              <Link to="/help-guide" className="w-full sm:w-auto group">
-                <button
-                  className="w-full sm:w-auto border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black py-2 sm:py-2.5 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white sm:min-w-[180px] relative overflow-hidden text-xs sm:text-sm"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                  <span className="relative z-10">Learn More</span>
-                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
-                </button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
