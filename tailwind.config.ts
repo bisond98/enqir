@@ -8,6 +8,13 @@ export default {
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
 	],
+	safelist: [
+		'pb-3',
+		'-mt-1.5',
+		'mt-auto',
+		'pb-2',
+		'pb-1',
+	],
 	prefix: "",
 	theme: {
 		container: {
