@@ -1610,12 +1610,12 @@ export default function EnquiryWall() {
             <>
             {/* Category Fallback Message */}
             {showCategoryFallback && (
-              <div className="mb-4 p-3 sm:p-4 bg-black border border-black rounded-lg sm:rounded-xl">
+              <div className="mb-4 p-3 sm:p-4 bg-[#5C0014] border border-[#5C0014] rounded-lg sm:rounded-xl">
                 <div className="text-center">
                   <p className="text-white font-semibold text-xs sm:text-base">
                     No enquiries found in "{selectedCategory.replace('-', ' ')}" category
                   </p>
-                  <p className="text-white text-[10px] sm:text-sm mt-1">
+                  <p className="text-white/70 text-[8px] sm:text-[9px] mt-1">
                     Showing all enquiries below
                   </p>
                 </div>
