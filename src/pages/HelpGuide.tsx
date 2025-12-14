@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
 
 const HelpGuide = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showPath, setShowPath] = useState(true);
   const noticeRef = useRef<HTMLDivElement>(null);
@@ -34,6 +35,92 @@ const HelpGuide = () => {
   });
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
   const robotRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasSetScrollRef = useRef(false);
+
+  // Set scroll position immediately when route changes to this page
+  // This runs on every location change to catch navigation
+  useEffect(() => {
+    if (location.pathname === '/help-guide') {
+      // Disable browser scroll restoration
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      
+      // Override CSS smooth scrolling for instant scroll
+      const originalHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
+      const originalBodyScrollBehavior = document.body.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      document.body.style.scrollBehavior = 'auto';
+      
+      // Set scroll position immediately - multiple times to ensure it sticks
+      const forceScrollTop = () => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        if (window.scrollY !== 0 || window.pageYOffset !== 0) {
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        }
+      };
+      
+      // Set immediately
+      forceScrollTop();
+      
+      // Set in next tick
+      setTimeout(forceScrollTop, 0);
+      
+      // Set in next animation frame
+      requestAnimationFrame(forceScrollTop);
+      
+      // Set in subsequent frames
+      requestAnimationFrame(() => {
+        requestAnimationFrame(forceScrollTop);
+      });
+      
+      // Keep setting for a short period to override any restoration
+      const intervalId = setInterval(forceScrollTop, 10);
+      setTimeout(() => {
+        clearInterval(intervalId);
+        // Restore scroll behavior after we're done
+        document.documentElement.style.scrollBehavior = originalHtmlScrollBehavior;
+        document.body.style.scrollBehavior = originalBodyScrollBehavior;
+      }, 500);
+      
+      return () => {
+        clearInterval(intervalId);
+        document.documentElement.style.scrollBehavior = originalHtmlScrollBehavior;
+        document.body.style.scrollBehavior = originalBodyScrollBehavior;
+      };
+    }
+  }, [location.pathname]);
+
+  // Prevent scroll restoration and set scroll position to top immediately
+  // Use useLayoutEffect to run synchronously before browser paint
+  useLayoutEffect(() => {
+    // Disable browser scroll restoration for this page
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    
+    // Set scroll to top immediately - before any rendering
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    // Also set it in the next frame
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+    
+    // Cleanup: restore scroll restoration when leaving
+    return () => {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'auto';
+      }
+    };
+  }, []);
 
   const sections = [
     {
@@ -309,8 +396,12 @@ const HelpGuide = () => {
 
     let lastScrollY = window.scrollY || window.pageYOffset;
     let scrollTimeout: NodeJS.Timeout;
+    let isInitialLoad = true; // Flag to ignore scroll during initial page load
 
     const handleScroll = () => {
+      // Ignore scroll events during initial load period (allows ScrollToTop animation to complete)
+      if (isInitialLoad) return;
+      
       const currentScrollY = window.scrollY || window.pageYOffset;
       const scrollDelta = Math.abs(currentScrollY - lastScrollY);
       
@@ -327,17 +418,22 @@ const HelpGuide = () => {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      // Ignore wheel events during initial load period
+      if (isInitialLoad) return;
+      
       // Only dismiss on significant intentional wheel scroll (more than 30px)
       if (Math.abs(e.deltaY) > 30 || Math.abs(e.deltaX) > 30) {
         setShowPath(false);
       }
     };
 
-    // Small delay before enabling scroll detection to avoid initial page load triggers
+    // Longer delay before enabling scroll detection to avoid initial page load triggers
+    // This allows ScrollToTop animation (400ms) and page animations to complete
     const enableTimeout = setTimeout(() => {
+      isInitialLoad = false; // Enable scroll detection after delay
       window.addEventListener('scroll', handleScroll, { passive: true });
       window.addEventListener('wheel', handleWheel, { passive: true });
-    }, 500);
+    }, 1500); // Increased to 1.5 seconds to ensure ScrollToTop and animations complete
 
     return () => {
       clearTimeout(enableTimeout);
@@ -645,7 +741,16 @@ const HelpGuide = () => {
 
   return (
     <Layout>
-      <div className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${showPath ? 'help-guide-path-active' : ''}`}>
+      <div 
+        ref={containerRef}
+        className={`min-h-screen bg-gradient-to-br from-background to-muted/20 ${showPath ? 'help-guide-path-active' : ''}`}
+        style={{ 
+          scrollBehavior: 'auto',
+          position: 'relative',
+          top: 0,
+          left: 0
+        }}
+      >
         {/* Header - Matching Dashboard Style - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">

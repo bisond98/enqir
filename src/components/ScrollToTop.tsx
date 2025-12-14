@@ -5,6 +5,11 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // Skip scrolling on HelpGuide page to allow animations to play
+    if (pathname === '/help-guide') {
+      return;
+    }
+
     // Smooth scroll to top when pathname changes
     const scrollToTop = () => {
       const startPosition = window.pageYOffset;
