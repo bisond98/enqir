@@ -18,6 +18,13 @@ export default {
 		'mt-auto',
 		'pb-2',
 		'pb-1',
+		'focus:border-2',
+		'focus:border-black',
+		'focus:ring-4',
+		'focus:ring-black/20',
+		'focus:ring-2',
+		'focus:ring-0',
+		'focus:outline-none',
 	],
 	prefix: "",
 	theme: {
