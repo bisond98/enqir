@@ -1048,6 +1048,11 @@ export default function MyChats() {
                             </motion.span>
                             <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
                           </Button>
+                          ) : (
+                            <div className="w-full border-[0.5px] border-red-300 bg-red-50 text-red-700 text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl text-center">
+                              View Warning Only
+                            </div>
+                          )}
                         </motion.div>
                       </div>
                     </Card>
