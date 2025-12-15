@@ -21,7 +21,7 @@ git diff --cached --name-only >> deploy_output.log 2>&1
 echo "" >> deploy_output.log
 
 echo "Step 4: Committing..." | tee -a deploy_output.log
-git commit --no-verify -m "Deploy: Complete styling updates - thin borders, Dynamic Island toast animations, smoother loading, seller form improvements" >> deploy_output.log 2>&1 || echo "No changes to commit or already committed" >> deploy_output.log
+git commit --no-verify -m "Deploy: All latest updates - mobile optimizations, thinner borders, removed dividers, search bar styling" >> deploy_output.log 2>&1 || echo "No changes to commit or already committed" >> deploy_output.log
 echo "" >> deploy_output.log
 
 echo "Step 5: Checking commits ahead of remote..." | tee -a deploy_output.log

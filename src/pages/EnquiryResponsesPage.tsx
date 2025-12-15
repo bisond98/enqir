@@ -558,33 +558,33 @@ const EnquiryResponsesPage = () => {
           </div>
         )}
 
-        <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+        <div className="space-y-3 sm:space-y-5 lg:space-y-8">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
               <div 
                 key={response.id} 
-                className="group/card bg-white border border-black rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1"
+                className="group/card bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden shadow-sm sm:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] sm:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] transition-all duration-300 sm:hover:-translate-y-1"
               >
-                {/* Card Header - Professional black header with better typography */}
-                <div className="bg-black px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
-                      <div className="bg-blue-600 text-white rounded-xl w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 flex items-center justify-center font-black text-sm sm:text-base lg:text-lg flex-shrink-0 shadow-lg ring-2 ring-blue-400/50">
+                {/* Card Header - Mobile optimized */}
+                <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
+                  <div className="flex items-center justify-between gap-2 sm:gap-4">
+                    <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
+                      <div className="bg-blue-600 text-white rounded-lg sm:rounded-xl w-7 h-7 sm:w-9 sm:h-9 lg:w-12 lg:h-12 flex items-center justify-center font-black text-xs sm:text-sm lg:text-lg flex-shrink-0 shadow-lg ring-1 sm:ring-2 ring-blue-400/50">
                         #{index + 1}
                       </div>
                       <div className="min-w-0">
-                        <span className="text-sm sm:text-base lg:text-lg font-bold text-white block leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
-                        <span className="text-[10px] sm:text-xs text-gray-300 font-medium">Response #{index + 1}</span>
+                        <span className="text-xs sm:text-sm lg:text-lg font-bold text-white block leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
+                        <span className="text-[9px] sm:text-[10px] lg:text-xs text-gray-300 font-medium hidden sm:block">Response #{index + 1}</span>
                       </div>
                     </div>
                     <Badge 
                       variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}
-                      className={`text-[10px] sm:text-xs lg:text-sm px-4 sm:px-5 py-1.5 sm:py-2 font-bold flex-shrink-0 shadow-lg ${
+                      className={`text-[9px] sm:text-[10px] lg:text-sm px-2 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 font-bold flex-shrink-0 shadow-md ${
                         response.status === 'approved' 
-                          ? 'bg-green-600 hover:bg-green-700 text-white border-2 border-green-500' 
+                          ? 'bg-green-600 hover:bg-green-700 text-white border border-green-500 sm:border-2' 
                           : response.status === 'rejected'
-                          ? 'bg-red-600 hover:bg-red-700 text-white border-2 border-red-500'
-                          : 'bg-yellow-500 hover:bg-yellow-600 text-white border-2 border-yellow-400'
+                          ? 'bg-red-600 hover:bg-red-700 text-white border border-red-500 sm:border-2'
+                          : 'bg-yellow-500 hover:bg-yellow-600 text-white border border-yellow-400 sm:border-2'
                       }`}
                     >
                       {response.status || 'pending'}
@@ -592,48 +592,48 @@ const EnquiryResponsesPage = () => {
                   </div>
                 </div>
                 
-                {/* Card Content - Professional spacing with subtle background */}
-                <div className="p-5 sm:p-6 lg:p-8 xl:p-10 space-y-5 sm:space-y-6 lg:space-y-7 relative z-10 bg-white">
+                {/* Card Content - Mobile optimized spacing */}
+                <div className="p-3 sm:p-5 lg:p-8 xl:p-10 space-y-3 sm:space-y-4 lg:space-y-7 relative z-10 bg-white">
                 
-                {/* Seller Info & Price Group - Professional layout */}
-                <div className="space-y-4 pb-5 sm:pb-6 border-b border-black">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 lg:gap-6">
-                    {/* Seller Info - Enhanced professional design */}
-                    <div className="flex items-center space-x-4 flex-1 min-w-0 w-full lg:w-auto">
+                {/* Seller Info & Price Group - Mobile optimized */}
+                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6">
+                    {/* Seller Info - Mobile optimized */}
+                    <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0 w-full lg:w-auto">
                       <div className="relative flex-shrink-0">
-                        <div className="w-14 h-14 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl flex-shrink-0 ring-4 ring-blue-100">
-                          <span className="text-white font-black text-xl sm:text-2xl lg:text-3xl">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl flex-shrink-0 ring-2 sm:ring-4 ring-blue-100">
+                          <span className="text-white font-black text-lg sm:text-xl lg:text-3xl">
                             {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
                           </span>
                         </div>
                         {((response as any).userProfileVerified || response.isIdentityVerified) && (
-                          <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 ring-4 ring-white shadow-lg">
-                            <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                          <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 bg-white rounded-full p-0.5 sm:p-1 ring-2 sm:ring-4 ring-white shadow-md sm:shadow-lg">
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
                           </div>
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-black text-base sm:text-lg lg:text-xl text-black truncate">{sanitizeSellerName(response.sellerName)}</h4>
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                          <h4 className="font-black text-sm sm:text-base lg:text-xl text-black truncate">{sanitizeSellerName(response.sellerName)}</h4>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4 text-gray-500" />
-                          <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                        <div className="flex items-center space-x-1.5 sm:space-x-2">
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                          <span className="text-[10px] sm:text-xs lg:text-sm text-gray-600 font-medium">
                             {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Price Quote - Professional prominent display */}
-                    <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-lg hover:shadow-xl transition-all duration-200">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                          <span className="text-white text-sm sm:text-base font-black">₹</span>
+                    {/* Price Quote - Mobile optimized */}
+                    <div className="bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl p-3 sm:p-5 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-md sm:shadow-lg lg:hover:shadow-xl transition-all duration-200">
+                      <div className="flex items-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-3">
+                        <div className="w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                          <span className="text-white text-xs sm:text-sm lg:text-base font-black">₹</span>
                         </div>
-                        <span className="text-xs sm:text-sm lg:text-base font-bold text-black">Price Quote</span>
+                        <span className="text-[10px] sm:text-xs lg:text-base font-bold text-black">Price Quote</span>
                       </div>
-                      <p className="font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-black leading-none">
+                      <p className="font-black text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-black leading-none">
                         {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
                       </p>
                     </div>
@@ -641,53 +641,53 @@ const EnquiryResponsesPage = () => {
                   
                 </div>
 
-                {/* Message & Notes Group - Professional sections */}
-                <div className="space-y-4 pb-5 sm:pb-6 border-b border-black">
-                  {/* Message Section - Professional styling */}
-                  <div className="bg-white border-2 border-black rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                        <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                {/* Message & Notes Group - Mobile optimized */}
+                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
+                  {/* Message Section - Mobile optimized */}
+                  <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                       </div>
-                      <span className="text-sm sm:text-base lg:text-lg font-black text-black">Message</span>
+                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message</span>
                     </div>
-                    <div className="bg-gray-50 border-2 border-black rounded-xl p-4 sm:p-5">
-                      <p className="text-sm sm:text-base lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
+                    <div className="bg-gray-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                      <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
                     </div>
                   </div>
                   
-                  {/* Additional Notes - Professional styling */}
+                  {/* Additional Notes - Mobile optimized */}
                   {response.notes && (
-                    <div className="bg-white border-2 border-black rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center shadow-md">
-                          <div className="w-6 h-6 bg-yellow-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white text-sm font-black">📝</span>
+                    <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                          <div className="w-5 h-5 sm:w-6 sm:w-6 bg-yellow-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-xs sm:text-sm font-black">📝</span>
                           </div>
                         </div>
-                        <span className="text-sm sm:text-base lg:text-lg font-black text-black">Additional Notes</span>
+                        <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Additional Notes</span>
                       </div>
-                      <div className="bg-yellow-50 border-2 border-black rounded-xl p-4 sm:p-5">
-                        <p className="text-xs sm:text-sm lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
+                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                        <p className="text-[10px] sm:text-xs lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
                       </div>
                     </div>
                   )}
                 </div>
                 
-                {/* Images Section - Professional grid layout */}
+                {/* Images Section - Mobile optimized grid */}
                 {response.imageUrls && response.imageUrls.length > 0 && (
-                  <div className="pb-5 sm:pb-6 border-b border-black">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-md">
-                        <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  <div className="pb-3 sm:pb-5 lg:pb-6">
+                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                        <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                       </div>
-                      <span className="text-sm sm:text-base lg:text-lg font-black text-black">Images ({response.imageUrls.length})</span>
+                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Images ({response.imageUrls.length})</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
                       {response.imageUrls.map((imageUrl, imgIndex) => (
                         <div 
                           key={imgIndex} 
-                          className="relative group cursor-pointer rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-black"
+                          className="relative group cursor-pointer rounded-lg sm:rounded-xl overflow-hidden shadow-md sm:shadow-lg lg:hover:shadow-2xl transition-all duration-300 sm:hover:-translate-y-1 lg:hover:-translate-y-2 border-[0.5px] border-black"
                           onClick={() => {
                             console.log('Image clicked:', imageUrl);
                             setFullscreenImage(imageUrl);
@@ -696,13 +696,13 @@ const EnquiryResponsesPage = () => {
                           <img 
                             src={imageUrl} 
                             alt={`Response image ${imgIndex + 1}`}
-                            className="w-full h-28 sm:h-32 lg:h-36 xl:h-40 object-cover transition-transform duration-300 group-hover:scale-110"
+                            className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 object-cover transition-transform duration-300 sm:group-hover:scale-110"
                             loading="lazy"
                             decoding="async"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
-                            <div className="bg-white rounded-full p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
-                              <Eye className="h-5 w-5 text-black" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2 sm:pb-3">
+                            <div className="bg-white rounded-full p-2 sm:p-3 transform translate-y-2 sm:translate-y-4 sm:group-hover:translate-y-0 transition-transform duration-300 shadow-lg sm:shadow-xl">
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-black" />
                             </div>
                           </div>
                         </div>
@@ -711,21 +711,21 @@ const EnquiryResponsesPage = () => {
                   </div>
                 )}
                 
-                {/* Footer Section - Professional action area */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-5 sm:pt-6 border-t border-black">
-                  <div className="text-xs sm:text-sm lg:text-base text-gray-600 flex items-center space-x-2 bg-white border-2 border-black rounded-xl px-4 py-2.5 shadow-sm">
-                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
-                    <span className="font-semibold">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                {/* Footer Section - Mobile optimized */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-5 lg:pt-6">
+                  <div className="text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
+                    <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-2 border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-6 sm:px-8 lg:px-10 py-3 sm:py-3.5 lg:py-4 rounded-xl text-sm sm:text-base font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
+                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 sm:hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
                   >
                     {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0 group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full sm:group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 sm:group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
                     <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
                 </div>
