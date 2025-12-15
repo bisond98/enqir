@@ -1,5 +1,5 @@
-import { useEffect, useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useContext, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,6 +121,15 @@ const Admin = () => {
     autoApprovePremium: true,
     autoApproveFree: true
   });
+
+  // Scroll to reports section if hash is present
+  useEffect(() => {
+    if (location.hash === '#reports' && reportsSectionRef.current) {
+      setTimeout(() => {
+        reportsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500); // Wait for page to load
+    }
+  }, [location.hash, isAuthorized]);
 
   // Load AI settings
   useEffect(() => {
@@ -2399,7 +2408,7 @@ const Admin = () => {
         </Card>
 
         {/* User Reports Section */}
-              <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+              <Card ref={reportsSectionRef} id="user-reports-section" className="bg-white border border-gray-200 shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-200 px-5 sm:px-6 py-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
