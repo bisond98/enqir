@@ -675,7 +675,8 @@ const EnquiryResponsesPage = () => {
                           (response as any).userProfileVerified || 
                           (response as any).isProfileVerified ||
                           (response as any).userVerified ||
-                          response.isIdentityVerified) && (
+                          response.isIdentityVerified ||
+                          (response as any).govIdUrl) && (
                           <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 bg-white rounded-full p-0.5 sm:p-1 ring-2 sm:ring-4 ring-white shadow-md sm:shadow-lg">
                             <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
                           </div>

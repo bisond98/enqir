@@ -917,8 +917,8 @@ const SellerResponse = () => {
         updatedAt: serverTimestamp(),
         buyerViewed: false,
         chatEnabled: false,
-        userVerified: isUserVerified,
-        isProfileVerified: isUserVerified
+        userVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
+        isProfileVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl))
       };
 
       console.log('Submitting seller response:', responseData);

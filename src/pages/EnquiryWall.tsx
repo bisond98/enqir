@@ -43,6 +43,7 @@ interface Enquiry {
   deadline?: any;
   userProfileVerified?: boolean;
   isProfileVerified?: boolean;
+  userVerified?: boolean;
   idFrontImage?: string;
   idBackImage?: string;
   dealClosed?: boolean;
@@ -998,7 +999,9 @@ export default function EnquiryWall() {
         profile?.trustBadge ||
         profile?.isIdentityVerified ||
         enquiry.idFrontImage || 
-        enquiry.idBackImage;
+        enquiry.idBackImage ||
+        enquiry.isProfileVerified ||
+        enquiry.userVerified;
       return hasTrustBadge;
     }).length;
   }, [enquiries, userProfiles]);
@@ -1750,7 +1753,7 @@ export default function EnquiryWall() {
                             {/* Show verified badge if: 
                                 1. User has profile-level verification (applies to all enquiries), OR
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
-                                {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                                {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage || enquiry.isProfileVerified || enquiry.userVerified) && (
                                   <>
                                     <div className={`flex items-center justify-center w-2 h-2 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
                                       isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
@@ -1927,7 +1930,8 @@ export default function EnquiryWall() {
                                    userProfiles[enquiry.userId]?.isVerified || 
                                    userProfiles[enquiry.userId]?.trustBadge || 
                                    userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                                  enquiry.idFrontImage || enquiry.idBackImage) && (
+                                  enquiry.idFrontImage || enquiry.idBackImage ||
+                                  enquiry.isProfileVerified || enquiry.userVerified) && (
                                 <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
                                   <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
                                     isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'

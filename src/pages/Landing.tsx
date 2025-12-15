@@ -2143,7 +2143,8 @@ const Landing = () => {
                                userProfiles[enquiry.userId]?.isVerified || 
                                userProfiles[enquiry.userId]?.trustBadge || 
                                userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                              enquiry.idFrontImage || enquiry.idBackImage) && (
+                              enquiry.idFrontImage || enquiry.idBackImage || 
+                              enquiry.isProfileVerified || enquiry.userVerified) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'

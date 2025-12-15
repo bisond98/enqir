@@ -1395,11 +1395,17 @@ export default function PostEnquiry() {
       };
 
       // Only add government ID fields if they exist
-      if (idFrontUrlFinal) {
-        enquiryData.idFrontImage = idFrontUrlFinal;
-      }
-      if (idBackUrlFinal) {
-        enquiryData.idBackImage = idBackUrlFinal;
+      // If ID images are uploaded through the form, mark this enquiry as verified
+      if (idFrontUrlFinal || idBackUrlFinal) {
+        if (idFrontUrlFinal) {
+          enquiryData.idFrontImage = idFrontUrlFinal;
+        }
+        if (idBackUrlFinal) {
+          enquiryData.idBackImage = idBackUrlFinal;
+        }
+        // Set verification flags to true for this enquiry when ID images are uploaded
+        enquiryData.isProfileVerified = true;
+        enquiryData.userVerified = true;
       }
       
       // Add reference images if any exist

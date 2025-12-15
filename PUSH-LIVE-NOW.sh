@@ -10,7 +10,7 @@ git config --local receive.denyDeletes false 2>/dev/null
 
 # Push
 git add -A
-git commit -m "Deploy: All UI updates - dark high depth black styling, Contact Us, Privacy Policy updates" 2>/dev/null || echo "No changes to commit"
+git commit -m "Deploy: Trust badge fixes for form uploads - PostEnquiry and SellerResponse forms now show trust badges correctly" 2>/dev/null || echo "No changes to commit"
 git push origin main 2>&1
 echo "Push completed. Check Vercel dashboard."
 
