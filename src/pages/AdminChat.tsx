@@ -414,19 +414,25 @@ export default function AdminChat() {
                         className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative border-[0.5px] border-black ${
-                            isOwnMessage
-                              ? 'bg-white text-black'
-                              : 'bg-white text-black'
+                          className={`max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative border-[0.5px] ${
+                            isAdminMsg
+                              ? 'bg-red-600 border-red-600 text-white'
+                              : isOwnMessage
+                              ? 'bg-white text-black border-black'
+                              : 'bg-white text-black border-black'
                           }`}
                         >
                           {/* Message Content */}
                           {message.message && (
-                            <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-black font-medium">
+                            <p className={`text-sm sm:text-base lg:text-lg leading-relaxed break-words font-medium ${
+                              isAdminMsg ? 'text-white' : 'text-black'
+                            }`}>
                               {cleanMessageText(message.message).split(/(₹?\d+(?:,\d+)*(?:\.\d+)?)/g).map((part, i) => {
                                 // Check if part is a number (with or without ₹)
                                 if (/^₹?\d+(?:,\d+)*(?:\.\d+)?$/.test(part)) {
-                                  return <span key={i} className="text-black font-bold bg-gray-200 px-1 rounded">{part}</span>;
+                                  return <span key={i} className={`font-bold px-1 rounded ${
+                                    isAdminMsg ? 'text-white bg-red-700' : 'text-black bg-gray-200'
+                                  }`}>{part}</span>;
                                 }
                                 return <span key={i}>{part}</span>;
                               })}
@@ -435,12 +441,16 @@ export default function AdminChat() {
                           
                           {/* Message Meta */}
                           <div className="flex items-center justify-end space-x-1.5 sm:space-x-2 mt-1.5 sm:mt-2">
-                            <span className={`text-[8px] sm:text-[9px] lg:text-[10px] font-medium text-gray-600`}>
+                            <span className={`text-[8px] sm:text-[9px] lg:text-[10px] font-medium ${
+                              isAdminMsg ? 'text-red-100' : 'text-gray-600'
+                            }`}>
                               {formatDate(message.timestamp)}
                             </span>
                             {isOwnMessage && (
                               <div className="ml-0.5 sm:ml-1">
-                                <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-600" />
+                                <CheckCircle className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
+                                  isAdminMsg ? 'text-red-100' : 'text-gray-600'
+                                }`} />
                               </div>
                             )}
                           </div>
