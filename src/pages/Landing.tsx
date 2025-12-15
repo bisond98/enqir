@@ -1756,9 +1756,9 @@ const Landing = () => {
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs sm:text-xs font-bold text-black">
-                  {allLiveEnquiries.length} Live Enquiries
+                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
+                  {allLiveEnquiries.length} real buyers waiting for the right seller
                 </span>
               </div>
             </div>
@@ -2034,8 +2034,9 @@ const Landing = () => {
                 duration: 0.5, 
                 ease: [0.22, 1, 0.36, 1],
                 type: "spring",
-                stiffness: 300,
-                damping: 30
+                stiffness: windowWidth < 1024 ? 40 : 30, // Desktop stiffness 30
+                damping: windowWidth < 1024 ? 28 : 30, // Desktop damping 30
+                mass: windowWidth < 1024 ? 0.6 : 1.0 // Desktop mass 1.0
               }}
               style={{ 
                 backgroundColor: 'white',
@@ -2109,7 +2110,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className="px-2.5 pt-2.5 pb-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
+                      <div className="px-2.5 pt-2.5 pb-1 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
                       {/* Title - Professional Typography */}
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2118,9 +2119,9 @@ const Landing = () => {
                       </h3>
                       
                       {/* Budget and Location - Stacked on Both Mobile and Desktop */}
-                      <div className="flex flex-col w-full gap-1.5 mb-1.5">
+                      <div className="flex flex-col w-full gap-3 sm:gap-2 mb-1.5">
                         {enquiry.budget && (
-                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border-[0.5px] border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-black sm:border-[0.5px] w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
                             <div className="flex items-center gap-0.5">
                               <span className="text-xs sm:text-sm font-normal text-black flex-shrink-0">₹</span>
@@ -2129,7 +2130,7 @@ const Landing = () => {
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className="flex items-center justify-between text-gray-700 border-[0.5px] border-black rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between text-gray-700 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2140,8 +2141,8 @@ const Landing = () => {
                       </div>
                       
                       {/* Meta Information - Professional Grouping */}
-                      <div className="flex flex-col w-full gap-1.5">
-                          <div className="flex items-center justify-between text-gray-600 border-[0.5px] border-black rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                      <div className="flex flex-col w-full gap-3 sm:gap-1.5">
+                          <div className="flex items-center justify-between text-gray-600 border border-black sm:border-[0.5px] rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2152,7 +2153,7 @@ const Landing = () => {
                         </div>
                         {/* Deadline Timer */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                            <div className="border-[0.5px] border-black rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <div className="border border-black sm:border-[0.5px] rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                               <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
@@ -2206,7 +2207,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full border-t border-black pt-1.5">
+                        <div className="block sm:hidden w-full border-t border-black pt-1.5" style={{ paddingBottom: '1.75rem', marginTop: '-0.5rem' }}>
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
@@ -2249,8 +2250,46 @@ const Landing = () => {
                         </Badge>
                       </div>
                       
+                      {/* Footer - Save and Share - Desktop only (moved before Sell button) */}
+                      <div className="hidden sm:block w-full pt-2 pb-3 border-t border-black">
+                        <div className="flex items-center gap-2 justify-between">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
+                          </button>
+                        </div>
+                      </div>
+                      
                       {/* Primary Action Button - Desktop only */}
-                      <div className="hidden sm:block mt-auto border-t border-black w-full pt-1.5 pb-0 sm:pt-2">
+                      <div className="hidden sm:block w-full pt-1.5 pb-0 sm:pt-2">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
@@ -2297,44 +2336,6 @@ const Landing = () => {
                             <span className="relative z-10">Sign In</span>
                           </button>
                         )}
-                      </div>
-                      
-                      {/* Footer - Save and Share - Desktop only */}
-                      <div className="hidden sm:block mt-2 pt-2 pb-3 border-t border-black">
-                        <div className="flex items-center gap-2 justify-between">
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleSave(enquiry.id, e);
-                              }
-                            }}
-                            disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
-                              savedEnquiries.includes(enquiry.id) 
-                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
-                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
-                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
-                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleShare(enquiry, e);
-                              }
-                            }}
-                            disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
-                            <span className="font-semibold">Share</span>
-                          </button>
-                        </div>
                       </div>
                       </div>
                       </div>

@@ -10,8 +10,9 @@ git config --local receive.denyDeletes false 2>/dev/null
 
 # Push
 git add -A
-git commit -m "Deploy: All latest updates - mobile optimizations, thinner borders, removed dividers, search bar styling" 2>/dev/null || echo "No changes to commit"
+git commit -m "Deploy: All home screen and response card updates" 2>/dev/null || echo "No changes to commit"
 git push origin main 2>&1
+echo "Push completed. Check Vercel dashboard."
 
 # Restore protections
 mv .git/hooks/pre-merge.temp .git/hooks/pre-merge 2>/dev/null
