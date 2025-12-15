@@ -120,12 +120,22 @@ export default function AdminChat() {
 
     // Query 1: Load warning messages (enquiryId: 'admin_warning')
     // Query without orderBy to avoid index issues, we'll sort manually
+    // This query gets admin warning messages sent to the user
     const warningQuery = query(
       collection(db, 'chatMessages'),
       where('enquiryId', '==', 'admin_warning'),
       where('recipientId', '==', targetUserId),
       where('isAdminMessage', '==', true),
       where('adminMessageType', '==', 'warning')
+    );
+
+    // Query 1b: Load user replies to warnings (enquiryId: 'admin_warning', but from user)
+    // This allows users to reply to admin warnings
+    const warningRepliesQuery = query(
+      collection(db, 'chatMessages'),
+      where('enquiryId', '==', 'admin_warning'),
+      where('sellerId', '==', 'admin'),
+      where('senderId', '==', targetUserId)
     );
 
     // Query 2: Load chat messages (enquiryId: 'admin_chat')
@@ -256,6 +266,7 @@ export default function AdminChat() {
 
     return () => {
       unsubscribeWarning();
+      unsubscribeWarningReplies();
       unsubscribeChat1();
       unsubscribeChat2();
       unsubscribeChat3();
