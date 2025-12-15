@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2 } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, ArrowLeftRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -394,7 +394,16 @@ export default function MyChats() {
                 </div>
             
                   {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
+                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
+                    {/* Arrow Indicator */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="mb-2 sm:mb-3"
+                    >
+                      <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                    </motion.div>
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
