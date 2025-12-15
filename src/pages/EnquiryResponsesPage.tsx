@@ -558,64 +558,82 @@ const EnquiryResponsesPage = () => {
           </div>
         )}
 
-        <div className="space-y-2.5 sm:space-y-6">
+        <div className="space-y-5 sm:space-y-6 lg:space-y-8">
           {visibleResponses.length > 0 ? (
             visibleResponses.map((response, index) => (
-              <div key={response.id} className="border-[0.5px] border-black rounded-lg sm:rounded-xl bg-white overflow-hidden">
-                {/* Card Header - Solid black background */}
-                <div className="bg-black px-3 py-2 sm:px-6 sm:py-4 border-b-[0.5px] border-black relative z-20">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center space-x-1.5 sm:space-x-2 flex-1 min-w-0">
-                      <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
+              <div 
+                key={response.id} 
+                className="group/card bg-white border border-black rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1"
+              >
+                {/* Card Header - Professional black header with better typography */}
+                <div className="bg-black px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+                      <div className="bg-blue-600 text-white rounded-xl w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 flex items-center justify-center font-black text-sm sm:text-base lg:text-lg flex-shrink-0 shadow-lg ring-2 ring-blue-400/50">
                         #{index + 1}
                       </div>
-                      <span className="text-[10px] sm:text-sm font-bold text-white">Seller {index + 1} of {visibleResponses.length}</span>
+                      <div className="min-w-0">
+                        <span className="text-sm sm:text-base lg:text-lg font-bold text-white block leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
+                        <span className="text-[10px] sm:text-xs text-gray-300 font-medium">Response #{index + 1}</span>
+                      </div>
                     </div>
                     <Badge 
                       variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}
-                      className="text-[9px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 font-black flex-shrink-0"
+                      className={`text-[10px] sm:text-xs lg:text-sm px-4 sm:px-5 py-1.5 sm:py-2 font-bold flex-shrink-0 shadow-lg ${
+                        response.status === 'approved' 
+                          ? 'bg-green-600 hover:bg-green-700 text-white border-2 border-green-500' 
+                          : response.status === 'rejected'
+                          ? 'bg-red-600 hover:bg-red-700 text-white border-2 border-red-500'
+                          : 'bg-yellow-500 hover:bg-yellow-600 text-white border-2 border-yellow-400'
+                      }`}
                     >
                       {response.status || 'pending'}
                     </Badge>
                   </div>
                 </div>
                 
-                {/* Card Content - Compact white background */}
-                <div className="p-2.5 sm:p-6 space-y-2.5 sm:space-y-4 relative z-10">
+                {/* Card Content - Professional spacing with subtle background */}
+                <div className="p-5 sm:p-6 lg:p-8 xl:p-10 space-y-5 sm:space-y-6 lg:space-y-7 relative z-10 bg-white">
                 
-                {/* Seller Info & Price Group */}
-                <div className="space-y-2 pb-2 border-b-[0.5px] border-black">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center space-x-2 flex-1 min-w-0 border-[0.5px] border-black rounded-lg p-2">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 border-[0.5px] border-black">
-                        <span className="text-white font-black text-xs sm:text-sm">
-                          {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
-                        </span>
+                {/* Seller Info & Price Group - Professional layout */}
+                <div className="space-y-4 pb-5 sm:pb-6 border-b border-black">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 lg:gap-6">
+                    {/* Seller Info - Enhanced professional design */}
+                    <div className="flex items-center space-x-4 flex-1 min-w-0 w-full lg:w-auto">
+                      <div className="relative flex-shrink-0">
+                        <div className="w-14 h-14 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl flex-shrink-0 ring-4 ring-blue-100">
+                          <span className="text-white font-black text-xl sm:text-2xl lg:text-3xl">
+                            {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        {((response as any).userProfileVerified || response.isIdentityVerified) && (
+                          <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 ring-4 ring-white shadow-lg">
+                            <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                          </div>
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                        <h4 className="font-black text-xs sm:text-sm text-gray-900 truncate">{sanitizeSellerName(response.sellerName)}</h4>
-                          {((response as any).userProfileVerified || response.isIdentityVerified) && (
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
-                          )}
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-black text-base sm:text-lg lg:text-xl text-black truncate">{sanitizeSellerName(response.sellerName)}</h4>
                         </div>
-                        <div className="flex items-center space-x-1.5">
-                          <span className="text-[9px] sm:text-xs text-gray-500">
-                            {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString() : 'N/A'}
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                            {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Price Quote - Compact */}
-                    <div className="bg-white border-[0.5px] border-black rounded-lg p-2 flex-shrink-0">
-                      <div className="flex items-center space-x-1 mb-0.5">
-                        <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-[8px] font-black">₹</span>
+                    {/* Price Quote - Professional prominent display */}
+                    <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-lg hover:shadow-xl transition-all duration-200">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                          <span className="text-white text-sm sm:text-base font-black">₹</span>
                         </div>
-                        <span className="text-[8px] sm:text-[9px] font-bold text-gray-600">Price</span>
+                        <span className="text-xs sm:text-sm lg:text-base font-bold text-black">Price Quote</span>
                       </div>
-                      <p className="font-black text-lg sm:text-xl lg:text-2xl text-black">
+                      <p className="font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-black leading-none">
                         {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
                       </p>
                     </div>
@@ -623,47 +641,53 @@ const EnquiryResponsesPage = () => {
                   
                 </div>
 
-                {/* Message & Notes Group */}
-                <div className="space-y-2 pb-2 border-b-[0.5px] border-black">
-                  {/* Message Section */}
-                  <div className="border-[0.5px] border-black rounded-lg p-2">
-                    <div className="flex items-center space-x-1.5 mb-1.5">
-                      <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                      <span className="text-[9px] sm:text-xs font-black text-gray-700">Message</span>
+                {/* Message & Notes Group - Professional sections */}
+                <div className="space-y-4 pb-5 sm:pb-6 border-b border-black">
+                  {/* Message Section - Professional styling */}
+                  <div className="bg-white border-2 border-black rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                        <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                      </div>
+                      <span className="text-sm sm:text-base lg:text-lg font-black text-black">Message</span>
                     </div>
-                    <div className="bg-gray-50 border-[0.5px] border-black rounded-lg p-2">
-                      <p className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">{response.message || 'No message provided'}</p>
+                    <div className="bg-gray-50 border-2 border-black rounded-xl p-4 sm:p-5">
+                      <p className="text-sm sm:text-base lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
                     </div>
                   </div>
                   
-                  {/* Additional Notes */}
+                  {/* Additional Notes - Professional styling */}
                   {response.notes && (
-                    <div className="border-[0.5px] border-black rounded-lg p-2">
-                      <div className="flex items-center space-x-1.5 mb-1.5">
-                        <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border-[0.5px] border-black">
-                          <span className="text-white text-[8px] font-black">📝</span>
+                    <div className="bg-white border-2 border-black rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center shadow-md">
+                          <div className="w-6 h-6 bg-yellow-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-sm font-black">📝</span>
+                          </div>
                         </div>
-                        <span className="text-[9px] sm:text-xs font-black text-gray-700">Additional Notes</span>
+                        <span className="text-sm sm:text-base lg:text-lg font-black text-black">Additional Notes</span>
                       </div>
-                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg p-2">
-                        <p className="text-[10px] sm:text-xs text-gray-900 leading-snug">{response.notes}</p>
+                      <div className="bg-yellow-50 border-2 border-black rounded-xl p-4 sm:p-5">
+                        <p className="text-xs sm:text-sm lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
                       </div>
                     </div>
                   )}
                 </div>
                 
-                {/* Images Section */}
+                {/* Images Section - Professional grid layout */}
                 {response.imageUrls && response.imageUrls.length > 0 && (
-                  <div className="pb-2 border-b-[0.5px] border-black">
-                    <div className="flex items-center space-x-1.5 mb-2 border-[0.5px] border-black rounded-lg p-2">
-                      <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                      <span className="text-[9px] sm:text-xs font-black text-gray-700">Images ({response.imageUrls.length})</span>
+                  <div className="pb-5 sm:pb-6 border-b border-black">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                        <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                      </div>
+                      <span className="text-sm sm:text-base lg:text-lg font-black text-black">Images ({response.imageUrls.length})</span>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 border-[0.5px] border-black rounded-lg p-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                       {response.imageUrls.map((imageUrl, imgIndex) => (
                         <div 
                           key={imgIndex} 
-                          className="relative group cursor-pointer"
+                          className="relative group cursor-pointer rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-black"
                           onClick={() => {
                             console.log('Image clicked:', imageUrl);
                             setFullscreenImage(imageUrl);
@@ -672,15 +696,13 @@ const EnquiryResponsesPage = () => {
                           <img 
                             src={imageUrl} 
                             alt={`Response image ${imgIndex + 1}`}
-                            className="w-full h-20 sm:h-24 object-cover rounded-lg border-[0.5px] border-black hover:border-blue-500 transition-all duration-200 hover:scale-105"
+                            className="w-full h-28 sm:h-32 lg:h-36 xl:h-40 object-cover transition-transform duration-300 group-hover:scale-110"
                             loading="lazy"
                             decoding="async"
                           />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-200 flex items-center justify-center pointer-events-none">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                              <div className="bg-white rounded-full p-1.5">
-                                <Eye className="h-3 w-3 text-gray-600" />
-                              </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
+                            <div className="bg-white rounded-full p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
+                              <Eye className="h-5 w-5 text-black" />
                             </div>
                           </div>
                         </div>
@@ -689,23 +711,21 @@ const EnquiryResponsesPage = () => {
                   </div>
                 )}
                 
-                {/* Footer Section - Timestamp & Action */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t-[0.5px] border-black">
-                  <div className="text-[9px] sm:text-xs text-gray-500 flex items-center space-x-1 border-[0.5px] border-black rounded-lg px-2 py-1">
-                    <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    <span>Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString() : 'N/A'}</span>
+                {/* Footer Section - Professional action area */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-5 sm:pt-6 border-t border-black">
+                  <div className="text-xs sm:text-sm lg:text-base text-gray-600 flex items-center space-x-2 bg-white border-2 border-black rounded-xl px-4 py-2.5 shadow-sm">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+                    <span className="font-semibold">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-xs font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/startchat"
+                    className="w-full sm:w-auto border-2 border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-6 sm:px-8 lg:px-10 py-3 sm:py-3.5 lg:py-4 rounded-xl text-sm sm:text-base font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
                   >
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                     {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0 group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
                     <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
                 </div>
