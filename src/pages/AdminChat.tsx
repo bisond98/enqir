@@ -120,22 +120,12 @@ export default function AdminChat() {
 
     // Query 1: Load warning messages (enquiryId: 'admin_warning')
     // Query without orderBy to avoid index issues, we'll sort manually
-    // This query gets admin warning messages sent to the user
     const warningQuery = query(
       collection(db, 'chatMessages'),
       where('enquiryId', '==', 'admin_warning'),
       where('recipientId', '==', targetUserId),
       where('isAdminMessage', '==', true),
       where('adminMessageType', '==', 'warning')
-    );
-
-    // Query 1b: Load user replies to warnings (enquiryId: 'admin_warning', but from user)
-    // This allows users to reply to admin warnings
-    const warningRepliesQuery = query(
-      collection(db, 'chatMessages'),
-      where('enquiryId', '==', 'admin_warning'),
-      where('sellerId', '==', 'admin'),
-      where('senderId', '==', targetUserId)
     );
 
     // Query 2: Load chat messages (enquiryId: 'admin_chat')
@@ -502,33 +492,45 @@ export default function AdminChat() {
               )}
             </div>
 
-            {/* Message Input - Matching EnquiryResponses */}
-            <div className="border-t border-gray-800 bg-white">
-              <div className="p-2.5 sm:p-2 lg:p-2.5">
-                {/* Simple Chat Input */}
-                <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 border border-gray-800 rounded-lg sm:rounded-xl p-1.5 sm:p-2 lg:p-2.5">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                    placeholder="Type your message..."
-                    className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm sm:text-base lg:text-lg"
-                  />
-                  <Button
-                    onClick={sendMessage}
-                    disabled={!newMessage.trim()}
-                    className="h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 rounded-full min-touch"
-                  >
-                    <Send className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
-                  </Button>
+            {/* Message Input - Hide for warning chats when user is not admin */}
+            {!(isWarningChat && !isAdmin) && (
+              <div className="border-t border-gray-800 bg-white">
+                <div className="p-2.5 sm:p-2 lg:p-2.5">
+                  {/* Simple Chat Input */}
+                  <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 border border-gray-800 rounded-lg sm:rounded-xl p-1.5 sm:p-2 lg:p-2.5">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      placeholder="Type your message..."
+                      className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-sm sm:text-base lg:text-lg"
+                    />
+                    <Button
+                      onClick={sendMessage}
+                      disabled={!newMessage.trim()}
+                      className="h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 p-0 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 rounded-full min-touch"
+                    >
+                      <Send className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+            {/* Message for warning chats - users cannot reply */}
+            {isWarningChat && !isAdmin && (
+              <div className="border-t border-gray-200 bg-red-50">
+                <div className="p-4 text-center">
+                  <p className="text-sm text-red-700 font-medium">
+                    You cannot reply to admin warnings. Please use the regular chat option to contact admin.
+                  </p>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       </div>
