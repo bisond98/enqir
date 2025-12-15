@@ -634,6 +634,8 @@ export default function MyChats() {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
                 const isAdminWarning = chat.isAdminChat || chat.enquiryId === 'admin_warning' || (chat.enquiryTitle?.includes('Warning') || chat.enquiryTitle?.includes('⚠️'));
+                // For admin warnings, users should not be able to open chat
+                const shouldDisableChat = isDisabled || isAdminWarning;
                 
                 // Only animate on first render of this view
                 const shouldAnimate = !hasAnimated.current;
@@ -990,22 +992,23 @@ export default function MyChats() {
                             transition: { duration: 0.1 }
                           } : {}}
                         >
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={isDisabled}
-                            className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
-                              isDisabled
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (!isDisabled) {
-                                openChat(chat);
-                              }
-                            }}
-                          >
+                          {!isAdminWarning ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={isDisabled}
+                              className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
+                                isDisabled
+                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                                  : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!isDisabled) {
+                                  openChat(chat);
+                                }
+                              }}
+                            >
                             {/* Physical button depth effect */}
                             {!isDisabled && (
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
