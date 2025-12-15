@@ -1419,7 +1419,7 @@ const Dashboard = () => {
                   </div>
                   {/* Toggle - Creative Rotating Dial Design */}
                   <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
-                    {/* Both-sided Arrow Indicator */}
+                    {/* Arrow Indicator */}
                     <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
