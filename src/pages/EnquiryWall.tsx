@@ -1191,8 +1191,8 @@ export default function EnquiryWall() {
           msTextSizeAdjust: '100%'
         }}
       >
-        {/* Header - Matching Seller Form Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+        {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)]">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
@@ -1458,14 +1458,14 @@ export default function EnquiryWall() {
                         }}
                           className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex-shrink-0 ${
                           selectedCategory === category.value
-                              ? 'bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] sm:hover:scale-105'
-                              : 'bg-white hover:bg-gray-50 text-black border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
+                              ? 'bg-black text-white border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
+                              : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
                         }`}
                       >
                         {/* Physical button depth effect */}
                         <div className={`absolute inset-0 bg-gradient-to-b ${
                           selectedCategory === category.value
-                            ? 'from-white/10 to-transparent'
+                            ? 'from-white/5 to-transparent'
                             : 'from-white/20 to-transparent'
                           } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
                         {/* Shimmer effect */}

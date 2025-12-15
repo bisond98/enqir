@@ -758,22 +758,22 @@ const HelpGuide = () => {
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10"></div>
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate(-1)}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <X className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+            >
+              <X className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            </Button>
               </div>
-            </div>
-            
-            {/* Heading in Black Header */}
+          </div>
+          
+          {/* Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
-                <Bot className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+              <Bot className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                 How to Use Enqir.
-              </h1>
+            </h1>
             </div>
             
             {/* Content Card - Black Background */}
@@ -781,7 +781,7 @@ const HelpGuide = () => {
               <div className="text-center">
                 <p className="text-[9px] sm:text-[10px] lg:text-xs text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
                   A simple guide to help you close deals at godspeed
-                </p>
+            </p>
               </div>
             </div>
           </div>
@@ -827,12 +827,12 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-3 mb-2 relative z-10">
                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      1
-                    </div>
+                    1
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Post Your Enquiry</p>
-                    </div>
                   </div>
+                </div>
                   <div className="relative z-10 pl-0">
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Go to "Post Enquiry", fill in what you need, your budget, and location.</p>
                   </div>
@@ -842,12 +842,12 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-3 mb-2 relative z-10">
                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      2
-                    </div>
+                    2
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Choose Premium (Optional)</p>
-                    </div>
                   </div>
+                </div>
                   <div className="relative z-10 pl-0">
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Get more than 2 responses from different sellers with different offers. Select what's better for you.</p>
                   </div>
@@ -857,12 +857,12 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-3 mb-2 relative z-10">
                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      3
-                    </div>
+                    3
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Add Trust Badge (Optional)</p>
-                    </div>
                   </div>
+                </div>
                   <div className="relative z-10 pl-0">
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Complete KYC in your profile - all your enquiries get trust badge automatically. You can remove it anytime. Or complete KYC in enquiry form for that enquiry only.</p>
                   </div>
@@ -872,12 +872,12 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-3 mb-2 relative z-10">
                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      4
-                    </div>
+                    4
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">AI Verifies Instantly</p>
-                    </div>
                   </div>
+                </div>
                   <div className="relative z-10 pl-0">
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Our AI verifies your enquiry and matches you with the right sellers automatically.</p>
                   </div>
@@ -887,12 +887,12 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-3 mb-2 relative z-10">
                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      5
-                    </div>
+                    5
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Track from Dashboard</p>
-                    </div>
                   </div>
+                </div>
                   <div className="relative z-10 pl-0">
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Track all your enquiries from the dashboard.</p>
                   </div>
@@ -902,8 +902,8 @@ const HelpGuide = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
                   <div className="flex items-start gap-4 mb-3 relative z-10">
                     <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-base sm:text-lg shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
-                      6
-                    </div>
+                    6
+                  </div>
                     <div className="flex-1 pt-1">
                       <p className="text-base sm:text-lg font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Chat & Close Deal</p>
                     </div>
