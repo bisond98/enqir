@@ -701,33 +701,11 @@ const EnquiryDetail = () => {
               </h1>
             </div>
             
-            {/* Deadline Date with Countdown in Header */}
-            {enquiry.deadline && formatDeadlineReadable(enquiry.deadline) && (
-              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap px-2">
-                <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 md:px-5 py-2.5 sm:py-3 shadow-lg">
-                  <span className="text-[10px] sm:text-xs text-gray-300 font-normal">before</span>
-                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
-                    <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
-                    <span>{formatDeadlineReadable(enquiry.deadline)}</span>
-                  </span>
-                  <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <Clock className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-gray-300 flex-shrink-0" />
-                    <CountdownTimer 
-                      deadline={enquiry.deadline} 
-                      showIcon={false} 
-                      className="[&_*]:!text-white [&_*]:!border-red-600 [&_*]:!bg-red-600 [&_*]:!font-semibold" 
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-            
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
                 <div className="text-center">
                   {/* Badges Row */}
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 lg:gap-3 mb-3 sm:mb-4 lg:mb-5">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-5">
                     {/* Show verified badge if: 
                         1. User has profile-level verification (applies to all enquiries), OR
                         2. This specific enquiry has ID images (enquiry-specific verification) */}
@@ -737,24 +715,52 @@ const EnquiryDetail = () => {
                        userProfile?.isIdentityVerified) || 
                       enquiry.idFrontImage || enquiry.idBackImage) && (
                       <div title="Verified Enquiry" className="flex-shrink-0">
-                      <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                       </div>
                     )}
                     {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                    <Badge className="bg-white text-black border-white border-2 px-2 sm:px-2.5 py-1 sm:py-1 text-[9px] sm:text-[10px] shadow-sm rounded-full">
-                        <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5" />
+                    <Badge className="bg-white text-black border-white border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
+                        <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                         Premium
                       </Badge>
                     )}
                     {enquiry.isUrgent && (
-                    <Badge className="bg-white text-black border-white border-2 px-2.5 sm:px-3 py-1 text-xs sm:text-xs shadow-sm rounded-full">
-                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
+                    <Badge className="bg-white text-black border-white border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
+                        <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
                         Urgent
                       </Badge>
                     )}
                     {getStatusBadge(enquiry.status)}
                   </div>
                   
+                  {/* Deadline Row - Creative Design */}
+                  {enquiry.deadline && (
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                    <span className="text-[9px] sm:text-[10px] lg:text-xs font-normal text-gray-300">before</span>
+                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 shadow-sm">
+                        {/* Countdown Timer with Icon */}
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-300" />
+                          <CountdownTimer 
+                            deadline={enquiry.deadline} 
+                            showIcon={false} 
+                          className="[&_*]:!text-white [&_*]:!border-gray-600 [&_*]:!bg-gray-800 [&_*]:!font-semibold" 
+                          />
+                        </div>
+                        
+                        {/* Date Separator and Display */}
+                        {formatDeadlineReadable(enquiry.deadline) && (
+                          <>
+                          <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
+                          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
+                            <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
+                              <span>{formatDeadlineReadable(enquiry.deadline)}</span>
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -891,15 +897,7 @@ const EnquiryDetail = () => {
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Deadline</p>
                           <div className="text-sm sm:text-sm md:text-base font-bold text-black leading-tight">
                             {enquiry.deadline ? (
-                              <div className="flex items-center gap-2 flex-wrap">
-                                {formatDeadlineReadable(enquiry.deadline) && (
-                                  <span className="text-gray-600 font-medium">
-                                    {formatDeadlineReadable(enquiry.deadline)}
-                                  </span>
-                                )}
-                                <span className="text-black">•</span>
-                                <CountdownTimer deadline={enquiry.deadline} />
-                              </div>
+                              <CountdownTimer deadline={enquiry.deadline} />
                             ) : (
                               <span className="text-gray-500 text-xs sm:text-xs">No deadline</span>
                             )}
@@ -1159,18 +1157,18 @@ const EnquiryDetail = () => {
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && enquiry && (
           <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-            <DialogContent className="max-w-6xl w-[calc(100vw-0.5rem)] sm:w-[calc(100vw-2rem)] md:w-full max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-5 md:p-6 lg:p-8 mx-auto rounded-2xl">
-              <DialogHeader className="mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-                <DialogTitle className="text-lg sm:text-xl md:text-2xl font-extrabold text-center mb-3 sm:mb-3.5 md:mb-4 flex items-center justify-center gap-2.5 sm:gap-3 px-2">
-                  <Crown className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-black flex-shrink-0" />
+            <DialogContent className="max-w-6xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-full max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 mx-auto">
+              <DialogHeader className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
+                <DialogTitle className="text-base sm:text-lg md:text-xl font-extrabold text-center mb-2 sm:mb-2.5 md:mb-3 flex items-center justify-center gap-2 sm:gap-2.5 px-2">
+                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-black flex-shrink-0" />
                   <span className="break-words text-gray-900">Upgrade Plan for "{enquiry.title}"</span>
                 </DialogTitle>
-                <DialogDescription className="text-center text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-medium px-2">
+                <DialogDescription className="text-center text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed font-medium px-2">
                   Select a plan to unlock premium responses
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="mt-2 sm:mt-3 md:mt-4 lg:mt-5">
+              <div className="mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                 <PaymentPlanSelector
                   currentPlanId={currentPlan}
                   enquiryId={enquiry.id}

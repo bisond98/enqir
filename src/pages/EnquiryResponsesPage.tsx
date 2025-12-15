@@ -80,8 +80,8 @@ const EnquiryResponsesPage = () => {
   const [selectedEnquiryForUpgrade, setSelectedEnquiryForUpgrade] = useState<Enquiry | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   
-  // Sorting state - default to newest first
-  const [sortBy, setSortBy] = useState<'default' | 'price-high' | 'price-low' | 'newest' | 'oldest'>('newest');
+  // Sorting state - default to oldest first (first come first)
+  const [sortBy, setSortBy] = useState<'default' | 'price-high' | 'price-low' | 'newest' | 'oldest'>('oldest');
 
   const sortResponses = (responses: Response[], sortType: string) => {
     console.log('🔍 SortResponses called:', { sortType, responseCount: responses.length, responses: responses.map(r => ({ id: r.id, price: r.price })) });
@@ -449,7 +449,7 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/amount"
+                  className="flex-1 sm:flex-none border-[0.5px] border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/amount"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
@@ -505,7 +505,7 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-4 border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/date"
+                  className="flex-1 sm:flex-none border-[0.5px] border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/date"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
@@ -569,7 +569,7 @@ const EnquiryResponsesPage = () => {
                       <div className="bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center font-black text-[10px] sm:text-sm flex-shrink-0">
                         #{index + 1}
                       </div>
-                      <span className="text-[10px] sm:text-sm font-bold text-white">Response {index + 1} of {visibleResponses.length}</span>
+                      <span className="text-[10px] sm:text-sm font-bold text-white">Seller {index + 1} of {visibleResponses.length}</span>
                     </div>
                     <Badge 
                       variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}

@@ -1,9 +1,6 @@
 // 🛡️ PROTECTED FILE - Mobile optimizations, centered descriptions, card styling
 // Last Updated: Mobile card optimizations and list view description centering
 // DO NOT REVERT: All mobile-specific optimizations are intentional
-// ⚠️ CRITICAL: The current card design in this file MUST NEVER be reverted to old design
-// The card structure, styling, and layout are final and should remain as-is
-// Any changes to card design should only be improvements, never reverts
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";

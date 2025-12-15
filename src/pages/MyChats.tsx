@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, ArrowLeftRight } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, ArrowLeftRight, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -372,6 +372,14 @@ export default function MyChats() {
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
                 <div className="w-10 h-10"></div>
               </div>
             </div>

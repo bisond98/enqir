@@ -8,24 +8,6 @@ export default {
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
 	],
-	safelist: [
-		'pb-3',
-		'pb-4',
-		'pb-5',
-		'-mt-1.5',
-		'-mt-3',
-		'-mt-4',
-		'mt-auto',
-		'pb-2',
-		'pb-1',
-		'focus:border-2',
-		'focus:border-black',
-		'focus:ring-4',
-		'focus:ring-black/20',
-		'focus:ring-2',
-		'focus:ring-0',
-		'focus:outline-none',
-	],
 	prefix: "",
 	theme: {
 		container: {
@@ -128,17 +110,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'shake': {
-					'0%, 100%': { transform: 'translateX(0)' },
-					'10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
-					'20%, 40%, 60%, 80%': { transform: 'translateX(4px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'shake': 'shake 0.5s ease-in-out'
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
