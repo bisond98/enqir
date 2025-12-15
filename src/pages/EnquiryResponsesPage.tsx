@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, query, where, orderBy, getDocs, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, doc, getDoc, onSnapshot, updateDoc, getDoc as firestoreGetDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
@@ -62,6 +62,9 @@ interface Response {
   updatedAt: any;
   buyerViewed: boolean;
   chatEnabled: boolean;
+  userVerified?: boolean;
+  isProfileVerified?: boolean;
+  userProfileVerified?: boolean;
 }
 
 const EnquiryResponsesPage = () => {
@@ -74,6 +77,8 @@ const EnquiryResponsesPage = () => {
   const [loading, setLoading] = useState(true);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
+  // User profiles for trust badge checking
+  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   
   // Payment plan selector state
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
@@ -283,6 +288,63 @@ const EnquiryResponsesPage = () => {
 
     loadEnquiryAndResponses();
   }, [user, enquiryId, navigate]);
+
+  // Load user profiles for trust badge checking
+  useEffect(() => {
+    if (responses.length === 0) return;
+
+    let isMounted = true;
+
+    const fetchUserProfiles = async () => {
+      try {
+        const sellerIds = Array.from(new Set(responses.map(r => r.sellerId).filter(Boolean)));
+        if (sellerIds.length === 0) return;
+
+        const profiles: {[key: string]: any} = {};
+
+        // Batch fetch profiles for better performance
+        const profilePromises = sellerIds.map(async (sellerId) => {
+          try {
+            // Try 'userProfiles' first
+            let profileDoc = await getDoc(doc(db, 'userProfiles', sellerId));
+            if (!profileDoc.exists()) {
+              // Fallback to 'profiles' collection
+              profileDoc = await getDoc(doc(db, 'profiles', sellerId));
+            }
+            if (profileDoc.exists()) {
+              return { sellerId, data: profileDoc.data() };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error fetching user profile for ${sellerId}:`, error);
+            return null;
+          }
+        });
+        
+        const results = await Promise.all(profilePromises);
+        
+        if (isMounted) {
+          results.forEach((result) => {
+            if (result) {
+              profiles[result.sellerId] = result.data;
+            }
+          });
+          setUserProfiles(profiles);
+        }
+      } catch (error) {
+        console.error('Error fetching user profiles:', error);
+        if (isMounted) {
+          setUserProfiles({});
+        }
+      }
+    };
+
+    fetchUserProfiles();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [responses]);
 
   const handleUpgradeClick = (enquiry: Enquiry) => {
     setSelectedEnquiryForUpgrade(enquiry);
@@ -606,7 +668,14 @@ const EnquiryResponsesPage = () => {
                             {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        {((response as any).userProfileVerified || response.isIdentityVerified) && (
+                        {((userProfiles[response.sellerId]?.isProfileVerified || 
+                           userProfiles[response.sellerId]?.isVerified || 
+                           userProfiles[response.sellerId]?.trustBadge || 
+                           userProfiles[response.sellerId]?.isIdentityVerified) || 
+                          (response as any).userProfileVerified || 
+                          (response as any).isProfileVerified ||
+                          (response as any).userVerified ||
+                          response.isIdentityVerified) && (
                           <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 bg-white rounded-full p-0.5 sm:p-1 ring-2 sm:ring-4 ring-white shadow-md sm:shadow-lg">
                             <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
                           </div>

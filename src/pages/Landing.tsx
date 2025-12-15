@@ -186,6 +186,8 @@ const Landing = () => {
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
+  // User profiles for trust badge checking
+  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [isShuffling, setIsShuffling] = useState(false);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
@@ -875,6 +877,63 @@ const Landing = () => {
     
     loadEnquiries();
   }, []);
+
+  // Load user profiles for trust badge checking
+  useEffect(() => {
+    if (publicRecentEnquiries.length === 0) return;
+
+    let isMounted = true;
+
+    const fetchUserProfiles = async () => {
+      try {
+        const userIds = Array.from(new Set(publicRecentEnquiries.map(e => e.userId).filter(Boolean)));
+        if (userIds.length === 0) return;
+
+        const profiles: {[key: string]: any} = {};
+
+        // Batch fetch profiles for better performance
+        const profilePromises = userIds.map(async (userId) => {
+          try {
+            // Try 'userProfiles' first
+            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+            if (!profileDoc.exists()) {
+              // Fallback to 'profiles' collection
+              profileDoc = await getDoc(doc(db, 'profiles', userId));
+            }
+            if (profileDoc.exists()) {
+              return { userId, data: profileDoc.data() };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error fetching user profile for ${userId}:`, error);
+            return null;
+          }
+        });
+        
+        const results = await Promise.all(profilePromises);
+        
+        if (isMounted) {
+          results.forEach((result) => {
+            if (result) {
+              profiles[result.userId] = result.data;
+            }
+          });
+          setUserProfiles(profiles);
+        }
+      } catch (error) {
+        console.error('Error fetching user profiles:', error);
+        if (isMounted) {
+          setUserProfiles({});
+        }
+      }
+    };
+
+    fetchUserProfiles();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [publicRecentEnquiries]);
 
   // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
   useEffect(() => {
@@ -2080,7 +2139,11 @@ const Landing = () => {
                         </div>
                         <div className="flex justify-between items-center relative z-10">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
-                            {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                            {((userProfiles[enquiry.userId]?.isProfileVerified || 
+                               userProfiles[enquiry.userId]?.isVerified || 
+                               userProfiles[enquiry.userId]?.trustBadge || 
+                               userProfiles[enquiry.userId]?.isIdentityVerified) || 
+                              enquiry.idFrontImage || enquiry.idBackImage) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'

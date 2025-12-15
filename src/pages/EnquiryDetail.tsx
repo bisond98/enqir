@@ -63,6 +63,10 @@ interface Enquiry {
   isIdentityVerified?: boolean;
   selectedPlanId?: string;
   referenceImages?: string[];
+  idFrontImage?: string;
+  idBackImage?: string;
+  isProfileVerified?: boolean;
+  userVerified?: boolean;
 }
 
 interface UserProfile {
@@ -709,7 +713,11 @@ const EnquiryDetail = () => {
                    userProfile?.isVerified || 
                    userProfile?.trustBadge || 
                    userProfile?.isIdentityVerified) || 
-                  enquiry.idFrontImage || enquiry.idBackImage) && (
+                  enquiry.idFrontImage || 
+                  enquiry.idBackImage ||
+                  enquiry.isProfileVerified ||
+                  enquiry.userProfileVerified ||
+                  (enquiry as any).userVerified) && (
                   <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-blue-400 flex-shrink-0" />
                 )}
                 <span>{enquiry.title}.</span>

@@ -1226,6 +1226,9 @@ export default function PostEnquiry() {
       return;
     }
 
+    // Set loading state immediately after validation passes
+    setLoading(true);
+
     // Check if premium option is selected
     console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
     
@@ -1244,6 +1247,7 @@ export default function PostEnquiry() {
         return;
       } catch (error) {
         console.error('❌ Error in handleDirectPayment:', error);
+        setLoading(false); // Reset loading on error
         toast({
           title: "Payment Error",
           description: error instanceof Error ? error.message : "Failed to open payment gateway. Please try again.",
@@ -1271,7 +1275,6 @@ export default function PostEnquiry() {
     // Trust badge verified users don't need to upload ID
     
     try {
-      setLoading(true);
       
       let idFrontUrlFinal = null;
       let idBackUrlFinal = null;

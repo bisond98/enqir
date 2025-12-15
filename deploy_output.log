@@ -17,3 +17,35 @@ Untracked files:
 no changes added to commit (use "git add" and/or "git commit -a")
 
 Step 2: Adding all changes...
+
+Step 3: Checking what will be committed...
+deploy_output.log
+src/pages/EnquiryDetail.tsx
+
+Step 4: Committing...
+[main ac4a943] Deploy: All latest updates - mobile optimizations, thinner borders, removed dividers, search bar styling
+ Committer: Nived Sunil <nivedsunil@Niveds-MacBook-Air.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 81 insertions(+), 110 deletions(-)
+ create mode 100644 deploy_output.log
+
+Step 5: Checking commits ahead of remote...
+ac4a943 Deploy: All latest updates - mobile optimizations, thinner borders, removed dividers, search bar styling
+
+Step 6: Pushing to main...
+To https://github.com/bisond98/enqir.git
+   69efbcb..ac4a943  main -> main
+
+=== DEPLOYMENT END ===
+Mon Dec 15 12:25:09 IST 2025
