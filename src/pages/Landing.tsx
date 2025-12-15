@@ -186,8 +186,6 @@ const Landing = () => {
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
-  // User profiles for trust badge checking
-  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [isShuffling, setIsShuffling] = useState(false);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
@@ -877,63 +875,6 @@ const Landing = () => {
     
     loadEnquiries();
   }, []);
-
-  // Load user profiles for trust badge checking
-  useEffect(() => {
-    if (publicRecentEnquiries.length === 0) return;
-
-    let isMounted = true;
-
-    const fetchUserProfiles = async () => {
-      try {
-        const userIds = Array.from(new Set(publicRecentEnquiries.map(e => e.userId).filter(Boolean)));
-        if (userIds.length === 0) return;
-
-        const profiles: {[key: string]: any} = {};
-
-        // Batch fetch profiles for better performance
-        const profilePromises = userIds.map(async (userId) => {
-          try {
-            // Try 'userProfiles' first
-            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
-            if (!profileDoc.exists()) {
-              // Fallback to 'profiles' collection
-              profileDoc = await getDoc(doc(db, 'profiles', userId));
-            }
-            if (profileDoc.exists()) {
-              return { userId, data: profileDoc.data() };
-            }
-            return null;
-          } catch (error) {
-            console.error(`Error fetching user profile for ${userId}:`, error);
-            return null;
-          }
-        });
-        
-        const results = await Promise.all(profilePromises);
-        
-        if (isMounted) {
-          results.forEach((result) => {
-            if (result) {
-              profiles[result.userId] = result.data;
-            }
-          });
-          setUserProfiles(profiles);
-        }
-      } catch (error) {
-        console.error('Error fetching user profiles:', error);
-        if (isMounted) {
-          setUserProfiles({});
-        }
-      }
-    };
-
-    fetchUserProfiles();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [publicRecentEnquiries]);
 
   // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
   useEffect(() => {
@@ -1693,14 +1634,27 @@ const Landing = () => {
             </div>
           </div>
 
-
+          {/* Logo Above Buttons */}
+          <div className="mb-6 sm:mb-8 text-center animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <div className="relative inline-block">
+              <img 
+                src={newLogo} 
+                alt="Enqir.in" 
+                className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto animate-float mx-auto" 
+                style={{ 
+                  display: 'block',
+                  margin: '0 auto'
+                }} 
+              />
+            </div>
+          </div>
 
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent rounded-xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
               <span className="text-xs sm:text-base relative z-10">Post Your Need</span>
@@ -1745,7 +1699,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -1815,9 +1769,9 @@ const Landing = () => {
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
-                  {allLiveEnquiries.length} real buyers waiting for the right seller
+                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs sm:text-xs font-bold text-black">
+                  {allLiveEnquiries.length} Live Enquiries
                 </span>
               </div>
             </div>
@@ -2093,9 +2047,8 @@ const Landing = () => {
                 duration: 0.5, 
                 ease: [0.22, 1, 0.36, 1],
                 type: "spring",
-                stiffness: windowWidth < 1024 ? 40 : 30, // Desktop stiffness 30
-                damping: windowWidth < 1024 ? 28 : 30, // Desktop damping 30
-                mass: windowWidth < 1024 ? 0.6 : 1.0 // Desktop mass 1.0
+                stiffness: 300,
+                damping: 30
               }}
               style={{ 
                 backgroundColor: 'white',
@@ -2132,19 +2085,14 @@ const Landing = () => {
                         />
                       )}
                       <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
-                      {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment - Dark High Depth Black */}
-                      <div className={`bg-black ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)]`}>
+                      {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative`}>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className={`text-[8px] sm:text-[9px] lg:text-xs font-medium text-white`}>Need</span>
                         </div>
                         <div className="flex justify-between items-center relative z-10">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
-                            {((userProfiles[enquiry.userId]?.isProfileVerified || 
-                               userProfiles[enquiry.userId]?.isVerified || 
-                               userProfiles[enquiry.userId]?.trustBadge || 
-                               userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                              enquiry.idFrontImage || enquiry.idBackImage || 
-                              enquiry.isProfileVerified || enquiry.userVerified) && (
+                            {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
@@ -2174,7 +2122,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className="px-2.5 pt-2.5 pb-1 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
+                      <div className="px-2.5 pt-2.5 pb-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
                       {/* Title - Professional Typography */}
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2183,9 +2131,9 @@ const Landing = () => {
                       </h3>
                       
                       {/* Budget and Location - Stacked on Both Mobile and Desktop */}
-                      <div className="flex flex-col w-full gap-3 sm:gap-2 mb-1.5">
+                      <div className="flex flex-col w-full gap-1.5 mb-1.5">
                         {enquiry.budget && (
-                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-black sm:border-[0.5px] w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border-[0.5px] border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
                             <div className="flex items-center gap-0.5">
                               <span className="text-xs sm:text-sm font-normal text-black flex-shrink-0">₹</span>
@@ -2194,7 +2142,7 @@ const Landing = () => {
                           </div>
                         )}
                         {enquiry.location && (
-                          <div className="flex items-center justify-between text-gray-700 border border-black sm:border-[0.5px] rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <div className="flex items-center justify-between text-gray-700 border-[0.5px] border-black rounded-lg w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2205,8 +2153,8 @@ const Landing = () => {
                       </div>
                       
                       {/* Meta Information - Professional Grouping */}
-                      <div className="flex flex-col w-full gap-3 sm:gap-1.5">
-                          <div className="flex items-center justify-between text-gray-600 border border-black sm:border-[0.5px] rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                      <div className="flex flex-col w-full gap-1.5">
+                          <div className="flex items-center justify-between text-gray-600 border-[0.5px] border-black rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-black flex-shrink-0 stroke-[2.5]" />
@@ -2217,7 +2165,7 @@ const Landing = () => {
                         </div>
                         {/* Deadline Timer */}
                         {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
-                            <div className="border border-black sm:border-[0.5px] rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <div className="border-[0.5px] border-black rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                               <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
@@ -2271,7 +2219,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full border-t border-black pt-1.5" style={{ paddingBottom: '1.75rem', marginTop: '-0.5rem' }}>
+                        <div className="block sm:hidden w-full border-t border-black pt-1.5">
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
@@ -2314,46 +2262,8 @@ const Landing = () => {
                         </Badge>
                       </div>
                       
-                      {/* Footer - Save and Share - Desktop only (moved before Sell button) */}
-                      <div className="hidden sm:block w-full pt-2 pb-3 border-t border-black">
-                        <div className="flex items-center gap-2 justify-between">
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleSave(enquiry.id, e);
-                              }
-                            }}
-                            disabled={!user || isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
-                              savedEnquiries.includes(enquiry.id) 
-                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
-                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
-                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
-                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (!isEnquiryOutdated(enquiry)) {
-                                handleShare(enquiry, e);
-                              }
-                            }}
-                            disabled={isEnquiryOutdated(enquiry)}
-                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
-                            <span className="font-semibold">Share</span>
-                          </button>
-                        </div>
-                      </div>
-                      
                       {/* Primary Action Button - Desktop only */}
-                      <div className="hidden sm:block w-full pt-1.5 pb-0 sm:pt-2">
+                      <div className="hidden sm:block mt-auto border-t border-black w-full pt-1.5 pb-0 sm:pt-2">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
@@ -2400,6 +2310,44 @@ const Landing = () => {
                             <span className="relative z-10">Sign In</span>
                           </button>
                         )}
+                      </div>
+                      
+                      {/* Footer - Save and Share - Desktop only */}
+                      <div className="hidden sm:block mt-2 pt-2 pb-3 border-t border-black">
+                        <div className="flex items-center gap-2 justify-between">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 hover:bg-gray-50 hover:text-gray-900`
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border-[0.5px] border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
+                          </button>
+                        </div>
                       </div>
                       </div>
                       </div>
@@ -2524,7 +2472,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',
@@ -2945,22 +2893,6 @@ const Landing = () => {
                 <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
-            
-            {/* Help Guide Button - Smaller and lean for mobile, grey/white color */}
-            <div className="text-center mt-4 sm:mt-6">
-              <Link to="/help-guide" className="w-full sm:w-auto group">
-                <button
-                  className="w-full sm:w-auto border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black py-2 sm:py-2.5 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white sm:min-w-[180px] relative overflow-hidden text-xs sm:text-sm"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                  <span className="relative z-10">Learn More</span>
-                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
-                </button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
