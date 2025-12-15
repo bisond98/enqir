@@ -702,11 +702,11 @@ export default function MyChats() {
                           ? 'border-red-600 bg-gradient-to-br from-red-50 via-red-100 to-red-200' 
                           : 'border-black bg-gradient-to-br from-white via-white to-gray-50'
                       } rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
-                        isDisabled 
+                        isDisabled || isAdminWarning
                           ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
                           : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
                       }`}
-                      onClick={() => !isDisabled && openChat(chat)}
+                      onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
                       {/* Physical button depth effect */}
                       {!isDisabled && (
