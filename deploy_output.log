@@ -1,0 +1,19 @@
+=== DEPLOYMENT START ===
+Mon Dec 15 12:25:07 IST 2025
+
+Step 1: Checking git status...
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+	modified:   enqir 1 copy 9 untested copy 14 (modified content, untracked content)
+	modified:   src/pages/EnquiryDetail.tsx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	deploy_output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+Step 2: Adding all changes...

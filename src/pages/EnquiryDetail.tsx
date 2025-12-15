@@ -677,8 +677,15 @@ const EnquiryDetail = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         {/* Header - Matching Profile Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+            {/* Live Badge - Top Right Corner */}
+            {enquiry.status === 'live' && (
+              <div className="absolute top-4 sm:top-6 right-4 sm:right-6 lg:right-8 z-50">
+                {getStatusBadge(enquiry.status)}
+              </div>
+            )}
+            
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
@@ -695,10 +702,35 @@ const EnquiryDetail = () => {
               </div>
               
             {/* Enquiry Title Heading in Black Header */}
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full">
-                {enquiry.title}.
+            <div className="flex flex-col items-center mb-4 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                {/* Trust Badge Icon - Before Title */}
+                {((userProfile?.isProfileVerified || 
+                   userProfile?.isVerified || 
+                   userProfile?.trustBadge || 
+                   userProfile?.isIdentityVerified) || 
+                  enquiry.idFrontImage || enquiry.idBackImage) && (
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-blue-400 flex-shrink-0" />
+                )}
+                <span>{enquiry.title}.</span>
               </h1>
+              
+              {/* Deadline Date and Countdown - In Header */}
+              {enquiry.deadline && (
+                <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-white">
+                  <span className="text-[9px] sm:text-[10px] lg:text-xs font-normal text-gray-300">before</span>
+                  {formatDeadlineReadable(enquiry.deadline) && (
+                    <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-300">
+                      {formatDeadlineReadable(enquiry.deadline)}
+                    </span>
+                  )}
+                  <CountdownTimer 
+                    deadline={enquiry.deadline} 
+                    showIcon={false} 
+                    className="[&_*]:!text-white [&_*]:!border-red-600 [&_*]:!bg-red-600 [&_*]:!font-semibold text-[9px] sm:text-[10px] lg:text-xs" 
+                  />
+                </div>
+              )}
             </div>
             
             {/* Content Card - Black Background */}
@@ -706,18 +738,6 @@ const EnquiryDetail = () => {
                 <div className="text-center">
                   {/* Badges Row */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-5">
-                    {/* Show verified badge if: 
-                        1. User has profile-level verification (applies to all enquiries), OR
-                        2. This specific enquiry has ID images (enquiry-specific verification) */}
-                    {((userProfile?.isProfileVerified || 
-                       userProfile?.isVerified || 
-                       userProfile?.trustBadge || 
-                       userProfile?.isIdentityVerified) || 
-                      enquiry.idFrontImage || enquiry.idBackImage) && (
-                      <div title="Verified Enquiry" className="flex-shrink-0">
-                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                      </div>
-                    )}
                     {user && user.uid === enquiry.userId && enquiry.isPremium && (
                     <Badge className="bg-white text-black border-white border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
                         <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
@@ -730,37 +750,7 @@ const EnquiryDetail = () => {
                         Urgent
                       </Badge>
                     )}
-                    {getStatusBadge(enquiry.status)}
                   </div>
-                  
-                  {/* Deadline Row - Creative Design */}
-                  {enquiry.deadline && (
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-                    <span className="text-[9px] sm:text-[10px] lg:text-xs font-normal text-gray-300">before</span>
-                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-gray-900 rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 shadow-sm">
-                        {/* Countdown Timer with Icon */}
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-300" />
-                          <CountdownTimer 
-                            deadline={enquiry.deadline} 
-                            showIcon={false} 
-                          className="[&_*]:!text-white [&_*]:!border-gray-600 [&_*]:!bg-gray-800 [&_*]:!font-semibold" 
-                          />
-                        </div>
-                        
-                        {/* Date Separator and Display */}
-                        {formatDeadlineReadable(enquiry.deadline) && (
-                          <>
-                          <div className="hidden sm:block w-px h-4 sm:h-5 bg-gray-600"></div>
-                          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-sm md:text-base font-medium text-gray-300">
-                            <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400" />
-                              <span>{formatDeadlineReadable(enquiry.deadline)}</span>
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -895,9 +885,18 @@ const EnquiryDetail = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Deadline</p>
-                          <div className="text-sm sm:text-sm md:text-base font-bold text-black leading-tight">
+                          <div className="text-sm sm:text-sm md:text-base font-bold text-black leading-tight flex items-center gap-2 flex-wrap">
                             {enquiry.deadline ? (
-                              <CountdownTimer deadline={enquiry.deadline} />
+                              <>
+                                {formatDeadlineReadable(enquiry.deadline) && (
+                                  <span className="text-xs sm:text-sm font-medium">
+                                    {formatDeadlineReadable(enquiry.deadline)}
+                                  </span>
+                                )}
+                                <div>
+                                  <CountdownTimer deadline={enquiry.deadline} />
+                                </div>
+                              </>
                             ) : (
                               <span className="text-gray-500 text-xs sm:text-xs">No deadline</span>
                             )}
@@ -906,25 +905,23 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    {enquiry.createdAt && (
-                      <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
-                        {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/posted:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                        <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                          <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-                            <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Posted</p>
-                            <p className="text-xs sm:text-sm md:text-base font-bold text-black break-words leading-tight">
-                              {formatDate(enquiry.createdAt)}
-                            </p>
-                          </div>
+                    <div className="bg-white rounded-xl p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/posted:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
+                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Posted</p>
+                          <p className="text-xs sm:text-sm md:text-base font-bold text-black break-words leading-tight">
+                            {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                          </p>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {enquiry.notes && (
@@ -1105,51 +1102,6 @@ const EnquiryDetail = () => {
                 </CardContent>
               </Card>
 
-              {/* User Profile - Professional Design */}
-              {userProfile && (
-                <Card className="border-[0.5px] border-black shadow-lg rounded-none bg-white">
-                  {/* Card Header - Black Background */}
-                  <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-none">
-                    <h3 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
-                      <User className="h-4 w-4 sm:h-4 sm:w-4" />
-                      Posted by
-                    </h3>
-                  </div>
-                  
-                  {/* Card Content - Enhanced White Background */}
-                  <CardContent className="p-5 sm:p-5">
-                    <div className="flex items-center gap-4 sm:gap-4 mb-5">
-                      <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-base flex-shrink-0 shadow-md">
-                        {userProfile.displayName?.charAt(0) || 'U'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-base sm:text-base text-gray-900 truncate mb-1.5">{userProfile.displayName || 'User'}</p>
-                        {/* Show trust badge if: 
-                            1. User has profile-level verification (same logic as dashboard/enquiry wall), OR
-                            2. This specific enquiry has ID images (enquiry-specific verification) */}
-                        {(userProfile.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage || userProfile.isVerified || userProfile.trustBadge || userProfile.isIdentityVerified) && (
-                          <div className="flex items-center gap-2 text-black text-xs sm:text-xs font-semibold">
-                            <CheckCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 text-blue-600" />
-                            <span className="text-blue-600 font-bold">Trust Badge</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {userProfile.location && (
-                      <div className="bg-gradient-to-br from-gray-50 to-white rounded-none p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
-                        {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none" />
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-none" />
-                        <div className="flex items-center gap-2.5 text-gray-700 relative z-10">
-                          <MapPin className="h-4 w-4 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
-                          <span className="font-semibold text-sm sm:text-sm truncate">{userProfile.location}</span>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
             </div>
           </div>
         </div>
