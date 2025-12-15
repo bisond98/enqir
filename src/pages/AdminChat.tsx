@@ -274,15 +274,21 @@ export default function AdminChat() {
       // If user: chat with their own ID (admin will see it)
       const targetUserId = isAdmin ? userId : user.uid;
 
+      // Use 'admin_warning' if it's a warning chat, otherwise use 'admin_chat'
+      const enquiryId = isWarningChat ? 'admin_warning' : 'admin_chat';
+      const sellerIdForThread = isWarningChat ? 'admin' : targetUserId;
+
       await addDoc(collection(db, 'chatMessages'), {
-        enquiryId: 'admin_chat',
-        sellerId: targetUserId, // Use targetUserId so both admin and user messages are in same thread
+        enquiryId: enquiryId,
+        sellerId: sellerIdForThread, // Use 'admin' for warning chats, targetUserId for regular chats
         senderId: user.uid,
         senderName: senderName,
         senderType: senderType,
         message: newMessage.trim(),
         isAdminMessage: isAdmin,
         recipientId: isAdmin ? userId : 'admin',
+        // For warning chats, also set adminMessageType to allow replies
+        ...(isWarningChat && !isAdmin ? { adminMessageType: 'warning' } : {}),
         timestamp: serverTimestamp()
       });
 
