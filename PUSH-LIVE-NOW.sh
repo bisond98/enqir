@@ -10,7 +10,15 @@ git config --local receive.denyDeletes false 2>/dev/null
 
 # Push
 git add -A
-git commit -m "Deploy: Trust badge fixes for form uploads - PostEnquiry and SellerResponse forms now show trust badges correctly" 2>/dev/null || echo "No changes to commit"
+git commit -m "Deploy: Admin panel fixes and app smoothness improvements
+
+- Fixed Admin.tsx: Added missing reportsSectionRef and location hook
+- Fixed Admin authorization: Prioritize sessionStorage for immediate access
+- Fixed AIChatbot: Removed duplicate 'ai search' key
+- Enhanced app smoothness: Improved transitions, animations, and scroll behavior
+- Added ErrorBoundary wrappers to Admin routes
+- Optimized ScrollToTop with requestAnimationFrame
+- Improved global CSS transitions and easing functions" 2>/dev/null || echo "No changes to commit"
 git push origin main 2>&1
 echo "Push completed. Check Vercel dashboard."
 

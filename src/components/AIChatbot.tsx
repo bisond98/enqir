@@ -653,11 +653,6 @@ const AIChatbot: React.FC = () => {
       actions: ["View Help Guide"],
       navigateTo: "/help-guide"
     },
-    "ai search": {
-      answer: "AI search: In Live Enquiries, AI search helps find relevant enquiries even if exact words don't match. Works with regular search!",
-      actions: ["Go to Live Enquiries"],
-      navigateTo: "/enquiry-wall"
-    },
     "how ai helps": {
       answer: "How AI helps:\n\n• Verifies enquiries automatically\n• Auto-approves quality responses\n• Smart search matching\n• Filters spam\n• Matches buyers with right sellers",
       actions: ["View Help Guide"],

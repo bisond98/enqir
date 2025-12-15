@@ -138,8 +138,8 @@ const App = () => {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/admin/access/:secretToken" element={<AdminAccess />} />
-                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/access/:secretToken" element={<ErrorBoundary><AdminAccess /></ErrorBoundary>} />
+                  <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
                   <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

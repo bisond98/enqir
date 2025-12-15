@@ -5,7 +5,7 @@ import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from 'firebase/firest
 import { db, auth } from '@/firebase';
 import { signInAnonymously } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
-import Layout from '@/components/Layout';
+// import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Loader2, Shield } from 'lucide-react';
@@ -150,72 +150,64 @@ const AdminAccess = () => {
 
   if (loading || status === 'checking') {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <Card className="max-w-md w-full mx-4">
-            <CardContent className="p-8 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Verifying access credentials...</p>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">Verifying access credentials...</p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (status === 'signing-in') {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <Card className="max-w-md w-full mx-4">
-            <CardContent className="p-8 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Creating admin session...</p>
-              <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="p-8 text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">Creating admin session...</p>
+            <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (status === 'error') {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <Card className="max-w-md w-full mx-4">
-            <CardHeader className="text-center">
-              <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-slate-900">Access Denied</h1>
-              <p className="text-slate-600 mt-2">Invalid or expired access link</p>
-            </CardHeader>
-            <CardContent className="text-center">
-              <Button onClick={() => navigate('/')} className="w-full" size="lg">
-                Go Home
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="max-w-md w-full mx-4">
+          <CardHeader className="text-center">
+            <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-slate-900">Access Denied</h1>
+            <p className="text-slate-600 mt-2">Invalid or expired access link</p>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button onClick={() => navigate('/')} className="w-full" size="lg">
+              Go Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-slate-900">Access Granted!</h1>
-            <p className="text-slate-600 mt-2">You now have admin privileges</p>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-slate-500 mb-4">Redirecting to admin panel...</p>
-            <Loader2 className="h-6 w-6 animate-spin text-gray-600 mx-auto" />
-          </CardContent>
-        </Card>
-      </div>
-    </Layout>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <Card className="max-w-md w-full mx-4">
+        <CardHeader className="text-center">
+          <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-slate-900">Access Granted!</h1>
+          <p className="text-slate-600 mt-2">You now have admin privileges</p>
+        </CardHeader>
+        <CardContent className="text-center">
+          <p className="text-sm text-slate-500 mb-4">Redirecting to admin panel...</p>
+          <Loader2 className="h-6 w-6 animate-spin text-gray-600 mx-auto" />
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

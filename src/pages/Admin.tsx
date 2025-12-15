@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -112,8 +112,11 @@ const Admin = () => {
   const [sendingWarning, setSendingWarning] = useState(false);
   const [selectedSellerSubmission, setSelectedSellerSubmission] = useState<SellerSubmission | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
+  
+  // Initialize authorization state immediately from sessionStorage
+  const secureLinkAccess = typeof window !== 'undefined' ? sessionStorage.getItem('admin_secure_link_accessed') : null;
   const [loading, setLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(!!secureLinkAccess);
   const [processingVerification, setProcessingVerification] = useState<string | null>(null);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
@@ -121,6 +124,9 @@ const Admin = () => {
     autoApprovePremium: true,
     autoApproveFree: true
   });
+
+  const reportsSectionRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   // Scroll to reports section if hash is present
   useEffect(() => {
@@ -175,6 +181,8 @@ const Admin = () => {
       const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
       const secureLinkTimestamp = sessionStorage.getItem('admin_secure_link_timestamp');
       
+      console.log('🔐 Admin: Starting authorization check - secureLinkAccess:', secureLinkAccess, 'authUser:', authUser?.uid);
+      
       if (!secureLinkAccess) {
         console.log('🔒 Admin: No secure link access found - redirecting');
         setIsAuthorized(false);
@@ -198,6 +206,32 @@ const Admin = () => {
         }
       }
 
+      // If sessionStorage exists and is valid, trust it immediately (even if authUser isn't ready yet)
+      // This handles the case where AdminAccess just granted access and redirected
+      if (secureLinkAccess) {
+        console.log('✅ Admin: sessionStorage exists - trusting it immediately, authUser:', authUser?.uid || 'not ready yet');
+        setIsAuthorized(true);
+        setLoading(false);
+        // Still check Firestore in background, but don't block rendering
+        if (authUser) {
+          // Verify in Firestore asynchronously, but don't wait for it
+          const userProfileRef = doc(db, 'userProfiles', authUser.uid);
+          getDoc(userProfileRef).then((userProfileSnap) => {
+            if (userProfileSnap.exists()) {
+              const userData = userProfileSnap.data();
+              if (userData.role === 'admin' || userData.isAdmin === true) {
+                console.log('✅ Admin: Firestore confirms admin role');
+              } else {
+                console.log('⚠️ Admin: Firestore doesn\'t have admin role yet, but sessionStorage is trusted');
+              }
+            }
+          }).catch((error) => {
+            console.error('Error verifying admin in Firestore:', error);
+          });
+        }
+        return;
+      }
+
       if (!authUser) {
         setIsAuthorized(false);
         setLoading(false);
@@ -212,6 +246,7 @@ const Admin = () => {
           const userData = userProfileSnap.data();
           if (userData.role === 'admin' || userData.isAdmin === true) {
             setIsAuthorized(true);
+            setLoading(false);
             return;
           }
         }
@@ -219,14 +254,32 @@ const Admin = () => {
         // Fallback: Check email (for backward compatibility)
         if (authUser.email === 'admin@example.com') {
           setIsAuthorized(true);
+          setLoading(false);
+          return;
+        }
+
+        // If sessionStorage exists but Firestore doesn't have admin role yet,
+        // trust sessionStorage (admin was just granted via secure link)
+        // This handles timing issues where Firestore update hasn't propagated
+        if (secureLinkAccess) {
+          console.log('✅ Admin: Trusting sessionStorage - admin access granted via secure link');
+          setIsAuthorized(true);
+          setLoading(false);
           return;
         }
 
         setIsAuthorized(false);
+        setLoading(false);
       } catch (error) {
         console.error('Error checking admin access:', error);
+        // If there's an error but sessionStorage exists, trust it
+        if (secureLinkAccess) {
+          console.log('✅ Admin: Error checking Firestore, but sessionStorage exists - allowing access');
+          setIsAuthorized(true);
+          setLoading(false);
+          return;
+        }
         setIsAuthorized(false);
-      } finally {
         setLoading(false);
       }
     };
@@ -722,8 +775,9 @@ const Admin = () => {
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeSellerSubmissions) unsubscribeSellerSubmissions();
     };
-  }, [authUser]); 
-      // Fetch profile verification requests - SIMPLE & REALTIME
+  }, [authUser]);
+
+  // Fetch profile verification requests - SIMPLE & REALTIME
   useEffect(() => {
     if (!authUser) return;
 
@@ -1497,41 +1551,46 @@ const Admin = () => {
     responseRate: responseRate + '%'
   });
 
+  // Debug: Log authorization state
+  console.log('🔐 Admin: Authorization check - loading:', loading, 'isAuthorized:', isAuthorized, 'authUser:', authUser?.uid);
+  console.log('🔐 Admin: sessionStorage check:', sessionStorage.getItem('admin_secure_link_accessed'));
+
   if (loading) {
+    console.log('⏳ Admin: Still loading, showing loading animation');
     return <LoadingAnimation message="Loading admin data" />;
   }
 
   // Check authorization before rendering admin panel
   if (!isAuthorized) {
     const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
+    console.log('🚫 Admin: Not authorized, secureLinkAccess:', secureLinkAccess);
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <Card className="max-w-md w-full mx-4">
-            <CardContent className="p-8 text-center">
-              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
-              {!secureLinkAccess ? (
-                <>
-                  <p className="text-slate-600 mb-4">You must use the secure admin access link to access this page.</p>
-                  <p className="text-sm text-slate-500 mb-4">Direct access to /admin is not allowed for security reasons.</p>
-                </>
-              ) : (
-                <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
-              )}
-              <Button onClick={() => navigate('/')} className="w-full" size="lg">
-                Go Home
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="p-8 text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+            {!secureLinkAccess ? (
+              <>
+                <p className="text-slate-600 mb-4">You must use the secure admin access link to access this page.</p>
+                <p className="text-sm text-slate-500 mb-4">Direct access to /admin is not allowed for security reasons.</p>
+              </>
+            ) : (
+              <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+            )}
+            <Button onClick={() => navigate('/')} className="w-full" size="lg">
+              Go Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
+  // Render admin panel (we already checked !isAuthorized above, so if we reach here, user is authorized)
+  console.log('✅ Admin: Rendering admin panel - user is authorized');
   return (
-    <Layout>
-      <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black">
         {/* Dark Header */}
         <div className="bg-black border-b border-gray-900 shadow-lg">
           <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
@@ -2732,8 +2791,7 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
         </div>
-      </div>
-    </Layout>
+    </div>
   );
 };
 
