@@ -384,10 +384,11 @@ const SignIn = () => {
       const dy = currentPath.end.y - currentPath.start.y;
       targetAngle = Math.atan2(dy, dx) * (180 / Math.PI);
       
-      // Constrain angle to prevent robot from going upside down
-      // Keep angle between -90 and 90 degrees (horizontal to slightly up/down)
-      if (targetAngle > 90) targetAngle = 90;
-      if (targetAngle < -90) targetAngle = -90;
+      // Constrain angle to prevent robot from going upside down and excessive left/right rotation
+      // Keep angle between -45 and 45 degrees (more upright, prevents excessive side rotation)
+      // This keeps the robot head more natural-looking, not tilted too much left or right
+      if (targetAngle > 45) targetAngle = 45;
+      if (targetAngle < -45) targetAngle = -45;
       
       let angleDiff = targetAngle - currentAngle;
       if (angleDiff > 180) angleDiff -= 360;
@@ -395,9 +396,9 @@ const SignIn = () => {
       
       currentAngle += angleDiff * rotationSmoothing;
       
-      // Constrain current angle to prevent upside down
-      if (currentAngle > 90) currentAngle = 90;
-      if (currentAngle < -90) currentAngle = -90;
+      // Constrain current angle to prevent upside down and excessive left/right rotation
+      if (currentAngle > 45) currentAngle = 45;
+      if (currentAngle < -45) currentAngle = -45;
       
       setRobotPosition({ x, y });
       setRobotAngle(currentAngle);
