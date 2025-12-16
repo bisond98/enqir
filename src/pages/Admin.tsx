@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -174,17 +174,19 @@ const Admin = () => {
     }
   };
 
-  // Check admin access - require secure link access
+  // Check admin access - STRICTLY require secure link access (no direct access allowed)
   useEffect(() => {
     const checkAdminAccess = async () => {
-      // First check: Must have accessed via secure link (stored in sessionStorage)
+      // STRICT CHECK: Must have accessed via secure link (stored in sessionStorage)
+      // Even if user has admin role in Firestore, they MUST use the secret link first
       const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
       const secureLinkTimestamp = sessionStorage.getItem('admin_secure_link_timestamp');
       
       console.log('🔐 Admin: Starting authorization check - secureLinkAccess:', secureLinkAccess, 'authUser:', authUser?.uid);
       
+      // NO ACCESS without secure link - this is the primary security check
       if (!secureLinkAccess) {
-        console.log('🔒 Admin: No secure link access found - redirecting');
+        console.log('🔒 Admin: No secure link access found - ACCESS DENIED. Must use secret link.');
         setIsAuthorized(false);
         setLoading(false);
         return;
@@ -197,7 +199,7 @@ const Admin = () => {
         const hoursSinceAccess = (now - timestamp) / (1000 * 60 * 60);
         
         if (hoursSinceAccess > 24) {
-          console.log('🔒 Admin: Secure link session expired - redirecting');
+          console.log('🔒 Admin: Secure link session expired - ACCESS DENIED. Must use secret link again.');
           sessionStorage.removeItem('admin_secure_link_accessed');
           sessionStorage.removeItem('admin_secure_link_timestamp');
           setIsAuthorized(false);
@@ -206,15 +208,15 @@ const Admin = () => {
         }
       }
 
-      // If sessionStorage exists and is valid, trust it immediately (even if authUser isn't ready yet)
+      // If sessionStorage exists and is valid, grant access
       // This handles the case where AdminAccess just granted access and redirected
       if (secureLinkAccess) {
-        console.log('✅ Admin: sessionStorage exists - trusting it immediately, authUser:', authUser?.uid || 'not ready yet');
+        console.log('✅ Admin: Secure link access confirmed - granting admin access, authUser:', authUser?.uid || 'not ready yet');
         setIsAuthorized(true);
         setLoading(false);
-        // Still check Firestore in background, but don't block rendering
+        
+        // Verify in Firestore in background (for logging, but don't block access)
         if (authUser) {
-          // Verify in Firestore asynchronously, but don't wait for it
           const userProfileRef = doc(db, 'userProfiles', authUser.uid);
           getDoc(userProfileRef).then((userProfileSnap) => {
             if (userProfileSnap.exists()) {
@@ -222,7 +224,7 @@ const Admin = () => {
               if (userData.role === 'admin' || userData.isAdmin === true) {
                 console.log('✅ Admin: Firestore confirms admin role');
               } else {
-                console.log('⚠️ Admin: Firestore doesn\'t have admin role yet, but sessionStorage is trusted');
+                console.log('⚠️ Admin: Firestore doesn\'t have admin role yet, but secure link access is valid');
               }
             }
           }).catch((error) => {
@@ -232,56 +234,10 @@ const Admin = () => {
         return;
       }
 
-      if (!authUser) {
-        setIsAuthorized(false);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const userProfileRef = doc(db, 'userProfiles', authUser.uid);
-        const userProfileSnap = await getDoc(userProfileRef);
-
-        if (userProfileSnap.exists()) {
-          const userData = userProfileSnap.data();
-          if (userData.role === 'admin' || userData.isAdmin === true) {
-            setIsAuthorized(true);
-            setLoading(false);
-            return;
-          }
-        }
-
-        // Fallback: Check email (for backward compatibility)
-        if (authUser.email === 'admin@example.com') {
-          setIsAuthorized(true);
-          setLoading(false);
-          return;
-        }
-
-        // If sessionStorage exists but Firestore doesn't have admin role yet,
-        // trust sessionStorage (admin was just granted via secure link)
-        // This handles timing issues where Firestore update hasn't propagated
-        if (secureLinkAccess) {
-          console.log('✅ Admin: Trusting sessionStorage - admin access granted via secure link');
-          setIsAuthorized(true);
-          setLoading(false);
-          return;
-        }
-
-        setIsAuthorized(false);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error checking admin access:', error);
-        // If there's an error but sessionStorage exists, trust it
-        if (secureLinkAccess) {
-          console.log('✅ Admin: Error checking Firestore, but sessionStorage exists - allowing access');
-          setIsAuthorized(true);
-          setLoading(false);
-          return;
-        }
-        setIsAuthorized(false);
-        setLoading(false);
-      }
+      // This should never be reached due to early return above, but keeping as safety
+      console.log('🔒 Admin: No secure link access - ACCESS DENIED');
+      setIsAuthorized(false);
+      setLoading(false);
     };
 
     checkAdminAccess();
@@ -1567,16 +1523,19 @@ const Admin = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="max-w-md w-full mx-4">
+          <CardHeader className="text-center">
+            <Lock className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-slate-900">Admin Access Required</h1>
+            <p className="text-slate-600 mt-2">You must access the admin panel through the secret private link.</p>
+          </CardHeader>
           <CardContent className="p-8 text-center">
-            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
             {!secureLinkAccess ? (
               <>
-                <p className="text-slate-600 mb-4">You must use the secure admin access link to access this page.</p>
-                <p className="text-sm text-slate-500 mb-4">Direct access to /admin is not allowed for security reasons.</p>
+                <p className="text-slate-600 mb-4">Direct access to /admin is not allowed for security reasons.</p>
+                <p className="text-sm text-slate-500 mb-4">Please use the secure admin access link to gain access.</p>
               </>
             ) : (
-              <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+              <p className="text-slate-600 mb-4">Your session may have expired. Please use the secure admin access link again.</p>
             )}
             <Button onClick={() => navigate('/')} className="w-full" size="lg">
               Go Home
@@ -1874,8 +1833,34 @@ const Admin = () => {
             <PremiumPlanTester />
           </TabsContent>
 
-            <TabsContent value="manual" className="mt-6 space-y-6 sm:space-y-8">
-            {/* Buyer Submissions Section */}
+            <TabsContent value="manual" className="mt-6">
+              {/* Add Dummy Enquiries Section */}
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm overflow-hidden mb-6">
+                <CardContent className="p-5 sm:p-6">
+                  <div className="flex items-start gap-4 mb-5">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Database className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-blue-900 mb-2">Add Dummy Enquiries</h2>
+                      <p className="text-sm text-blue-700 leading-relaxed">
+                        Add 46 realistic Indian market enquiries with multilingual content (Hindi, Tamil, Telugu, Malayalam, Kannada, Bengali, English).
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <Button
+                      onClick={() => navigate('/admin/add-enquiries')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                      <Database className="h-5 w-5 mr-2" />
+                      Go to Add Enquiries Page
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            <div className="mt-6 space-y-6 sm:space-y-8">
+              {/* Buyer Submissions Section */}
               <Card className="bg-black border border-gray-900 shadow-lg overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-b border-gray-900 px-5 sm:px-6 py-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -2788,6 +2773,7 @@ const Admin = () => {
           </div>
                 </CardContent>
         </Card>
+            </div>
           </TabsContent>
         </Tabs>
         </div>
