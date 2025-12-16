@@ -62,6 +62,7 @@ const SignIn = () => {
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
   const [robotAngle, setRobotAngle] = useState(0);
   const [isRobotPaused, setIsRobotPaused] = useState(false);
+  const [robotAction, setRobotAction] = useState<'idle' | 'wave' | 'jump' | 'spin' | 'celebrate' | 'lookAround' | 'dance'>('idle');
   
   
   // Pre-fill email from URL parameter (from email verification)
@@ -805,39 +806,103 @@ const SignIn = () => {
                       <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
                       ENQIR
                     </text>
-                    {/* Dancing body animations - bobbing, swaying, pulsing, rotating */}
-                    <animateTransform
-                      attributeName="transform"
-                      type="translate"
-                      values="0,0; 0,-4; 0,0; 0,-2; 0,0"
-                      dur="2.5s"
-                      repeatCount="indefinite"
-                      calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.25;0.5;0.75;1"
-                    />
-                    <animateTransform
-                      attributeName="transform"
-                      type="rotate"
-                      values="0 50 65; -5 50 65; 5 50 65; -3 50 65; 3 50 65; 0 50 65"
-                      dur="3s"
-                      repeatCount="indefinite"
-                      calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.2;0.4;0.6;0.8;1"
-                      additive="sum"
-                    />
-                    <animateTransform
-                      attributeName="transform"
-                      type="scale"
-                      values="1,1; 1.08,0.95; 1,1; 0.95,1.08; 1,1"
-                      dur="2s"
-                      repeatCount="indefinite"
-                      calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.25;0.5;0.75;1"
-                      additive="sum"
-                    />
+                    {/* Dynamic body animations based on action */}
+                    {robotAction === 'jump' && (
+                      <animateTransform
+                        attributeName="transform"
+                        type="translate"
+                        values="0,0; 0,-8; 0,0"
+                        dur="0.6s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.5;1"
+                      />
+                    )}
+                    {robotAction === 'spin' && (
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        values="0 50 65; 360 50 65"
+                        dur="1s"
+                        repeatCount="indefinite"
+                      />
+                    )}
+                    {robotAction === 'celebrate' && (
+                      <>
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-6; 0,0; 0,-3; 0,0"
+                          dur="0.8s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                        />
+                        <animateTransform
+                          attributeName="transform"
+                          type="scale"
+                          values="1,1; 1.15,1.15; 1,1"
+                          dur="0.8s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                          additive="sum"
+                        />
+                      </>
+                    )}
+                    {robotAction === 'dance' && (
+                      <>
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-4; 0,0; 0,-2; 0,0"
+                          dur="0.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                        />
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="0 50 65; -8 50 65; 8 50 65; -8 50 65; 0 50 65"
+                          dur="0.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                          additive="sum"
+                        />
+                      </>
+                    )}
+                    {(robotAction === 'idle' || robotAction === 'wave' || robotAction === 'lookAround') && (
+                      <>
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-3; 0,0"
+                          dur="2.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                        <animateTransform
+                          attributeName="transform"
+                          type="scale"
+                          values="1,1; 1.05,1; 1,1"
+                          dur="2s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                          additive="sum"
+                        />
+                      </>
+                    )}
                   </g>
               
                   {/* Head */}
@@ -947,28 +1012,55 @@ const SignIn = () => {
                       <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                       </circle>
-                      {/* Dancing arm movements - waving, swinging, raising */}
-                      <animateTransform
-                        attributeName="transform"
-                        type="rotate"
-                        values="-15 20 60; -50 20 60; -15 20 60; -40 20 60; -15 20 60; -30 20 60; -15 20 60"
-                        dur="2.5s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                      />
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        values="0,0; -2,-1; 0,0; -1,1; 0,0"
-                        dur="2s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.25;0.5;0.75;1"
-                        additive="sum"
-                      />
+                      {/* Dynamic arm movements based on action */}
+                      {robotAction === 'wave' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="-15 20 60; -60 20 60; -15 20 60; -60 20 60; -15 20 60"
+                          dur="0.8s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                        />
+                      )}
+                      {robotAction === 'celebrate' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="-15 20 60; -70 20 60; -15 20 60"
+                          dur="0.6s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                      )}
+                      {robotAction === 'dance' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="-15 20 60; -50 20 60; -15 20 60; -40 20 60; -15 20 60"
+                          dur="0.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                        />
+                      )}
+                      {(robotAction === 'idle' || robotAction === 'jump' || robotAction === 'spin' || robotAction === 'lookAround') && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="-15 20 60; -25 20 60; -15 20 60"
+                          dur="2.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                      )}
                     </g>
                     <g id="right-arm-signin" transform-origin="80 60">
                       <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
@@ -976,30 +1068,59 @@ const SignIn = () => {
                       <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.9s"/>
                       </circle>
-                      {/* Dancing arm movements - waving, swinging, raising */}
-                      <animateTransform
-                        attributeName="transform"
-                        type="rotate"
-                        values="15 80 60; 50 80 60; 15 80 60; 40 80 60; 15 80 60; 30 80 60; 15 80 60"
-                        dur="2.5s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                        begin="0.9s"
-                      />
-                      <animateTransform
-                        attributeName="transform"
-                        type="translate"
-                        values="0,0; 2,-1; 0,0; 1,1; 0,0"
-                        dur="2s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.25;0.5;0.75;1"
-                        begin="0.9s"
-                        additive="sum"
-                      />
+                      {/* Dynamic arm movements based on action */}
+                      {robotAction === 'wave' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="15 80 60; 60 80 60; 15 80 60; 60 80 60; 15 80 60"
+                          dur="0.8s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                          begin="0.4s"
+                        />
+                      )}
+                      {robotAction === 'celebrate' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="15 80 60; 70 80 60; 15 80 60"
+                          dur="0.6s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                          begin="0.3s"
+                        />
+                      )}
+                      {robotAction === 'dance' && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="15 80 60; 50 80 60; 15 80 60; 40 80 60; 15 80 60"
+                          dur="0.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                          begin="0.25s"
+                        />
+                      )}
+                      {(robotAction === 'idle' || robotAction === 'jump' || robotAction === 'spin' || robotAction === 'lookAround') && (
+                        <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          values="15 80 60; 25 80 60; 15 80 60"
+                          dur="2.5s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                          begin="1.5s"
+                        />
+                      )}
                     </g>
                   </g>
             </svg>
