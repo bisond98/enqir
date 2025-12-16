@@ -194,9 +194,10 @@ const SignIn = () => {
     }
   };
 
-  // Robot animation - moves around within card bounds
+  // Robot animation - moves around within card bounds and pauses above welcome text
   useEffect(() => {
     const cardElement = document.querySelector('.signin-card');
+    const welcomeElement = document.querySelector('.welcome-heading');
     if (!cardElement || !robotRef.current) return;
 
     let animationFrameId: number | null = null;
@@ -206,26 +207,45 @@ const SignIn = () => {
     let lastTimestamp = 0;
     let currentAngle = 0;
     let targetAngle = 0;
+    let isPaused = false;
+    let pauseStartTime = 0;
+    let pauseDuration = 1000; // 1 second pause
 
     const createRoamingPaths = () => {
       const cardRect = cardElement.getBoundingClientRect();
+      const welcomeRect = welcomeElement?.getBoundingClientRect();
       const padding = 60;
       const cardWidth = cardRect.width;
       const cardHeight = cardRect.height;
       const offset = 100; // How far outside the card to go
       
+      // Calculate position above welcome text (centered horizontally, above vertically)
+      let welcomeX = cardWidth / 2;
+      let welcomeY = -80; // Above the card
+      
+      if (welcomeRect) {
+        const cardTop = cardRect.top;
+        const welcomeTop = welcomeRect.top;
+        const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - cardRect.left;
+        welcomeX = welcomeCenterX;
+        welcomeY = welcomeTop - cardTop - 60; // 60px above the welcome text
+      }
+      
       return [
         // Paths that go outside the card
-        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth + offset, y: cardHeight / 2 } },
-        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: -offset } },
-        { start: { x: cardWidth / 2, y: -offset }, end: { x: -offset, y: cardHeight / 2 } },
-        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight + offset } },
-        { start: { x: cardWidth / 2, y: cardHeight + offset }, end: { x: cardWidth + offset, y: cardHeight / 2 } },
-        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
-        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: -offset } },
-        { start: { x: -offset, y: -offset }, end: { x: cardWidth + offset, y: cardHeight + offset } },
-        { start: { x: cardWidth + offset, y: cardHeight + offset }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
-        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: cardHeight / 2 } },
+        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth + offset, y: cardHeight / 2 }, pause: false },
+        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: -offset }, pause: false },
+        { start: { x: cardWidth / 2, y: -offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
+        { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text
+        { start: { x: welcomeX, y: welcomeY }, end: { x: -offset, y: cardHeight / 2 }, pause: false },
+        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight + offset }, pause: false },
+        { start: { x: cardWidth / 2, y: cardHeight + offset }, end: { x: cardWidth + offset, y: cardHeight / 2 }, pause: false },
+        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight / 2 }, pause: false },
+        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: -offset }, pause: false },
+        { start: { x: -offset, y: -offset }, end: { x: cardWidth + offset, y: cardHeight + offset }, pause: false },
+        { start: { x: cardWidth + offset, y: cardHeight + offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
+        { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text again
+        { start: { x: welcomeX, y: welcomeY }, end: { x: -offset, y: cardHeight / 2 }, pause: false },
       ];
     };
 
@@ -241,22 +261,56 @@ const SignIn = () => {
       const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
       lastTimestamp = timestamp;
       
+      // Handle pause state
+      if (isPaused) {
+        if (pauseStartTime === 0) {
+          pauseStartTime = timestamp;
+        }
+        const pauseElapsed = timestamp - pauseStartTime;
+        if (pauseElapsed >= pauseDuration) {
+          isPaused = false;
+          pauseStartTime = 0;
+          pathProgress = 0;
+          currentPathIndex = (currentPathIndex + 1) % paths.length;
+          paths = createRoamingPaths();
+          if (currentPathIndex < paths.length) {
+            currentPath = paths[currentPathIndex];
+          }
+        } else {
+          // Keep robot at pause position
+          animationFrameId = requestAnimationFrame(animate);
+          return;
+        }
+      }
+      
       pathProgress += deltaTime / pathDuration;
       
       if (pathProgress >= 1) {
-        pathProgress = 0;
-        currentPathIndex = (currentPathIndex + 1) % paths.length;
-        paths = createRoamingPaths();
-        if (currentPathIndex < paths.length) {
-          currentPath = paths[currentPathIndex];
+        // Check if this path should pause
+        if (currentPath.pause) {
+          isPaused = true;
+          pauseStartTime = timestamp;
+          pathProgress = 1; // Keep at end position during pause
+        } else {
+          pathProgress = 0;
+          currentPathIndex = (currentPathIndex + 1) % paths.length;
+          paths = createRoamingPaths();
+          if (currentPathIndex < paths.length) {
+            currentPath = paths[currentPathIndex];
+          }
         }
       }
       
       const t = pathProgress;
       const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      const x = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
-      const y = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
+      // If paused, keep at end position
+      const x = isPaused 
+        ? currentPath.end.x 
+        : currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
+      const y = isPaused 
+        ? currentPath.end.y 
+        : currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
       
       const dx = currentPath.end.x - currentPath.start.x;
       const dy = currentPath.end.y - currentPath.start.y;
@@ -322,7 +376,7 @@ const SignIn = () => {
           {/* Clean Header Section */}
           <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center">
             {/* Main Heading */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)' }}>
+            <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span className="text-blue-600 font-black">Enqir</span>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>.in</span>
