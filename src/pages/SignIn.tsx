@@ -773,43 +773,43 @@ const SignIn = () => {
                     <ellipse cx="50" cy="65" rx="18" ry="20" fill="url(#whiteMatte-signin)" stroke="none"/>
                     <ellipse cx="50" cy="65" rx="16" ry="18" fill="url(#lightGrey-signin)"/>
                     <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                     </rect>
                     <text x="50" y="63" fontSize="3" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.7;0.6" dur="3s" repeatCount="indefinite"/>
+                      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
                       ENQIR
                     </text>
-                    {/* Lively body animations - floating, swaying, pulsing */}
+                    {/* Dancing body animations - bobbing, swaying, pulsing, rotating */}
                     <animateTransform
                       attributeName="transform"
                       type="translate"
-                      values="0,0; 0,-3; 0,0"
-                      dur="4s"
+                      values="0,0; 0,-4; 0,0; 0,-2; 0,0"
+                      dur="2.5s"
                       repeatCount="indefinite"
                       calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.5;1"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.25;0.5;0.75;1"
                     />
                     <animateTransform
                       attributeName="transform"
                       type="rotate"
-                      values="0 50 65; -2 50 65; 2 50 65; 0 50 65"
-                      dur="6s"
+                      values="0 50 65; -5 50 65; 5 50 65; -3 50 65; 3 50 65; 0 50 65"
+                      dur="3s"
                       repeatCount="indefinite"
                       calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.33;0.66;1"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.2;0.4;0.6;0.8;1"
                       additive="sum"
                     />
                     <animateTransform
                       attributeName="transform"
                       type="scale"
-                      values="1,1; 1.05,1; 1,1"
-                      dur="3s"
+                      values="1,1; 1.08,0.95; 1,1; 0.95,1.08; 1,1"
+                      dur="2s"
                       repeatCount="indefinite"
                       calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.5;1"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.25;0.5;0.75;1"
                       additive="sum"
                     />
                   </g>
@@ -819,33 +819,46 @@ const SignIn = () => {
                     <ellipse cx="50" cy="30" rx="14" ry="16" fill="url(#whiteMatte-signin)" stroke="none"/>
                     <ellipse cx="50" cy="30" rx="12" ry="14" fill="url(#lightGrey-signin)"/>
                     <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
-                      <animate attributeName="y2" values="11;10.5;11" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      <animate attributeName="y2" values="11;9.5;11;10;11" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                     </line>
                     <circle cx="50" cy="8" r="1.5" fill="#ffffff" opacity="0.6">
-                      <animate attributeName="r" values="1.5;1.8;1.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      <animate attributeName="r" values="1.5;2.2;1.5;2;1.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                     </circle>
-                    {/* Lively head animations - floating, bobbing, tilting */}
+                    {/* Dancing head animations - bobbing, tilting, nodding */}
                     <animateTransform
                       attributeName="transform"
                       type="translate"
-                      values="0,0; 0,-2.5; 0,0"
-                      dur="4.5s"
+                      values="0,0; 0,-3; 0,0; 0,-1.5; 0,0"
+                      dur="2.2s"
                       repeatCount="indefinite"
                       calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.5;1"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.25;0.5;0.75;1"
                       begin="0.8s"
                     />
                     <animateTransform
                       attributeName="transform"
                       type="rotate"
-                      values="0 50 30; -3 50 30; 3 50 30; 0 50 30"
-                      dur="5s"
+                      values="0 50 30; -6 50 30; 6 50 30; -4 50 30; 4 50 30; 0 50 30"
+                      dur="2.8s"
                       repeatCount="indefinite"
                       calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.33;0.66;1"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.2;0.4;0.6;0.8;1"
                       begin="1s"
+                      additive="sum"
+                    />
+                    {/* Nodding animation */}
+                    <animateTransform
+                      attributeName="transform"
+                      type="rotate"
+                      values="0 50 30; 8 50 30; 0 50 30; -8 50 30; 0 50 30"
+                      dur="3.5s"
+                      repeatCount="indefinite"
+                      calcMode="spline"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.25;0.5;0.75;1"
+                      begin="0.5s"
                       additive="sum"
                     />
                   </g>
@@ -889,28 +902,28 @@ const SignIn = () => {
                       <ellipse cx="20" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(-15 20 60)"/>
                       <ellipse cx="20" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(-15 20 60)"/>
                       <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                        <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                       </circle>
-                      {/* More lively arm movements - waving, swinging */}
+                      {/* Dancing arm movements - waving, swinging, raising */}
                       <animateTransform
                         attributeName="transform"
                         type="rotate"
-                        values="-15 20 60; -35 20 60; -15 20 60; -25 20 60; -15 20 60"
-                        dur="3s"
+                        values="-15 20 60; -50 20 60; -15 20 60; -40 20 60; -15 20 60; -30 20 60; -15 20 60"
+                        dur="2.5s"
                         repeatCount="indefinite"
                         calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.25;0.5;0.75;1"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
                       />
                       <animateTransform
                         attributeName="transform"
                         type="translate"
-                        values="0,0; -1,0; 0,0"
-                        dur="2.5s"
+                        values="0,0; -2,-1; 0,0; -1,1; 0,0"
+                        dur="2s"
                         repeatCount="indefinite"
                         calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.5;1"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.25;0.5;0.75;1"
                         additive="sum"
                       />
                     </g>
@@ -918,30 +931,30 @@ const SignIn = () => {
                       <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
                       <ellipse cx="80" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(15 80 60)"/>
                       <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="1.5s"/>
+                        <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.9s"/>
                       </circle>
-                      {/* More lively arm movements - waving, swinging */}
+                      {/* Dancing arm movements - waving, swinging, raising */}
                       <animateTransform
                         attributeName="transform"
                         type="rotate"
-                        values="15 80 60; 35 80 60; 15 80 60; 25 80 60; 15 80 60"
-                        dur="3s"
+                        values="15 80 60; 50 80 60; 15 80 60; 40 80 60; 15 80 60; 30 80 60; 15 80 60"
+                        dur="2.5s"
                         repeatCount="indefinite"
                         calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.25;0.5;0.75;1"
-                        begin="1.5s"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                        begin="0.9s"
                       />
                       <animateTransform
                         attributeName="transform"
                         type="translate"
-                        values="0,0; 1,0; 0,0"
-                        dur="2.5s"
+                        values="0,0; 2,-1; 0,0; 1,1; 0,0"
+                        dur="2s"
                         repeatCount="indefinite"
                         calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.5;1"
-                        begin="1.5s"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.25;0.5;0.75;1"
+                        begin="0.9s"
                         additive="sum"
                       />
                     </g>
