@@ -278,124 +278,42 @@ const SignIn = () => {
                 </div>
               )}
 
-              {/* Sign In / Sign Up Tabs - Enhanced Engaging Design */}
+              {/* Sign In / Sign Up Tabs - Minimal, Clean, User-Friendly Design */}
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-gradient-to-b from-gray-200 via-gray-250 to-gray-300 border-[0.5px] border-black rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-full h-auto grid grid-cols-2 overflow-hidden group">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
-                      
-                      {/* Animated Background Slider - Enhanced with spring animation */}
+                    <TabsList className="relative inline-flex items-center bg-white border-2 border-gray-200 rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-sm w-full h-auto grid grid-cols-2 overflow-hidden transition-all duration-200 hover:border-gray-300 hover:shadow-md">
+                      {/* Animated Background Slider - Clean minimal design */}
                       <motion.div 
-                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.3)] pointer-events-none z-[1]"
+                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-black pointer-events-none z-[1]"
                         style={{ 
-                          width: 'calc(50% - 3px)',
-                          left: activeTab === 'signin' ? '6px' : 'calc(50% + 3px)',
+                          width: 'calc(50% - 4px)',
                         }}
                         animate={{
-                          left: activeTab === 'signin' ? '6px' : 'calc(50% + 3px)',
+                          x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
                         }}
                         transition={{
                           type: "spring",
-                          stiffness: 300,
-                          damping: 30,
-                          mass: 0.8
+                          stiffness: 400,
+                          damping: 35,
+                          mass: 0.6
                         }}
-                      >
-                        {/* Glowing effect on active */}
-                        <motion.div 
-                          className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/10 to-transparent rounded-xl"
-                          animate={{
-                            opacity: [0.3, 0.6, 0.3],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        />
-                        {/* Button highlight with shimmer */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-transparent rounded-xl pointer-events-none" />
-                        <motion.div 
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-xl"
-                          animate={{
-                            x: ['-100%', '100%'],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "linear"
-                          }}
-                        />
-                      </motion.div>
+                      />
                       
-                      {/* Log In Button - Enhanced with hover effects */}
+                      {/* Log In Button - Clean, clear, accessible */}
                       <TabsTrigger 
                         value="signin" 
-                        className="relative z-50 h-10 sm:h-11 rounded-xl font-black text-sm sm:text-base transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:text-gray-800 data-[state=inactive]:hover:text-black bg-transparent border-0 group/trigger"
+                        className="relative z-50 h-11 sm:h-12 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                       >
-                        <motion.span 
-                          className="relative z-10 flex items-center justify-center gap-2"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <motion.div
-                            animate={{
-                              rotate: activeTab === 'signin' ? [0, 10, -10, 0] : 0,
-                            }}
-                            transition={{
-                              duration: 0.5,
-                              ease: "easeInOut"
-                            }}
-                          >
-                            <User className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </motion.div>
-                          <span>Log In</span>
-                        </motion.span>
-                        {/* Active glow effect */}
-                        {activeTab === 'signin' && (
-                          <motion.div
-                            className="absolute inset-0 rounded-xl bg-blue-500/20 blur-xl pointer-events-none"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          />
-                        )}
+                        <span className="relative z-10">Log In</span>
                       </TabsTrigger>
                       
-                      {/* Sign Up Button - Enhanced with hover effects */}
+                      {/* Sign Up Button - Clean, clear, accessible */}
                       <TabsTrigger 
                         value="signup" 
-                        className="relative z-50 h-10 sm:h-11 rounded-xl font-black text-sm sm:text-base transition-all duration-300 data-[state=active]:text-white data-[state=inactive]:text-gray-800 data-[state=inactive]:hover:text-black bg-transparent border-0 group/trigger"
+                        className="relative z-50 h-11 sm:h-12 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                       >
-                        <motion.span 
-                          className="relative z-10 flex items-center justify-center gap-2"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <motion.div
-                            animate={{
-                              rotate: activeTab === 'signup' ? [0, 10, -10, 0] : 0,
-                            }}
-                            transition={{
-                              duration: 0.5,
-                              ease: "easeInOut"
-                            }}
-                          >
-                            <User className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </motion.div>
-                          <span>Sign Up</span>
-                        </motion.span>
-                        {/* Active glow effect */}
-                        {activeTab === 'signup' && (
-                          <motion.div
-                            className="absolute inset-0 rounded-xl bg-purple-500/20 blur-xl pointer-events-none"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          />
-                        )}
+                        <span className="relative z-10">Sign Up</span>
                       </TabsTrigger>
                 </TabsList>
 
