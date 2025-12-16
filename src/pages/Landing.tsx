@@ -1789,6 +1789,9 @@ const Landing = () => {
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
+            {/* 🛡️ PROTECTED: Live Enquiries Count - DO NOT MODIFY
+                This displays the dynamic count of live enquiries
+                Format: "{count} Live Enquiries" */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
