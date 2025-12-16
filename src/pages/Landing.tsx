@@ -798,16 +798,15 @@ const Landing = () => {
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
     // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
-    const loadEnquiries = async () => {
-      try {
     const q = query(
       collection(db, 'enquiries'),
-          orderBy('createdAt', 'desc')
-          // NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
+      orderBy('createdAt', 'desc')
+      // NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
-        
-        // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+    
+    // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      try {
           const items: any[] = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
@@ -900,23 +899,25 @@ const Landing = () => {
           // Set initial shuffled display (3 random from all live enquiries)
           const initialShuffled = getRandomThree(liveEnquiries);
           setShuffledEnquiries(initialShuffled);
-        }, (error) => {
-          console.error('Error loading enquiries:', error);
-          // Set empty arrays on error
-          setAllLiveEnquiries([]);
-          setPublicRecentEnquiries([]);
-          setShuffledEnquiries([]);
-          setLiveEnquiriesCount(0);
-        });
-        
-        // Return unsubscribe function for cleanup
-        return () => unsubscribe();
       } catch (error) {
-        console.error('Error setting up enquiries listener:', error);
+        console.error('Error processing enquiries:', error);
+        // Set empty arrays on error
+        setAllLiveEnquiries([]);
+        setPublicRecentEnquiries([]);
+        setShuffledEnquiries([]);
+        setLiveEnquiriesCount(0);
       }
-    };
+    }, (error) => {
+      console.error('Error loading enquiries:', error);
+      // Set empty arrays on error
+      setAllLiveEnquiries([]);
+      setPublicRecentEnquiries([]);
+      setShuffledEnquiries([]);
+      setLiveEnquiriesCount(0);
+    });
     
-    loadEnquiries();
+    // Return unsubscribe function for cleanup
+    return () => unsubscribe();
   }, []);
 
   // Fetch user profiles for trust badge verification
