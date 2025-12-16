@@ -873,24 +873,41 @@ const SignIn = () => {
                 {/* Eyes */}
                 <g id="eyes-group-signin">
                   <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
-                    <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    <animate attributeName="opacity" values="0.5;1;0.5;0.8;0.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
+                    <animate attributeName="ry" values="4;6;4;5.5;4" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
+                    <animate attributeName="rx" values="3.5;4.5;3.5;4.2;3.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                   </ellipse>
                   <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
-                    <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
-                    <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
+                    <animate attributeName="opacity" values="0.5;1;0.5;0.8;0.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.5s"/>
+                    <animate attributeName="ry" values="4;6;4;5.5;4" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.5s"/>
+                    <animate attributeName="rx" values="3.5;4.5;3.5;4.2;3.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.5s"/>
                   </ellipse>
                   {/* Blink animation when paused above text */}
                   {isRobotPaused && (
                     <>
                       <rect x="40" y="26" width="8" height="4" fill="#1a1a1a" rx="2" opacity="0">
-                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1"/>
+                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="0.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1"/>
                       </rect>
                       <rect x="52" y="26" width="8" height="4" fill="#1a1a1a" rx="2" opacity="0">
-                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1" begin="0.05s"/>
+                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="0.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1" begin="0.05s"/>
                       </rect>
                     </>
                   )}
+                  {/* Eye movement - looking around more actively */}
+                  <animateTransform
+                    attributeName="transform"
+                    type="translate"
+                    values="0,0; -2,0; 2,0; -1,1; 1,-1; 0,0"
+                    dur="5s"
+                    repeatCount="indefinite"
+                    calcMode="spline"
+                    keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                    keyTimes="0;0.2;0.4;0.6;0.8;1"
+                  />
+                  {/* Wink animation - right eye periodically */}
+                  <rect x="52" y="26" width="8" height="4" fill="#1a1a1a" rx="2" opacity="0">
+                    <animate attributeName="opacity" values="0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;1;0;0;0" dur="6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.04;0.08;0.12;0.16;0.2;0.24;0.28;0.32;0.36;0.4;0.44;0.48;0.52;0.56;0.6;0.64;0.68;0.72;0.76;0.8;0.82;0.84;0.88;1" begin="2s"/>
+                  </rect>
                   <ellipse cx="45" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
                   <ellipse cx="55" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
                 </g>
