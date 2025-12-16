@@ -471,7 +471,7 @@ const SignIn = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative" style={{ overflow: 'visible' }}>
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative" style={{ overflow: 'visible', touchAction: 'pan-y', WebkitTouchCallout: 'none' }}>
         {/* Subtle Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-40 h-40 bg-blue-100/40 rounded-full blur-3xl hidden sm:block"></div>

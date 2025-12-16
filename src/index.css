@@ -27,7 +27,6 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
-    scroll-snap-type: y proximity;
   }
   
   /* Optimize all scrollable elements */
@@ -36,37 +35,10 @@
     scroll-behavior: smooth;
   }
   
-  /* Smooth scroll containers */
-  [class*="overflow"], [class*="scroll"] {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-  
   /* Optimize images and media for better performance */
   img, video, iframe {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  /* Smooth image loading */
-  img {
-    opacity: 0;
-    animation: imageFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  
-  img[loading="lazy"] {
-    content-visibility: auto;
-  }
-  
-  @keyframes imageFadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
   
   /* GPU acceleration for animated elements */
@@ -130,7 +102,7 @@
   @keyframes fadeInSmooth {
     from {
       opacity: 0;
-      transform: translateY(4px) translateZ(0);
+      transform: translateY(8px) translateZ(0);
     }
     to {
       opacity: 1;
@@ -142,23 +114,11 @@
   @keyframes scaleFadeIn {
     from {
       opacity: 0;
-      transform: scale(0.98) translateZ(0);
+      transform: scale(0.96) translateZ(0);
     }
     to {
       opacity: 1;
       transform: scale(1) translateZ(0);
-    }
-  }
-  
-  /* Ultra-smooth page fade */
-  @keyframes pageFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(2px) translateZ(0);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) translateZ(0);
     }
   }
   
@@ -255,12 +215,12 @@
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-12px);
+      transform: translateY(-8px);
     }
   }
   
   .animate-spin {
-    animation: spin-ultra-smooth 0.7s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    animation: spin-ultra-smooth 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     will-change: transform;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -268,30 +228,14 @@
 
   /* Smooth fade-in utility */
   .animate-fade-in-smooth {
-    animation: fadeInSmooth 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInSmooth 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity, transform;
   }
 
   /* Smooth scale fade utility */
   .animate-scale-fade-in {
-    animation: scaleFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: scaleFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity, transform;
-  }
-  
-  /* Ultra-smooth page transitions */
-  @keyframes pageFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(4px) translateZ(0);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) translateZ(0);
-    }
-  }
-  
-  .page-transition {
-    animation: pageFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   
   /* Performance: Reduce motion for users who prefer it */
@@ -327,30 +271,14 @@
   
   /* Optimize all transitions and animations for ultra-smooth feel */
   * {
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    transition-duration: 0.25s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.3s;
   }
   
   /* Smoother transitions for interactive elements */
   button, a, input, select, textarea {
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    transition-duration: 0.2s;
-  }
-  
-  /* Ultra-smooth card transitions */
-  [class*="Card"], [class*="card"], .card {
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity, box-shadow;
-  }
-  
-  /* Smooth hover effects */
-  button:hover, a:hover, [role="button"]:hover {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  /* Smooth active states */
-  button:active, a:active, [role="button"]:active {
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 0.25s;
   }
   
   /* Optimize scroll performance */
@@ -1006,9 +934,9 @@
     --shadow-inner: inset 0 2px 4px hsl(var(--gray-900) / 0.06);
     
     /* Animations */
-    --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-spring: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -1279,7 +1207,7 @@
     background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
     border: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
   }
   
   .btn-corporate:hover {
@@ -1292,7 +1220,7 @@
     background: transparent;
     border-color: hsl(var(--pal-blue));
     color: hsl(var(--pal-blue));
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
   }
   
   .btn-corporate-outline:hover {
@@ -1336,34 +1264,29 @@
 @layer utilities {
   /* Mobile-First Animations */
   .animate-slide-up {
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.6s ease-out forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
 
   .animate-slide-down {
-    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideDown 0.6s ease-out forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeIn 0.5s ease-out forwards;
     will-change: opacity;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: scaleIn 0.3s ease-out forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-  }
-  
-  /* Page transition utility */
-  .page-transition {
-    animation: pageFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-float {
@@ -1544,18 +1467,18 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px) translateZ(0);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) translateZ(0);
+    transform: translateY(0);
   }
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, -30px, 0);
   }
   to {
     opacity: 1;
@@ -1575,11 +1498,11 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale3d(0.98, 0.98, 1) translateZ(0);
+    transform: scale3d(0.9, 0.9, 1);
   }
   to {
     opacity: 1;
-    transform: scale3d(1, 1, 1) translateZ(0);
+    transform: scale3d(1, 1, 1);
   }
 }
 
@@ -2308,15 +2231,31 @@ html.razorpay-open {
   background: #1a1a1a;
 }
 
-/* Search input text selection styling - matches Live Enquiries */
-.landing-search-input::selection,
-input.landing-search-input::selection {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  color: black !important;
+/* Fix iOS Safari double-tap zoom on sign in/sign up page */
+.signin-container,
+.signin-container * {
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.landing-search-input::-moz-selection,
-input.landing-search-input::-moz-selection {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  color: black !important;
+/* Allow text selection in inputs */
+.signin-container input,
+.signin-container textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: manipulation;
+}
+
+/* Robot container should not interfere with scrolling */
+.robot-svg,
+[class*="robot"] {
+  touch-action: none;
+  pointer-events: none;
+}
+
+/* Ensure body allows vertical scrolling on iOS */
+body {
+  touch-action: pan-y pinch-zoom;
 }
