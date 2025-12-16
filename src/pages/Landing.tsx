@@ -1804,8 +1804,8 @@ const Landing = () => {
           </div>
 
           {/* Mobile-only text card above trust badge */}
-          <div className="block sm:hidden mb-4 animate-slide-up px-1" style={{ animationDelay: '0.55s' }}>
-            <Card className="p-2.5 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl">
+          <div className="block sm:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
+            <Card className="p-0 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl">
               <p className="text-[10px] text-black text-center font-black leading-tight">
                 Post your needs. Sell to real demand. Close deals at godspeed with perfectly curated demand & supply.
               </p>
