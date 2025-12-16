@@ -897,15 +897,22 @@ const Landing = () => {
       // Store all live enquiries for shuffling (not just first 3)
       setPublicRecentEnquiries(liveEnquiries);
       
-      // Set initial shuffled display (3 random from all live enquiries)
-      const initialShuffled = getRandomThree(liveEnquiries);
-      setShuffledEnquiries(initialShuffled);
+          // Set initial shuffled display (3 random from all live enquiries)
+          const initialShuffled = getRandomThree(liveEnquiries);
+          setShuffledEnquiries(initialShuffled);
+        }, (error) => {
+          console.error('Error loading enquiries:', error);
+          // Set empty arrays on error
+          setAllLiveEnquiries([]);
+          setPublicRecentEnquiries([]);
+          setShuffledEnquiries([]);
+          setLiveEnquiriesCount(0);
+        });
+        
+        // Return unsubscribe function for cleanup
+        return () => unsubscribe();
       } catch (error) {
-      console.error('Error loading enquiries:', error);
-      // Set empty arrays on error
-      setAllLiveEnquiries([]);
-      setPublicRecentEnquiries([]);
-      setShuffledEnquiries([]);
+        console.error('Error setting up enquiries listener:', error);
       }
     };
     
