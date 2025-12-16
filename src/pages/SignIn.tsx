@@ -409,7 +409,7 @@ const SignIn = () => {
 
           {/* Clean Card */}
           <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-visible">
-            <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11">
+            <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11 relative z-20">
               {/* Error Display */}
               {error && (
                 <Alert className="mb-4 sm:mb-6 border border-red-200 bg-red-50 rounded-lg">
@@ -700,7 +700,7 @@ const SignIn = () => {
           {/* Moving Robot Animation - Outside card, behind content, doesn't interrupt */}
           <div 
             ref={robotRef}
-            className="absolute pointer-events-none z-0"
+            className="absolute pointer-events-none z-[1]"
             style={{
               position: 'absolute',
               left: `${robotPosition.x || 0}px`,
