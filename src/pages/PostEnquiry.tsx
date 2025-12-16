@@ -1391,7 +1391,8 @@ export default function PostEnquiry() {
         userLikes: [],
         notes: notes.trim(),
         userVerified: isUserVerified, // Pass verification status to AI
-        isProfileVerified: isUserVerified
+        isProfileVerified: isUserVerified,
+        userProfileVerified: isUserVerified // Add this field for trust badge display
       };
 
       // Only add government ID fields if they exist
@@ -1406,6 +1407,7 @@ export default function PostEnquiry() {
         // Set verification flags to true for this enquiry when ID images are uploaded
         enquiryData.isProfileVerified = true;
         enquiryData.userVerified = true;
+        enquiryData.userProfileVerified = true; // Add this field for trust badge display
       }
       
       // Add reference images if any exist
