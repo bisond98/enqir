@@ -283,13 +283,14 @@ const SignIn = () => {
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
                     <TabsList className="relative inline-flex items-center bg-gray-100 border border-gray-300 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200">
-                      {/* Animated Background Slider - Intense dark black selection, no shadow */}
+                      {/* Animated Background Slider - High depth intense dark black selection, no shadow */}
                       <motion.div 
                         className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl pointer-events-none"
                         style={{ 
                           width: 'calc(50% - 4px)',
                           zIndex: 0,
                           backgroundColor: '#000000',
+                          background: 'linear-gradient(180deg, #000000 0%, #000000 100%)',
                         }}
                         animate={{
                           x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
@@ -300,7 +301,10 @@ const SignIn = () => {
                           damping: 40,
                           mass: 0.5
                         }}
-                      />
+                      >
+                        {/* Depth highlight effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                      </motion.div>
                       
                       {/* Log In Button - Text always visible, clear selection */}
                       <TabsTrigger 
