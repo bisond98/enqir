@@ -61,6 +61,7 @@ const SignIn = () => {
   const robotRef = useRef<HTMLDivElement>(null);
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
   const [robotAngle, setRobotAngle] = useState(0);
+  const [isRobotPaused, setIsRobotPaused] = useState(false);
   
   
   // Pre-fill email from URL parameter (from email verification)
@@ -273,6 +274,7 @@ const SignIn = () => {
         const pauseElapsed = timestamp - pauseStartTime;
         if (pauseElapsed >= pauseDuration) {
           isPaused = false;
+          setIsRobotPaused(false);
           pauseStartTime = 0;
           pathProgress = 0;
           currentPathIndex = (currentPathIndex + 1) % paths.length;
@@ -281,7 +283,8 @@ const SignIn = () => {
             currentPath = paths[currentPathIndex];
           }
         } else {
-          // Keep robot at pause position
+          // Keep robot at pause position and trigger blink
+          setIsRobotPaused(true);
           animationFrameId = requestAnimationFrame(animate);
           return;
         }
@@ -293,6 +296,7 @@ const SignIn = () => {
         // Check if this path should pause
         if (currentPath.pause) {
           isPaused = true;
+          setIsRobotPaused(true);
           pauseStartTime = timestamp;
           pathProgress = 1; // Keep at end position during pause
         } else {
