@@ -679,173 +679,173 @@ const SignIn = () => {
               </div>
                 </>
               )}
-
-              {/* Moving Robot Animation - Behind content, doesn't interrupt */}
-              <div 
-                ref={robotRef}
-                className="absolute pointer-events-none z-0"
-                style={{
-                  position: 'absolute',
-                  left: `${robotPosition.x || 0}px`,
-                  top: `${robotPosition.y || 0}px`,
-                  width: '80px',
-                  height: '80px',
-                  transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
-                  willChange: 'transform',
-                  transition: 'none',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                  opacity: 1,
-                }}
-              >
-                {/* Same Robot from HelpGuide - Smaller */}
-                <svg width="80" height="80" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
-                  <defs>
-                    <filter id="cyan-glow-signin">
-                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                      <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                      </feMerge>
-                    </filter>
-                    <linearGradient id="whiteMatte-signin" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 1 }} />
-                      <stop offset="50%" style={{ stopColor: '#fafafa', stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: '#f0f0f0', stopOpacity: 1 }} />
-                    </linearGradient>
-                    <linearGradient id="lightGrey-signin" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.4 }} />
-                      <stop offset="50%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.5 }} />
-                      <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
-                    </linearGradient>
-                    <radialGradient id="cyanGlow-signin" cx="50%" cy="50%">
-                      <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 0.6 }} />
-                      <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.5 }} />
-                      <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.4 }} />
-                      <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.3 }} />
-                    </radialGradient>
-                    <radialGradient id="eyeHighlight-signin" cx="30%" cy="30%">
-                      <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
-                      <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
-                    </radialGradient>
-                  </defs>
-                  
-                  {/* Soft floating shadow */}
-                  <ellipse cx="50" cy="95" rx="18" ry="4" fill="#000000" opacity="0.08">
-                    <animate attributeName="rx" values="18;20;18" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    <animate attributeName="opacity" values="0.08;0.1;0.08" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                  </ellipse>
-                  
-                  {/* Body */}
-                  <g id="body-group-signin">
-                    <ellipse cx="50" cy="65" rx="18" ry="20" fill="url(#whiteMatte-signin)" stroke="none"/>
-                    <ellipse cx="50" cy="65" rx="16" ry="18" fill="url(#lightGrey-signin)"/>
-                    <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    </rect>
-                    <text x="50" y="63" fontSize="3" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.7;0.6" dur="3s" repeatCount="indefinite"/>
-                      ENQIR
-                    </text>
-                    <animateTransform
-                      attributeName="transform"
-                      type="translate"
-                      values="0,0; 0,-2.5; 0,0"
-                      dur="5s"
-                      repeatCount="indefinite"
-                      calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.5;1"
-                    />
-                  </g>
-                  
-                  {/* Head */}
-                  <g id="head-group-signin">
-                    <ellipse cx="50" cy="30" rx="14" ry="16" fill="url(#whiteMatte-signin)" stroke="none"/>
-                    <ellipse cx="50" cy="30" rx="12" ry="14" fill="url(#lightGrey-signin)"/>
-                    <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
-                      <animate attributeName="y2" values="11;10.5;11" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    </line>
-                    <circle cx="50" cy="8" r="1.5" fill="#ffffff" opacity="0.6">
-                      <animate attributeName="r" values="1.5;1.8;1.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    </circle>
-                    <animateTransform
-                      attributeName="transform"
-                      type="translate"
-                      values="0,0; 0,-2; 0,0"
-                      dur="5s"
-                      repeatCount="indefinite"
-                      calcMode="spline"
-                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                      keyTimes="0;0.5;1"
-                      begin="0.8s"
-                    />
-                  </g>
-                  
-                  {/* Face screen */}
-                  <g id="face-screen-signin">
-                    <ellipse cx="50" cy="32" rx="12" ry="14" fill="#1a1a1a" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                    </ellipse>
-                    <ellipse cx="50" cy="28" rx="8" ry="6" fill="url(#eyeHighlight-signin)" opacity="0.1"/>
-                    
-                    {/* Eyes */}
-                    <g id="eyes-group-signin">
-                      <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
-                        <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                        <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                      </ellipse>
-                      <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
-                        <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
-                        <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
-                      </ellipse>
-                      <ellipse cx="45" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
-                      <ellipse cx="55" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
-                    </g>
-                  </g>
-                  
-                  {/* Arms */}
-                  <g id="arms-group-signin">
-                    <g id="left-arm-signin" transform-origin="20 60">
-                      <ellipse cx="20" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(-15 20 60)"/>
-                      <ellipse cx="20" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(-15 20 60)"/>
-                      <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                      </circle>
-                      <animateTransform
-                        attributeName="transform"
-                        type="rotate"
-                        values="-15 20 60; -25 20 60; -15 20 60"
-                        dur="4s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.5;1"
-                      />
-                    </g>
-                    <g id="right-arm-signin" transform-origin="80 60">
-                      <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
-                      <ellipse cx="80" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(15 80 60)"/>
-                      <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="1.5s"/>
-                      </circle>
-                      <animateTransform
-                        attributeName="transform"
-                        type="rotate"
-                        values="15 80 60; 25 80 60; 15 80 60"
-                        dur="4s"
-                        repeatCount="indefinite"
-                        calcMode="spline"
-                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-                        keyTimes="0;0.5;1"
-                        begin="2s"
-                      />
-                    </g>
-                  </g>
-                </svg>
-              </div>
             </CardContent>
           </Card>
+
+          {/* Moving Robot Animation - Outside card, behind content, doesn't interrupt */}
+          <div 
+            ref={robotRef}
+            className="absolute pointer-events-none z-0"
+            style={{
+              position: 'absolute',
+              left: `${robotPosition.x || 0}px`,
+              top: `${robotPosition.y || 0}px`,
+              width: '80px',
+              height: '80px',
+              transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
+              willChange: 'transform',
+              transition: 'none',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              opacity: 1,
+            }}
+          >
+            {/* Same Robot from HelpGuide - Smaller */}
+            <svg width="80" height="80" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
+              <defs>
+                <filter id="cyan-glow-signin">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <linearGradient id="whiteMatte-signin" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 1 }} />
+                  <stop offset="50%" style={{ stopColor: '#fafafa', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#f0f0f0', stopOpacity: 1 }} />
+                </linearGradient>
+                <linearGradient id="lightGrey-signin" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.4 }} />
+                  <stop offset="50%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.5 }} />
+                  <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
+                </linearGradient>
+                <radialGradient id="cyanGlow-signin" cx="50%" cy="50%">
+                  <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 0.6 }} />
+                  <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.5 }} />
+                  <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.4 }} />
+                  <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.3 }} />
+                </radialGradient>
+                <radialGradient id="eyeHighlight-signin" cx="30%" cy="30%">
+                  <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
+                  <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
+                </radialGradient>
+              </defs>
+              
+              {/* Soft floating shadow */}
+              <ellipse cx="50" cy="95" rx="18" ry="4" fill="#000000" opacity="0.08">
+                <animate attributeName="rx" values="18;20;18" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                <animate attributeName="opacity" values="0.08;0.1;0.08" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+              </ellipse>
+              
+              {/* Body */}
+              <g id="body-group-signin">
+                <ellipse cx="50" cy="65" rx="18" ry="20" fill="url(#whiteMatte-signin)" stroke="none"/>
+                <ellipse cx="50" cy="65" rx="16" ry="18" fill="url(#lightGrey-signin)"/>
+                <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
+                  <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                </rect>
+                <text x="50" y="63" fontSize="3" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.6">
+                  <animate attributeName="opacity" values="0.6;0.7;0.6" dur="3s" repeatCount="indefinite"/>
+                  ENQIR
+                </text>
+                <animateTransform
+                  attributeName="transform"
+                  type="translate"
+                  values="0,0; 0,-2.5; 0,0"
+                  dur="5s"
+                  repeatCount="indefinite"
+                  calcMode="spline"
+                  keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                  keyTimes="0;0.5;1"
+                />
+              </g>
+              
+              {/* Head */}
+              <g id="head-group-signin">
+                <ellipse cx="50" cy="30" rx="14" ry="16" fill="url(#whiteMatte-signin)" stroke="none"/>
+                <ellipse cx="50" cy="30" rx="12" ry="14" fill="url(#lightGrey-signin)"/>
+                <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
+                  <animate attributeName="y2" values="11;10.5;11" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                </line>
+                <circle cx="50" cy="8" r="1.5" fill="#ffffff" opacity="0.6">
+                  <animate attributeName="r" values="1.5;1.8;1.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                </circle>
+                <animateTransform
+                  attributeName="transform"
+                  type="translate"
+                  values="0,0; 0,-2; 0,0"
+                  dur="5s"
+                  repeatCount="indefinite"
+                  calcMode="spline"
+                  keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                  keyTimes="0;0.5;1"
+                  begin="0.8s"
+                />
+              </g>
+              
+              {/* Face screen */}
+              <g id="face-screen-signin">
+                <ellipse cx="50" cy="32" rx="12" ry="14" fill="#1a1a1a" opacity="0.6">
+                  <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                </ellipse>
+                <ellipse cx="50" cy="28" rx="8" ry="6" fill="url(#eyeHighlight-signin)" opacity="0.1"/>
+                
+                {/* Eyes */}
+                <g id="eyes-group-signin">
+                  <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                    <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                  </ellipse>
+                  <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                    <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
+                    <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
+                  </ellipse>
+                  <ellipse cx="45" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
+                  <ellipse cx="55" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
+                </g>
+              </g>
+              
+              {/* Arms */}
+              <g id="arms-group-signin">
+                <g id="left-arm-signin" transform-origin="20 60">
+                  <ellipse cx="20" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(-15 20 60)"/>
+                  <ellipse cx="20" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(-15 20 60)"/>
+                  <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
+                    <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                  </circle>
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    values="-15 20 60; -25 20 60; -15 20 60"
+                    dur="4s"
+                    repeatCount="indefinite"
+                    calcMode="spline"
+                    keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                    keyTimes="0;0.5;1"
+                  />
+                </g>
+                <g id="right-arm-signin" transform-origin="80 60">
+                  <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
+                  <ellipse cx="80" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(15 80 60)"/>
+                  <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
+                    <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="1.5s"/>
+                  </circle>
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    values="15 80 60; 25 80 60; 15 80 60"
+                    dur="4s"
+                    repeatCount="indefinite"
+                    calcMode="spline"
+                    keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                    keyTimes="0;0.5;1"
+                    begin="2s"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
         </div>
       </div>
     </Layout>
