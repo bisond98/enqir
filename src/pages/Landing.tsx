@@ -1,54 +1,20 @@
 import { Button } from "@/components/ui/button";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { Card } from "@/components/ui/card";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { Badge } from "@/components/ui/badge";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift } from "lucide-react";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { Link, useNavigate } from "react-router-dom";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import Layout from "@/components/Layout";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import newLogo from "@/assets/new-logo.png";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { useAuth } from "@/contexts/AuthContext";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { NotificationContext } from "@/contexts/NotificationContext";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import CountdownTimer from "@/components/CountdownTimer";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { useEffect, useState, useRef, useContext } from "react";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { motion, AnimatePresence } from "framer-motion";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { db } from "@/firebase";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { collection, query, where, orderBy, limit, doc, updateDoc, setDoc, arrayUnion, arrayRemove, increment, getDoc, getDocs, onSnapshot } from "firebase/firestore";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { createPortal } from "react-dom";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { formatIndianCurrency } from "@/lib/utils";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { toast } from "@/hooks/use-toast";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 
 const Landing = () => {
   const features = [
@@ -2066,20 +2032,22 @@ const Landing = () => {
                     // Z-index: rightmost card (index 0) = 30, middle (index 1) = 20, leftmost (index 2) = 10
                     const baseZIndex = showAllEnquiries ? 10 : (3 - index) * 10;
                     const zIndex = isHovered ? 50 : (isAnyCardHovered && !isHovered ? 40 : baseZIndex);
-                    // Equal spacing: Cards positioned with equal gaps between them
+                    // Horizontal overlap: Each card shows enough to see the enquiry title/heading text
+                    // Right-to-left: Cards positioned to center the entire stack
                     // Card widths: mobile 180px (fits 3 cards on screen), tablet 280px, desktop 320px
+                    // Overlap adjusted: Show enough of card to see header section + title text area clearly
+                    // Title text is at the top of content area, so we need ~80% visible to ensure title is visible on all cards
                     const cardWidth = windowWidth >= 1024 ? 320 : (windowWidth >= 640 ? 280 : 180);
-                    // Equal gap between cards: Desktop: 24px, Tablet: 20px, Mobile: 16px
-                    const gapBetweenCards = windowWidth >= 1024 ? 24 : (windowWidth >= 640 ? 20 : 16);
-                    // Position cards with equal spacing
-                    // Middle card (index 1) should be centered at 50%
-                    // Rightmost card (index 0): 50% - cardWidth - gap
-                    // Middle card (index 1): 50% (centered)
-                    // Leftmost card (index 2): 50% + cardWidth + gap
+                    // Desktop: 20% overlap (80% visible - title text clearly visible on all cards), Tablet: 25%, Mobile: 50%
+                    const shiftAmount = windowWidth >= 1024 ? (cardWidth * 0.20) : (windowWidth >= 640 ? (cardWidth * 0.25) : (cardWidth * 0.5));
+                    // Position cards so the middle card (index 1) is centered below "Live Needs" heading
+                    // Middle card should be at 50% (page center)
+                    // Rightmost card (index 0) at: 50% - shiftAmount
+                    // Middle card (index 1) at: 50% - shiftAmount + shiftAmount = 50% ✓
+                    // Leftmost card (index 2) at: 50% + shiftAmount
+                    // Also need to account for card width to center the card itself, not just its left edge
                     const cardCenterOffset = cardWidth / 2; // Half card width to center the card
-                    // Calculate position: center card at 50%, then offset by (index - 1) * (cardWidth + gap)
-                    const positionOffset = (index - 1) * (cardWidth + gapBetweenCards);
-                    const baseLeft = showAllEnquiries ? 'auto' : `calc(50% - ${cardCenterOffset}px + ${positionOffset}px)`;
+                    const baseLeft = showAllEnquiries ? 'auto' : `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
                     // Creative animation: When any card is hovered/touched, it pops forward with spring effect
                     // Other cards elegantly move back and slightly up with rotation
                     // Highly optimized for mobile with minimal movements and no rotation
