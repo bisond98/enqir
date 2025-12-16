@@ -212,9 +212,9 @@ const SignIn = () => {
     let lastTimestamp = 0;
     let currentAngle = 0;
     let targetAngle = 0;
-    let isPaused = false;
-    let pauseStartTime = 0;
-    let pauseDuration = 1000; // 1 second pause
+      let isPaused = false;
+      let pauseStartTime = 0;
+      let pauseDuration = 1500; // 1.5 second pause to show pushing effort
 
     const createRoamingPaths = () => {
       const cardRect = cardElement.getBoundingClientRect();
@@ -279,41 +279,31 @@ const SignIn = () => {
       // Ensure welcomeY doesn't go too close to bottom
       const constrainedWelcomeY = Math.min(welcomeY, maxY - 40);
       
+      // Calculate position to push "Enqir" text - robot should go directly to it
+      const pushY = welcomeY - 20; // Position slightly above the text to push it
+      
       return [
-        // Paths that use ALL space including very top - robot head goes very high up
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelTopY }, pause: false }, // Go to very top
-        { start: { x: cardLeft + cardWidth / 2, y: levelTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false },
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: levelHeaderTopY }, pause: false }, // Go to very top
-        { start: { x: cardLeft - offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth + offset, y: levelTopY }, pause: false }, // Move along very top
-        { start: { x: cardLeft + cardWidth + offset, y: levelTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false },
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top again
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
-        // Additional paths going to very top area
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelTopY }, pause: false }, // Go to very top
-        { start: { x: cardLeft + cardWidth / 2, y: levelTopY }, end: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: levelHeaderY }, pause: false }, // Move between top levels
-        { start: { x: cardLeft - offset, y: levelHeaderY }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderTopY }, pause: false }, // Back to very top
-        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft - offset, y: levelHeaderTopY }, pause: false }, // Back to very top
-        { start: { x: cardLeft - offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level1Y }, end: { x: cardLeft + cardWidth + offset, y: levelTopY }, pause: false }, // Back to very top
-        { start: { x: cardLeft + cardWidth + offset, y: levelTopY }, end: { x: cardLeft - offset, y: level2Y }, pause: false },
-        { start: { x: cardLeft - offset, y: level2Y }, end: { x: cardLeft + cardWidth / 2, y: level3Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level3Y }, end: { x: cardLeft + cardWidth + offset, y: level6Y }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: level6Y }, end: { x: cardLeft - offset, y: level4Y }, pause: false },
-        { start: { x: cardLeft - offset, y: level4Y }, end: { x: cardLeft + cardWidth / 2, y: level7Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level7Y }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false }, // Back to very top
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top
-        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: levelTopY }, pause: false }, // Go to topmost
-        { start: { x: cardLeft - offset, y: levelTopY }, end: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, pause: false }, // Move along very top
-        { start: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
+        // Loop: Go to Enqir text, push it, move away, repeat
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push the text (pause to show effort)
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft - offset, y: levelTopY }, pause: false },
+        { start: { x: cardLeft - offset, y: levelTopY }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft + cardWidth + offset, y: levelTopY }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: levelTopY }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
+        { start: { x: welcomeX, y: pushY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: welcomeX, y: pushY }, pause: false },
+        { start: { x: welcomeX, y: pushY }, end: { x: welcomeX, y: pushY }, pause: true }, // Push again
       ];
     };
 
