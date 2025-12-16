@@ -2304,14 +2304,14 @@ const Landing = () => {
                       {/* Card Content - Professional Layout with Better Spacing */}
                       <div className="px-2.5 pt-2.5 pb-4 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
                       {/* Title - Professional Typography */}
-                      <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
+                      <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-2 sm:pb-2 sm:mb-2.5 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
                       } w-full overflow-hidden`}>
                         {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
                       </h3>
                       
                       {/* Budget and Location - Stacked on Both Mobile and Desktop */}
-                      <div className="flex flex-col w-full gap-1.5 mb-1.5">
+                      <div className="flex flex-col w-full gap-1.5 mb-2 sm:mb-2.5">
                         {enquiry.budget && (
                           <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border-[0.5px] border-black w-full px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
@@ -2333,7 +2333,7 @@ const Landing = () => {
                       </div>
                       
                       {/* Meta Information - Professional Grouping */}
-                      <div className="flex flex-col w-full gap-1.5">
+                      <div className="flex flex-col w-full gap-1.5 mb-2 sm:mb-2.5">
                           <div className="flex items-center justify-between text-gray-600 border-[0.5px] border-black rounded-lg w-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
@@ -2353,9 +2353,10 @@ const Landing = () => {
                             />
                           </div>
                         )}
+                      </div>
                         
                         {/* Sell Button - Mobile only (inside meta container) */}
-                        <div className="block sm:hidden w-full">
+                        <div className="block sm:hidden w-full mb-2 sm:mb-2.5">
                           {user ? (
                             (() => {
                               const isOwnEnquiry = enquiry.userId === user.uid;
