@@ -255,9 +255,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
           }
           
           if (isMounted) {
-            // Sum all unread message counts + new chats
-            const totalUnreadMessages = Array.from(threadsWithUnread.values()).reduce((sum, count) => sum + count, 0);
-            setUnreadChatCount(totalUnreadMessages);
+            // Count unique threads with unread messages (matches MyChats.tsx logic)
+            // This counts threads, not total messages, to match the badge in MyChats page
+            const uniqueThreadsWithUnread = threadsWithUnread.size;
+            setUnreadChatCount(uniqueThreadsWithUnread);
           }
           return; // Exit early - we used preloaded data!
         }
@@ -533,9 +534,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
         }
         
         if (isMounted) {
-          // Sum all unread message counts + new chats
-          const totalUnreadMessages = Array.from(activeChatThreads.values()).reduce((sum, count) => sum + count, 0);
-          setUnreadChatCount(totalUnreadMessages);
+          // Count unique threads with unread messages (matches MyChats.tsx logic)
+          // This counts threads, not total messages, to match the badge in MyChats page
+          const uniqueThreadsWithUnread = activeChatThreads.size;
+          setUnreadChatCount(uniqueThreadsWithUnread);
         }
       } catch (error) {
         console.error("Error counting unread chats:", error);

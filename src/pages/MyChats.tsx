@@ -1,14 +1,36 @@
 import { useEffect, useState, useRef } from "react";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useNavigate } from "react-router-dom";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import Layout from "@/components/Layout";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useAuth } from "@/contexts/AuthContext";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useChats } from "@/contexts/ChatContext";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { db } from "@/firebase";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { Card } from "@/components/ui/card";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { Button } from "@/components/ui/button";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, ArrowLeftRight, ArrowLeft } from "lucide-react";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { motion } from "framer-motion";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 
 interface ChatThread {
   id: string;
@@ -562,10 +584,10 @@ export default function MyChats() {
                             </motion.span>
                           )}
                             
-                            {/* Unread Badge - Seller */}
+                            {/* Unread Badge - Seller (on left side) */}
                             {viewMode === 'seller' && sellerUnreadCount > 0 && (
                             <motion.span 
-                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
+                                className="absolute -top-1 -left-1 sm:-top-1.5 sm:-left-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
                               animate={{
                                   scale: [1, 1.3, 1],
                                   rotate: [0, 15, -15, 0]
