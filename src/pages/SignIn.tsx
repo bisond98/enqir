@@ -368,7 +368,7 @@ const SignIn = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative">
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative" style={{ overflow: 'visible' }}>
         {/* Subtle Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-40 h-40 bg-blue-100/40 rounded-full blur-3xl hidden sm:block"></div>
@@ -378,9 +378,9 @@ const SignIn = () => {
 
         <div className="signin-container w-full max-w-md lg:max-w-lg relative z-10" style={{ overflow: 'visible' }}>
           {/* Clean Header Section */}
-          <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center">
+          <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center" style={{ overflow: 'visible' }}>
             {/* Main Heading */}
-            <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)' }}>
+            <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)', overflow: 'visible' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span className="text-blue-600 font-black">Enqir</span>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>.in</span>
