@@ -1802,7 +1802,7 @@ const Landing = () => {
           <div className="block sm:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
             <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
               <div className="relative">
-                <div className="h-5 w-5 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring"></div>
+                <Zap className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                 <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
               </div>
               <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Post your needs. Sell to real demand.</h3>
