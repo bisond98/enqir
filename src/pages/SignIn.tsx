@@ -278,19 +278,19 @@ const SignIn = () => {
                 </div>
               )}
 
-              {/* Sign In / Sign Up Tabs - Optimal UX: Minimal, Clear, Accessible */}
+              {/* Sign In / Sign Up Tabs - Clear Selection, Always Visible Text */}
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-gray-50 border border-gray-300 rounded-2xl p-1 sm:p-1.5 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-visible transition-all duration-200 hover:shadow-md">
-                      {/* Animated Background Slider - Smooth, visible, clear affordance */}
+                    <TabsList className="relative inline-flex items-center bg-white border-2 border-gray-200 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-2 overflow-hidden transition-all duration-200 hover:border-gray-300 hover:shadow-md">
+                      {/* Animated Background Slider - Behind text, clear selection indicator */}
                       <motion.div 
-                        className="absolute top-1 bottom-1 sm:top-1.5 sm:bottom-1.5 rounded-xl bg-black shadow-md pointer-events-none z-[1]"
+                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-black pointer-events-none z-0"
                         style={{ 
-                          width: 'calc(50% - 4px)',
+                          width: 'calc(50% - 6px)',
                         }}
                         animate={{
-                          x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
+                          x: activeTab === 'signin' ? '6px' : 'calc(100% + 6px)',
                         }}
                         transition={{
                           type: "spring",
@@ -300,22 +300,22 @@ const SignIn = () => {
                         }}
                       />
                       
-                      {/* Log In Button - Optimal touch target, clear state, always visible */}
+                      {/* Log In Button - Text always visible, clear selection */}
                       <TabsTrigger 
                         value="signin" 
-                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:hover:text-black bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative z-10 h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-800 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                         aria-label="Switch to Log In"
                       >
-                        <span className="relative z-10 font-bold">Log In</span>
+                        Log In
                       </TabsTrigger>
                       
-                      {/* Sign Up Button - Optimal touch target, clear state, always visible */}
+                      {/* Sign Up Button - Text always visible, clear selection */}
                       <TabsTrigger 
                         value="signup" 
-                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:hover:text-black bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative z-10 h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-800 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                         aria-label="Switch to Sign Up"
                       >
-                        <span className="relative z-10 font-bold">Sign Up</span>
+                        Sign Up
                       </TabsTrigger>
                 </TabsList>
 
