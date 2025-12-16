@@ -1408,6 +1408,7 @@ export default function PostEnquiry() {
         enquiryData.isProfileVerified = true;
         enquiryData.userVerified = true;
         enquiryData.userProfileVerified = true; // Add this field for trust badge display
+        enquiryData.userProfileVerified = true; // Add this field for trust badge display
       }
       
       // Add reference images if any exist
