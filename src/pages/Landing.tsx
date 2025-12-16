@@ -1789,113 +1789,17 @@ const Landing = () => {
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
-            {/* 🛡️ PROTECTED: Live Enquiries Section - DO NOT MODIFY
-                Structure: Live Enquiries. / respect the tastebuds. / Categories / All filters / Scroll down / Count */}
-            {/* Live Enquiries Heading */}
-            <div className="text-center mb-2 sm:mb-4">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-black mb-1 sm:mb-2">
-                Live Enquiries.
-              </h2>
-              <p className="text-sm sm:text-base text-gray-600 lowercase">
-                respect the tastebuds.
-              </p>
-            </div>
-            
-            {/* Categories Section */}
-            <div className="text-center mb-4 sm:mb-6">
-              <h3 className="text-lg sm:text-xl font-bold text-black mb-3 sm:mb-4">
-                Categories
-              </h3>
-              
-              {/* Category Filters */}
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-4 sm:px-6 max-w-5xl mx-auto">
-                {[
-                  { value: "all", label: "All" },
-                  { value: "professional-services", label: "Business" },
-                  { value: "childcare-family", label: "Personal" },
-                  { value: "professional-services", label: "Service" },
-                  { value: "agriculture-farming", label: "Agriculture" },
-                  { value: "antiques", label: "Antiques" },
-                  { value: "home-furniture", label: "Appliances" },
-                  { value: "art", label: "Art" },
-                  { value: "automobile", label: "Automobile" },
-                  { value: "childcare-family", label: "Baby & Kids" },
-                  { value: "fashion-apparel", label: "Bags & Luggage" },
-                  { value: "health-beauty", label: "Beauty" },
-                  { value: "sports-outdoor", label: "Bicycles" },
-                  { value: "books-publications", label: "Books" },
-                  { value: "childcare-family", label: "Childcare" },
-                  { value: "professional-services", label: "Cleaning Services" },
-                  { value: "collectibles", label: "Collectibles" },
-                  { value: "construction-renovation", label: "Construction" },
-                  { value: "education-training", label: "Education" },
-                  { value: "electronics-gadgets", label: "Electronics" },
-                  { value: "entertainment-media", label: "Entertainment" },
-                  { value: "events-entertainment", label: "Events" },
-                  { value: "fashion-apparel", label: "Fashion" },
-                  { value: "sports-outdoor", label: "Fitness & Gym Equipment" },
-                  { value: "food-beverage", label: "Food" },
-                  { value: "gaming-recreation", label: "Gaming" },
-                  { value: "agriculture-farming", label: "Garden & Outdoor" },
-                  { value: "government-public", label: "Government" },
-                  { value: "health-beauty", label: "Health" },
-                  { value: "home-furniture", label: "Home" },
-                  { value: "raw-materials-industrial", label: "Industrial" },
-                  { value: "insurance-services", label: "Insurance" },
-                  { value: "jewelry-accessories", label: "Jewelry" },
-                  { value: "jobs", label: "Jobs" },
-                  { value: "home-furniture", label: "Kitchen & Dining" },
-                  { value: "legal-financial", label: "Legal" },
-                  { value: "marketing-advertising", label: "Marketing" },
-                  { value: "health-beauty", label: "Medical Equipment" },
-                  { value: "memorabilia", label: "Memorabilia" },
-                  { value: "entertainment-media", label: "Musical Accessories" },
-                  { value: "entertainment-media", label: "Musical Instruments" },
-                  { value: "entertainment-media", label: "Musical Services" },
-                  { value: "non-profit-charity", label: "Non-Profit" },
-                  { value: "professional-services", label: "Office Supplies" },
-                  { value: "pets", label: "Pets" },
-                  { value: "entertainment-media", label: "Photography & Cameras" },
-                  { value: "real-estate", label: "Real Estate" },
-                  { value: "real-estate-services", label: "Real Estate Services" },
-                  { value: "renewable-energy", label: "Renewable Energy" },
-                  { value: "professional-services", label: "Repair Services" },
-                  { value: "security-safety", label: "Security" },
-                  { value: "sneakers", label: "Sneakers" },
-                  { value: "souvenir", label: "Souvenir" },
-                  { value: "sports-outdoor", label: "Sports" },
-                  { value: "technology", label: "Technology" },
-                  { value: "thrift", label: "Thrift" },
-                  { value: "professional-services", label: "Tools & Equipment" },
-                  { value: "transportation-logistics", label: "Transportation" },
-                  { value: "travel-tourism", label: "Travel" },
-                  { value: "education-training", label: "Tutoring & Lessons" },
-                  { value: "vintage", label: "Vintage" },
-                  { value: "waste-management", label: "Waste Management" },
-                  { value: "wedding-events", label: "Wedding" },
-                  { value: "other", label: "Other" }
-                ].map((category) => (
-                  <button
-                    key={category.value}
-                    onClick={() => navigate(`/enquiries?category=${category.value}`)}
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-black border border-black rounded-lg hover:bg-gray-100 transition-all duration-200"
-                  >
-                    {category.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Scroll down indicator */}
-            <div className="text-center mb-4 sm:mb-6">
-              <p className="text-sm sm:text-base text-gray-600">Scroll down</p>
-            </div>
-            
-            {/* Count */}
+            {/* 🛡️ PROTECTED: Live Enquiries Count - DO NOT MODIFY
+                This displays the dynamic count of live enquiries
+                Format: "{count} Live Enquiries" */}
+            {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
-              <span className="text-2xl sm:text-3xl font-black text-black">
-                {allLiveEnquiries.length}
-              </span>
+              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs sm:text-xs font-bold text-black">
+                  {allLiveEnquiries.length} Live Enquiries
+                </span>
+              </div>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
