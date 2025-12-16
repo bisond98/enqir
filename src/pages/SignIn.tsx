@@ -223,11 +223,16 @@ const SignIn = () => {
       const cardTop = cardRect.top - containerRect.top;
       const cardWidth = cardRect.width;
       const cardHeight = cardRect.height;
-      const offset = 150; // How far outside the card to go
+      const offset = 100; // How far outside the card to go (reduced to stay within container)
       
-      // Calculate position above "Enqir" text (centered horizontally, above vertically)
+      // Get header boundary - don't go above the welcome heading
+      const headerBottom = welcomeRect ? (welcomeRect.bottom - containerRect.top) : 0;
+      const minY = headerBottom + 20; // Stay 20px below header (don't go into header area)
+      const maxY = cardTop + cardHeight + offset; // Bottom boundary
+      
+      // Calculate position near "Enqir" text (centered horizontally, within header boundary)
       let welcomeX = cardLeft + cardWidth / 2;
-      let welcomeY = -150; // Above the container - increased to prevent cutting
+      let welcomeY = minY; // Stay at header bottom, not above it
       
       if (welcomeRect && welcomeElement) {
         // Find the "Enqir" span within the welcome heading
@@ -235,33 +240,36 @@ const SignIn = () => {
         if (enqirSpan) {
           const enqirRect = enqirSpan.getBoundingClientRect();
           const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
-          const enqirTop = enqirRect.top - containerRect.top;
+          const enqirBottom = enqirRect.bottom - containerRect.top;
           welcomeX = enqirCenterX;
-          welcomeY = enqirTop - 120; // 120px above the "Enqir" text to ensure it's not cut
+          welcomeY = Math.max(minY, enqirBottom + 20); // Stay below header, at least 20px below Enqir text
         } else {
           // Fallback to welcome text center
           const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - containerRect.left;
-          const welcomeTop = welcomeRect.top - containerRect.top;
+          const welcomeBottom = welcomeRect.bottom - containerRect.top;
           welcomeX = welcomeCenterX;
-          welcomeY = welcomeTop - 120; // 120px above to ensure it's not cut
+          welcomeY = Math.max(minY, welcomeBottom + 20); // Stay below header
         }
       }
       
+      // Ensure welcomeY doesn't go too close to bottom
+      const constrainedWelcomeY = Math.min(welcomeY, maxY - 40);
+      
       return [
-        // Paths that go outside the card - positions relative to container
+        // Paths that go outside the card but stay within container bounds
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop - offset }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop - offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
-        { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text
-        { start: { x: welcomeX, y: welcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight + offset }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight + offset }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: minY }, pause: false }, // Go to header bottom, not above
+        { start: { x: cardLeft + cardWidth / 2, y: minY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause near welcome text (within header boundary)
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: cardTop - offset }, pause: false },
-        { start: { x: cardLeft - offset, y: cardTop - offset }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight + offset }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight + offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
-        { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text again
-        { start: { x: welcomeX, y: welcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: minY }, pause: false }, // Go to header bottom, not above
+        { start: { x: cardLeft - offset, y: minY }, end: { x: cardLeft + cardWidth + offset, y: maxY }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: maxY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause near welcome text again
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
       ];
     };
 
