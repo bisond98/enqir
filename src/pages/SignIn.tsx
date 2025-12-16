@@ -490,7 +490,7 @@ const SignIn = () => {
             
             {/* Tagline */}
             <p className="text-[10px] sm:text-xs text-gray-700 px-2 sm:px-4 leading-tight max-w-md mx-auto mb-4 sm:mb-5 font-medium whitespace-nowrap">
-              From Hobbies To Wants; From Necessities To Requirements
+              The AI Powered Intent-Based Hybrid Commerce to buy & sell
             </p>
           </div>
 
