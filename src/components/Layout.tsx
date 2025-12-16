@@ -87,7 +87,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const chatMessagesQuery = query(collection(db, "chatMessages"));
           const snapshot = await getDocs(chatMessagesQuery);
           
-          const threadsWithUnread = new Map<string, number>(); // Map<threadKey, unreadCount>
+          const threadsWithUnread = new Set<string>();
           
           // Process only messages from user's threads
           snapshot.docs.forEach((docSnap) => {
@@ -95,35 +95,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
             const enquiryId = messageData.enquiryId;
             const sellerId = messageData.sellerId;
             const senderId = messageData.senderId;
-            const recipientId = messageData.recipientId;
-            const isAdminMessage = messageData.isAdminMessage;
-            
-            // Handle admin messages (warnings, suspensions)
-            if (isAdminMessage && recipientId === user.uid) {
-              // Admin message for this user
-              const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
-              
-              const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
-              const lastViewedTime = localStorage.getItem(readKey);
-              
-              const messageTime = messageData.timestamp?.toDate 
-                ? messageData.timestamp.toDate().getTime() 
-                : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
-              
-              if (lastViewedTime) {
-                const viewedTime = parseInt(lastViewedTime, 10);
-                if (messageTime > viewedTime) {
-                  // Count admin messages
-                  const currentCount = threadsWithUnread.get(adminThreadKey) || 0;
-                  threadsWithUnread.set(adminThreadKey, currentCount + 1);
-                }
-              } else {
-                // Never viewed - count as unread
-                const currentCount = threadsWithUnread.get(adminThreadKey) || 0;
-                threadsWithUnread.set(adminThreadKey, currentCount + 1);
-              }
-              return; // Processed admin message, skip regular message logic
-            }
             
             if (!enquiryId || !sellerId || !senderId) return;
             if (messageData.isSystemMessage) return;
@@ -133,6 +104,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
             
             // Only check threads we know the user is involved in
             if (!threadKeys.has(threadKey)) return;
+            
+            // Check if already marked as unread
+            if (threadsWithUnread.has(threadKey)) return;
             
             const readKey = `chat_read_${user.uid}_${threadKey}`;
             const lastViewedTime = localStorage.getItem(readKey);
@@ -144,121 +118,16 @@ export default function Layout({ children, showNavigation = true }: { children: 
             if (lastViewedTime) {
               const viewedTime = parseInt(lastViewedTime, 10);
               if (messageTime > viewedTime) {
-                // Count actual messages instead of just marking thread
-                const currentCount = threadsWithUnread.get(threadKey) || 0;
-                threadsWithUnread.set(threadKey, currentCount + 1);
+                threadsWithUnread.add(threadKey);
               }
             } else {
-              // Never viewed - count all messages as unread
-              const currentCount = threadsWithUnread.get(threadKey) || 0;
-              threadsWithUnread.set(threadKey, currentCount + 1);
+              // Never viewed - mark as unread
+              threadsWithUnread.add(threadKey);
             }
           });
           
-          // Also count approved responses that are ready to chat but have no messages yet
-          // These should show as "new chats" in the notification badge
-          try {
-            // Get all approved responses for enquiries where user is buyer
-            const buyerEnquiriesQuery = query(
-              collection(db, "enquiries"),
-              where("userId", "==", user.uid)
-            );
-            const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
-            
-            const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
-            
-            if (buyerEnquiryIds.length > 0) {
-              // Process in batches of 10 (Firestore 'in' limit)
-              for (let i = 0; i < buyerEnquiryIds.length; i += 10) {
-                const batch = buyerEnquiryIds.slice(i, i + 10);
-                const approvedResponsesQuery = query(
-                  collection(db, "sellerSubmissions"),
-                  where("enquiryId", "in", batch),
-                  where("status", "==", "approved")
-                );
-                const approvedResponsesSnapshot = await getDocs(approvedResponsesQuery);
-                
-                approvedResponsesSnapshot.docs.forEach((responseDoc) => {
-                  const responseData = responseDoc.data();
-                  const enquiryId = responseData.enquiryId;
-                  const sellerId = responseData.sellerId;
-                  
-                  if (!enquiryId || !sellerId) return;
-                  
-                  const threadKey = `${enquiryId}_${sellerId}`;
-                  
-                  // Skip if already counted (has unread messages)
-                  if (threadsWithUnread.has(threadKey)) return;
-                  
-                  // Check if this thread exists in activeThreads
-                  if (threadKeys.has(threadKey)) {
-                    // Check if there are any messages for this thread
-                    const hasMessages = snapshot.docs.some(msgDoc => {
-                      const msgData = msgDoc.data();
-                      return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
-                    });
-                    
-                    // If no messages, check if user has viewed this chat
-                    if (!hasMessages) {
-                      const readKey = `chat_read_${user.uid}_${threadKey}`;
-                      const lastViewedTime = localStorage.getItem(readKey);
-                      
-                      // If never viewed, count it as 1 new chat
-                      if (!lastViewedTime) {
-                        threadsWithUnread.set(threadKey, 1);
-                      }
-                    }
-                  }
-                });
-              }
-            }
-            
-            // Also check for seller's approved responses
-            const sellerResponsesQuery = query(
-              collection(db, "sellerSubmissions"),
-              where("sellerId", "==", user.uid),
-              where("status", "==", "approved")
-            );
-            const sellerResponsesSnapshot = await getDocs(sellerResponsesQuery);
-            
-            sellerResponsesSnapshot.docs.forEach((responseDoc) => {
-              const responseData = responseDoc.data();
-              const enquiryId = responseData.enquiryId;
-              const sellerId = responseData.sellerId;
-              
-              if (!enquiryId || !sellerId) return;
-              
-              const threadKey = `${enquiryId}_${sellerId}`;
-              
-              // Skip if already counted
-              if (threadsWithUnread.has(threadKey)) return;
-              
-              if (threadKeys.has(threadKey)) {
-                const hasMessages = snapshot.docs.some(msgDoc => {
-                  const msgData = msgDoc.data();
-                  return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
-                });
-                
-                if (!hasMessages) {
-                  const readKey = `chat_read_${user.uid}_${threadKey}`;
-                  const lastViewedTime = localStorage.getItem(readKey);
-                  
-                  if (!lastViewedTime) {
-                    // Count as 1 new chat (ready to chat)
-                    threadsWithUnread.set(threadKey, 1);
-                  }
-                }
-              }
-            });
-          } catch (error) {
-            console.error("Error counting new ready-to-chat items:", error);
-          }
-          
           if (isMounted) {
-            // Count unique threads with unread messages (matches MyChats.tsx logic)
-            // This counts threads, not total messages, to match the badge in MyChats page
-            const uniqueThreadsWithUnread = threadsWithUnread.size;
-            setUnreadChatCount(uniqueThreadsWithUnread);
+            setUnreadChatCount(threadsWithUnread.size);
           }
           return; // Exit early - we used preloaded data!
         }
@@ -268,8 +137,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
         const chatMessagesQuery = query(collection(db, "chatMessages"));
         const snapshot = await getDocs(chatMessagesQuery);
         
-        // First pass: Count unread messages per thread
-        const messageThreads = new Map<string, { enquiryId: string; sellerId: string; unreadCount: number }>();
+        // First pass: Filter messages and collect unique enquiry IDs
+        const messageThreads = new Map<string, { enquiryId: string; sellerId: string; timestamp: number }>();
         const enquiryIds = new Set<string>();
         
         snapshot.docs.forEach((docSnap) => {
@@ -277,42 +146,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const enquiryId = messageData.enquiryId;
           const sellerId = messageData.sellerId;
           const senderId = messageData.senderId;
-          const recipientId = messageData.recipientId;
-          const isAdminMessage = messageData.isAdminMessage;
-          
-          // Handle admin messages (warnings, suspensions)
-          if (isAdminMessage && recipientId === user.uid) {
-            // Admin message for this user
-            const adminThreadKey = `admin_${messageData.adminMessageType || 'admin'}_${docSnap.id}`;
-            const messageTime = messageData.timestamp?.toDate 
-              ? messageData.timestamp.toDate().getTime() 
-              : (messageData.timestamp ? new Date(messageData.timestamp).getTime() : 0);
-            
-            // Check if user has viewed this admin message
-            const readKey = `chat_read_${user.uid}_${adminThreadKey}`;
-            const lastViewedTime = localStorage.getItem(readKey);
-            
-            let isUnread = false;
-            if (lastViewedTime) {
-              const viewedTime = parseInt(lastViewedTime, 10);
-              if (messageTime > viewedTime) {
-                isUnread = true;
-              }
-            } else {
-              isUnread = true; // Never viewed
-            }
-            
-            if (isUnread) {
-              const existing = messageThreads.get(adminThreadKey);
-              const currentCount = existing?.unreadCount || 0;
-              messageThreads.set(adminThreadKey, { 
-                enquiryId: enquiryId || 'admin', 
-                sellerId: sellerId || 'admin', 
-                unreadCount: currentCount + 1
-              });
-            }
-            return; // Processed admin message, skip regular message logic
-          }
           
           if (!enquiryId || !sellerId || !senderId) return;
           if (messageData.isSystemMessage) return;
@@ -327,25 +160,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
           const readKey = `chat_read_${user.uid}_${threadKey}`;
           const lastViewedTime = localStorage.getItem(readKey);
           
-          let isUnread = false;
           if (lastViewedTime) {
             const viewedTime = parseInt(lastViewedTime, 10);
-            if (messageTime > viewedTime) {
-              isUnread = true;
-            }
-          } else {
-            isUnread = true; // Never viewed
+            if (messageTime <= viewedTime) return; // Already viewed
           }
           
-          if (isUnread) {
-            // Count messages per thread
-            const existing = messageThreads.get(threadKey);
-            const currentCount = existing?.unreadCount || 0;
-            messageThreads.set(threadKey, { 
-              enquiryId, 
-              sellerId, 
-              unreadCount: currentCount + 1 
-            });
+          // Track the latest message for this thread
+          const existing = messageThreads.get(threadKey);
+          if (!existing || messageTime > existing.timestamp) {
+            messageThreads.set(threadKey, { enquiryId, sellerId, timestamp: messageTime });
             enquiryIds.add(enquiryId);
           }
         });
@@ -370,16 +193,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
         });
         
         // Second pass: Filter threads by user involvement and enquiry status
-        const activeChatThreads = new Map<string, number>(); // Map<threadKey, unreadCount>
+        const activeChatThreads = new Set<string>();
         const now = new Date();
         
         messageThreads.forEach((thread, threadKey) => {
-          // Handle admin messages separately (they don't have enquiry data)
-          if (threadKey.startsWith('admin_')) {
-            activeChatThreads.set(threadKey, thread.unreadCount);
-            return;
-          }
-          
           const enquiryData = enquiryDataMap.get(thread.enquiryId);
           if (!enquiryData) return; // Enquiry deleted
           
@@ -399,145 +216,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
           // Check if enquiry status would close the chat
           if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
           
-          activeChatThreads.set(threadKey, thread.unreadCount);
+          activeChatThreads.add(threadKey);
         });
         
-        // Also count approved responses that are ready to chat but have no messages yet
-        try {
-          // Get all approved responses for enquiries where user is buyer
-          const buyerEnquiriesQuery = query(
-            collection(db, "enquiries"),
-            where("userId", "==", user.uid)
-          );
-          const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
-          
-          const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
-          
-          if (buyerEnquiryIds.length > 0) {
-            // Process in batches of 10 (Firestore 'in' limit)
-            for (let i = 0; i < buyerEnquiryIds.length; i += 10) {
-              const batch = buyerEnquiryIds.slice(i, i + 10);
-              const approvedResponsesQuery = query(
-                collection(db, "sellerSubmissions"),
-                where("enquiryId", "in", batch),
-                where("status", "==", "approved")
-              );
-              const approvedResponsesSnapshot = await getDocs(approvedResponsesQuery);
-              
-              approvedResponsesSnapshot.docs.forEach((responseDoc) => {
-                const responseData = responseDoc.data();
-                const enquiryId = responseData.enquiryId;
-                const sellerId = responseData.sellerId;
-                
-                if (!enquiryId || !sellerId) return;
-                
-                const threadKey = `${enquiryId}_${sellerId}`;
-                
-                // Skip if already in activeChatThreads (has messages)
-                if (activeChatThreads.has(threadKey)) return;
-                
-                // Check if there are any messages for this thread
-                const hasMessages = snapshot.docs.some(msgDoc => {
-                  const msgData = msgDoc.data();
-                  return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
-                });
-                
-                // If no messages, check if user has viewed this chat
-                if (!hasMessages) {
-                  const readKey = `chat_read_${user.uid}_${threadKey}`;
-                  const lastViewedTime = localStorage.getItem(readKey);
-                  
-                    // If never viewed, count it as 1 new chat
-                    if (!lastViewedTime) {
-                      // Verify user is involved and enquiry is active
-                      const enquiryData = enquiryDataMap.get(enquiryId);
-                      if (!enquiryData) return;
-                      
-                      const buyerId = enquiryData.userId;
-                      const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
-                      if (!isUserInvolved) return;
-                      
-                      // Check if enquiry is still active
-                      const now = new Date();
-                      if (enquiryData.deadline) {
-                        const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
-                        if (deadline < now) return;
-                      }
-                      if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
-                      if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
-                      
-                      // Skip if already counted (has unread messages)
-                      if (!activeChatThreads.has(threadKey)) {
-                        activeChatThreads.set(threadKey, 1);
-                      }
-                    }
-                }
-              });
-            }
-          }
-          
-          // Also check for seller's approved responses
-          const sellerResponsesQuery = query(
-            collection(db, "sellerSubmissions"),
-            where("sellerId", "==", user.uid),
-            where("status", "==", "approved")
-          );
-          const sellerResponsesSnapshot = await getDocs(sellerResponsesQuery);
-          
-          sellerResponsesSnapshot.docs.forEach((responseDoc) => {
-            const responseData = responseDoc.data();
-            const enquiryId = responseData.enquiryId;
-            const sellerId = responseData.sellerId;
-            
-            if (!enquiryId || !sellerId) return;
-            
-            const threadKey = `${enquiryId}_${sellerId}`;
-            
-            // Skip if already counted
-            if (activeChatThreads.has(threadKey)) return;
-            
-            const hasMessages = snapshot.docs.some(msgDoc => {
-              const msgData = msgDoc.data();
-              return msgData.enquiryId === enquiryId && msgData.sellerId === sellerId;
-            });
-            
-            if (!hasMessages) {
-              const readKey = `chat_read_${user.uid}_${threadKey}`;
-              const lastViewedTime = localStorage.getItem(readKey);
-              
-              if (!lastViewedTime) {
-                // Verify enquiry is active
-                const enquiryData = enquiryDataMap.get(enquiryId);
-                if (!enquiryData) return;
-                
-                const buyerId = enquiryData.userId;
-                const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid);
-                if (!isUserInvolved) return;
-                
-                const now = new Date();
-                if (enquiryData.deadline) {
-                  const deadline = enquiryData.deadline?.toDate ? enquiryData.deadline.toDate() : new Date(enquiryData.deadline);
-                  if (deadline < now) return;
-                }
-                if (enquiryData.status === 'deal_closed' || enquiryData.dealClosed === true) return;
-                if (enquiryData.status === 'rejected' || enquiryData.status === 'completed') return;
-                
-                // Skip if already counted (has unread messages)
-                if (!activeChatThreads.has(threadKey)) {
-                  activeChatThreads.set(threadKey, 1);
-                }
-              }
-            }
-          });
-        } catch (error) {
-          console.error("Error counting new ready-to-chat items:", error);
-        }
-        
         if (isMounted) {
-          // Count unique threads with unread messages (matches MyChats.tsx logic)
-          // This counts threads, not total messages, to match the badge in MyChats page
-          const uniqueThreadsWithUnread = activeChatThreads.size;
-          setUnreadChatCount(uniqueThreadsWithUnread);
+          setUnreadChatCount(activeChatThreads.size);
         }
       } catch (error) {
         console.error("Error counting unread chats:", error);
@@ -1277,22 +960,27 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 </>
               ) : (
                 <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
-                  <Link to="/signin">
-                    <Button variant="outline" size="sm" className="hidden sm:flex">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/signin">
-                    <Button size="sm" className="hidden sm:flex">
-                      Get Started
-                    </Button>
-                  </Link>
-                  {/* Mobile Get Started Button */}
-                  <Link to="/signin" className="sm:hidden">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 h-7">
-                      Get Started
-                    </Button>
-                  </Link>
+                  {/* Hide Get Started button on sign in/sign up page */}
+                  {location.pathname !== '/signin' && location.pathname !== '/signup' && (
+                    <>
+                      <Link to="/signin">
+                        <Button variant="outline" size="sm" className="hidden sm:flex">
+                          Sign In
+                        </Button>
+                      </Link>
+                      <Link to="/signin">
+                        <Button size="sm" className="hidden sm:flex">
+                          Get Started
+                        </Button>
+                      </Link>
+                      {/* Mobile Get Started Button */}
+                      <Link to="/signin" className="sm:hidden">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 h-7">
+                          Get Started
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -1311,11 +999,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
       {/* Mobile Bottom Navigation */}
       {isMobile && showNavigation && (
-        <nav 
-          role="navigation" 
-          aria-label="Main navigation"
-          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom"
-        >
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom">
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
             {navigationItems.filter(item => item.path !== "/").map((item) => {
               const Icon = item.icon;
@@ -1337,22 +1021,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <div
                     key={item.path}
                     onClick={handleClick}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Navigate to ${item.label}`}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleClick(e as any);
-                      }
-                    }}
                     className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                       isActive(item.path)
                         ? "text-pal-blue bg-pal-blue/10"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
-                    <Icon className="h-5 w-5" aria-hidden="true" />
+                    <Icon className="h-5 w-5" />
                     <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                   </div>
                 );
@@ -1362,14 +1037,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <Link
                   key={item.path}
                   to={item.path}
-                  aria-label={`Navigate to ${item.label}`}
                   className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 ${
                     isActive(item.path)
                       ? "text-pal-blue bg-pal-blue/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon className="h-5 w-5" aria-hidden="true" />
+                  <Icon className="h-5 w-5" />
                   <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                 </Link>
               );
@@ -1383,19 +1057,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/settings");
                 }
               }}
-              role="button"
-              tabIndex={0}
-              aria-label={user ? "Navigate to Settings" : "Sign in to access Settings"}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  if (!user) {
-                    navigate("/signin");
-                  } else {
-                    navigate("/settings");
-                  }
-                }
-              }}
               className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                 isActive("/settings")
                   ? "text-pal-blue bg-pal-blue/10"
@@ -1406,7 +1067,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               <span className="text-[10px] font-medium truncate leading-tight">Settings</span>
             </div>
           </div>
-        </nav>
+        </div>
       )}
 
 
