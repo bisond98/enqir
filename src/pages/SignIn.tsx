@@ -274,36 +274,39 @@ const SignIn = () => {
       const constrainedWelcomeY = Math.min(welcomeY, maxY - 40);
       
       return [
-        // Paths that use ALL space including header area - robot goes right up to header
+        // Paths that use ALL space including very top - robot head goes very high up
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, pause: false }, // Go into header area
-        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, end: { x: welcomeX, y: level0Y }, pause: false },
-        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause right at header
-        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelTopY }, pause: false }, // Go to very top
+        { start: { x: cardLeft + cardWidth / 2, y: levelTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false },
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: level0Y }, pause: false }, // Go to header level
-        { start: { x: cardLeft - offset, y: level0Y }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false }, // Move along header
-        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: false },
-        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause at header again
-        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
-        // Additional paths going to header area
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, pause: false }, // Go to header area
-        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft - offset, y: level1Y }, pause: false }, // Move between header levels
-        { start: { x: cardLeft - offset, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: level0Y }, pause: false }, // Back to header
-        { start: { x: cardLeft + cardWidth / 2, y: level0Y }, end: { x: cardLeft + cardWidth + offset, y: level2Y }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: level2Y }, end: { x: cardLeft - offset, y: level0Y }, pause: false }, // Back to header
-        { start: { x: cardLeft - offset, y: level0Y }, end: { x: cardLeft + cardWidth / 2, y: level3Y }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: levelHeaderTopY }, pause: false }, // Go to very top
+        { start: { x: cardLeft - offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth + offset, y: levelTopY }, pause: false }, // Move along very top
+        { start: { x: cardLeft + cardWidth + offset, y: levelTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false },
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top again
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        // Additional paths going to very top area
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelTopY }, pause: false }, // Go to very top
+        { start: { x: cardLeft + cardWidth / 2, y: levelTopY }, end: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: levelHeaderY }, pause: false }, // Move between top levels
+        { start: { x: cardLeft - offset, y: levelHeaderY }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderTopY }, pause: false }, // Back to very top
+        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft - offset, y: levelHeaderTopY }, pause: false }, // Back to very top
+        { start: { x: cardLeft - offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: level1Y }, end: { x: cardLeft + cardWidth + offset, y: levelTopY }, pause: false }, // Back to very top
+        { start: { x: cardLeft + cardWidth + offset, y: levelTopY }, end: { x: cardLeft - offset, y: level2Y }, pause: false },
+        { start: { x: cardLeft - offset, y: level2Y }, end: { x: cardLeft + cardWidth / 2, y: level3Y }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: level3Y }, end: { x: cardLeft + cardWidth + offset, y: level6Y }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: level6Y }, end: { x: cardLeft - offset, y: level4Y }, pause: false },
         { start: { x: cardLeft - offset, y: level4Y }, end: { x: cardLeft + cardWidth / 2, y: level7Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level7Y }, end: { x: welcomeX, y: level0Y }, pause: false }, // Back to header
-        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause at header
-        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: levelHeaderY }, pause: false }, // Go to header top area
-        { start: { x: cardLeft - offset, y: levelHeaderY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false }, // Move along header
-        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: level7Y }, end: { x: welcomeX, y: levelHeaderTopY }, pause: false }, // Back to very top
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: welcomeX, y: levelHeaderTopY }, pause: true }, // Pause at very top
+        { start: { x: welcomeX, y: levelHeaderTopY }, end: { x: cardLeft - offset, y: levelTopY }, pause: false }, // Go to topmost
+        { start: { x: cardLeft - offset, y: levelTopY }, end: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, pause: false }, // Move along very top
+        { start: { x: cardLeft + cardWidth + offset, y: levelHeaderTopY }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
       ];
     };
@@ -378,14 +381,20 @@ const SignIn = () => {
       const dy = currentPath.end.y - currentPath.start.y;
       targetAngle = Math.atan2(dy, dx) * (180 / Math.PI);
       
+      // Constrain angle to prevent robot from going upside down
+      // Keep angle between -90 and 90 degrees (horizontal to slightly up/down)
+      if (targetAngle > 90) targetAngle = 90;
+      if (targetAngle < -90) targetAngle = -90;
+      
       let angleDiff = targetAngle - currentAngle;
       if (angleDiff > 180) angleDiff -= 360;
       if (angleDiff < -180) angleDiff += 360;
       
       currentAngle += angleDiff * rotationSmoothing;
       
-      if (currentAngle > 180) currentAngle -= 360;
-      if (currentAngle < -180) currentAngle += 360;
+      // Constrain current angle to prevent upside down
+      if (currentAngle > 90) currentAngle = 90;
+      if (currentAngle < -90) currentAngle = -90;
       
       setRobotPosition({ x, y });
       setRobotAngle(currentAngle);
