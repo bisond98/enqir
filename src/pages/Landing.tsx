@@ -2934,16 +2934,29 @@ const Landing = () => {
             </svg>
             
             {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
-            <div className="text-center mt-4 sm:mt-6">
-              <Link to="/help-guide" className="inline-flex items-center justify-center group">
+            <div className="text-center mt-4 sm:mt-6 sm:block relative">
+              {/* Mobile: Bottom left center, bigger */}
+              <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group">
                 <button
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
+                  className="w-16 h-16 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                  <Plus className="h-7 w-7 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                </button>
+              </Link>
+              {/* Desktop: Centered */}
+              <Link to="/help-guide" className="hidden sm:inline-flex items-center justify-center group">
+                <button
+                  className="w-14 h-14 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
                 </button>
               </Link>
             </div>
