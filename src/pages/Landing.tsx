@@ -2583,10 +2583,14 @@ const Landing = () => {
               <div className="max-w-7xl mx-auto relative">
               {/* Section Header */}
                 <div className="mb-8 sm:mb-14 lg:mb-16">
-                  <h2 className="text-center text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-2 sm:mb-4">
-                  Popular Categories
-                </h2>
-                  <div className="w-full flex justify-center">
+                  <div className="inline-block mx-auto px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 bg-black border border-black rounded-xl sm:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                    {/* Physical depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none" />
+                    <h2 className="text-center text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading text-white mb-2 sm:mb-4 relative z-10">
+                      Popular Categories
+                    </h2>
+                  </div>
+                  <div className="w-full flex justify-center mt-4 sm:mt-6">
                     <p className="text-[10px] sm:text-xs lg:text-sm font-black text-black w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
                       "They not like us"
                 </p>
