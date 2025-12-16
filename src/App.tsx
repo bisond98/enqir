@@ -15,7 +15,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
-import { ChatProvider } from "./contexts/ChatContext";
 import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
@@ -26,8 +25,6 @@ import SellerResponse from "./pages/SellerResponse";
 import MyEnquiries from "./pages/MyEnquiries";
 import MyResponses from "./pages/MyResponses";
 import SavedEnquiries from "./pages/SavedEnquiries";
-import MyChats from "./pages/MyChats";
-import AllChats from "./pages/AllChats";
 import EnquiryResponses from "./pages/EnquiryResponses";
 import DetailedResponses from "./pages/DetailedResponses";
 import EnquiryResponsesPage from "./pages/EnquiryResponsesPage";
@@ -43,15 +40,14 @@ import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminAccess from "./pages/AdminAccess";
-import AddDummyEnquiries from "./pages/AddDummyEnquiries";
 import PremiumTestDataGenerator from "./components/PremiumTestDataGenerator";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import ContactUs from "./pages/ContactUs";
+import AllChats from "./pages/AllChats";
 import HelpGuide from "./pages/HelpGuide";
-import ReportUser from "./pages/ReportUser";
 
 const queryClient = new QueryClient();
 
@@ -111,13 +107,12 @@ const App = () => {
         <TooltipProvider>
           <ConditionalAuthProvider>
             <NotificationProvider>
-              <ChatProvider>
-                <UsageProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                  <ScrollToTop />
-                  <Routes>
+              <UsageProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                <ScrollToTop />
+                <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiries" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
@@ -134,16 +129,13 @@ const App = () => {
                   <Route path="/data-clear" element={<DataClear />} />
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-                  <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
-                  <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/admin/access/:secretToken" element={<ErrorBoundary><AdminAccess /></ErrorBoundary>} />
-                  <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
-                  <Route path="/admin/add-enquiries" element={<ErrorBoundary><AddDummyEnquiries /></ErrorBoundary>} />
+                  <Route path="/admin/access/:secretToken" element={<AdminAccess />} />
+                  <Route path="/admin" element={<Admin />} />
                   <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -152,13 +144,12 @@ const App = () => {
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
-                  <Route path="/report-user/:userId" element={<ErrorBoundary><AuthGuard><ReportUser /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </UsageProvider>
-            </ChatProvider>
+                </Routes>
+              </BrowserRouter>
+            </UsageProvider>
           </NotificationProvider>
         </ConditionalAuthProvider>
       </TooltipProvider>
