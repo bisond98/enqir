@@ -797,53 +797,82 @@ const Landing = () => {
 
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
-    // Optimized: Use getDocs for one-time fetch instead of onSnapshot for faster initial load
-    // Limit to 50 most recent enquiries since we only need 3 cards for display
+    // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
     const loadEnquiries = async () => {
       try {
     const q = query(
       collection(db, 'enquiries'),
-          orderBy('createdAt', 'desc'),
-          limit(50) // Reduced limit for faster loading - we only need 3 cards
+          orderBy('createdAt', 'desc')
+          // NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
         
-        const snap = await getDocs(q);
-      const items: any[] = [];
-      snap.forEach((doc) => {
-        const data = doc.data();
-        items.push({
-          id: doc.id,
-          ...data
-        });
-      });
+        // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const items: any[] = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            items.push({
+              id: doc.id,
+              ...data
+            });
+          });
       
-      console.log('📊 Landing: Total enquiries from query:', items.length);
+          console.log('📊 Landing: Total enquiries from query:', items.length);
       
-      // Filter to only show enquiries with status='live' (admin accepted)
-      // Use case-insensitive check to catch any variations
-      const liveStatusItems = items.filter(e => {
-        const status = (e.status || '').toLowerCase().trim();
-        return status === 'live';
-      });
+          // Filter to show enquiries with status='live' OR status='deal_closed' (matches EnquiryWall.tsx)
+          // Use case-insensitive check to catch any variations
+          const liveStatusEnquiries = items.filter(e => {
+            const status = (e.status || '').toLowerCase().trim();
+            return status === 'live' || status === 'deal_closed';
+          });
       
-      console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
+          console.log('📊 Landing: Enquiries with status=live or deal_closed:', liveStatusEnquiries.length);
       
-      // Deduplicate by ID first (in case same document appears multiple times)
-      const uniqueItems = Array.from(
-        new Map(liveStatusItems.map(e => [e.id, e])).values()
-      );
+          // Deduplicate by ID first (in case same document appears multiple times)
+          const uniqueItems = Array.from(
+            new Map(liveStatusEnquiries.map(e => [e.id, e])).values()
+          );
       
-      // Filter out expired enquiries - only show live (not expired) enquiries
-      const now = new Date();
-      const liveEnquiries = uniqueItems.filter(enquiry => {
-        if (!enquiry.deadline) return true; // No deadline = live
-        try {
-          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate.getTime() >= now.getTime();
-        } catch {
-          return true; // If error, assume live
-        }
-      });
+          // Filter out deal closed enquiries (matches EnquiryWall.tsx logic)
+          const activeEnquiries = uniqueItems.filter(enquiry => {
+            const status = (enquiry.status || '').toLowerCase().trim();
+            return !(status === 'deal_closed' || enquiry.dealClosed === true);
+          });
+      
+          // Filter out expired enquiries - only show live (not expired) enquiries
+          // Use same deadline handling logic as EnquiryWall.tsx
+          const now = new Date();
+          const liveEnquiries = activeEnquiries.filter(enquiry => {
+            if (!enquiry.deadline) return true; // No deadline = live
+            try {
+              let deadlineDate: Date;
+              
+              // Handle Firestore Timestamp (has toDate method)
+              if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+                deadlineDate = enquiry.deadline.toDate();
+              }
+              // Handle Firestore Timestamp object (has seconds and nanoseconds)
+              else if (enquiry.deadline?.seconds !== undefined) {
+                deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+              }
+              // Handle Date object
+              else if (enquiry.deadline instanceof Date) {
+                deadlineDate = enquiry.deadline;
+              }
+              // Handle string or number
+              else {
+                deadlineDate = new Date(enquiry.deadline);
+              }
+              
+              if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                return true; // If invalid, assume live
+              }
+              
+              return deadlineDate.getTime() >= now.getTime();
+            } catch {
+              return true; // If error, assume live
+            }
+          });
       
       console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
       
