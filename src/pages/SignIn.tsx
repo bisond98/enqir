@@ -194,10 +194,11 @@ const SignIn = () => {
     }
   };
 
-  // Robot animation - moves around within card bounds and pauses above welcome text
+  // Robot animation - moves around outside card and pauses above welcome text
   useEffect(() => {
     const cardElement = document.querySelector('.signin-card');
     const welcomeElement = document.querySelector('.welcome-heading');
+    const containerElement = document.querySelector('.signin-container');
     if (!cardElement || !robotRef.current) return;
 
     let animationFrameId: number | null = null;
@@ -214,38 +215,41 @@ const SignIn = () => {
     const createRoamingPaths = () => {
       const cardRect = cardElement.getBoundingClientRect();
       const welcomeRect = welcomeElement?.getBoundingClientRect();
-      const padding = 60;
+      const containerRect = containerElement?.getBoundingClientRect() || cardRect;
+      
+      // Calculate positions relative to container (not card)
+      const cardLeft = cardRect.left - containerRect.left;
+      const cardTop = cardRect.top - containerRect.top;
       const cardWidth = cardRect.width;
       const cardHeight = cardRect.height;
-      const offset = 100; // How far outside the card to go
+      const offset = 150; // How far outside the card to go
       
       // Calculate position above welcome text (centered horizontally, above vertically)
-      let welcomeX = cardWidth / 2;
-      let welcomeY = -80; // Above the card
+      let welcomeX = cardLeft + cardWidth / 2;
+      let welcomeY = -100; // Above the container
       
       if (welcomeRect) {
-        const cardTop = cardRect.top;
-        const welcomeTop = welcomeRect.top;
-        const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - cardRect.left;
+        const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - containerRect.left;
+        const welcomeTop = welcomeRect.top - containerRect.top;
         welcomeX = welcomeCenterX;
-        welcomeY = welcomeTop - cardTop - 60; // 60px above the welcome text
+        welcomeY = welcomeTop - 80; // 80px above the welcome text
       }
       
       return [
-        // Paths that go outside the card
-        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth + offset, y: cardHeight / 2 }, pause: false },
-        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: -offset }, pause: false },
-        { start: { x: cardWidth / 2, y: -offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
+        // Paths that go outside the card - positions relative to container
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop - offset }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop - offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
         { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text
-        { start: { x: welcomeX, y: welcomeY }, end: { x: -offset, y: cardHeight / 2 }, pause: false },
-        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight + offset }, pause: false },
-        { start: { x: cardWidth / 2, y: cardHeight + offset }, end: { x: cardWidth + offset, y: cardHeight / 2 }, pause: false },
-        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight / 2 }, pause: false },
-        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: -offset }, pause: false },
-        { start: { x: -offset, y: -offset }, end: { x: cardWidth + offset, y: cardHeight + offset }, pause: false },
-        { start: { x: cardWidth + offset, y: cardHeight + offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
+        { start: { x: welcomeX, y: welcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight + offset }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight + offset }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: cardTop - offset }, pause: false },
+        { start: { x: cardLeft - offset, y: cardTop - offset }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight + offset }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight + offset }, end: { x: welcomeX, y: welcomeY }, pause: false },
         { start: { x: welcomeX, y: welcomeY }, end: { x: welcomeX, y: welcomeY }, pause: true }, // Pause above welcome text again
-        { start: { x: welcomeX, y: welcomeY }, end: { x: -offset, y: cardHeight / 2 }, pause: false },
+        { start: { x: welcomeX, y: welcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
       ];
     };
 
@@ -372,7 +376,7 @@ const SignIn = () => {
           <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-blue-100/40 rounded-full blur-3xl hidden sm:block"></div>
         </div>
 
-        <div className="w-full max-w-md lg:max-w-lg relative z-10">
+        <div className="signin-container w-full max-w-md lg:max-w-lg relative z-10 overflow-visible">
           {/* Clean Header Section */}
           <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center">
             {/* Main Heading */}
@@ -679,7 +683,7 @@ const SignIn = () => {
               {/* Moving Robot Animation - Behind content, doesn't interrupt */}
               <div 
                 ref={robotRef}
-                className="absolute inset-0 pointer-events-none z-0"
+                className="absolute pointer-events-none z-0"
                 style={{
                   position: 'absolute',
                   left: `${robotPosition.x || 0}px`,
