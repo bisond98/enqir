@@ -120,37 +120,37 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       case 'expired':
         return {
           bg: 'bg-red-100 text-red-800 border-red-200',
-          icon: <AlertTriangle className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <AlertTriangle className="h-3 w-3" />,
           text: 'Expired'
         };
       case 'critical':
         return {
           bg: 'bg-red-100 text-red-800 border-red-200',
-          icon: <Zap className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <Zap className="h-3 w-3" />,
           text: 'Critical'
         };
       case 'urgent':
         return {
           bg: 'bg-orange-100 text-orange-800 border-orange-200',
-          icon: <Zap className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <Zap className="h-3 w-3" />,
           text: 'Urgent'
         };
       case 'high':
         return {
           bg: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-          icon: <Clock className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <Clock className="h-3 w-3" />,
           text: 'High'
         };
       case 'medium':
         return {
           bg: 'bg-blue-100 text-blue-800 border-blue-200',
-          icon: <Clock className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <Clock className="h-3 w-3" />,
           text: 'Medium'
         };
       default:
         return {
           bg: 'bg-green-100 text-green-800 border-green-200',
-          icon: <Clock className={`h-3 w-3 ${iconClassName}`} />,
+          icon: <Clock className="h-3 w-3" />,
           text: 'Low'
         };
     }
@@ -186,7 +186,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       )}
       <Badge 
         variant="outline" 
-        className={`text-xs font-medium px-2 py-1 text-white border ${
+        className={`text-xs font-medium px-2 py-1 text-white border-2 ${
           urgencyLevel === 'critical' || urgencyLevel === 'urgent' ? 'animate-pulse' : ''
         }`}
         style={{ backgroundColor: '#dc2626', borderColor: '#000000', color: 'white' }}
