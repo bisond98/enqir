@@ -1839,9 +1839,12 @@ const Landing = () => {
               {/* Space kept blank as requested */}
             </div>
             {/* 🛡️ PROTECTED: Live Enquiries Count - DO NOT MODIFY
-                This displays the dynamic count of live (non-expired) enquiries
+                This displays the dynamic count of live (non-expired, non-deal-closed) enquiries
                 Format: "{count} real buyers waiting for the right seller"
-                Must match EnquiryWall.tsx count logic */}
+                Must match EnquiryWall.tsx count logic exactly
+                - NO LIMIT on query (gets all enquiries)
+                - onSnapshot for real-time updates
+                - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
