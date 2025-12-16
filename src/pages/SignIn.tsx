@@ -225,15 +225,26 @@ const SignIn = () => {
       const cardHeight = cardRect.height;
       const offset = 150; // How far outside the card to go
       
-      // Calculate position above welcome text (centered horizontally, above vertically)
+      // Calculate position above "Enqir" text (centered horizontally, above vertically)
       let welcomeX = cardLeft + cardWidth / 2;
-      let welcomeY = -100; // Above the container
+      let welcomeY = -150; // Above the container - increased to prevent cutting
       
-      if (welcomeRect) {
-        const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - containerRect.left;
-        const welcomeTop = welcomeRect.top - containerRect.top;
-        welcomeX = welcomeCenterX;
-        welcomeY = welcomeTop - 80; // 80px above the welcome text
+      if (welcomeRect && welcomeElement) {
+        // Find the "Enqir" span within the welcome heading
+        const enqirSpan = welcomeElement.querySelector('.text-blue-600') as HTMLElement;
+        if (enqirSpan) {
+          const enqirRect = enqirSpan.getBoundingClientRect();
+          const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
+          const enqirTop = enqirRect.top - containerRect.top;
+          welcomeX = enqirCenterX;
+          welcomeY = enqirTop - 120; // 120px above the "Enqir" text to ensure it's not cut
+        } else {
+          // Fallback to welcome text center
+          const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - containerRect.left;
+          const welcomeTop = welcomeRect.top - containerRect.top;
+          welcomeX = welcomeCenterX;
+          welcomeY = welcomeTop - 120; // 120px above to ensure it's not cut
+        }
       }
       
       return [
