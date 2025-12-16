@@ -1805,7 +1805,7 @@ const Landing = () => {
                 <Zap className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                 <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
               </div>
-              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Post your needs. Sell to real demand.</h3>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Post any need. Sell to real demand</h3>
               <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
                 Close deals at godspeed with perfectly curated demand & supply.
               </p>
