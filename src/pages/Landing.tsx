@@ -1675,7 +1675,7 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_10px_0_0_rgba(0,0,0,0.5),inset_0_1px_2px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.5),inset_0_1px_2px_rgba(0,0,0,0.3)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(0,0,0,0.4)] lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
