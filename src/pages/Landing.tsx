@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift } from "lucide-react";
+import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
@@ -2933,18 +2933,17 @@ const Landing = () => {
               </g>
             </svg>
             
-            {/* Help Guide Button - Inside How It Works card */}
+            {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
             <div className="text-center mt-4 sm:mt-6">
-              <Link to="/help-guide" className="w-full sm:w-auto group">
+              <Link to="/help-guide" className="inline-flex items-center justify-center group">
                 <button
-                  className="w-full sm:w-auto border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black py-2 sm:py-2.5 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white sm:min-w-[180px] relative overflow-hidden text-xs sm:text-sm"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                  <span className="relative z-10">Learn More</span>
-                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
                 </button>
               </Link>
             </div>
