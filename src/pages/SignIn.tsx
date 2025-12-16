@@ -278,14 +278,14 @@ const SignIn = () => {
                 </div>
               )}
 
-              {/* Sign In / Sign Up Tabs - Minimal, Clean, User-Friendly Design */}
+              {/* Sign In / Sign Up Tabs - Optimal UX: Minimal, Clear, Accessible */}
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-white border-2 border-gray-200 rounded-2xl p-1.5 sm:p-2 mb-7 sm:mb-9 shadow-sm w-full h-auto grid grid-cols-2 overflow-hidden transition-all duration-200 hover:border-gray-300 hover:shadow-md">
-                      {/* Animated Background Slider - Clean minimal design */}
+                    <TabsList className="relative inline-flex items-center bg-gray-50 border border-gray-300 rounded-2xl p-1 sm:p-1.5 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-visible transition-all duration-200 hover:shadow-md">
+                      {/* Animated Background Slider - Smooth, visible, clear affordance */}
                       <motion.div 
-                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-black pointer-events-none z-[1]"
+                        className="absolute top-1 bottom-1 sm:top-1.5 sm:bottom-1.5 rounded-xl bg-black shadow-md pointer-events-none z-[1]"
                         style={{ 
                           width: 'calc(50% - 4px)',
                         }}
@@ -294,24 +294,26 @@ const SignIn = () => {
                         }}
                         transition={{
                           type: "spring",
-                          stiffness: 400,
-                          damping: 35,
-                          mass: 0.6
+                          stiffness: 500,
+                          damping: 40,
+                          mass: 0.5
                         }}
                       />
                       
-                      {/* Log In Button - Clean, clear, accessible */}
+                      {/* Log In Button - Optimal touch target, clear state */}
                       <TabsTrigger 
                         value="signin" 
-                        className="relative z-50 h-11 sm:h-12 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-xl"
+                        aria-label="Switch to Log In"
                       >
                         <span className="relative z-10">Log In</span>
                       </TabsTrigger>
                       
-                      {/* Sign Up Button - Clean, clear, accessible */}
+                      {/* Sign Up Button - Optimal touch target, clear state */}
                       <TabsTrigger 
                         value="signup" 
-                        className="relative z-50 h-11 sm:h-12 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-xl"
+                        aria-label="Switch to Sign Up"
                       >
                         <span className="relative z-10">Sign Up</span>
                       </TabsTrigger>
