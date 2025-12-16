@@ -49,7 +49,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
             variant="outline"
-            className="w-full sm:flex-1 !bg-white !border-[0.5px] !border-slate-300 !text-slate-700 hover:!bg-slate-50 font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-none hover:shadow-none active:shadow-none min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/cancel"
+            className="w-full sm:flex-1 !bg-white !border-[0.5px] !border-slate-300 !text-slate-700 hover:!bg-slate-50 font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/cancel"
           >
             {/* Physical button depth effect */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -61,7 +61,8 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
             onClick={handleSignOut}
             disabled={isLoading}
             variant="outline"
-            className="w-full sm:flex-1 !bg-black !text-white !border-black hover:!bg-black hover:!text-white hover:!border-black font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/logout"
+            className="w-full sm:flex-1 !bg-black !text-white !border-black hover:!bg-black hover:!text-white hover:!border-black font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-none hover:shadow-none active:shadow-none min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/logout"
+            style={{ boxShadow: 'none' }}
             style={{ 
               backgroundColor: '#000000 !important', 
               color: '#ffffff !important', 
