@@ -504,6 +504,57 @@ const SignIn = () => {
               </div>
                 </>
               )}
+
+              {/* Subtle Robot Animation - Small, dull, under all content */}
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200/50">
+                <div className="relative w-full h-24 sm:h-32 opacity-30">
+                  <svg viewBox="0 0 120 120" className="w-full h-full">
+                    {/* Small Animated Human Character - Subtle */}
+                    <g transform="translate(60, 60)">
+                      {/* Head with Continuous Bounce - Smaller */}
+                      <circle cx="0" cy="-20" r="12" fill="none" stroke="#1F2937" strokeWidth="1.5" opacity="0.4">
+                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="-4" cy="-28" r="1.5" fill="#1F2937" opacity="0.4">
+                        <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="4" cy="-28" r="1.5" fill="#1F2937" opacity="0.4">
+                        <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
+                      </circle>
+                      <path d="M-4,-18 Q0,-14 4,-18" stroke="#1F2937" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.4">
+                        <animate attributeName="d" values="M-4,-18 Q0,-14 4,-18; M-4,-18 Q0,-11 4,-18" dur="2s" repeatCount="indefinite"/>
+                      </path>
+                      
+                      {/* Body - Smaller */}
+                      <ellipse cx="0" cy="10" rx="9" ry="14" fill="none" stroke="#1F2937" strokeWidth="1.5" opacity="0.4">
+                        <animateTransform attributeName="transform" type="scale" values="1,1; 1.05,1; 1,1" dur="3s" repeatCount="indefinite"/>
+                      </ellipse>
+                      
+                      {/* Dynamic Arms - Smaller Swing */}
+                      <g transform="translate(-9, 8)">
+                        <path d="M0,0 L-7,-6" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" opacity="0.4">
+                          <animateTransform attributeName="transform" type="rotate" values="0 0 0; -15 0 0; 0 0 0" dur="2.5s" repeatCount="indefinite"/>
+                        </path>
+                        <circle cx="-7" cy="-6" r="2" fill="#1F2937" opacity="0.4"/>
+                      </g>
+                      <g transform="translate(9, 8)">
+                        <path d="M0,0 L7,-6" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" opacity="0.4">
+                          <animateTransform attributeName="transform" type="rotate" values="0 0 0; 15 0 0; 0 0 0" dur="2.5s" repeatCount="indefinite"/>
+                        </path>
+                        <circle cx="7" cy="-6" r="2" fill="#1F2937" opacity="0.4"/>
+                      </g>
+                      
+                      {/* Subtle Pulsing Energy Circles - Very Dull */}
+                      <circle cx="0" cy="-20" r="16" fill="none" stroke="#1F2937" strokeWidth="0.5" opacity="0.1">
+                        <animate attributeName="r" values="16;18;16" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="0" cy="-20" r="14" fill="none" stroke="#1F2937" strokeWidth="0.5" opacity="0.08">
+                        <animate attributeName="r" values="14;16;14" dur="2.3s" repeatCount="indefinite"/>
+                      </circle>
+                    </g>
+                  </svg>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
