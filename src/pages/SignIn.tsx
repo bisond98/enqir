@@ -225,30 +225,33 @@ const SignIn = () => {
       const cardHeight = cardRect.height;
       const offset = 120; // How far outside the card to go
       
-      // Get header boundary - allow robot to go very close to or even slightly into header area
+      // Get header boundary - allow robot head to go very high up
       const headerBottom = welcomeRect ? (welcomeRect.bottom - containerRect.top) : 0;
       const headerTop = welcomeRect ? (welcomeRect.top - containerRect.top) : 0;
-      // On mobile, get much closer to header (allow going into header area slightly)
+      const containerTop = containerRect.top - containerRect.top; // Top of container (0)
+      // On mobile, get much closer to top
       const isMobile = window.innerWidth < 640;
-      // Allow robot to go right up to header, even slightly above welcome text bottom
-      const minY = headerBottom - (isMobile ? 15 : 5); // Go above header bottom on mobile (-15px), slightly above on desktop (-5px)
+      // Allow robot head to go very high up - use top of container area
+      const minY = containerTop + (isMobile ? 20 : 30); // Very close to top of container
       const maxY = cardTop + cardHeight + offset; // Bottom boundary
       
-      // Calculate ALL available space from header top to card - use it fully
-      const spaceFromHeaderTopToCard = cardTop - headerTop;
-      const spaceBetweenHeaderAndCard = cardTop - minY;
+      // Calculate ALL available space from container top to card - use it fully
+      const spaceFromTopToCard = cardTop - containerTop;
+      const spaceBetweenTopAndCard = cardTop - minY;
       
-      // Use the entire vertical space including header area - divide into multiple levels
-      // Levels that go into/very close to header area
-      const levelHeaderY = headerTop + (spaceFromHeaderTopToCard * 0.05); // Inside header area (5% from top)
+      // Use the entire vertical space including very top area - divide into multiple levels
+      // Levels that go very high up
+      const levelTopY = containerTop + (spaceFromTopToCard * 0.02); // Very top (2% from container top)
+      const levelHeaderTopY = headerTop - (isMobile ? 5 : 10); // Above header top
+      const levelHeaderY = headerTop + (spaceFromTopToCard * 0.1); // Inside header area (10% from top)
       const level0Y = headerBottom - (isMobile ? 10 : 5); // Right at header bottom or slightly above
-      const level1Y = minY + (spaceBetweenHeaderAndCard * 0.05); // Very close to header (5% of space)
-      const level2Y = minY + (spaceBetweenHeaderAndCard * 0.15); // Close to header (15% of space)
-      const level3Y = minY + (spaceBetweenHeaderAndCard * 0.3); // Lower quarter
-      const level4Y = minY + (spaceBetweenHeaderAndCard * 0.5); // Middle
-      const level5Y = minY + (spaceBetweenHeaderAndCard * 0.65); // Upper half
-      const level6Y = minY + (spaceBetweenHeaderAndCard * 0.8); // Close to card
-      const level7Y = minY + (spaceBetweenHeaderAndCard * 0.95); // Very close to card
+      const level1Y = minY + (spaceBetweenTopAndCard * 0.1); // Very close to top (10% of space)
+      const level2Y = minY + (spaceBetweenTopAndCard * 0.25); // Close to top (25% of space)
+      const level3Y = minY + (spaceBetweenTopAndCard * 0.4); // Lower quarter
+      const level4Y = minY + (spaceBetweenTopAndCard * 0.55); // Middle
+      const level5Y = minY + (spaceBetweenTopAndCard * 0.7); // Upper half
+      const level6Y = minY + (spaceBetweenTopAndCard * 0.85); // Close to card
+      const level7Y = minY + (spaceBetweenTopAndCard * 0.95); // Very close to card
       
       // Calculate position near "Enqir" text (centered horizontally, using full space)
       let welcomeX = cardLeft + cardWidth / 2;
