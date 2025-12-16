@@ -19,11 +19,6 @@ import { toast } from "@/hooks/use-toast";
 const Landing = () => {
   const features = [
     {
-      icon: Shield,
-      title: "Trust Badge (Optional)",
-      description: "Get a trust badge, since the world doesn't trust you"
-    },
-    {
       icon: Search,
       title: "AI-Powered Discovery",
       description: "We do not exploit unpaid interns"
