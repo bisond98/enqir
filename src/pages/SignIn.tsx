@@ -480,7 +480,15 @@ const SignIn = () => {
             {/* Main Heading */}
             <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)', overflow: 'visible' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
-              <span className="text-blue-600 font-black">Enqir</span>
+              <span 
+                className="text-blue-600 font-black enqir-text inline-block transition-transform duration-100 ease-out" 
+                style={{ 
+                  transform: `translate(${textPushOffset.x}px, ${textPushOffset.y}px) rotate(${textPushOffset.x * 0.5}deg)`,
+                  transformOrigin: 'center center'
+                }}
+              >
+                Enqir
+              </span>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>.in</span>
             </h1>
             
