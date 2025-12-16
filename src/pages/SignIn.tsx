@@ -408,11 +408,11 @@ const SignIn = () => {
           </div>
 
           {/* Clean Card */}
-          <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-visible z-30">
-            <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11 relative z-30">
+          <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-visible z-10">
+            <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11 relative z-10">
               {/* Error Display */}
               {error && (
-                <Alert className="mb-4 sm:mb-6 border border-red-200 bg-red-50 rounded-lg">
+                <Alert className="mb-4 sm:mb-6 border border-red-200 bg-red-50 rounded-lg relative z-20">
                   <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
                   <AlertDescription className="text-xs sm:text-sm text-red-800 ml-2">
                     {error}
@@ -422,7 +422,7 @@ const SignIn = () => {
 
               {/* Success Display */}
               {success && !showVerificationSent && (
-                <Alert className="mb-4 sm:mb-6 border border-green-200 bg-green-50 rounded-lg">
+                <Alert className="mb-4 sm:mb-6 border border-green-200 bg-green-50 rounded-lg relative z-20">
                   <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                   <AlertDescription className="text-xs sm:text-sm text-green-800 ml-2">
                     {success}
@@ -471,8 +471,8 @@ const SignIn = () => {
               {/* Sign In / Sign Up Tabs - Clear Selection, Always Visible Text */}
               {!showVerificationSent && (
                 <>
-              <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-gray-100 border border-gray-300 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200">
+              <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full relative z-20">
+                    <TabsList className="relative inline-flex items-center bg-gray-100 border border-gray-300 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200 z-20">
                       {/* Animated Background Slider - High depth intense dark black selection, no shadow */}
                       <motion.div 
                         className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl pointer-events-none"
@@ -526,11 +526,11 @@ const SignIn = () => {
                 {/* Sign In Form */}
                     <TabsContent value="signin" className="space-y-4 sm:space-y-5">
                       <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5">
-                        <div className="space-y-2.5">
-                          <Label htmlFor="identifier" className="text-xs sm:text-sm font-semibold text-gray-800">
+                        <div className="space-y-2.5 relative z-20">
+                          <Label htmlFor="identifier" className="text-xs sm:text-sm font-semibold text-gray-800 relative z-20">
                             Email Address
                           </Label>
-                      <div className="relative">
+                      <div className="relative z-20">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="identifier"
@@ -551,11 +551,11 @@ const SignIn = () => {
                       </div>
                     </div>
                         
-                        <div className="space-y-2.5">
-                          <Label htmlFor="password" className="text-xs sm:text-sm font-semibold text-gray-800">
+                        <div className="space-y-2.5 relative z-20">
+                          <Label htmlFor="password" className="text-xs sm:text-sm font-semibold text-gray-800 relative z-20">
                             Password
                           </Label>
-                      <div className="relative">
+                      <div className="relative z-20">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="password"
@@ -606,11 +606,11 @@ const SignIn = () => {
                 {/* Sign Up Form */}
                     <TabsContent value="signup" className="space-y-4 sm:space-y-5">
                       <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-5">
-                        <div className="space-y-2.5">
-                          <Label htmlFor="signup-identifier" className="text-xs sm:text-sm font-semibold text-gray-800">
+                        <div className="space-y-2.5 relative z-20">
+                          <Label htmlFor="signup-identifier" className="text-xs sm:text-sm font-semibold text-gray-800 relative z-20">
                             Email Address
                           </Label>
-                      <div className="relative">
+                      <div className="relative z-20">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="signup-identifier"
@@ -631,11 +631,11 @@ const SignIn = () => {
                       </div>
                     </div>
 
-                        <div className="space-y-2.5">
-                          <Label htmlFor="signup-password" className="text-xs sm:text-sm font-semibold text-gray-800">
+                        <div className="space-y-2.5 relative z-20">
+                          <Label htmlFor="signup-password" className="text-xs sm:text-sm font-semibold text-gray-800 relative z-20">
                             Password
                           </Label>
-                      <div className="relative">
+                      <div className="relative z-20">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-20 pointer-events-none transition-colors group-focus-within:text-blue-500" />
                         <Input
                           id="signup-password"
@@ -659,7 +659,7 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20"
                     >
                       {/* Physical button depth effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -678,10 +678,10 @@ const SignIn = () => {
                 </TabsContent>
               </Tabs>
 
-                  <Separator className="my-4 sm:my-6" />
+                  <Separator className="my-4 sm:my-6 relative z-20" />
               
-                  <div className="text-center">
-                    <p className="text-[9px] sm:text-[10px] text-gray-600 leading-relaxed">
+                  <div className="text-center relative z-20">
+                    <p className="text-[9px] sm:text-[10px] text-gray-600 leading-relaxed relative z-20">
                   By continuing, you agree to our{" "}
                       <Link to="/terms-and-conditions" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
                     Terms of Service
