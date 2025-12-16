@@ -49,6 +49,7 @@ import ContactUs from "./pages/ContactUs";
 import AllChats from "./pages/AllChats";
 import HelpGuide from "./pages/HelpGuide";
 import MyChats from "./pages/MyChats";
+import { ChatProvider } from "./contexts/ChatContext";
 
 const queryClient = new QueryClient();
 
@@ -109,9 +110,10 @@ const App = () => {
           <ConditionalAuthProvider>
             <NotificationProvider>
               <UsageProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
+                <ChatProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
@@ -151,6 +153,7 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
+                </ChatProvider>
             </UsageProvider>
           </NotificationProvider>
         </ConditionalAuthProvider>
