@@ -212,16 +212,20 @@ const SignIn = () => {
       const padding = 60;
       const cardWidth = cardRect.width;
       const cardHeight = cardRect.height;
+      const offset = 100; // How far outside the card to go
       
       return [
-        { start: { x: padding, y: cardHeight - padding }, end: { x: cardWidth - padding, y: padding } },
-        { start: { x: cardWidth - padding, y: padding }, end: { x: cardWidth - padding, y: cardHeight - padding } },
-        { start: { x: cardWidth - padding, y: cardHeight - padding }, end: { x: padding, y: cardHeight - padding } },
-        { start: { x: padding, y: cardHeight - padding }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
-        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: padding, y: padding } },
-        { start: { x: padding, y: padding }, end: { x: cardWidth - padding, y: cardHeight / 2 } },
-        { start: { x: cardWidth - padding, y: cardHeight / 2 }, end: { x: padding, y: padding } },
-        { start: { x: padding, y: padding }, end: { x: padding, y: cardHeight - padding } },
+        // Paths that go outside the card
+        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth + offset, y: cardHeight / 2 } },
+        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: -offset } },
+        { start: { x: cardWidth / 2, y: -offset }, end: { x: -offset, y: cardHeight / 2 } },
+        { start: { x: -offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight + offset } },
+        { start: { x: cardWidth / 2, y: cardHeight + offset }, end: { x: cardWidth + offset, y: cardHeight / 2 } },
+        { start: { x: cardWidth + offset, y: cardHeight / 2 }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
+        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: -offset } },
+        { start: { x: -offset, y: -offset }, end: { x: cardWidth + offset, y: cardHeight + offset } },
+        { start: { x: cardWidth + offset, y: cardHeight + offset }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
+        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: -offset, y: cardHeight / 2 } },
       ];
     };
 
@@ -331,7 +335,7 @@ const SignIn = () => {
           </div>
 
           {/* Clean Card */}
-          <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
+          <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-visible">
             <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11">
               {/* Error Display */}
               {error && (
@@ -621,7 +625,7 @@ const SignIn = () => {
               {/* Moving Robot Animation - Behind content, doesn't interrupt */}
               <div 
                 ref={robotRef}
-                className="absolute inset-0 pointer-events-none z-0 opacity-20"
+                className="absolute inset-0 pointer-events-none z-0 opacity-70"
                 style={{
                   position: 'absolute',
                   left: `${robotPosition.x || 0}px`,
