@@ -862,6 +862,32 @@ const SignIn = () => {
                       ENQIR
                     </text>
                     {/* Dynamic body animations - more frequent and engaging movements */}
+                    {/* Extra effort animation when pushing text - body shakes/vibrates */}
+                    {isPushingText && (
+                      <>
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; -2,0; 2,0; -1.5,0; 1.5,0; 0,0"
+                          dur="0.3s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.2;0.4;0.6;0.8;1"
+                        />
+                        <animateTransform
+                          attributeName="transform"
+                          type="scale"
+                          values="1,1; 1.05,0.98; 1,1; 1.03,0.99; 1,1"
+                          dur="0.3s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
+                          additive="sum"
+                        />
+                      </>
+                    )}
                     {robotAction === 'jump' && (
                       <>
                         <animateTransform
