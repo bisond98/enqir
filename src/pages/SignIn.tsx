@@ -225,21 +225,26 @@ const SignIn = () => {
       const cardHeight = cardRect.height;
       const offset = 120; // How far outside the card to go
       
-      // Get header boundary - don't go above the welcome heading
+      // Get header boundary - allow robot to go very close to or even slightly into header area
       const headerBottom = welcomeRect ? (welcomeRect.bottom - containerRect.top) : 0;
-      // On mobile, get closer to header (smaller margin)
+      const headerTop = welcomeRect ? (welcomeRect.top - containerRect.top) : 0;
+      // On mobile, get much closer to header (allow going into header area slightly)
       const isMobile = window.innerWidth < 640;
-      const minY = headerBottom + (isMobile ? 10 : 20); // Closer to header on mobile (10px vs 20px)
+      // Allow robot to go right up to header, even slightly above welcome text bottom
+      const minY = headerBottom - (isMobile ? 15 : 5); // Go above header bottom on mobile (-15px), slightly above on desktop (-5px)
       const maxY = cardTop + cardHeight + offset; // Bottom boundary
       
-      // Calculate ALL available space between header and card - use it fully
+      // Calculate ALL available space from header top to card - use it fully
+      const spaceFromHeaderTopToCard = cardTop - headerTop;
       const spaceBetweenHeaderAndCard = cardTop - minY;
       
-      // Use the entire vertical space - divide into multiple levels, including very close to header
-      const level0Y = minY + (spaceBetweenHeaderAndCard * 0.02); // Extremely close to header (2% of space)
-      const level1Y = minY + (spaceBetweenHeaderAndCard * 0.08); // Very close to header (8% of space)
-      const level2Y = minY + (spaceBetweenHeaderAndCard * 0.2); // Close to header (20% of space)
-      const level3Y = minY + (spaceBetweenHeaderAndCard * 0.35); // Lower quarter
+      // Use the entire vertical space including header area - divide into multiple levels
+      // Levels that go into/very close to header area
+      const levelHeaderY = headerTop + (spaceFromHeaderTopToCard * 0.05); // Inside header area (5% from top)
+      const level0Y = headerBottom - (isMobile ? 10 : 5); // Right at header bottom or slightly above
+      const level1Y = minY + (spaceBetweenHeaderAndCard * 0.05); // Very close to header (5% of space)
+      const level2Y = minY + (spaceBetweenHeaderAndCard * 0.15); // Close to header (15% of space)
+      const level3Y = minY + (spaceBetweenHeaderAndCard * 0.3); // Lower quarter
       const level4Y = minY + (spaceBetweenHeaderAndCard * 0.5); // Middle
       const level5Y = minY + (spaceBetweenHeaderAndCard * 0.65); // Upper half
       const level6Y = minY + (spaceBetweenHeaderAndCard * 0.8); // Close to card
@@ -269,34 +274,37 @@ const SignIn = () => {
       const constrainedWelcomeY = Math.min(welcomeY, maxY - 40);
       
       return [
-        // Paths that use ALL space under header boundary, including very close to header
+        // Paths that use ALL space including header area - robot goes right up to header
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: level0Y }, pause: false }, // Go extremely close to header
-        { start: { x: cardLeft + cardWidth / 2, y: level0Y }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause in space under header
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, pause: false }, // Go into header area
+        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, end: { x: welcomeX, y: level0Y }, pause: false },
+        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause right at header
+        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: level1Y }, pause: false }, // Use level 1 (very close to header)
-        { start: { x: cardLeft - offset, y: level1Y }, end: { x: cardLeft + cardWidth + offset, y: level5Y }, pause: false }, // Move through different levels
-        { start: { x: cardLeft + cardWidth + offset, y: level5Y }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause again
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
-        // Additional paths using all levels, including very close to header
-        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: level0Y }, pause: false }, // Go to level 0 (extremely close)
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: level0Y }, pause: false }, // Go to header level
+        { start: { x: cardLeft - offset, y: level0Y }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false }, // Move along header
+        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: false },
+        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause at header again
+        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        // Additional paths going to header area
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, pause: false }, // Go to header area
+        { start: { x: cardLeft + cardWidth / 2, y: levelHeaderY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft - offset, y: level1Y }, pause: false }, // Move between header levels
+        { start: { x: cardLeft - offset, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: level0Y }, pause: false }, // Back to header
         { start: { x: cardLeft + cardWidth / 2, y: level0Y }, end: { x: cardLeft + cardWidth + offset, y: level2Y }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: level2Y }, end: { x: cardLeft - offset, y: level1Y }, pause: false }, // Move between close levels
-        { start: { x: cardLeft - offset, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: level3Y }, pause: false },
+        { start: { x: cardLeft + cardWidth + offset, y: level2Y }, end: { x: cardLeft - offset, y: level0Y }, pause: false }, // Back to header
+        { start: { x: cardLeft - offset, y: level0Y }, end: { x: cardLeft + cardWidth / 2, y: level3Y }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: level3Y }, end: { x: cardLeft + cardWidth + offset, y: level6Y }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: level6Y }, end: { x: cardLeft - offset, y: level4Y }, pause: false },
         { start: { x: cardLeft - offset, y: level4Y }, end: { x: cardLeft + cardWidth / 2, y: level7Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level7Y }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause again
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: level0Y }, pause: false }, // Go to level 0
-        { start: { x: cardLeft - offset, y: level0Y }, end: { x: cardLeft + cardWidth + offset, y: level1Y }, pause: false }, // Move along header
-        { start: { x: cardLeft + cardWidth + offset, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: level2Y }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: level2Y }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: level7Y }, end: { x: welcomeX, y: level0Y }, pause: false }, // Back to header
+        { start: { x: welcomeX, y: level0Y }, end: { x: welcomeX, y: level0Y }, pause: true }, // Pause at header
+        { start: { x: welcomeX, y: level0Y }, end: { x: cardLeft - offset, y: levelHeaderY }, pause: false }, // Go to header top area
+        { start: { x: cardLeft - offset, y: levelHeaderY }, end: { x: cardLeft + cardWidth + offset, y: level0Y }, pause: false }, // Move along header
+        { start: { x: cardLeft + cardWidth + offset, y: level0Y }, end: { x: cardLeft + cardWidth / 2, y: level1Y }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: level1Y }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
       ];
     };
 
