@@ -376,7 +376,7 @@ const SignIn = () => {
           <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-blue-100/40 rounded-full blur-3xl hidden sm:block"></div>
         </div>
 
-        <div className="signin-container w-full max-w-md lg:max-w-lg relative z-10 overflow-visible">
+        <div className="signin-container w-full max-w-md lg:max-w-lg relative z-10" style={{ overflow: 'visible' }}>
           {/* Clean Header Section */}
           <div className="text-center mb-6 sm:mb-8 lg:mb-10 flex flex-col items-center justify-center">
             {/* Main Heading */}
