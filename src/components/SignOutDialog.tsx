@@ -31,7 +31,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-4 border-black rounded-2xl p-4 sm:p-6 mx-auto shadow-none">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-4 border-black rounded-2xl p-4 sm:p-6 mx-auto shadow-none" style={{ boxShadow: 'none' }}>
         <DialogHeader className="text-center space-y-2 sm:space-y-3 items-center w-full px-0">
           <div className="flex items-center justify-center w-12 h-12 sm:w-12 sm:h-12 mx-auto bg-black rounded-full flex-shrink-0">
             <LogOut className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
