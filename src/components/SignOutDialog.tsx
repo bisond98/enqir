@@ -31,7 +31,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-4 border-black rounded-2xl p-4 sm:p-6 mx-auto">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:w-full max-w-sm border-4 border-black rounded-2xl p-4 sm:p-6 mx-auto shadow-none">
         <DialogHeader className="text-center space-y-2 sm:space-y-3 items-center w-full px-0">
           <div className="flex items-center justify-center w-12 h-12 sm:w-12 sm:h-12 mx-auto bg-black rounded-full flex-shrink-0">
             <LogOut className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
@@ -49,7 +49,7 @@ const SignOutDialog = ({ open, onOpenChange, onConfirm }: SignOutDialogProps) =>
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
             variant="outline"
-            className="w-full sm:flex-1 !bg-white !border-[0.5px] !border-slate-300 !text-slate-700 hover:!bg-slate-50 font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/cancel"
+            className="w-full sm:flex-1 !bg-white !border-[0.5px] !border-slate-300 !text-slate-700 hover:!bg-slate-50 font-black text-sm sm:text-sm py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-none hover:shadow-none active:shadow-none min-h-[40px] sm:min-h-[44px] relative overflow-hidden group/cancel"
           >
             {/* Physical button depth effect */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
