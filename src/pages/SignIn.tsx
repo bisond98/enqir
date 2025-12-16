@@ -805,6 +805,17 @@ const SignIn = () => {
                     <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
                     <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
                   </ellipse>
+                  {/* Blink animation when paused above text */}
+                  {isRobotPaused && (
+                    <>
+                      <rect x="40" y="26" width="8" height="4" fill="#1a1a1a" rx="2" opacity="0">
+                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1"/>
+                      </rect>
+                      <rect x="52" y="26" width="8" height="4" fill="#1a1a1a" rx="2" opacity="0">
+                        <animate attributeName="opacity" values="0;0;1;1;0;0" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.3;0.35;0.4;0.45;1" begin="0.05s"/>
+                      </rect>
+                    </>
+                  )}
                   <ellipse cx="45" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
                   <ellipse cx="55" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
                 </g>
