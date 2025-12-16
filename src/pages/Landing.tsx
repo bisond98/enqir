@@ -184,7 +184,8 @@ const Landing = () => {
   const [publicRecentEnquiries, setPublicRecentEnquiries] = useState<any[]>([]);
   // All live enquiries for count and search
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
-  // Live enquiries count (non-expired only)
+  // 🛡️ PROTECTED: Live enquiries count (non-expired only) - REQUIRED for matching EnquiryWall.tsx count
+  // DO NOT MODIFY - This count must match EnquiryWall.tsx exactly
   const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
@@ -797,11 +798,16 @@ const Landing = () => {
 
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
+    // 🛡️ PROTECTED: Enquiry Loading Logic - DO NOT MODIFY
+    // This section ensures homescreen count matches Live Enquiries page count exactly
+    // - NO LIMIT: Must get ALL enquiries (not just first 50)
+    // - onSnapshot: Real-time updates matching EnquiryWall.tsx
+    // - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired
     // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
     const q = query(
       collection(db, 'enquiries'),
       orderBy('createdAt', 'desc')
-      // NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
+      // 🛡️ NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
     
     // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
@@ -889,7 +895,8 @@ const Landing = () => {
       // Set all live enquiries for count and search (includes expired for count/search)
       setAllLiveEnquiries(uniqueItems);
       
-      // Set live enquiries count (non-expired only) - matches EnquiryWall.tsx logic
+      // 🛡️ PROTECTED: Set live enquiries count (non-expired, non-deal-closed only) - matches EnquiryWall.tsx logic exactly
+      // DO NOT MODIFY - This count must match EnquiryWall.tsx
       setLiveEnquiriesCount(liveEnquiries.length);
       
       // Set display enquiries - only live (not expired) enquiries for the 3 cards

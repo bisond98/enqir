@@ -55,6 +55,8 @@ export default function EnquiryWall() {
   const { user: authUser } = useAuth();
   const [searchParams] = useSearchParams();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  // 🛡️ PROTECTED: Live enquiries count - REQUIRED for matching Landing.tsx count
+  // DO NOT MODIFY - This count must match Landing.tsx exactly
   const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -503,7 +505,8 @@ export default function EnquiryWall() {
         
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
         
-        // Set live enquiries count for display
+        // 🛡️ PROTECTED: Set live enquiries count for display (non-expired, non-deal-closed only)
+        // DO NOT MODIFY - This count must match Landing.tsx exactly
         setLiveEnquiriesCount(liveEnquiries.length);
         
         // Sort live enquiries by date (newest first)
@@ -1526,7 +1529,7 @@ export default function EnquiryWall() {
               <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
                 {showTrustBadgeOnly 
                   ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
-                  : `${liveEnquiriesCount} real buyers waiting for the right seller`
+                  : `${liveEnquiriesCount} real buyers waiting for the right seller` // 🛡️ PROTECTED TEXT - DO NOT MODIFY
                 }
               </span>
             </div>
