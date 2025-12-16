@@ -2933,9 +2933,10 @@ const Landing = () => {
               </g>
             </svg>
             
+            {/* 🛡️ PROTECTED: Learn More Button - DO NOT REVERT OR MODIFY WITHOUT PERMISSION */}
             {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
             <div className="text-center mt-4 sm:mt-6 sm:block relative">
-              {/* Mobile: Bottom left, bigger */}
+              {/* Mobile: Bottom left, bigger - PROTECTED: w-24 h-24, bottom-6 left-6 */}
               <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-6 z-50 group">
                 <button
                   className="w-24 h-24 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
