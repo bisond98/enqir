@@ -1488,11 +1488,11 @@ const Landing = () => {
           {/* Logo with Cartoon Story Around It */}
           <div className="mb-3 sm:mb-4 animate-slide-up text-center">
             <div className="relative inline-block -m-1 sm:-m-2">
-              <img src={newLogo} alt="Enqir.in" className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-20" style={{ background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
-              <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl"></div>
+              <img src={newLogo} alt="Enqir.in" className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-50" style={{ display: 'block', visibility: 'visible', opacity: 1, background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
+              <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl z-0 pointer-events-none"></div>
               
               {/* MINIMAL PROFESSIONAL SKETCH IN LOGO PADDING */}
-              <div className="absolute inset-0 pointer-events-none opacity-30">
+              <div className="absolute inset-0 pointer-events-none opacity-30 z-10">
                 <svg className="w-full h-full min-w-full min-h-full" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                   {/* Central Hub - Logo Area */}
                   <g transform="translate(200, 200)" opacity="0.8">
