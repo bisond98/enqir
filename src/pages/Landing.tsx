@@ -184,6 +184,8 @@ const Landing = () => {
   const [publicRecentEnquiries, setPublicRecentEnquiries] = useState<any[]>([]);
   // All live enquiries for count and search
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
+  // Live enquiries count (non-expired only)
+  const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -858,6 +860,9 @@ const Landing = () => {
       
       // Set all live enquiries for count and search (includes expired for count/search)
       setAllLiveEnquiries(uniqueItems);
+      
+      // Set live enquiries count (non-expired only) - matches EnquiryWall.tsx logic
+      setLiveEnquiriesCount(liveEnquiries.length);
       
       // Set display enquiries - only live (not expired) enquiries for the 3 cards
       // Store all live enquiries for shuffling (not just first 3)
@@ -1790,14 +1795,15 @@ const Landing = () => {
               {/* Space kept blank as requested */}
             </div>
             {/* 🛡️ PROTECTED: Live Enquiries Count - DO NOT MODIFY
-                This displays the dynamic count of live enquiries
-                Format: "{count} Live Enquiries" */}
+                This displays the dynamic count of live (non-expired) enquiries
+                Format: "{count} real buyers waiting for the right seller"
+                Must match EnquiryWall.tsx count logic */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-xs sm:text-xs font-bold text-black">
-                  {allLiveEnquiries.length} Live Enquiries
+                  {liveEnquiriesCount} real buyers waiting for the right seller
                 </span>
               </div>
             </div>
