@@ -282,15 +282,16 @@ const SignIn = () => {
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
-                    <TabsList className="relative inline-flex items-center bg-white border-2 border-gray-200 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-2 overflow-hidden transition-all duration-200 hover:border-gray-300 hover:shadow-md">
+                    <TabsList className="relative inline-flex items-center bg-gray-100 border border-gray-300 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200">
                       {/* Animated Background Slider - Behind text, clear selection indicator */}
                       <motion.div 
-                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-black pointer-events-none z-0"
+                        className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl bg-black pointer-events-none"
                         style={{ 
-                          width: 'calc(50% - 6px)',
+                          width: 'calc(50% - 4px)',
+                          zIndex: 0,
                         }}
                         animate={{
-                          x: activeTab === 'signin' ? '6px' : 'calc(100% + 6px)',
+                          x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
                         }}
                         transition={{
                           type: "spring",
@@ -303,7 +304,11 @@ const SignIn = () => {
                       {/* Log In Button - Text always visible, clear selection */}
                       <TabsTrigger 
                         value="signin" 
-                        className="relative z-10 h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-800 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-colors duration-200 !bg-transparent !border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        style={{
+                          zIndex: 10,
+                          color: activeTab === 'signin' ? '#ffffff' : '#1f2937',
+                        }}
                         aria-label="Switch to Log In"
                       >
                         Log In
@@ -312,7 +317,11 @@ const SignIn = () => {
                       {/* Sign Up Button - Text always visible, clear selection */}
                       <TabsTrigger 
                         value="signup" 
-                        className="relative z-10 h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-800 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="relative h-12 sm:h-14 rounded-xl font-bold text-base sm:text-lg transition-colors duration-200 !bg-transparent !border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        style={{
+                          zIndex: 10,
+                          color: activeTab === 'signup' ? '#ffffff' : '#1f2937',
+                        }}
                         aria-label="Switch to Sign Up"
                       >
                         Sign Up
