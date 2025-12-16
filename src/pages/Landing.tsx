@@ -2776,12 +2776,12 @@ const Landing = () => {
               perspective: '1000px',
               transform: 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)',
               boxShadow: `
-                0 15px 40px rgba(0,0,0,0.2),
-                0 8px 20px rgba(0,0,0,0.15),
-                0 4px 10px rgba(0,0,0,0.1),
-                0 0 0 1px rgba(0,0,0,0.2),
-                inset 0 2px 4px rgba(255,255,255,0.9),
-                inset 0 -2px 4px rgba(0,0,0,0.05)
+                0 8px 20px rgba(0,0,0,0.1),
+                0 4px 10px rgba(0,0,0,0.08),
+                0 2px 5px rgba(0,0,0,0.05),
+                0 0 0 1px rgba(0,0,0,0.1),
+                inset 0 1px 2px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.03)
               `,
               transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
               willChange: 'transform, box-shadow'
@@ -2789,23 +2789,23 @@ const Landing = () => {
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'perspective(1000px) rotateX(4deg) rotateY(-2deg) translateZ(30px)';
               e.currentTarget.style.boxShadow = `
-                0 20px 50px rgba(0,0,0,0.25),
-                0 10px 25px rgba(0,0,0,0.2),
-                0 5px 12px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(0,0,0,0.3),
-                inset 0 3px 6px rgba(255,255,255,0.95),
-                inset 0 -3px 6px rgba(0,0,0,0.1)
+                0 10px 25px rgba(0,0,0,0.12),
+                0 5px 12px rgba(0,0,0,0.1),
+                0 2px 6px rgba(0,0,0,0.08),
+                0 0 0 1px rgba(0,0,0,0.15),
+                inset 0 2px 3px rgba(255,255,255,0.6),
+                inset 0 -2px 3px rgba(0,0,0,0.05)
               `;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)';
               e.currentTarget.style.boxShadow = `
-                0 15px 40px rgba(0,0,0,0.2),
-                0 8px 20px rgba(0,0,0,0.15),
-                0 4px 10px rgba(0,0,0,0.1),
-                0 0 0 1px rgba(0,0,0,0.2),
-                inset 0 2px 4px rgba(255,255,255,0.9),
-                inset 0 -2px 4px rgba(0,0,0,0.05)
+                0 8px 20px rgba(0,0,0,0.1),
+                0 4px 10px rgba(0,0,0,0.08),
+                0 2px 5px rgba(0,0,0,0.05),
+                0 0 0 1px rgba(0,0,0,0.1),
+                inset 0 1px 2px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.03)
               `;
             }}
           >
