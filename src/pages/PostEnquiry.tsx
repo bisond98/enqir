@@ -1392,6 +1392,8 @@ export default function PostEnquiry() {
         notes: notes.trim(),
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified,
+        // 🛡️ PROTECTED: Trust Badge Fix - userProfileVerified field is REQUIRED for trust badge display in enquiry cards
+        // DO NOT REMOVE OR MODIFY THIS FIELD - It's checked in Landing.tsx trust badge condition
         userProfileVerified: isUserVerified // Add this field for trust badge display
       };
 
@@ -1407,7 +1409,8 @@ export default function PostEnquiry() {
         // Set verification flags to true for this enquiry when ID images are uploaded
         enquiryData.isProfileVerified = true;
         enquiryData.userVerified = true;
-        enquiryData.userProfileVerified = true; // Add this field for trust badge display
+        // 🛡️ PROTECTED: Trust Badge Fix - userProfileVerified field is REQUIRED when ID images are uploaded
+        // DO NOT REMOVE OR MODIFY THIS FIELD - It's checked in Landing.tsx trust badge condition
         enquiryData.userProfileVerified = true; // Add this field for trust badge display
       }
       
