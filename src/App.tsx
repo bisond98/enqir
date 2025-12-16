@@ -27,6 +27,7 @@ import MyEnquiries from "./pages/MyEnquiries";
 import MyResponses from "./pages/MyResponses";
 import SavedEnquiries from "./pages/SavedEnquiries";
 import MyChats from "./pages/MyChats";
+import AllChats from "./pages/AllChats";
 import EnquiryResponses from "./pages/EnquiryResponses";
 import DetailedResponses from "./pages/DetailedResponses";
 import EnquiryResponsesPage from "./pages/EnquiryResponsesPage";
@@ -42,6 +43,7 @@ import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminAccess from "./pages/AdminAccess";
+import AddDummyEnquiries from "./pages/AddDummyEnquiries";
 import PremiumTestDataGenerator from "./components/PremiumTestDataGenerator";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -133,6 +135,7 @@ const App = () => {
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
                   <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -140,6 +143,7 @@ const App = () => {
                   <Route path="/auth/callback" element={<AuthCallback />} />
                   <Route path="/admin/access/:secretToken" element={<ErrorBoundary><AdminAccess /></ErrorBoundary>} />
                   <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
+                  <Route path="/admin/add-enquiries" element={<ErrorBoundary><AddDummyEnquiries /></ErrorBoundary>} />
                   <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
