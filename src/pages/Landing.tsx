@@ -200,6 +200,8 @@ const Landing = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchPosition, setSearchPosition] = useState({ top: 0, left: 0, width: 0 });
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
+  // User profiles for trust badge display
+  const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   // Track window width for responsive behavior
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
@@ -795,85 +797,153 @@ const Landing = () => {
   useEffect(() => {
     // Optimized: Use getDocs for one-time fetch instead of onSnapshot for faster initial load
     // Limit to 50 most recent enquiries since we only need 3 cards for display
-    const loadEnquiries = async () => {
-      try {
+    // Use real-time listener for instant loading - no delay
     const q = query(
       collection(db, 'enquiries'),
-          orderBy('createdAt', 'desc'),
-          limit(50) // Reduced limit for faster loading - we only need 3 cards
+      orderBy('createdAt', 'desc'),
+      limit(50) // Reduced limit for faster loading - we only need 3 cards
     );
-        
-        const snap = await getDocs(q);
-      const items: any[] = [];
-      snap.forEach((doc) => {
-        const data = doc.data();
-        items.push({
-          id: doc.id,
-          ...data
-        });
-      });
-      
-      console.log('📊 Landing: Total enquiries from query:', items.length);
-      
-      // Filter to only show enquiries with status='live' (admin accepted)
-      // Use case-insensitive check to catch any variations
-      const liveStatusItems = items.filter(e => {
-        const status = (e.status || '').toLowerCase().trim();
-        return status === 'live';
-      });
-      
-      console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
-      
-      // Deduplicate by ID first (in case same document appears multiple times)
-      const uniqueItems = Array.from(
-        new Map(liveStatusItems.map(e => [e.id, e])).values()
-      );
-      
-      // Filter out expired enquiries - only show live (not expired) enquiries
-      const now = new Date();
-      const liveEnquiries = uniqueItems.filter(enquiry => {
-        if (!enquiry.deadline) return true; // No deadline = live
-        try {
-          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate.getTime() >= now.getTime();
-        } catch {
-          return true; // If error, assume live
-        }
-      });
-      
-      console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
-      
-        // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
-      liveEnquiries.sort((a, b) => {
-        try {
-          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return dateB.getTime() - dateA.getTime();
-        } catch {
-          return 0;
-        }
-      });
-      
-      // Set all live enquiries for count and search (includes expired for count/search)
-      setAllLiveEnquiries(uniqueItems);
-      
-      // Set display enquiries - only live (not expired) enquiries for the 3 cards
-      // Store all live enquiries for shuffling (not just first 3)
-      setPublicRecentEnquiries(liveEnquiries);
-      
-      // Set initial shuffled display (3 random from all live enquiries)
-      const initialShuffled = getRandomThree(liveEnquiries);
-      setShuffledEnquiries(initialShuffled);
-      } catch (error) {
-      console.error('Error loading enquiries:', error);
-      // Set empty arrays on error
-      setAllLiveEnquiries([]);
-      setPublicRecentEnquiries([]);
-      setShuffledEnquiries([]);
-      }
-    };
     
-    loadEnquiries();
+    const unsubscribe = onSnapshot(q, (snap) => {
+      try {
+        const items: any[] = [];
+        snap.forEach((doc) => {
+          const data = doc.data();
+          items.push({
+            id: doc.id,
+            ...data
+          });
+        });
+        
+        console.log('📊 Landing: Total enquiries from query:', items.length);
+        
+        // Filter to only show enquiries with status='live' (admin accepted)
+        // Use case-insensitive check to catch any variations
+        const liveStatusItems = items.filter(e => {
+          const status = (e.status || '').toLowerCase().trim();
+          return status === 'live';
+        });
+        
+        console.log('📊 Landing: Enquiries with status=live:', liveStatusItems.length);
+        
+        // Deduplicate by ID first (in case same document appears multiple times)
+        const uniqueItems = Array.from(
+          new Map(liveStatusItems.map(e => [e.id, e])).values()
+        );
+        
+        // Filter out expired enquiries - only show live (not expired) enquiries
+        const now = new Date();
+        const liveEnquiries = uniqueItems.filter(enquiry => {
+          if (!enquiry.deadline) return true; // No deadline = live
+          try {
+            const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            return deadlineDate.getTime() >= now.getTime();
+          } catch {
+            return true; // If error, assume live
+          }
+        });
+        
+        console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
+        
+        // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
+        liveEnquiries.sort((a, b) => {
+          try {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          } catch {
+            return 0;
+          }
+        });
+        
+        // Set all live enquiries for count and search (includes expired for count/search)
+        setAllLiveEnquiries(uniqueItems);
+        
+        // Set display enquiries - only live (not expired) enquiries for the 3 cards
+        // Store all live enquiries for shuffling (not just first 3)
+        setPublicRecentEnquiries(liveEnquiries);
+        
+        // Set initial shuffled display (3 random from all live enquiries)
+        // Always update to show latest data immediately
+        if (liveEnquiries.length > 0) {
+          const initialShuffled = getRandomThree(liveEnquiries);
+          setShuffledEnquiries(initialShuffled);
+        } else {
+          setShuffledEnquiries([]);
+        }
+      } catch (error) {
+        console.error('Error loading enquiries:', error);
+        // Set empty arrays on error
+        setAllLiveEnquiries([]);
+        setPublicRecentEnquiries([]);
+        if (shuffledEnquiries.length === 0) {
+          setShuffledEnquiries([]);
+        }
+      }
+    }, (error) => {
+      console.error('Error in enquiry snapshot:', error);
+      // Fallback to one-time fetch if snapshot fails
+      const loadEnquiries = async () => {
+        try {
+          const snap = await getDocs(q);
+          const items: any[] = [];
+          snap.forEach((doc) => {
+            const data = doc.data();
+            items.push({
+              id: doc.id,
+              ...data
+            });
+          });
+          
+          const liveStatusItems = items.filter(e => {
+            const status = (e.status || '').toLowerCase().trim();
+            return status === 'live';
+          });
+          
+          const uniqueItems = Array.from(
+            new Map(liveStatusItems.map(e => [e.id, e])).values()
+          );
+          
+          const now = new Date();
+          const liveEnquiries = uniqueItems.filter(enquiry => {
+            if (!enquiry.deadline) return true;
+            try {
+              const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+              return deadlineDate.getTime() >= now.getTime();
+            } catch {
+              return true;
+            }
+          });
+          
+          liveEnquiries.sort((a, b) => {
+            try {
+              const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+              const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            } catch {
+              return 0;
+            }
+          });
+          
+          setAllLiveEnquiries(uniqueItems);
+          setPublicRecentEnquiries(liveEnquiries);
+          if (liveEnquiries.length > 0) {
+            const initialShuffled = getRandomThree(liveEnquiries);
+            setShuffledEnquiries(initialShuffled);
+          } else {
+            setShuffledEnquiries([]);
+          }
+        } catch (err) {
+          console.error('Error in fallback fetch:', err);
+          setAllLiveEnquiries([]);
+          setPublicRecentEnquiries([]);
+          setShuffledEnquiries([]);
+        }
+      };
+      loadEnquiries();
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
@@ -939,6 +1009,61 @@ const Landing = () => {
       }
     }, 10000); // 10 seconds
     return () => clearInterval(interval);
+  }, [publicRecentEnquiries]);
+
+  // Fetch user profiles for trust badge display
+  useEffect(() => {
+    if (publicRecentEnquiries.length === 0) return;
+
+    let isMounted = true;
+
+    const fetchUserProfiles = async () => {
+      try {
+        const profiles: {[key: string]: any} = {};
+        const userIds = [...new Set(publicRecentEnquiries.map(enquiry => enquiry.userId))];
+        
+        // Batch fetch profiles for better performance
+        const profilePromises = userIds.map(async (userId) => {
+          try {
+            // Try 'userProfiles' first
+            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+            if (!profileDoc.exists()) {
+              // Fallback to 'profiles' collection
+              profileDoc = await getDoc(doc(db, 'profiles', userId));
+            }
+            if (profileDoc.exists()) {
+              return { userId, data: profileDoc.data() };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error fetching user profile for ${userId}:`, error);
+            return null;
+          }
+        });
+        
+        const results = await Promise.all(profilePromises);
+        
+        if (isMounted) {
+          results.forEach((result) => {
+            if (result) {
+              profiles[result.userId] = result.data;
+            }
+          });
+          setUserProfiles(profiles);
+        }
+      } catch (error) {
+        console.error('Error fetching user profiles:', error);
+        if (isMounted) {
+          setUserProfiles({});
+        }
+      }
+    };
+
+    fetchUserProfiles();
+
+    return () => {
+      isMounted = false;
+    };
   }, [publicRecentEnquiries]);
 
   useEffect(() => {
@@ -1639,7 +1764,7 @@ const Landing = () => {
           {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-gradient-to-b from-black to-gray-900 text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-gray-900 hover:to-black lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
@@ -1667,6 +1792,46 @@ const Landing = () => {
                 - Hidden on mobile, visible on desktop (sm: and above)
             */}
             <div className="hidden sm:block w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
+              <style>{`
+                .landing-search-input::selection,
+                input.landing-search-input::selection {
+                  background-color: rgba(0, 0, 0, 0.2) !important;
+                  color: black !important;
+                }
+                .landing-search-input::-moz-selection,
+                input.landing-search-input::-moz-selection {
+                  background-color: rgba(0, 0, 0, 0.2) !important;
+                  color: black !important;
+                }
+                .landing-search-input::-webkit-selection,
+                input.landing-search-input::-webkit-selection {
+                  background-color: rgba(0, 0, 0, 0.2) !important;
+                  color: black !important;
+                }
+                .landing-search-input:focus,
+                input.landing-search-input:focus {
+                  outline: none !important;
+                  outline-width: 0 !important;
+                  outline-style: none !important;
+                  outline-color: transparent !important;
+                  box-shadow: none !important;
+                  -webkit-box-shadow: none !important;
+                  -moz-box-shadow: none !important;
+                  -webkit-focus-ring-color: transparent !important;
+                  -webkit-tap-highlight-color: transparent !important;
+                  border: 2px solid black !important;
+                }
+                .landing-search-input:focus-visible,
+                input.landing-search-input:focus-visible {
+                  outline: none !important;
+                  outline-width: 0 !important;
+                  outline-style: none !important;
+                  outline-color: transparent !important;
+                  box-shadow: none !important;
+                  -webkit-box-shadow: none !important;
+                  -moz-box-shadow: none !important;
+                }
+              `}</style>
               <div className="flex gap-0">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
                   <Search className="absolute left-2.5 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
@@ -1680,19 +1845,34 @@ const Landing = () => {
                       setShowSearchSuggestions(true);
                       updateSearchPosition();
                     }}
-                    onFocus={() => {
+                    onFocus={(e) => {
+                      const input = e.target as HTMLInputElement;
+                      input.style.outline = 'none';
+                      input.style.outlineWidth = '0';
+                      input.style.outlineStyle = 'none';
+                      input.style.outlineColor = 'transparent';
+                      input.style.boxShadow = 'none';
+                      input.style.webkitBoxShadow = 'none';
+                      input.style.mozBoxShadow = 'none';
+                      input.style.webkitFocusRingColor = 'transparent';
+                      input.style.webkitTapHighlightColor = 'transparent';
                       setShowSearchSuggestions(true);
                       updateSearchPosition();
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] landing-search-input"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
                       paddingBottom: '0.75rem',
                       textAlign: 'center',
-                      paddingLeft: '2.75rem'
+                      paddingLeft: '2.75rem',
+                      outline: 'none',
+                      outlineWidth: '0',
+                      outlineStyle: 'none',
+                      outlineColor: 'transparent',
+                      WebkitTapHighlightColor: 'transparent'
                     }}
                   />
                   {/* Physical button depth effect for input */}
@@ -1944,13 +2124,15 @@ const Landing = () => {
                       exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
                       transition={{ 
                         type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
-                        duration: isShuffling ? 0.4 : undefined,
-                        // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
-                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
-                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
-                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
-                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
-                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
+                        duration: isShuffling ? 0.5 : undefined,
+                        // Optimized spring physics for ultra-smooth, flawless motion
+                        stiffness: isShuffling ? undefined : (isMobile ? 120 : 100), // Balanced for smooth motion
+                        damping: isShuffling ? undefined : (isMobile ? 25 : 22), // Higher damping for smoother stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.5 : 0.7), // Balanced mass for natural feel
+                        ease: isShuffling ? [0.34, 1.56, 0.64, 1] : undefined, // Ultra-smooth easing curve
+                        delay: isShuffling ? index * 0.05 : 0, // Smooth stagger timing
+                        restDelta: 0.001, // Higher precision for smoother animations
+                        restSpeed: 0.01 // Slower rest speed for smoother settling
                       }}
                       className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
                       style={{
@@ -2031,11 +2213,14 @@ const Landing = () => {
                 scale: isHovered ? 1.02 : 1,
               }}
               transition={{ 
-                duration: 0.5, 
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.6, 
+                ease: [0.34, 1.56, 0.64, 1],
                 type: "spring",
-                stiffness: 300,
-                damping: 30
+                stiffness: 280,
+                damping: 28,
+                mass: 0.8,
+                restDelta: 0.001,
+                restSpeed: 0.01
               }}
               style={{ 
                 backgroundColor: 'white',
@@ -2048,7 +2233,7 @@ const Landing = () => {
                 boxShadow: isHovered 
                   ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
                   : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
-                transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
+                transition: 'filter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
               }}
             >
                       {/* Subtle glow effect for mobile-friendly animation */}
@@ -2079,7 +2264,15 @@ const Landing = () => {
                         </div>
                         <div className="flex justify-between items-center relative z-10">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
-                            {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+                            {((userProfiles[enquiry.userId]?.isProfileVerified || 
+                               userProfiles[enquiry.userId]?.isVerified || 
+                               userProfiles[enquiry.userId]?.trustBadge || 
+                               userProfiles[enquiry.userId]?.isIdentityVerified) || 
+                              enquiry.userProfileVerified || 
+                              enquiry.isProfileVerified || 
+                              enquiry.userVerified ||
+                              enquiry.idFrontImage || 
+                              enquiry.idBackImage) && (
                               <>
                                 <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
@@ -2109,7 +2302,7 @@ const Landing = () => {
                       {/* Category Mural - Hidden */}
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
-                      <div className="px-2.5 pt-2.5 pb-2.5 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
+                      <div className="px-2.5 pt-2.5 pb-4 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
                       {/* Title - Professional Typography */}
                       <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 border-b border-black pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 ${
                         isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
@@ -2206,7 +2399,7 @@ const Landing = () => {
                       </div>
                       
                         {/* Save and Share - Mobile only (inside meta container, after sell button) */}
-                        <div className="block sm:hidden w-full border-t border-black pt-1.5">
+                        <div className="block sm:hidden w-full border-t border-black pt-1.5" style={{ paddingBottom: '1.75rem', marginTop: '-0.5rem' }}>
                           <div className="flex items-center gap-1.5 justify-between">
                             <button 
                               onClick={(e) => {
@@ -2880,6 +3073,22 @@ const Landing = () => {
                 <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
+            
+            {/* Help Guide Button - Smaller and lean for mobile, grey/white color */}
+            <div className="text-center mt-4 sm:mt-6">
+              <Link to="/help-guide" className="w-full sm:w-auto group">
+                <button
+                  className="w-full sm:w-auto border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black py-2 sm:py-2.5 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white sm:min-w-[180px] relative overflow-hidden text-xs sm:text-sm"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
+                  <span className="relative z-10">Learn More</span>
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
