@@ -300,22 +300,22 @@ const SignIn = () => {
                         }}
                       />
                       
-                      {/* Log In Button - Optimal touch target, clear state */}
+                      {/* Log In Button - Optimal touch target, clear state, always visible */}
                       <TabsTrigger 
                         value="signin" 
-                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-xl"
+                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:hover:text-black bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                         aria-label="Switch to Log In"
                       >
-                        <span className="relative z-10">Log In</span>
+                        <span className="relative z-10 font-bold">Log In</span>
                       </TabsTrigger>
                       
-                      {/* Sign Up Button - Optimal touch target, clear state */}
+                      {/* Sign Up Button - Optimal touch target, clear state, always visible */}
                       <TabsTrigger 
                         value="signup" 
-                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-xl"
+                        className="relative z-50 h-12 sm:h-14 rounded-xl font-semibold text-base sm:text-lg transition-colors duration-200 data-[state=active]:text-white data-[state=inactive]:text-gray-900 data-[state=inactive]:hover:text-black bg-transparent border-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                         aria-label="Switch to Sign Up"
                       >
-                        <span className="relative z-10">Sign Up</span>
+                        <span className="relative z-10 font-bold">Sign Up</span>
                       </TabsTrigger>
                 </TabsList>
 
