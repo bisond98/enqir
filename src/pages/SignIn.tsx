@@ -63,6 +63,8 @@ const SignIn = () => {
   const [robotAngle, setRobotAngle] = useState(0);
   const [isRobotPaused, setIsRobotPaused] = useState(false);
   const [robotAction, setRobotAction] = useState<'idle' | 'wave' | 'jump' | 'spin' | 'celebrate' | 'lookAround' | 'dance'>('idle');
+  const [isPushingText, setIsPushingText] = useState(false);
+  const [textPushOffset, setTextPushOffset] = useState({ x: 0, y: 0 });
   
   
   // Pre-fill email from URL parameter (from email verification)
@@ -320,12 +322,51 @@ const SignIn = () => {
     const pathDuration = 4000;
     const rotationSmoothing = 0.12;
 
-    const animate = (timestamp: number) => {
-      if (!isRunning || !robotRef.current) return;
-      
-      if (lastTimestamp === 0) lastTimestamp = timestamp;
-      const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
-      lastTimestamp = timestamp;
+             const animate = (timestamp: number) => {
+             if (!isRunning || !robotRef.current) return;
+             
+             if (lastTimestamp === 0) lastTimestamp = timestamp;
+             const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
+             lastTimestamp = timestamp;
+             
+             // Check robot position relative to "Enqir" text for push interaction
+             const welcomeElement = document.querySelector('.welcome-heading');
+             const containerElement = document.querySelector('.signin-container');
+             const enqirSpan = welcomeElement?.querySelector('.enqir-text') as HTMLElement;
+             
+             if (enqirSpan && containerElement && robotRef.current) {
+               const containerRect = containerElement.getBoundingClientRect();
+               const enqirRect = enqirSpan.getBoundingClientRect();
+               const robotRect = robotRef.current.getBoundingClientRect();
+               
+               const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
+               const enqirCenterY = enqirRect.top + enqirRect.height / 2 - containerRect.top;
+               const robotCenterX = robotRect.left + robotRect.width / 2 - containerRect.left;
+               const robotCenterY = robotRect.top + robotRect.height / 2 - containerRect.top;
+               
+               const distance = Math.sqrt(
+                 Math.pow(robotCenterX - enqirCenterX, 2) + 
+                 Math.pow(robotCenterY - enqirCenterY, 2)
+               );
+               
+               // If robot is within 80px of text, push it
+               if (distance < 80) {
+                 setIsPushingText(true);
+                 const angle = Math.atan2(enqirCenterY - robotCenterY, enqirCenterX - robotCenterX);
+                 const pushStrength = Math.max(0, (80 - distance) / 80) * 8; // Max 8px push
+                 setTextPushOffset({
+                   x: Math.cos(angle) * pushStrength,
+                   y: Math.sin(angle) * pushStrength
+                 });
+               } else {
+                 setIsPushingText(false);
+                 // Smoothly return text to original position
+                 setTextPushOffset(prev => ({
+                   x: prev.x * 0.85,
+                   y: prev.y * 0.85
+                 }));
+               }
+             }
       
       // Handle pause state
       if (isPaused) {
