@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -56,6 +56,11 @@ const SignIn = () => {
   const [isEmailLinkMode, setIsEmailLinkMode] = useState(false);
   const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
+  
+  // Robot animation state
+  const robotRef = useRef<HTMLDivElement>(null);
+  const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
+  const [robotAngle, setRobotAngle] = useState(0);
   
   
   // Pre-fill email from URL parameter (from email verification)
@@ -189,6 +194,114 @@ const SignIn = () => {
     }
   };
 
+  // Robot animation - moves around within card bounds
+  useEffect(() => {
+    const cardElement = document.querySelector('.signin-card');
+    if (!cardElement || !robotRef.current) return;
+
+    let animationFrameId: number | null = null;
+    let isRunning = true;
+    let currentPathIndex = 0;
+    let pathProgress = 0;
+    let lastTimestamp = 0;
+    let currentAngle = 0;
+    let targetAngle = 0;
+
+    const createRoamingPaths = () => {
+      const cardRect = cardElement.getBoundingClientRect();
+      const padding = 60;
+      const cardWidth = cardRect.width;
+      const cardHeight = cardRect.height;
+      
+      return [
+        { start: { x: padding, y: cardHeight - padding }, end: { x: cardWidth - padding, y: padding } },
+        { start: { x: cardWidth - padding, y: padding }, end: { x: cardWidth - padding, y: cardHeight - padding } },
+        { start: { x: cardWidth - padding, y: cardHeight - padding }, end: { x: padding, y: cardHeight - padding } },
+        { start: { x: padding, y: cardHeight - padding }, end: { x: cardWidth / 2, y: cardHeight / 2 } },
+        { start: { x: cardWidth / 2, y: cardHeight / 2 }, end: { x: padding, y: padding } },
+        { start: { x: padding, y: padding }, end: { x: cardWidth - padding, y: cardHeight / 2 } },
+        { start: { x: cardWidth - padding, y: cardHeight / 2 }, end: { x: padding, y: padding } },
+        { start: { x: padding, y: padding }, end: { x: padding, y: cardHeight - padding } },
+      ];
+    };
+
+    let paths = createRoamingPaths();
+    let currentPath = paths[currentPathIndex];
+    const pathDuration = 4000;
+    const rotationSmoothing = 0.12;
+
+    const animate = (timestamp: number) => {
+      if (!isRunning || !robotRef.current) return;
+      
+      if (lastTimestamp === 0) lastTimestamp = timestamp;
+      const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
+      lastTimestamp = timestamp;
+      
+      pathProgress += deltaTime / pathDuration;
+      
+      if (pathProgress >= 1) {
+        pathProgress = 0;
+        currentPathIndex = (currentPathIndex + 1) % paths.length;
+        paths = createRoamingPaths();
+        if (currentPathIndex < paths.length) {
+          currentPath = paths[currentPathIndex];
+        }
+      }
+      
+      const t = pathProgress;
+      const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      
+      const x = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
+      const y = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
+      
+      const dx = currentPath.end.x - currentPath.start.x;
+      const dy = currentPath.end.y - currentPath.start.y;
+      targetAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+      
+      let angleDiff = targetAngle - currentAngle;
+      if (angleDiff > 180) angleDiff -= 360;
+      if (angleDiff < -180) angleDiff += 360;
+      
+      currentAngle += angleDiff * rotationSmoothing;
+      
+      if (currentAngle > 180) currentAngle -= 360;
+      if (currentAngle < -180) currentAngle += 360;
+      
+      setRobotPosition({ x, y });
+      setRobotAngle(currentAngle);
+      
+      if (robotRef.current) {
+        robotRef.current.style.left = `${x}px`;
+        robotRef.current.style.top = `${y}px`;
+        robotRef.current.style.transform = `translate(-50%, -50%) rotate(${currentAngle}deg)`;
+      }
+      
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    // Start animation after a short delay
+    const startTimeout = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(animate);
+    }, 500);
+
+    const handleResize = () => {
+      paths = createRoamingPaths();
+      if (currentPathIndex < paths.length) {
+        currentPath = paths[currentPathIndex];
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      isRunning = false;
+      clearTimeout(startTimeout);
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
+
   console.log("SignIn component rendering, loading:", loading);
 
   return (
@@ -218,7 +331,7 @@ const SignIn = () => {
           </div>
 
           {/* Clean Card */}
-          <Card className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
+          <Card className="signin-card shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm relative overflow-hidden">
             <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11">
               {/* Error Display */}
               {error && (
@@ -505,55 +618,168 @@ const SignIn = () => {
                 </>
               )}
 
-              {/* Subtle Robot Animation - Small, dull, under all content */}
-              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200/50">
-                <div className="relative w-full h-24 sm:h-32 opacity-30">
-                  <svg viewBox="0 0 120 120" className="w-full h-full">
-                    {/* Small Animated Human Character - Subtle */}
-                    <g transform="translate(60, 60)">
-                      {/* Head with Continuous Bounce - Smaller */}
-                      <circle cx="0" cy="-20" r="12" fill="none" stroke="#1F2937" strokeWidth="1.5" opacity="0.4">
-                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0" dur="2s" repeatCount="indefinite"/>
-                      </circle>
-                      <circle cx="-4" cy="-28" r="1.5" fill="#1F2937" opacity="0.4">
-                        <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
-                      </circle>
-                      <circle cx="4" cy="-28" r="1.5" fill="#1F2937" opacity="0.4">
-                        <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
-                      </circle>
-                      <path d="M-4,-18 Q0,-14 4,-18" stroke="#1F2937" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.4">
-                        <animate attributeName="d" values="M-4,-18 Q0,-14 4,-18; M-4,-18 Q0,-11 4,-18" dur="2s" repeatCount="indefinite"/>
-                      </path>
-                      
-                      {/* Body - Smaller */}
-                      <ellipse cx="0" cy="10" rx="9" ry="14" fill="none" stroke="#1F2937" strokeWidth="1.5" opacity="0.4">
-                        <animateTransform attributeName="transform" type="scale" values="1,1; 1.05,1; 1,1" dur="3s" repeatCount="indefinite"/>
+              {/* Moving Robot Animation - Behind content, doesn't interrupt */}
+              <div 
+                ref={robotRef}
+                className="absolute inset-0 pointer-events-none z-0 opacity-20"
+                style={{
+                  position: 'absolute',
+                  left: `${robotPosition.x || 0}px`,
+                  top: `${robotPosition.y || 0}px`,
+                  width: '120px',
+                  height: '120px',
+                  transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
+                  willChange: 'transform',
+                  transition: 'none',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+              >
+                {/* Same Robot from HelpGuide - Smaller */}
+                <svg width="120" height="120" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
+                  <defs>
+                    <filter id="cyan-glow-signin">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                    <linearGradient id="whiteMatte-signin" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 1 }} />
+                      <stop offset="50%" style={{ stopColor: '#fafafa', stopOpacity: 1 }} />
+                      <stop offset="100%" style={{ stopColor: '#f0f0f0', stopOpacity: 1 }} />
+                    </linearGradient>
+                    <linearGradient id="lightGrey-signin" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.4 }} />
+                      <stop offset="50%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.5 }} />
+                      <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
+                    </linearGradient>
+                    <radialGradient id="cyanGlow-signin" cx="50%" cy="50%">
+                      <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 0.6 }} />
+                      <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.5 }} />
+                      <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.4 }} />
+                      <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.3 }} />
+                    </radialGradient>
+                    <radialGradient id="eyeHighlight-signin" cx="30%" cy="30%">
+                      <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
+                      <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
+                    </radialGradient>
+                  </defs>
+                  
+                  {/* Soft floating shadow */}
+                  <ellipse cx="50" cy="95" rx="18" ry="4" fill="#000000" opacity="0.08">
+                    <animate attributeName="rx" values="18;20;18" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    <animate attributeName="opacity" values="0.08;0.1;0.08" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                  </ellipse>
+                  
+                  {/* Body */}
+                  <g id="body-group-signin">
+                    <ellipse cx="50" cy="65" rx="18" ry="20" fill="url(#whiteMatte-signin)" stroke="none"/>
+                    <ellipse cx="50" cy="65" rx="16" ry="18" fill="url(#lightGrey-signin)"/>
+                    <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
+                      <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    </rect>
+                    <text x="50" y="63" fontSize="3" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.6">
+                      <animate attributeName="opacity" values="0.6;0.7;0.6" dur="3s" repeatCount="indefinite"/>
+                      ENQIR
+                    </text>
+                    <animateTransform
+                      attributeName="transform"
+                      type="translate"
+                      values="0,0; 0,-2.5; 0,0"
+                      dur="5s"
+                      repeatCount="indefinite"
+                      calcMode="spline"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.5;1"
+                    />
+                  </g>
+                  
+                  {/* Head */}
+                  <g id="head-group-signin">
+                    <ellipse cx="50" cy="30" rx="14" ry="16" fill="url(#whiteMatte-signin)" stroke="none"/>
+                    <ellipse cx="50" cy="30" rx="12" ry="14" fill="url(#lightGrey-signin)"/>
+                    <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
+                      <animate attributeName="y2" values="11;10.5;11" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    </line>
+                    <circle cx="50" cy="8" r="1.5" fill="#ffffff" opacity="0.6">
+                      <animate attributeName="r" values="1.5;1.8;1.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    </circle>
+                    <animateTransform
+                      attributeName="transform"
+                      type="translate"
+                      values="0,0; 0,-2; 0,0"
+                      dur="5s"
+                      repeatCount="indefinite"
+                      calcMode="spline"
+                      keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                      keyTimes="0;0.5;1"
+                      begin="0.8s"
+                    />
+                  </g>
+                  
+                  {/* Face screen */}
+                  <g id="face-screen-signin">
+                    <ellipse cx="50" cy="32" rx="12" ry="14" fill="#1a1a1a" opacity="0.6">
+                      <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    </ellipse>
+                    <ellipse cx="50" cy="28" rx="8" ry="6" fill="url(#eyeHighlight-signin)" opacity="0.1"/>
+                    
+                    {/* Eyes */}
+                    <g id="eyes-group-signin">
+                      <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                        <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                        <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                       </ellipse>
-                      
-                      {/* Dynamic Arms - Smaller Swing */}
-                      <g transform="translate(-9, 8)">
-                        <path d="M0,0 L-7,-6" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" opacity="0.4">
-                          <animateTransform attributeName="transform" type="rotate" values="0 0 0; -15 0 0; 0 0 0" dur="2.5s" repeatCount="indefinite"/>
-                        </path>
-                        <circle cx="-7" cy="-6" r="2" fill="#1F2937" opacity="0.4"/>
-                      </g>
-                      <g transform="translate(9, 8)">
-                        <path d="M0,0 L7,-6" stroke="#1F2937" strokeWidth="1.5" strokeLinecap="round" opacity="0.4">
-                          <animateTransform attributeName="transform" type="rotate" values="0 0 0; 15 0 0; 0 0 0" dur="2.5s" repeatCount="indefinite"/>
-                        </path>
-                        <circle cx="7" cy="-6" r="2" fill="#1F2937" opacity="0.4"/>
-                      </g>
-                      
-                      {/* Subtle Pulsing Energy Circles - Very Dull */}
-                      <circle cx="0" cy="-20" r="16" fill="none" stroke="#1F2937" strokeWidth="0.5" opacity="0.1">
-                        <animate attributeName="r" values="16;18;16" dur="2s" repeatCount="indefinite"/>
-                      </circle>
-                      <circle cx="0" cy="-20" r="14" fill="none" stroke="#1F2937" strokeWidth="0.5" opacity="0.08">
-                        <animate attributeName="r" values="14;16;14" dur="2.3s" repeatCount="indefinite"/>
-                      </circle>
+                      <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                        <animate attributeName="opacity" values="0.5;0.6;0.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
+                        <animate attributeName="ry" values="4;4.5;4" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
+                      </ellipse>
+                      <ellipse cx="45" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
+                      <ellipse cx="55" cy="27" rx="1.2" ry="1.5" fill="url(#eyeHighlight-signin)"/>
                     </g>
-                  </svg>
-                </div>
+                  </g>
+                  
+                  {/* Arms */}
+                  <g id="arms-group-signin">
+                    <g id="left-arm-signin" transform-origin="20 60">
+                      <ellipse cx="20" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(-15 20 60)"/>
+                      <ellipse cx="20" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(-15 20 60)"/>
+                      <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
+                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      </circle>
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        values="-15 20 60; -25 20 60; -15 20 60"
+                        dur="4s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.5;1"
+                      />
+                    </g>
+                    <g id="right-arm-signin" transform-origin="80 60">
+                      <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
+                      <ellipse cx="80" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(15 80 60)"/>
+                      <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
+                        <animate attributeName="r" values="3;3.2;3" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="1.5s"/>
+                      </circle>
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        values="15 80 60; 25 80 60; 15 80 60"
+                        dur="4s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                        keyTimes="0;0.5;1"
+                        begin="2s"
+                      />
+                    </g>
+                  </g>
+                </svg>
               </div>
             </CardContent>
           </Card>
