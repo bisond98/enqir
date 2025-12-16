@@ -49,6 +49,7 @@ import ContactUs from "./pages/ContactUs";
 import AllChats from "./pages/AllChats";
 import HelpGuide from "./pages/HelpGuide";
 import MyChats from "./pages/MyChats";
+// 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
 const queryClient = new QueryClient();
@@ -110,6 +111,7 @@ const App = () => {
           <ConditionalAuthProvider>
             <NotificationProvider>
               <UsageProvider>
+                {/* 🛡️ PROTECTED: ChatProvider wrapper - DO NOT REMOVE - Required for useChats hook */}
                 <ChatProvider>
                   <Toaster />
                   <Sonner />
@@ -147,7 +149,9 @@ const App = () => {
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
+                  {/* 🛡️ PROTECTED: My Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
+                  {/* 🛡️ PROTECTED: All Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
