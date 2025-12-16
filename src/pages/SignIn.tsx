@@ -329,7 +329,7 @@ const SignIn = () => {
              const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
              lastTimestamp = timestamp;
              
-             // Check robot position relative to "Enqir" text for push interaction
+             // Check robot position relative to "Enqir" text for HARD push interaction
              const welcomeElement = document.querySelector('.welcome-heading');
              const containerElement = document.querySelector('.signin-container');
              const enqirSpan = welcomeElement?.querySelector('.enqir-text') as HTMLElement;
@@ -349,21 +349,26 @@ const SignIn = () => {
                  Math.pow(robotCenterY - enqirCenterY, 2)
                );
                
-               // If robot is within 80px of text, push it
-               if (distance < 80) {
+               // If robot is within 100px of text, push it HARD with effort
+               if (distance < 100) {
                  setIsPushingText(true);
                  const angle = Math.atan2(enqirCenterY - robotCenterY, enqirCenterX - robotCenterX);
-                 const pushStrength = Math.max(0, (80 - distance) / 80) * 8; // Max 8px push
+                 // Much stronger push - max 25px displacement (was 8px)
+                 const pushStrength = Math.max(0, (100 - distance) / 100) * 25;
+                 // Add extra force when very close (within 40px)
+                 const extraForce = distance < 40 ? (40 - distance) / 40 * 10 : 0;
+                 const totalPush = pushStrength + extraForce;
+                 
                  setTextPushOffset({
-                   x: Math.cos(angle) * pushStrength,
-                   y: Math.sin(angle) * pushStrength
+                   x: Math.cos(angle) * totalPush,
+                   y: Math.sin(angle) * totalPush
                  });
                } else {
                  setIsPushingText(false);
-                 // Smoothly return text to original position
+                 // Slower return - text resists coming back (shows it was pushed hard)
                  setTextPushOffset(prev => ({
-                   x: prev.x * 0.85,
-                   y: prev.y * 0.85
+                   x: prev.x * 0.92,
+                   y: prev.y * 0.92
                  }));
                }
              }
@@ -481,10 +486,11 @@ const SignIn = () => {
             <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)', overflow: 'visible' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span 
-                className="text-blue-600 font-black enqir-text inline-block transition-transform duration-100 ease-out" 
+                className="text-blue-600 font-black enqir-text inline-block transition-transform duration-75 ease-out" 
                 style={{ 
-                  transform: `translate(${textPushOffset.x}px, ${textPushOffset.y}px) rotate(${textPushOffset.x * 0.5}deg)`,
-                  transformOrigin: 'center center'
+                  transform: `translate(${textPushOffset.x}px, ${textPushOffset.y}px) rotate(${textPushOffset.x * 1.2}deg) scale(${1 + Math.abs(textPushOffset.x) * 0.01})`,
+                  transformOrigin: 'center center',
+                  filter: isPushingText ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))' : 'none'
                 }}
               >
                 Enqir
@@ -1253,6 +1259,32 @@ const SignIn = () => {
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                       </circle>
                       {/* Completely different hand movements for each action */}
+                      {/* Extra effort arm movement when pushing text */}
+                      {isPushingText && (
+                        <>
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="-15 20 60; -25 20 60; -15 20 60; -30 20 60; -15 20 60"
+                            dur="0.25s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                          />
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; -1,-2; 0,0; -1.5,-2.5; 0,0"
+                            dur="0.25s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            additive="sum"
+                          />
+                        </>
+                      )}
                       {robotAction === 'wave' && (
                         <>
                           {/* Circular waving motion - arm moves in a circle */}
@@ -1450,6 +1482,34 @@ const SignIn = () => {
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.9s"/>
                       </circle>
                       {/* Completely different hand movements - right arm */}
+                      {/* Extra effort arm movement when pushing text */}
+                      {isPushingText && (
+                        <>
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="15 80 60; 25 80 60; 15 80 60; 30 80 60; 15 80 60"
+                            dur="0.25s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.125s"
+                          />
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 1,-2; 0,0; 1.5,-2.5; 0,0"
+                            dur="0.25s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.125s"
+                            additive="sum"
+                          />
+                        </>
+                      )}
                       {robotAction === 'wave' && (
                         <>
                           {/* Circular waving motion - opposite direction */}
