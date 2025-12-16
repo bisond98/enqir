@@ -1,0 +1,10 @@
+# Protect critical files from automatic changes
+src/pages/Landing.tsx -text -eol
+src/pages/App.tsx -text -eol
+src/index.css -text -eol
+src/pages/MyChats.tsx -text -eol
+src/pages/AllChats.tsx -text -eol
+
+# Prevent automatic merges on these files
+src/pages/Landing.tsx merge=ours
+src/pages/App.tsx merge=ours
