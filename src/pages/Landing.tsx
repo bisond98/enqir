@@ -1850,7 +1850,7 @@ const Landing = () => {
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-xs sm:text-xs font-bold text-black">
-                  {liveEnquiriesCount} real buyers waiting for the right seller
+                  {liveEnquiriesCount} real buyers waiting for the right seller {/* 🛡️ PROTECTED TEXT - DO NOT MODIFY */}
                 </span>
               </div>
             </div>
