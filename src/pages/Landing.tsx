@@ -2115,11 +2115,17 @@ const Landing = () => {
                         </div>
                         <div className="flex justify-between items-center relative z-10">
                           <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
+                            {/* 🛡️ PROTECTED: Trust Badge Display Logic - DO NOT MODIFY
+                                This condition checks multiple verification sources:
+                                1. User profile verification (userProfiles collection)
+                                2. Enquiry-level verification flags (userProfileVerified, isProfileVerified, userVerified)
+                                3. ID image uploads (idFrontImage, idBackImage)
+                                All these checks are REQUIRED for proper trust badge display */}
                             {((userProfiles[enquiry.userId]?.isProfileVerified || 
                                userProfiles[enquiry.userId]?.isVerified || 
                                userProfiles[enquiry.userId]?.trustBadge || 
                                userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                              enquiry.userProfileVerified || 
+                              enquiry.userProfileVerified || // 🛡️ REQUIRED: Set in PostEnquiry.tsx
                               enquiry.isProfileVerified || 
                               enquiry.userVerified ||
                               enquiry.idFrontImage || 

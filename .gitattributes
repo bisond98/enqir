@@ -6,6 +6,7 @@ src/pages/MyChats.tsx -text -eol merge=ours
 src/pages/AllChats.tsx -text -eol merge=ours
 src/components/Layout.tsx -text -eol merge=ours
 src/contexts/ChatContext.tsx -text -eol merge=ours
+src/pages/PostEnquiry.tsx -text -eol merge=ours
 
 # Prevent automatic merges on these files - ALWAYS keep local version
 src/pages/Landing.tsx merge=ours
@@ -15,3 +16,4 @@ src/pages/MyChats.tsx merge=ours
 src/pages/AllChats.tsx merge=ours
 src/components/Layout.tsx merge=ours
 src/contexts/ChatContext.tsx merge=ours
+src/pages/PostEnquiry.tsx merge=ours
