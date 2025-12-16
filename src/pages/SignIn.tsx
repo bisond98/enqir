@@ -1203,49 +1203,53 @@ const SignIn = () => {
                       <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                       </circle>
-                      {/* Dynamic arm movements - more frequent and engaging */}
+                      {/* Completely different hand movements for each action */}
                       {robotAction === 'wave' && (
                         <>
+                          {/* Circular waving motion - arm moves in a circle */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -65 20 60; -20 20 60; -60 20 60; -15 20 60; -55 20 60; -15 20 60"
-                            dur="0.6s"
+                            values="-15 20 60; -80 20 60; -15 20 60; -80 20 60; -15 20 60"
+                            dur="0.5s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                           />
+                          {/* Vertical lift and drop for wave effect */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -2,-3; 0,-1; -1,-2; 0,0; -1.5,-2.5; 0,0"
-                            dur="0.6s"
+                            values="0,0; -4,-6; 0,0; -4,-6; 0,0"
+                            dur="0.5s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                             additive="sum"
                           />
                         </>
                       )}
                       {robotAction === 'celebrate' && (
                         <>
+                          {/* Upward thrust motion - arms raise high */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -75 20 60; -10 20 60; -70 20 60; -15 20 60"
-                            dur="0.4s"
+                            values="-15 20 60; -90 20 60; -15 20 60; -90 20 60; -15 20 60"
+                            dur="0.35s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.25;0.5;0.75;1"
                           />
+                          {/* Diagonal upward movement */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -3,-4; 0,-2; -2,-3; 0,0"
-                            dur="0.4s"
+                            values="0,0; -5,-8; 0,0; -5,-8; 0,0"
+                            dur="0.35s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
@@ -1256,21 +1260,23 @@ const SignIn = () => {
                       )}
                       {robotAction === 'dance' && (
                         <>
+                          {/* Side-to-side swinging motion */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -55 20 60; -20 20 60; -50 20 60; -15 20 60; -45 20 60; -15 20 60"
-                            dur="0.3s"
+                            values="-15 20 60; -40 20 60; 10 20 60; -40 20 60; -15 20 60; -35 20 60; -15 20 60"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
                           />
+                          {/* Horizontal swinging */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -2,-2; 0,-1; -1.5,-1.5; 0,0; -1,-1; 0,0"
-                            dur="0.3s"
+                            values="0,0; -3,0; 2,0; -3,0; 0,0; -2,0; 0,0"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
@@ -1279,27 +1285,110 @@ const SignIn = () => {
                           />
                         </>
                       )}
-                      {(robotAction === 'idle' || robotAction === 'jump' || robotAction === 'spin' || robotAction === 'lookAround') && (
+                      {robotAction === 'jump' && (
                         <>
+                          {/* Arms spread wide during jump */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -30 20 60; -20 20 60; -25 20 60; -15 20 60; -22 20 60; -15 20 60"
-                            dur="1.5s"
+                            values="-15 20 60; -45 20 60; -15 20 60"
+                            dur="0.4s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
                           />
+                          {/* Outward spread motion */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -1,-1; 0,0; -0.5,-0.5; 0,0; -0.8,-0.8; 0,0"
-                            dur="1.8s"
+                            values="0,0; -3,-4; 0,0"
+                            dur="0.4s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'spin' && (
+                        <>
+                          {/* Arms extend outward during spin */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="-15 20 60; -30 20 60; -15 20 60; -30 20 60; -15 20 60"
+                            dur="0.6s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                          />
+                          {/* Radial extension */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; -2.5,-2.5; 0,0; -2.5,-2.5; 0,0"
+                            dur="0.6s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'lookAround' && (
+                        <>
+                          {/* Slow, subtle arm movement while looking */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="-15 20 60; -25 20 60; -20 20 60; -15 20 60"
+                            dur="2s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.33;0.67;1"
+                          />
+                          {/* Minimal translation */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; -0.5,-0.5; 0,0; -0.5,-0.5; 0,0"
+                            dur="2s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'idle' && (
+                        <>
+                          {/* Gentle floating arm movement */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="-15 20 60; -18 20 60; -15 20 60; -17 20 60; -15 20 60"
+                            dur="3s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                          />
+                          {/* Very subtle vertical drift */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0,-0.5; 0,0; 0,-0.3; 0,0"
+                            dur="3s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                             additive="sum"
                           />
                         </>
@@ -1311,111 +1400,206 @@ const SignIn = () => {
                       <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
                         <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.9s"/>
                       </circle>
-                      {/* Dynamic arm movements - more frequent and engaging */}
+                      {/* Completely different hand movements - right arm */}
                       {robotAction === 'wave' && (
                         <>
+                          {/* Circular waving motion - opposite direction */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 65 80 60; 20 80 60; 60 80 60; 15 80 60; 55 80 60; 15 80 60"
-                            dur="0.6s"
+                            values="15 80 60; 80 80 60; 15 80 60; 80 80 60; 15 80 60"
+                            dur="0.5s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.2s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.25s"
                           />
+                          {/* Vertical lift and drop - synchronized */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 2,-3; 0,-1; 1,-2; 0,0; 1.5,-2.5; 0,0"
-                            dur="0.6s"
+                            values="0,0; 4,-6; 0,0; 4,-6; 0,0"
+                            dur="0.5s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.2s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.25s"
                             additive="sum"
                           />
                         </>
                       )}
                       {robotAction === 'celebrate' && (
                         <>
+                          {/* Upward thrust - synchronized with left */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 75 80 60; 10 80 60; 70 80 60; 15 80 60"
-                            dur="0.4s"
+                            values="15 80 60; 90 80 60; 15 80 60; 90 80 60; 15 80 60"
+                            dur="0.35s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.25;0.5;0.75;1"
-                            begin="0.15s"
+                            begin="0.175s"
                           />
+                          {/* Diagonal upward movement */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 3,-4; 0,-2; 2,-3; 0,0"
-                            dur="0.4s"
+                            values="0,0; 5,-8; 0,0; 5,-8; 0,0"
+                            dur="0.35s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.25;0.5;0.75;1"
-                            begin="0.15s"
+                            begin="0.175s"
                             additive="sum"
                           />
                         </>
                       )}
                       {robotAction === 'dance' && (
                         <>
+                          {/* Side-to-side swinging - opposite direction */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 55 80 60; 20 80 60; 50 80 60; 15 80 60; 45 80 60; 15 80 60"
-                            dur="0.3s"
+                            values="15 80 60; 40 80 60; -10 80 60; 40 80 60; 15 80 60; 35 80 60; 15 80 60"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.12s"
+                            begin="0.125s"
                           />
+                          {/* Horizontal swinging - opposite */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 2,-2; 0,-1; 1.5,-1.5; 0,0; 1,-1; 0,0"
-                            dur="0.3s"
+                            values="0,0; 3,0; -2,0; 3,0; 0,0; 2,0; 0,0"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
                             keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
                             keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.12s"
+                            begin="0.125s"
                             additive="sum"
                           />
                         </>
                       )}
-                      {(robotAction === 'idle' || robotAction === 'jump' || robotAction === 'spin' || robotAction === 'lookAround') && (
+                      {robotAction === 'jump' && (
                         <>
+                          {/* Arms spread wide - synchronized */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 30 80 60; 20 80 60; 25 80 60; 15 80 60; 22 80 60; 15 80 60"
-                            dur="1.5s"
+                            values="15 80 60; 45 80 60; 15 80 60"
+                            dur="0.4s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.75s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                            begin="0.2s"
                           />
+                          {/* Outward spread motion */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 1,-1; 0,0; 0.5,-0.5; 0,0; 0.8,-0.8; 0,0"
-                            dur="1.8s"
+                            values="0,0; 3,-4; 0,0"
+                            dur="0.4s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="0.9s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                            begin="0.2s"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'spin' && (
+                        <>
+                          {/* Arms extend outward - synchronized */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="15 80 60; 30 80 60; 15 80 60; 30 80 60; 15 80 60"
+                            dur="0.6s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.3s"
+                          />
+                          {/* Radial extension */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 2.5,-2.5; 0,0; 2.5,-2.5; 0,0"
+                            dur="0.6s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.3s"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'lookAround' && (
+                        <>
+                          {/* Slow, subtle arm movement */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="15 80 60; 25 80 60; 20 80 60; 15 80 60"
+                            dur="2s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.33;0.67;1"
+                            begin="1s"
+                          />
+                          {/* Minimal translation */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0.5,-0.5; 0,0; 0.5,-0.5; 0,0"
+                            dur="2s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="1s"
+                            additive="sum"
+                          />
+                        </>
+                      )}
+                      {robotAction === 'idle' && (
+                        <>
+                          {/* Gentle floating - synchronized */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="rotate"
+                            values="15 80 60; 18 80 60; 15 80 60; 17 80 60; 15 80 60"
+                            dur="3s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="1.5s"
+                          />
+                          {/* Very subtle vertical drift */}
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0,-0.5; 0,0; 0,-0.3; 0,0"
+                            dur="3s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="1.5s"
                             additive="sum"
                           />
                         </>
