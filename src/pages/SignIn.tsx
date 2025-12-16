@@ -223,16 +223,22 @@ const SignIn = () => {
       const cardTop = cardRect.top - containerRect.top;
       const cardWidth = cardRect.width;
       const cardHeight = cardRect.height;
-      const offset = 100; // How far outside the card to go (reduced to stay within container)
+      const offset = 120; // How far outside the card to go
       
       // Get header boundary - don't go above the welcome heading
       const headerBottom = welcomeRect ? (welcomeRect.bottom - containerRect.top) : 0;
-      const minY = headerBottom + 20; // Stay 20px below header (don't go into header area)
+      const minY = headerBottom + 30; // Stay 30px below header (safe space under header)
       const maxY = cardTop + cardHeight + offset; // Bottom boundary
       
-      // Calculate position near "Enqir" text (centered horizontally, within header boundary)
+      // Calculate the space between header and card - use this area effectively
+      const spaceBetweenHeaderAndCard = cardTop - minY;
+      const midSpaceY = minY + (spaceBetweenHeaderAndCard / 2); // Middle of the space between header and card
+      const upperSpaceY = minY + (spaceBetweenHeaderAndCard * 0.3); // Upper part of the space
+      const lowerSpaceY = minY + (spaceBetweenHeaderAndCard * 0.7); // Lower part of the space
+      
+      // Calculate position near "Enqir" text (centered horizontally, in the safe space under header)
       let welcomeX = cardLeft + cardWidth / 2;
-      let welcomeY = minY; // Stay at header bottom, not above it
+      let welcomeY = midSpaceY; // Use middle of safe space
       
       if (welcomeRect && welcomeElement) {
         // Find the "Enqir" span within the welcome heading
@@ -240,15 +246,13 @@ const SignIn = () => {
         if (enqirSpan) {
           const enqirRect = enqirSpan.getBoundingClientRect();
           const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
-          const enqirBottom = enqirRect.bottom - containerRect.top;
           welcomeX = enqirCenterX;
-          welcomeY = Math.max(minY, enqirBottom + 20); // Stay below header, at least 20px below Enqir text
+          welcomeY = midSpaceY; // Use safe space below header
         } else {
           // Fallback to welcome text center
           const welcomeCenterX = welcomeRect.left + welcomeRect.width / 2 - containerRect.left;
-          const welcomeBottom = welcomeRect.bottom - containerRect.top;
           welcomeX = welcomeCenterX;
-          welcomeY = Math.max(minY, welcomeBottom + 20); // Stay below header
+          welcomeY = midSpaceY; // Use safe space below header
         }
       }
       
@@ -256,20 +260,23 @@ const SignIn = () => {
       const constrainedWelcomeY = Math.min(welcomeY, maxY - 40);
       
       return [
-        // Paths that go outside the card but stay within container bounds
+        // Paths that utilize the space under header boundary effectively
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: minY }, pause: false }, // Go to header bottom, not above
-        { start: { x: cardLeft + cardWidth / 2, y: minY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause near welcome text (within header boundary)
+        { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: upperSpaceY }, pause: false }, // Use upper safe space
+        { start: { x: cardLeft + cardWidth / 2, y: upperSpaceY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause in safe space under header
         { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: maxY }, pause: false },
         { start: { x: cardLeft + cardWidth / 2, y: maxY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
         { start: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, pause: false },
-        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: minY }, pause: false }, // Go to header bottom, not above
-        { start: { x: cardLeft - offset, y: minY }, end: { x: cardLeft + cardWidth + offset, y: maxY }, pause: false },
-        { start: { x: cardLeft + cardWidth + offset, y: maxY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
-        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause near welcome text again
+        { start: { x: cardLeft + cardWidth / 2, y: cardTop + cardHeight / 2 }, end: { x: cardLeft - offset, y: lowerSpaceY }, pause: false }, // Use lower safe space
+        { start: { x: cardLeft - offset, y: lowerSpaceY }, end: { x: cardLeft + cardWidth + offset, y: upperSpaceY }, pause: false }, // Move through safe space
+        { start: { x: cardLeft + cardWidth + offset, y: upperSpaceY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: false },
+        { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: welcomeX, y: constrainedWelcomeY }, pause: true }, // Pause in safe space again
         { start: { x: welcomeX, y: constrainedWelcomeY }, end: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, pause: false },
+        // Additional paths to use the safe space more
+        { start: { x: cardLeft - offset, y: cardTop + cardHeight / 2 }, end: { x: cardLeft + cardWidth / 2, y: midSpaceY }, pause: false },
+        { start: { x: cardLeft + cardWidth / 2, y: midSpaceY }, end: { x: cardLeft + cardWidth + offset, y: cardTop + cardHeight / 2 }, pause: false },
       ];
     };
 
