@@ -625,22 +625,23 @@ const SignIn = () => {
               {/* Moving Robot Animation - Behind content, doesn't interrupt */}
               <div 
                 ref={robotRef}
-                className="absolute inset-0 pointer-events-none z-0 opacity-70"
+                className="absolute inset-0 pointer-events-none z-0"
                 style={{
                   position: 'absolute',
                   left: `${robotPosition.x || 0}px`,
                   top: `${robotPosition.y || 0}px`,
-                  width: '120px',
-                  height: '120px',
+                  width: '80px',
+                  height: '80px',
                   transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
                   willChange: 'transform',
                   transition: 'none',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
+                  opacity: 1,
                 }}
               >
                 {/* Same Robot from HelpGuide - Smaller */}
-                <svg width="120" height="120" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
+                <svg width="80" height="80" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
                   <defs>
                     <filter id="cyan-glow-signin">
                       <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
