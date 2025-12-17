@@ -237,18 +237,6 @@
     animation: scaleFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: opacity, transform;
   }
-
-  /* Robot dialogue bubble animation */
-  @keyframes fadeInScale {
-    0% {
-      opacity: 0;
-      transform: translate3d(-50%, -10px, 0) scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: translate3d(-50%, 0, 0) scale(1);
-    }
-  }
   
   /* Performance: Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
