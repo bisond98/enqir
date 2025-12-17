@@ -562,11 +562,15 @@ const SignIn = () => {
             <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)', overflow: 'visible' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span 
-                className="text-blue-600 font-black enqir-text inline-block transition-transform duration-75 ease-out" 
+                className="text-blue-600 font-black enqir-text inline-block" 
                 style={{ 
-                  transform: `translate(${textPushOffset.x}px, ${textPushOffset.y}px) rotate(${textPushOffset.x * 1.2}deg) scale(${1 + Math.abs(textPushOffset.x) * 0.01})`,
+                  transform: `translate3d(${textPushOffset.x}px, ${textPushOffset.y}px, 0) rotate(${textPushOffset.x * 1.2}deg) scale(${1 + Math.abs(textPushOffset.x) * 0.01})`,
                   transformOrigin: 'center center',
-                  filter: isPushingText ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))' : 'none'
+                  filter: isPushingText ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))' : 'none',
+                  willChange: 'transform',
+                  transition: 'none', // No transition - animation is handled by requestAnimationFrame
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
                 }}
               >
                 Enqir
@@ -1870,12 +1874,12 @@ const SignIn = () => {
             </svg>
           </div>
 
-          {/* Robot Dialogue Bubble - Shows when robot pauses at Enqir text */}
+          {/* Robot Dialogue Bubble - Shows when robot pauses at Enqir text - Isolated to not interfere with text animation */}
           {isRobotPaused && isPushingText && (
             <div
-              className="absolute pointer-events-none z-10"
+              className="absolute pointer-events-none"
               style={{
-                position: 'absolute',
+                position: 'fixed', // Use fixed to avoid layout interference
                 left: `${robotPosition.x || 0}px`,
                 top: `${(robotPosition.y || 0) - 90}px`,
                 transform: 'translate3d(-50%, 0, 0)',
@@ -1884,6 +1888,9 @@ const SignIn = () => {
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
+                zIndex: 5, // Lower than text (which is in z-10+ area)
+                isolation: 'isolate', // Create new stacking context to prevent interference
+                contain: 'layout style paint', // Isolate rendering
               }}
             >
               {/* Speech Bubble with animation */}
