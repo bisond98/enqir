@@ -19,6 +19,11 @@ import { toast } from "@/hooks/use-toast";
 const Landing = () => {
   const features = [
     {
+      icon: Users,
+      title: "Simple & Safe",
+      description: "We don't need your data; we already have a revenue model"
+    },
+    {
       icon: Search,
       title: "AI-Powered Discovery",
       description: "We do not exploit unpaid interns"
@@ -1798,8 +1803,8 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* Mobile-only text card above trust badge */}
-          <div className="block sm:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
+          {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
+          <div className="block md:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
             <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
               <div className="relative">
                 <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
@@ -1817,11 +1822,11 @@ const Landing = () => {
             {features.map((feature, index) => (
               <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
                 <div className="relative">
-                  <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
-                <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
-                <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">{feature.description}</p>
+                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
               </Card>
             ))}
           </div>
@@ -3010,7 +3015,7 @@ const Landing = () => {
               {/* Mobile: Bottom left, bigger - PROTECTED: w-24 h-24, bottom-6 left-6 */}
               <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-6 z-50 group">
                 <button
-                  className="w-24 h-24 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
+                  className="w-24 h-24 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
@@ -3022,7 +3027,7 @@ const Landing = () => {
               {/* Desktop: Centered */}
               <Link to="/help-guide" className="hidden sm:inline-flex items-center justify-center group">
                 <button
-                  className="w-14 h-14 rounded-full border-[0.5px] border-gray-400 bg-gradient-to-b from-white to-gray-100 text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:from-gray-50 hover:to-white relative overflow-hidden"
+                  className="w-14 h-14 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
