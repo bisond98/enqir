@@ -235,7 +235,9 @@ const SignIn = () => {
         // Page is visible - resume animation
         isRunning = true;
         lastTimestamp = 0; // Reset to recalculate timing
-        pathStartTime = performance.now(); // Reset path timing
+        // 🛡️ PRODUCTION FIX: Use requestAnimationFrame timestamp for consistency
+        // Don't set pathStartTime here - let animate() handle it with proper timestamp
+        pathStartTime = 0; // Reset so it gets set properly in animate()
         if (robotRef.current) {
           animationFrameId = requestAnimationFrame(animate);
         }
@@ -359,6 +361,13 @@ const SignIn = () => {
                }
              }
              
+             // 🛡️ PRODUCTION FIX: Always ensure pathStartTime is valid (safeguard)
+             // This prevents animation from getting stuck if pathStartTime is somehow invalid
+             if (pathStartTime <= 0 || pathStartTime > timestamp) {
+               console.warn('⚠️ Robot animation: Invalid pathStartTime, resetting to current timestamp');
+               pathStartTime = timestamp;
+             }
+             
              // 🛡️ FIX: Use actual elapsed time but clamp to prevent huge jumps when tab returns
              // This ensures consistent animation speed in both localhost and production
              // Allow up to 100ms to handle throttling, but prevent huge jumps that break animation
@@ -456,6 +465,11 @@ const SignIn = () => {
       
       // 🛡️ FIX: Use absolute time-based progress instead of accumulating deltaTime
       // This ensures animation speed is consistent regardless of frame rate (localhost vs production)
+      // 🛡️ PRODUCTION FIX: Ensure pathStartTime is always valid
+      if (pathStartTime === 0) {
+        pathStartTime = timestamp;
+      }
+      
       const pathElapsed = timestamp - pathStartTime;
       const pathProgress = Math.min(pathElapsed / pathDuration, 1);
       
@@ -465,13 +479,19 @@ const SignIn = () => {
           isPaused = true;
           setIsRobotPaused(true);
           pauseStartTime = timestamp;
+          // Keep pathStartTime as is during pause
         } else {
           // 🛡️ FIX: Reset path start time when moving to next path
+          // Use current timestamp to ensure smooth transition
           pathStartTime = timestamp;
           currentPathIndex = (currentPathIndex + 1) % paths.length;
           paths = createRoamingPaths();
           if (currentPathIndex < paths.length) {
             currentPath = paths[currentPathIndex];
+            // 🛡️ PRODUCTION FIX: Ensure pathStartTime is set for new path
+            if (pathStartTime === 0) {
+              pathStartTime = timestamp;
+            }
           }
         }
       }
@@ -525,6 +545,8 @@ const SignIn = () => {
       if (currentPathIndex < paths.length) {
         currentPath = paths[currentPathIndex];
       }
+      // 🛡️ PRODUCTION FIX: Reset path timing on resize to prevent animation glitches
+      pathStartTime = performance.now();
     };
     window.addEventListener('resize', handleResize);
 
