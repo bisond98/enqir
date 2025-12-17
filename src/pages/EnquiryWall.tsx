@@ -1782,9 +1782,9 @@ export default function EnquiryWall() {
                       isEnquiryDisabled(enquiry) 
                         ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' 
                         : viewMode === 'list' 
-                          ? 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_8px_0_0_rgba(0,0,0,0.15),0_4px_8px_rgba(0,0,0,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15),0_1px_4px_rgba(0,0,0,0.1)] active:translate-y-[6px] active:scale-[0.98]' 
-                          : 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 border-2 shadow-[0_8px_0_0_rgba(0,0,0,0.15),0_4px_8px_rgba(0,0,0,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15),0_1px_4px_rgba(0,0,0,0.1)] active:translate-y-[6px] active:scale-[0.98]'
-                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_10px_0_0_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.12)] sm:hover:-translate-y-1 sm:active:shadow-[0_2px_0_0_rgba(0,0,0,0.15),0_1px_4px_rgba(0,0,0,0.1)] sm:active:translate-y-[6px] sm:active:scale-[0.98]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 } : {}}>
+                          ? 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
+                          : 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
+                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -1863,10 +1863,6 @@ export default function EnquiryWall() {
                                   </>
                                 )}
                           </div>
-                          {/* Need Label - Centered in header */}
-                          <div className="absolute left-1/2 transform -translate-x-1/2">
-                            <span className="text-[7px] sm:text-[9px] text-white font-bold tracking-wide">Need</span>
-                          </div>
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             {!isEnquiryDisabled(enquiry) && (
                               <Badge className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
@@ -1887,9 +1883,14 @@ export default function EnquiryWall() {
                           {/* First Half - Top: Title and Description */}
                           <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
                             <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0">
+                              {/* Need Label - Above Title */}
+                              <div className="text-center">
+                                <span className="text-[7px] sm:text-[9px] text-gray-500 font-semibold tracking-wide">Need</span>
+                              </div>
+                              
                               {/* Title - Mobile: allows 3 lines, Desktop: 1 line - Professional typography */}
-                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-gray-900 sm:text-black text-center antialiased font-heading ${
-                                    isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
+                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-white text-center antialiased font-heading border-[0.5px] border-red-700 bg-red-700 px-2 py-1 rounded-lg ${
+                                    isEnquiryDisabled(enquiry) ? 'text-gray-500 bg-gray-400' : ''
                                   }`} style={{
                                     WebkitFontSmoothing: 'antialiased',
                                     MozOsxFontSmoothing: 'grayscale',
@@ -1971,13 +1972,15 @@ export default function EnquiryWall() {
                       ) : (
                         <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
-                            {/* Need Label */}
-                            <span className="text-[7px] sm:text-[9px] text-gray-500 font-semibold tracking-wide">Need</span>
+                            {/* Need Label - Above Title */}
+                            <div className="text-center">
+                              <span className="text-[7px] sm:text-[9px] text-gray-500 font-semibold tracking-wide">Need</span>
+                            </div>
                             
                             {/* Title - Professional typography */}
                             <div className="mb-1.5 sm:mb-3">
-                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-1 truncate text-gray-900 sm:text-black text-center antialiased font-heading ${
-                                  isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
+                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-1 truncate text-white text-center antialiased font-heading border-[0.5px] border-red-700 bg-red-700 px-2 py-1 rounded-lg ${
+                                  isEnquiryDisabled(enquiry) ? 'text-gray-500 bg-gray-400' : ''
                                 }`} style={{
                                   WebkitFontSmoothing: 'antialiased',
                                   MozOsxFontSmoothing: 'grayscale',
@@ -2073,8 +2076,8 @@ export default function EnquiryWall() {
                                 <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
-                                  <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
-                                  <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-black text-black text-xl sm:text-3xl md:text-4xl relative z-10">₹</span>
+                                  <span className="truncate font-black text-gray-900 text-lg sm:text-2xl md:text-3xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
@@ -2113,8 +2116,8 @@ export default function EnquiryWall() {
                                 <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
                                   <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
-                                  <span className="font-black text-black text-sm sm:text-xl md:text-2xl relative z-10">₹</span>
-                                  <span className="font-black text-gray-900 text-xs sm:text-lg md:text-xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-black text-black text-lg sm:text-2xl md:text-3xl relative z-10">₹</span>
+                                  <span className="font-black text-gray-900 text-base sm:text-xl md:text-2xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
@@ -2180,32 +2183,35 @@ export default function EnquiryWall() {
                           </div>
                           
                           {/* Mobile Layout - Budget, Location, Category and Button at Bottom */}
-                          <div className="block sm:hidden w-full mt-auto space-y-2 pt-4">
-                            {/* Budget, Location, Category - Mobile Only */}
-                            <div className="flex flex-wrap items-center gap-1.5 justify-start">
-                              {/* Budget */}
-                              {enquiry.budget && (
-                                <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                  <span className="font-semibold text-gray-700 text-[8px] relative z-10">budget -</span>
-                                  <span className="font-black text-black text-sm relative z-10">₹</span>
-                                  <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
-                                  </div>
-                              )}
-                              {/* Location */}
-                              {enquiry.location && (
-                                <div className="flex items-center gap-1 text-gray-700 rounded-lg px-1.5 py-0.5 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                  <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0 relative z-10">
-                                    <MapPin className="h-2 w-2 text-gray-600" />
+                          <div className="block sm:hidden w-full mt-auto space-y-3 pt-4">
+                            {/* Budget - Mobile Only - Bigger and Centered */}
+                            {enquiry.budget && (
+                              <div className="relative flex items-center justify-center" style={{ marginTop: '-24px' }}>
+                                <div className="flex items-center gap-1">
+                                  <span className="font-semibold text-gray-700 text-[10px]">budget -</span>
+                                  <span className="font-black text-black text-xl">₹</span>
+                                  <span className="font-black text-gray-900 text-lg whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
-                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10">{enquiry.location}</span>
                               </div>
                             )}
+                            
+                            {/* Spacer to maintain card height */}
+                            <div className="h-6 sm:hidden"></div>
+                            
+                            {/* Location and Category - In a line above Sell Button (Mobile Only) */}
+                            <div className="w-full flex items-center justify-between sm:hidden mb-2">
+                              {/* Location */}
+                              {enquiry.location && (
+                                <div className="flex items-center gap-1 text-gray-700 flex-shrink-0">
+                                  <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gray-100 flex-shrink-0">
+                                    <MapPin className="h-2 w-2 text-red-500" />
+                                  </div>
+                                  <span className="text-[10px] font-semibold whitespace-nowrap">{enquiry.location}</span>
+                                </div>
+                              )}
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg flex-shrink-0 whitespace-nowrap relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
+                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
+                                <span>{enquiry.category.replace('-', ' ')}</span>
                               </Badge>
                             </div>
                             
