@@ -1,6 +1,11 @@
 // 🛡️ PROTECTED FILE - Mobile optimizations, centered descriptions, card styling
 // Last Updated: Mobile card optimizations and list view description centering
 // DO NOT REVERT: All mobile-specific optimizations are intentional
+// 
+// 🛡️ PROTECTED: Count calculation fix (prevents count from being capped at 99)
+// ⚠️ CRITICAL: Count must be calculated from displayEnquiries filtered to live only
+// ⚠️ DO NOT MODIFY: The count calculation useEffect (around line 1049-1096)
+// ⚠️ DO NOT REVERT: This fix ensures count matches Load More button and what users see
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -507,9 +512,12 @@ export default function EnquiryWall() {
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
         console.log('📊 EnquiryWall: Snapshot docs count:', snapshot.docs.length, '- If this is 100, snapshot might be limited');
         
+        // 🛡️ PROTECTED: DO NOT set count here - it will be calculated from displayEnquiries
         // 🚀 FIX: Don't set count here - it will be calculated from displayEnquiries
         // The count will be set in the useEffect that watches displayEnquiries
         // This ensures count matches what's actually displayed, not just what's in the snapshot
+        // ⚠️ CRITICAL: Setting count here causes it to be capped at 99
+        // ⚠️ DO NOT REVERT: Count must be calculated from displayEnquiries useEffect (line ~1049)
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -1046,10 +1054,19 @@ export default function EnquiryWall() {
     setHasMore(displayEnquiries.length > enquiriesPerPage);
   }, [displayEnquiries, enquiriesPerPage]);
 
+  // 🛡️ PROTECTED: Count calculation - DO NOT MODIFY
   // 🚀 FIX: Calculate count from displayEnquiries filtered to live only
   // This ensures count matches what's actually available to users (what they can see)
   // displayEnquiries includes all enquiries (live + expired + deal closed) that match filters
   // We need to count only LIVE enquiries from displayEnquiries to match what's available
+  // 
+  // ⚠️ CRITICAL: This fix prevents count from being capped at 99
+  // ⚠️ DO NOT REVERT: Count must be calculated from displayEnquiries, not enquiries state
+  // ⚠️ This ensures count matches Load More button and what users actually see
+  // 
+  // Previous issue: Count showed 99 but Load More showed 127 remaining
+  // Root cause: Count was calculated from enquiries state (limited snapshot)
+  // Solution: Calculate from displayEnquiries filtered to live only
   useEffect(() => {
     // Count only live (non-expired, non-deal-closed) enquiries from displayEnquiries
     // This ensures count matches what's actually available (matches Load More button logic)
@@ -1090,8 +1107,11 @@ export default function EnquiryWall() {
       displayedEnquiriesLength: displayedEnquiries.length
     });
     
+    // 🛡️ PROTECTED: Set count from displayEnquiries - DO NOT CHANGE THIS LOGIC
     // 🚀 FIX: Use the count from displayEnquiries filtered to live only
     // This ensures count matches what's actually available to users
+    // ⚠️ CRITICAL: Must use displayEnquiries, not enquiries state
+    // ⚠️ DO NOT REVERT: This prevents count from being capped incorrectly
     setLiveEnquiriesCount(liveCount);
   }, [displayEnquiries, enquiries, displayedEnquiries]);
 
