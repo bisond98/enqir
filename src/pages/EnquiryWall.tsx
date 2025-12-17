@@ -358,6 +358,12 @@ export default function EnquiryWall() {
         enquiriesQueryWithoutOrder,
         (snapshot) => {
           console.log('✅ EnquiryWall: Query without orderBy succeeded, got', snapshot.docs.length, 'documents');
+          if (snapshot.docs.length === 100) {
+            console.error('❌ EnquiryWall: Query without orderBy returned exactly 100 documents - snapshot is LIMITED!');
+            console.error('❌ EnquiryWall: This means we are NOT getting all documents. Count will be incorrect.');
+          } else {
+            console.log('✅ EnquiryWall: Query without orderBy got', snapshot.docs.length, 'documents - should be all documents');
+          }
           processEnquiries(snapshot);
         },
         (error) => {
@@ -501,11 +507,9 @@ export default function EnquiryWall() {
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
         console.log('📊 EnquiryWall: Snapshot docs count:', snapshot.docs.length, '- If this is 100, snapshot might be limited');
         
-        // 🛡️ PROTECTED: Set live enquiries count for display (non-expired, non-deal-closed only)
-        // 🚀 FIX: Check if snapshot is limited and warn
-        // Note: Count will be updated from displayEnquiries useEffect to ensure accuracy
-        // This initial count is set here but may be overridden if snapshot is limited
-        setLiveEnquiriesCount(liveEnquiries.length);
+        // 🚀 FIX: Don't set count here - it will be calculated from displayEnquiries
+        // The count will be set in the useEffect that watches displayEnquiries
+        // This ensures count matches what's actually displayed, not just what's in the snapshot
         
         // Sort live enquiries by date (newest first)
         liveEnquiries.sort((a, b) => {
@@ -1033,23 +1037,32 @@ export default function EnquiryWall() {
     return results;
   }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles]);
 
-  // 🚀 PAGINATION: Paginate displayEnquiries to show 25 at a time
+  // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
   useEffect(() => {
     // Reset pagination when filters change
     const firstPage = displayEnquiries.slice(0, enquiriesPerPage);
     setDisplayedEnquiries(firstPage);
     setCurrentPage(1);
     setHasMore(displayEnquiries.length > enquiriesPerPage);
-    
-    // 🚀 FIX: Update count from displayEnquiries to ensure accuracy
+  }, [displayEnquiries, enquiriesPerPage]);
+
+  // 🚀 FIX: Calculate count from displayEnquiries filtered to live only
+  // This ensures count matches what's actually available to users (what they can see)
+  // displayEnquiries includes all enquiries (live + expired + deal closed) that match filters
+  // We need to count only LIVE enquiries from displayEnquiries to match what's available
+  useEffect(() => {
     // Count only live (non-expired, non-deal-closed) enquiries from displayEnquiries
+    // This ensures count matches what's actually available (matches Load More button logic)
     const now = new Date();
     const liveCount = displayEnquiries.filter(enquiry => {
-      // Filter out deal closed
+      // Filter to status='live' or 'deal_closed' first (matches processEnquiries logic)
       const status = (enquiry.status || '').toLowerCase().trim();
+      if (status !== 'live' && status !== 'deal_closed') return false;
+      
+      // Filter out deal closed
       if (status === 'deal_closed' || enquiry.dealClosed === true) return false;
       
-      // Filter out expired
+      // Filter out expired - use same logic as processEnquiries
       if (!enquiry.deadline) return true; // No deadline = live
       try {
         let deadlineDate: Date;
@@ -1069,11 +1082,18 @@ export default function EnquiryWall() {
       }
     }).length;
     
-    // Only update count if displayEnquiries has data (to avoid resetting to 0 during loading)
-    if (displayEnquiries.length > 0 || liveCount > 0) {
-      setLiveEnquiriesCount(liveCount);
-    }
-  }, [displayEnquiries, enquiriesPerPage]);
+    // Always update count from displayEnquiries (matches what users can see)
+    console.log('📊 EnquiryWall: Recalculating count from displayEnquiries:', {
+      totalDisplayEnquiries: displayEnquiries.length,
+      liveCount: liveCount,
+      totalEnquiries: enquiries.length,
+      displayedEnquiriesLength: displayedEnquiries.length
+    });
+    
+    // 🚀 FIX: Use the count from displayEnquiries filtered to live only
+    // This ensures count matches what's actually available to users
+    setLiveEnquiriesCount(liveCount);
+  }, [displayEnquiries, enquiries, displayedEnquiries]);
 
   // 🚀 PAGINATION: Load more function
   const loadMore = useCallback(() => {
