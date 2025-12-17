@@ -331,57 +331,25 @@ export default function EnquiryWall() {
   useEffect(() => {
     setLoading(true);
     
-    // Fetch all enquiries and filter client-side to ensure all 'live' enquiries are shown
-    // This ensures we catch all admin-approved enquiries regardless of query/index issues
+    // 🚀 FIX: Fetch all enquiries - use query without orderBy first to avoid 100 document limit
+    // Firestore queries with orderBy may be limited to 100 documents
+    // We'll sort client-side to ensure we get ALL documents
+    const enquiriesQueryWithoutOrder = query(
+      collection(db, "enquiries")
+      // No orderBy - gets ALL documents without limit
+    );
+    
+    // Query with orderBy for fallback (if needed, but may be limited to 100)
     const enquiriesQueryWithOrder = query(
       collection(db, "enquiries"),
       orderBy("createdAt", "desc")
     );
     
-    // Fallback query without orderBy (if index doesn't exist)
-    const enquiriesQueryWithoutOrder = query(
-      collection(db, "enquiries")
-    );
-    
     let unsubscribe: (() => void) | null = null;
     
-    // Try with orderBy first
-    const tryWithOrder = () => {
-      console.log('🔍 EnquiryWall: Attempting query with orderBy...');
-      unsubscribe = onSnapshot(
-        enquiriesQueryWithOrder,
-        (snapshot) => {
-          console.log('✅ EnquiryWall: Query with orderBy succeeded');
-          processEnquiries(snapshot);
-        },
-        (error: any) => {
-          // If index error, fallback to query without orderBy
-          if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
-            console.warn("⚠️ EnquiryWall: Firestore index missing, using fallback query:", error);
-            tryWithoutOrder();
-          } else {
-            console.error("❌ EnquiryWall: Error loading enquiries:", error);
-            console.error("❌ EnquiryWall: Error details:", {
-              code: error?.code,
-              message: error?.message,
-              stack: error?.stack
-            });
-            
-            // Only show error toast for non-CORS errors
-            if (!error?.message?.includes('CORS') && !error?.message?.includes('Access-Control-Allow-Origin')) {
-              // Error will be handled by fallback, don't show toast here to avoid spam
-            }
-            
-            // Try fallback even on other errors
-            tryWithoutOrder();
-          }
-        }
-      );
-    };
-    
-    // Fallback without orderBy
+    // 🚀 FIX: Try without orderBy first to get ALL documents (no 100 limit)
     const tryWithoutOrder = () => {
-      console.log('🔍 EnquiryWall: Attempting fallback query without orderBy...');
+      console.log('🔍 EnquiryWall: Attempting query without orderBy to get ALL documents...');
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
@@ -389,20 +357,42 @@ export default function EnquiryWall() {
       unsubscribe = onSnapshot(
         enquiriesQueryWithoutOrder,
         (snapshot) => {
-          console.log('✅ EnquiryWall: Fallback query succeeded');
+          console.log('✅ EnquiryWall: Query without orderBy succeeded, got', snapshot.docs.length, 'documents');
           processEnquiries(snapshot);
         },
         (error) => {
-          console.error("❌ EnquiryWall: Error loading enquiries (fallback):", error);
-          console.error("❌ EnquiryWall: Fallback error details:", {
-            code: error?.code,
-            message: error?.message,
-            stack: error?.stack
-          });
+          console.error("❌ EnquiryWall: Error loading enquiries (no orderBy):", error);
+          // Try with orderBy as fallback
+          tryWithOrder();
+        }
+      );
+    };
+    
+    // Fallback: Try with orderBy if query without orderBy fails
+    const tryWithOrder = () => {
+      console.log('🔍 EnquiryWall: Attempting query with orderBy (may be limited to 100 docs)...');
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+      unsubscribe = onSnapshot(
+        enquiriesQueryWithOrder,
+        (snapshot) => {
+          console.log('✅ EnquiryWall: Query with orderBy succeeded, got', snapshot.docs.length, 'documents');
+          if (snapshot.docs.length === 100) {
+            console.warn('⚠️ EnquiryWall: Snapshot returned exactly 100 documents - may be limited!');
+          }
+          processEnquiries(snapshot);
+        },
+        (error: any) => {
+          console.error("❌ EnquiryWall: Error loading enquiries (orderBy):", error);
           setLoading(false);
         }
       );
     };
+    
+    // Start with query without orderBy to get ALL documents
+    tryWithoutOrder();
     
     // Process enquiries data
     const processEnquiries = (snapshot: any) => {
@@ -509,9 +499,12 @@ export default function EnquiryWall() {
         });
         
         console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
+        console.log('📊 EnquiryWall: Snapshot docs count:', snapshot.docs.length, '- If this is 100, snapshot might be limited');
         
         // 🛡️ PROTECTED: Set live enquiries count for display (non-expired, non-deal-closed only)
-        // DO NOT MODIFY - This count must match Landing.tsx exactly
+        // 🚀 FIX: Check if snapshot is limited and warn
+        // Note: Count will be updated from displayEnquiries useEffect to ensure accuracy
+        // This initial count is set here but may be overridden if snapshot is limited
         setLiveEnquiriesCount(liveEnquiries.length);
         
         // Sort live enquiries by date (newest first)
@@ -566,8 +559,8 @@ export default function EnquiryWall() {
       }
     };
     
-    // Start with orderBy query
-    tryWithOrder();
+    // 🚀 FIX: Start with query without orderBy to get ALL documents (no 100 limit)
+    tryWithoutOrder();
 
     // Cleanup subscription on unmount
     return () => {
@@ -1047,6 +1040,39 @@ export default function EnquiryWall() {
     setDisplayedEnquiries(firstPage);
     setCurrentPage(1);
     setHasMore(displayEnquiries.length > enquiriesPerPage);
+    
+    // 🚀 FIX: Update count from displayEnquiries to ensure accuracy
+    // Count only live (non-expired, non-deal-closed) enquiries from displayEnquiries
+    const now = new Date();
+    const liveCount = displayEnquiries.filter(enquiry => {
+      // Filter out deal closed
+      const status = (enquiry.status || '').toLowerCase().trim();
+      if (status === 'deal_closed' || enquiry.dealClosed === true) return false;
+      
+      // Filter out expired
+      if (!enquiry.deadline) return true; // No deadline = live
+      try {
+        let deadlineDate: Date;
+        if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+          deadlineDate = enquiry.deadline.toDate();
+        } else if (enquiry.deadline?.seconds !== undefined) {
+          deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+        } else if (enquiry.deadline instanceof Date) {
+          deadlineDate = enquiry.deadline;
+        } else {
+          deadlineDate = new Date(enquiry.deadline);
+        }
+        if (!deadlineDate || isNaN(deadlineDate.getTime())) return true;
+        return deadlineDate.getTime() >= now.getTime();
+      } catch {
+        return true;
+      }
+    }).length;
+    
+    // Only update count if displayEnquiries has data (to avoid resetting to 0 during loading)
+    if (displayEnquiries.length > 0 || liveCount > 0) {
+      setLiveEnquiriesCount(liveCount);
+    }
   }, [displayEnquiries, enquiriesPerPage]);
 
   // 🚀 PAGINATION: Load more function

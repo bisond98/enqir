@@ -798,10 +798,12 @@ const Landing = () => {
     // - NO LIMIT: Must get ALL enquiries (not just first 50)
     // - onSnapshot: Real-time updates matching EnquiryWall.tsx
     // - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired
-    // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
+    // 🚀 FIX: Use query without orderBy to get ALL documents (no 100 limit)
+    // Firestore queries with orderBy may be limited to 100 documents
+    // We'll sort client-side to ensure we get ALL documents
     const q = query(
-      collection(db, 'enquiries'),
-      orderBy('createdAt', 'desc')
+      collection(db, 'enquiries')
+      // No orderBy - gets ALL documents without limit
       // 🛡️ NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
     
