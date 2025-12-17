@@ -1882,18 +1882,22 @@ export default function EnquiryWall() {
                         <>
                           {/* First Half - Top: Title and Description */}
                           <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
-                            <div className="space-y-1.5 sm:space-y-3">
-                              {/* Need Label */}
-                              <span className="text-[8px] sm:text-[10px] text-gray-900 font-bold tracking-wide">Need</span>
+                            <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0">
+                              {/* Need Label - Centered on mobile */}
+                              <span className="text-[8px] sm:text-[10px] text-gray-900 font-bold tracking-wide text-center sm:text-left block">Need</span>
                               
-                              {/* Title */}
-                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
+                              {/* Title - Mobile: allows 3 lines, Desktop: 1 line - Professional typography */}
+                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-gray-900 sm:text-black text-center antialiased font-heading ${
                                     isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
-                                  }`}>
+                                  }`} style={{
+                                    WebkitFontSmoothing: 'antialiased',
+                                    MozOsxFontSmoothing: 'grayscale',
+                                    textRendering: 'optimizeLegibility'
+                                  }}>
                                     {enquiry.title}
                                   </h3>
                               
-                              {/* "before [date]" below title, right aligned */}
+                              {/* "before [date]" below title, centered on mobile */}
                               {enquiry.deadline && (() => {
                                 try {
                                   let deadlineDate: Date;
@@ -1921,7 +1925,7 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                    <div className="flex flex-col items-center sm:items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
                                       <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                         before {formatDate(deadlineDate.toISOString())}
                                       </span>
@@ -1936,8 +1940,8 @@ export default function EnquiryWall() {
                                 }
                               })()}
                               
-                              {/* Badges Row */}
-                              <div className="flex items-center gap-0.5 sm:gap-2 flex-wrap">
+                              {/* Badges Row - Centered on mobile */}
+                              <div className="flex items-center justify-center sm:justify-start gap-0.5 sm:gap-2 flex-wrap">
                                   {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                                     <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
                                       <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
@@ -1953,9 +1957,9 @@ export default function EnquiryWall() {
                                 </div>
                               </div>
                               
-                            {/* Description - Lower position for mobile list view */}
+                            {/* Description - Hidden on mobile, shown on desktop */}
                             {enquiry.description && (
-                              <div className="flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
+                              <div className="hidden sm:flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
                                 <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-5 text-center max-w-xs sm:max-w-sm">
                                 {enquiry.description}
                               </p>
@@ -1969,11 +1973,15 @@ export default function EnquiryWall() {
                             {/* Need Label */}
                             <span className="text-[8px] sm:text-[10px] text-gray-500 font-semibold tracking-wide">Need</span>
                             
-                            {/* Title */}
+                            {/* Title - Professional typography */}
                             <div className="mb-1.5 sm:mb-3">
-                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight line-clamp-1 truncate text-black text-center ${
+                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-1 truncate text-gray-900 sm:text-black text-center antialiased font-heading ${
                                   isEnquiryDisabled(enquiry) ? 'text-gray-500' : ''
-                                }`}>
+                                }`} style={{
+                                  WebkitFontSmoothing: 'antialiased',
+                                  MozOsxFontSmoothing: 'grayscale',
+                                  textRendering: 'optimizeLegibility'
+                                }}>
                                   {enquiry.title}
                                 </h3>
                               
@@ -2062,6 +2070,7 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
                                   <span className="font-black text-black text-base sm:text-2xl md:text-3xl relative z-10">₹</span>
                                   <span className="truncate font-black text-gray-900 text-sm sm:text-xl md:text-2xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
@@ -2101,6 +2110,7 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
                                   <span className="font-black text-black text-sm sm:text-xl md:text-2xl relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs sm:text-lg md:text-xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
@@ -2175,6 +2185,7 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1 bg-white rounded-lg px-1.5 py-0.5 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                  <span className="font-semibold text-gray-700 text-[8px] relative z-10">budget -</span>
                                   <span className="font-black text-black text-sm relative z-10">₹</span>
                                   <span className="font-black text-gray-900 text-xs whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
                                   </div>
