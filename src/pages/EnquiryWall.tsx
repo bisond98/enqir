@@ -63,6 +63,11 @@ export default function EnquiryWall() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
+  // 🚀 PAGINATION: State for paginated display (25 per page)
+  const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const enquiriesPerPage = 25;
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scroll sound effect refs
@@ -1035,6 +1040,29 @@ export default function EnquiryWall() {
     return results;
   }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles]);
 
+  // 🚀 PAGINATION: Paginate displayEnquiries to show 25 at a time
+  useEffect(() => {
+    // Reset pagination when filters change
+    const firstPage = displayEnquiries.slice(0, enquiriesPerPage);
+    setDisplayedEnquiries(firstPage);
+    setCurrentPage(1);
+    setHasMore(displayEnquiries.length > enquiriesPerPage);
+  }, [displayEnquiries, enquiriesPerPage]);
+
+  // 🚀 PAGINATION: Load more function
+  const loadMore = useCallback(() => {
+    const nextPage = currentPage + 1;
+    const startIndex = (nextPage - 1) * enquiriesPerPage;
+    const endIndex = startIndex + enquiriesPerPage;
+    const nextBatch = displayEnquiries.slice(startIndex, endIndex);
+    
+    if (nextBatch.length > 0) {
+      setDisplayedEnquiries(prev => [...prev, ...nextBatch]);
+      setCurrentPage(nextPage);
+      setHasMore(endIndex < displayEnquiries.length);
+    }
+  }, [currentPage, displayEnquiries, enquiriesPerPage]);
+
   // Memoize helper functions for better performance
   const isOwnEnquiry = useCallback((enquiry: Enquiry) => {
     return authUser && enquiry.userId === authUser.uid;
@@ -1670,7 +1698,7 @@ export default function EnquiryWall() {
                 ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 items-stretch' 
                 : 'space-y-3 sm:space-y-4'
             }`}>
-              {displayEnquiries.map((enquiry) => (
+              {displayedEnquiries.map((enquiry) => (
                 <div key={enquiry.id} className="block">
                   <Link
                     to={isEnquiryDisabled(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
@@ -2197,6 +2225,18 @@ export default function EnquiryWall() {
                 </div>
               ))}
             </div>
+
+            {/* 🚀 PAGINATION: Load More Button */}
+            {hasMore && displayEnquiries.length > displayedEnquiries.length && (
+              <div className="flex justify-center mt-8 mb-4">
+                <Button
+                  onClick={loadMore}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg hover:shadow-xl"
+                >
+                  Load More ({displayEnquiries.length - displayedEnquiries.length} remaining)
+                </Button>
+              </div>
+            )}
             </>
           ) : (
             <div className="text-center py-16">
