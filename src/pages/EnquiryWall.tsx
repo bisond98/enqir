@@ -2014,11 +2014,16 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
-                                        before {formatDate(deadlineDate.toISOString())}
-                                      </span>
-                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                    <div className="flex items-center gap-3 pt-2">
+                                      <div className="flex items-center gap-2 text-gray-600">
+                                        <span className="text-sm font-medium">
+                                          Deadline:
+                                        </span>
+                                        <span className="text-sm font-semibold text-gray-900">
+                                          {formatDate(deadlineDate.toISOString())}
+                                        </span>
+                                      </div>
+                                      <span className="inline-flex items-center px-2.5 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-md border border-red-200">
                                         {formatDeadlineText(enquiry.deadline)}
                                       </span>
                                     </div>
@@ -2048,21 +2053,17 @@ export default function EnquiryWall() {
                                 )}
                               </div>
                             
-                            {/* Badges */}
-                            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                              {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                <Badge className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 bg-red-500 text-white border-0 shadow-sm font-semibold flex-shrink-0">
-                                  <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
+                            {/* Urgent Badge */}
+                            {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
+                              <div className="pt-1">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 text-xs font-semibold rounded-lg border border-red-200">
+                                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                                   Urgent
-                                </Badge>
-                              )}
-                              {isDealClosed(enquiry) && (
-                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Deal Closed</Badge>
-                              )}
-                              {!isDealClosed(enquiry) && isEnquiryOutdated(enquiry) && (
-                                <Badge variant="outline" className="text-[8px] sm:text-[11px] px-0.5 sm:px-2 py-0.5 text-gray-500 border-gray-300 bg-gray-50 flex-shrink-0">Expired</Badge>
-                              )}
-                            </div>
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Description - Hidden in grid view */}
                             
                             {/* Description - Hidden in grid view */}
                             

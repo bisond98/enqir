@@ -19,11 +19,6 @@ import { toast } from "@/hooks/use-toast";
 const Landing = () => {
   const features = [
     {
-      icon: Users,
-      title: "Simple & Safe",
-      description: "We don't need your data; we already have a revenue model"
-    },
-    {
       icon: Search,
       title: "AI-Powered Discovery",
       description: "We do not exploit unpaid interns"
@@ -32,6 +27,11 @@ const Landing = () => {
       icon: Zap,
       title: "Post any need. Sell to real demand",
       description: "Close deals at godspeed with perfectly curated demand & supply."
+    },
+    {
+      icon: Users,
+      title: "Simple & Safe",
+      description: "We don't need your data; we already have a revenue model"
     }
   ];
 
@@ -1820,7 +1820,7 @@ const Landing = () => {
           {/* Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
+              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
                 <div className="relative">
                   <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
