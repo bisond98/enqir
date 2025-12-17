@@ -1292,7 +1292,7 @@ export default function EnquiryWall() {
         }}
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)]">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
@@ -1343,7 +1343,7 @@ export default function EnquiryWall() {
                   }}
                   onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
@@ -1448,7 +1448,7 @@ export default function EnquiryWall() {
             <div className="space-y-3 sm:space-y-4">
               {/* Categories Box - Scrollable */}
               <div className="w-full" ref={categoryBoxRef}>
-                <div className="bg-white border border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                <div className="bg-gray-200 border border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300 relative overflow-hidden">
                       {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                   <div className="relative z-10">
@@ -1620,7 +1620,7 @@ export default function EnquiryWall() {
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="inline-flex items-center gap-1 sm:gap-2">
               <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] sm:text-[11px] font-medium text-gray-600">
+              <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
                 {showTrustBadgeOnly 
                   ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
                   : `${liveEnquiriesCount} real buyers waiting for the right seller` // 🛡️ PROTECTED TEXT - DO NOT MODIFY

@@ -24,9 +24,9 @@ const Landing = () => {
       description: "We do not exploit unpaid interns"
     },
     {
-      icon: Users,
-      title: "Simple & Safe",
-      description: "We don't need your data; we already have a revenue model"
+      icon: Zap,
+      title: "Post any need. Sell to real demand",
+      description: "Close deals at godspeed with perfectly curated demand & supply."
     }
   ];
 
@@ -798,42 +798,22 @@ const Landing = () => {
     // - NO LIMIT: Must get ALL enquiries (not just first 50)
     // - onSnapshot: Real-time updates matching EnquiryWall.tsx
     // - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired
-    // 🚀 FIX: Use query without orderBy to get ALL documents (no 100 limit)
-    // Firestore queries with orderBy may be limited to 100 documents
-    // We'll sort client-side to ensure we get ALL documents
+    // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
     const q = query(
-      collection(db, 'enquiries')
-      // No orderBy - gets ALL documents without limit
+      collection(db, 'enquiries'),
+      orderBy('createdAt', 'desc')
       // 🛡️ NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
     
     // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
     const unsubscribe = onSnapshot(q, (snapshot) => {
       try {
-          // 🚀 OPTIMIZATION: Extract only minimal fields needed for filtering/counting
-          // This reduces data transfer by ~90% while keeping all filtering logic intact
           const items: any[] = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
             items.push({
               id: doc.id,
-              // Minimal fields for filtering and count calculation
-              status: data.status,
-              dealClosed: data.dealClosed,
-              deadline: data.deadline,
-              createdAt: data.createdAt,
-              // Fields needed for display cards (minimal)
-              title: data.title,
-              category: data.category,
-              budget: data.budget,
-              userId: data.userId,
-              idFrontImage: data.idFrontImage,
-              idBackImage: data.idBackImage,
-              description: data.description,
-              location: data.location,
-              responses: data.responses,
-              likes: data.likes,
-              userLikes: data.userLikes
+              ...data
             });
           });
       
@@ -1822,12 +1802,12 @@ const Landing = () => {
           <div className="block sm:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
             <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
               <div className="relative">
-                <Zap className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                 <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
               </div>
-              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Post any need. Sell to real demand</h3>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
               <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
-                Close deals at godspeed with perfectly curated demand & supply.
+                We don't need your data; we already have a revenue model
               </p>
             </Card>
           </div>
@@ -1878,7 +1858,7 @@ const Landing = () => {
             <div className="text-center mb-4 sm:mb-8">
               <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs sm:text-xs font-bold text-black">
+                <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
                   {liveEnquiriesCount} real buyers waiting for the right seller {/* 🛡️ PROTECTED TEXT - DO NOT MODIFY */}
                 </span>
               </div>
