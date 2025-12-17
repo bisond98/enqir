@@ -63,11 +63,11 @@ export default function EnquiryWall() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
-  // 🚀 PAGINATION: State for paginated display (25 per page)
+  // 🚀 PAGINATION: State for paginated display (10 per page)
   const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const enquiriesPerPage = 25;
+  const enquiriesPerPage = 10;
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scroll sound effect refs
