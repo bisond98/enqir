@@ -205,6 +205,12 @@ const SignIn = () => {
     const containerElement = document.querySelector('.signin-container');
     if (!cardElement || !robotRef.current) return;
 
+    // 🛡️ MOBILE FIX: Cache DOM elements to avoid expensive queries every frame
+    let cachedEnqirSpan: HTMLElement | null = null;
+    let cacheTimestamp = 0;
+    const CACHE_DURATION = 1000; // Refresh cache every second
+    const isMobileDevice = window.innerWidth < 640; // Detect mobile once
+
     let animationFrameId: number | null = null;
     let isRunning = true;
     let currentPathIndex = 0;
@@ -215,6 +221,27 @@ const SignIn = () => {
       let isPaused = false;
       let pauseStartTime = 0;
       let pauseDuration = 1500; // 1.5 second pause to show pushing effort
+      
+    // 🛡️ MOBILE FIX: Handle page visibility changes (mobile browsers pause when tab hidden)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page is hidden - pause animation
+        isRunning = false;
+        if (animationFrameId !== null) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+      } else {
+        // Page is visible - resume animation
+        isRunning = true;
+        lastTimestamp = 0; // Reset to recalculate timing
+        pathStartTime = performance.now(); // Reset path timing
+        if (robotRef.current) {
+          animationFrameId = requestAnimationFrame(animate);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const createRoamingPaths = () => {
       const cardRect = cardElement.getBoundingClientRect();
@@ -309,7 +336,8 @@ const SignIn = () => {
 
     let paths = createRoamingPaths();
     let currentPath = paths[currentPathIndex];
-    const pathDuration = 4000; // Fixed 4 second duration - ensures consistency
+    // 🛡️ MOBILE FIX: Slightly faster on mobile for better performance (use cached isMobileDevice)
+    const pathDuration = isMobileDevice ? 3500 : 4000; // 3.5s on mobile, 4s on desktop
     const rotationSmoothing = 0.12;
     // 🛡️ FIX: Track actual start time for consistent timing regardless of frame rate
     let animationStartTime = 0;
@@ -323,11 +351,12 @@ const SignIn = () => {
                animationStartTime = timestamp;
                pathStartTime = timestamp;
                lastTimestamp = timestamp;
-             }
-             
-             if (lastTimestamp === 0) {
+             } else if (lastTimestamp === 0) {
+               // 🛡️ MOBILE FIX: Handle case where animation resumes after being paused
                lastTimestamp = timestamp;
-               pathStartTime = timestamp;
+               if (pathStartTime === 0) {
+                 pathStartTime = timestamp;
+               }
              }
              
              // 🛡️ FIX: Use actual elapsed time but clamp to prevent huge jumps when tab returns
@@ -337,14 +366,21 @@ const SignIn = () => {
              const deltaTime = Math.min(rawDelta, 100); // Clamp to 100ms max per frame
              lastTimestamp = timestamp;
              
-             // Check robot position relative to "Enqir" text for HARD push interaction
-             const welcomeElement = document.querySelector('.welcome-heading');
-             const containerElement = document.querySelector('.signin-container');
-             const enqirSpan = welcomeElement?.querySelector('.enqir-text') as HTMLElement;
+             // 🛡️ MOBILE FIX: Cache DOM queries and throttle distance calculations on mobile
+             const now = performance.now();
+             const shouldCheckDistance = !isMobileDevice || (now - cacheTimestamp) > 200; // Check every 200ms on mobile
              
-             if (enqirSpan && containerElement && robotRef.current) {
+             if (!cachedEnqirSpan || (now - cacheTimestamp) > CACHE_DURATION) {
+               const welcomeEl = document.querySelector('.welcome-heading');
+               cachedEnqirSpan = welcomeEl?.querySelector('.enqir-text') as HTMLElement;
+               cacheTimestamp = now;
+             }
+             
+             // Check robot position relative to "Enqir" text for HARD push interaction
+             // 🛡️ MOBILE FIX: Throttle distance calculations on mobile for better performance
+             if (shouldCheckDistance && cachedEnqirSpan && containerElement && robotRef.current) {
                const containerRect = containerElement.getBoundingClientRect();
-               const enqirRect = enqirSpan.getBoundingClientRect();
+               const enqirRect = cachedEnqirSpan.getBoundingClientRect();
                const robotRect = robotRef.current.getBoundingClientRect();
                
                const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
@@ -379,6 +415,15 @@ const SignIn = () => {
                    y: prev.y * 0.92
                  }));
                }
+             } else if (!shouldCheckDistance) {
+               // 🛡️ MOBILE FIX: Continue text push animation even when distance check is throttled
+               // Only update if currently pushing
+               setTextPushOffset(prev => {
+                 if (Math.abs(prev.x) > 0.1 || Math.abs(prev.y) > 0.1) {
+                   return { x: prev.x * 0.98, y: prev.y * 0.98 };
+                 }
+                 return prev;
+               });
              }
       
       // Handle pause state
@@ -401,7 +446,10 @@ const SignIn = () => {
         } else {
           // Keep robot at pause position and trigger blink
           setIsRobotPaused(true);
-          animationFrameId = requestAnimationFrame(animate);
+          // 🛡️ MOBILE FIX: Only continue if visible
+          if (isRunning && !document.hidden) {
+            animationFrameId = requestAnimationFrame(animate);
+          }
           return;
         }
       }
@@ -448,17 +496,28 @@ const SignIn = () => {
       setRobotAngle(currentAngle);
       
       if (robotRef.current) {
+        // 🛡️ MOBILE FIX: Use GPU-accelerated transforms for better mobile performance
         robotRef.current.style.left = `${x}px`;
         robotRef.current.style.top = `${y}px`;
-        robotRef.current.style.transform = `translate(-50%, -50%) rotate(${currentAngle}deg)`;
+        robotRef.current.style.transform = `translate3d(-50%, -50%, 0) rotate(${currentAngle}deg)`;
+        robotRef.current.style.willChange = 'transform, left, top';
       }
       
-      animationFrameId = requestAnimationFrame(animate);
+      // 🛡️ MOBILE FIX: Continue animation only if running and visible
+      if (isRunning && !document.hidden) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
     };
 
-    // Start animation after a short delay
+    // 🛡️ MOBILE FIX: Start animation after delay, but check if page is visible
     const startTimeout = setTimeout(() => {
-      animationFrameId = requestAnimationFrame(animate);
+      if (isRunning && !document.hidden && robotRef.current) {
+        // Reset timing for fresh start
+        lastTimestamp = 0;
+        pathStartTime = 0;
+        animationStartTime = 0;
+        animationFrameId = requestAnimationFrame(animate);
+      }
     }, 500);
 
     const handleResize = () => {
@@ -473,8 +532,13 @@ const SignIn = () => {
       isRunning = false;
       clearTimeout(startTimeout);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
+      }
+      // 🛡️ MOBILE FIX: Clean up will-change for performance
+      if (robotRef.current) {
+        robotRef.current.style.willChange = 'auto';
       }
     };
   }, []);
@@ -816,12 +880,18 @@ const SignIn = () => {
               top: `${robotPosition.y || 0}px`,
               width: '80px',
               height: '80px',
-              transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
-              willChange: 'transform',
+              // 🛡️ MOBILE FIX: GPU acceleration and mobile optimizations
+              transform: `translate3d(-50%, -50%, 0) rotate(${robotAngle || 0}deg)`,
+              willChange: 'transform, left, top',
               transition: 'none',
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden',
+              WebkitTransform: `translate3d(-50%, -50%, 0) rotate(${robotAngle || 0}deg)`,
+              touchAction: 'none', // Prevent touch interference on mobile
               opacity: 1,
+              // 🛡️ MOBILE FIX: Force GPU layer for smoother animation
+              transformStyle: 'preserve-3d',
+              perspective: '1000px',
             }}
           >
             {/* Same Robot from HelpGuide - Smaller */}
