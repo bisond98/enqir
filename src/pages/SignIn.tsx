@@ -1869,6 +1869,62 @@ const SignIn = () => {
                   </g>
             </svg>
           </div>
+
+          {/* Robot Dialogue Bubble - Shows when robot pauses at Enqir text */}
+          {isRobotPaused && isPushingText && (
+            <div
+              className="absolute pointer-events-none z-10"
+              style={{
+                position: 'absolute',
+                left: `${robotPosition.x || 0}px`,
+                top: `${(robotPosition.y || 0) - 90}px`,
+                transform: 'translate3d(-50%, 0, 0)',
+                opacity: 1,
+                animation: 'fadeInScale 0.4s ease-out',
+                willChange: 'transform, opacity',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
+            >
+              {/* Speech Bubble with animation */}
+              <div
+                className="relative bg-white border-2 border-black rounded-2xl px-3 py-2.5 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] max-w-[200px] sm:max-w-[240px]"
+                style={{
+                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))',
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                {/* Speech bubble tail pointing down to robot */}
+                <div
+                  className="absolute left-1/2 -bottom-3 transform -translate-x-1/2"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: '8px solid transparent',
+                    borderRight: '8px solid transparent',
+                    borderTop: '12px solid black',
+                  }}
+                />
+                <div
+                  className="absolute left-1/2 -bottom-2.5 transform -translate-x-1/2"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: '10px solid white',
+                  }}
+                />
+                
+                {/* Dialogue Text */}
+                <p className="text-[10px] sm:text-xs font-bold text-black text-center leading-tight">
+                  From needs to wants;<br />
+                  from hobbies to necessities
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
