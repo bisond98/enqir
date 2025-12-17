@@ -221,6 +221,9 @@ const SignIn = () => {
       let isPaused = false;
       let pauseStartTime = 0;
       let pauseDuration = 1500; // 1.5 second pause to show pushing effort
+      // 🛡️ PRODUCTION FIX: Track actual robot position for continuity
+      let currentRobotX = 0;
+      let currentRobotY = 0;
       
     // 🛡️ MOBILE FIX: Handle page visibility changes (mobile browsers pause when tab hidden)
     const handleVisibilityChange = () => {
@@ -353,6 +356,11 @@ const SignIn = () => {
                animationStartTime = timestamp;
                pathStartTime = timestamp;
                lastTimestamp = timestamp;
+               // 🛡️ PRODUCTION FIX: Initialize robot position from first path
+               if (currentPath && currentRobotX === 0 && currentRobotY === 0) {
+                 currentRobotX = currentPath.start.x;
+                 currentRobotY = currentPath.start.y;
+               }
              } else if (lastTimestamp === 0) {
                // 🛡️ MOBILE FIX: Handle case where animation resumes after being paused
                lastTimestamp = timestamp;
@@ -466,12 +474,12 @@ const SignIn = () => {
       // 🛡️ FIX: Use absolute time-based progress instead of accumulating deltaTime
       // This ensures animation speed is consistent regardless of frame rate (localhost vs production)
       // 🛡️ PRODUCTION FIX: Ensure pathStartTime is always valid
-      if (pathStartTime === 0) {
+      if (pathStartTime === 0 || pathStartTime > timestamp) {
         pathStartTime = timestamp;
       }
       
       const pathElapsed = timestamp - pathStartTime;
-      const pathProgress = Math.min(pathElapsed / pathDuration, 1);
+      const pathProgress = Math.min(Math.max(pathElapsed / pathDuration, 0), 1); // Clamp between 0 and 1
       
       if (pathProgress >= 1) {
         // Check if this path should pause
@@ -479,19 +487,39 @@ const SignIn = () => {
           isPaused = true;
           setIsRobotPaused(true);
           pauseStartTime = timestamp;
-          // Keep pathStartTime as is during pause
+          // Keep pathStartTime as is during pause - don't reset it
         } else {
-          // 🛡️ FIX: Reset path start time when moving to next path
-          // Use current timestamp to ensure smooth transition
-          pathStartTime = timestamp;
+          // 🛡️ PRODUCTION FIX: Move to next path with proper continuity
+          // Store current robot position (at end of path) before changing path
+          const currentRobotX = currentPath.end.x;
+          const currentRobotY = currentPath.end.y;
+          
+          // Move to next path
           currentPathIndex = (currentPathIndex + 1) % paths.length;
-          paths = createRoamingPaths();
+          
+          // 🛡️ PRODUCTION FIX: Only recalculate paths if we've completed a full cycle
+          // This prevents unnecessary recalculations that can cause jumps
+          if (currentPathIndex === 0) {
+            paths = createRoamingPaths();
+          }
+          
           if (currentPathIndex < paths.length) {
             currentPath = paths[currentPathIndex];
-            // 🛡️ PRODUCTION FIX: Ensure pathStartTime is set for new path
-            if (pathStartTime === 0) {
-              pathStartTime = timestamp;
+            
+            // 🛡️ PRODUCTION FIX: Ensure continuity - new path MUST start from robot's current position
+            // This prevents any jumps when transitioning between paths
+            // Use actual tracked position, not calculated end position
+            if (currentRobotX !== 0 || currentRobotY !== 0) {
+              currentPath.start.x = currentRobotX;
+              currentPath.start.y = currentRobotY;
+            } else {
+              // Fallback: use previous end position
+              currentPath.start.x = currentRobotX || currentPath.start.x;
+              currentPath.start.y = currentRobotY || currentPath.start.y;
             }
+            
+            // Reset path start time for new path
+            pathStartTime = timestamp;
           }
         }
       }
@@ -499,13 +527,38 @@ const SignIn = () => {
       const t = pathProgress;
       const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      // If paused, keep at end position
-      const x = isPaused 
-        ? currentPath.end.x 
-        : currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
-      const y = isPaused 
-        ? currentPath.end.y 
-        : currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
+      // 🛡️ PRODUCTION FIX: Calculate target position with continuity check
+      let targetX: number;
+      let targetY: number;
+      
+      if (isPaused) {
+        targetX = currentPath.end.x;
+        targetY = currentPath.end.y;
+      } else {
+        targetX = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
+        targetY = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
+      }
+      
+      // 🛡️ PRODUCTION FIX: Ensure smooth transition - prevent large jumps
+      // Use tracked position instead of state (which might be stale)
+      const distance = Math.sqrt(Math.pow(targetX - currentRobotX, 2) + Math.pow(targetY - currentRobotY, 2));
+      
+      // If jump is too large (>50px), smoothly interpolate to prevent visible jump
+      const maxJump = 50;
+      let x: number, y: number;
+      if (distance > maxJump && pathProgress < 0.1 && currentRobotX !== 0 && currentRobotY !== 0) {
+        // Smooth interpolation for first 10% of path to prevent jumps
+        const smoothFactor = Math.min(pathProgress * 10, 1); // 0 to 1 over first 10% of path
+        x = currentRobotX + (targetX - currentRobotX) * smoothFactor;
+        y = currentRobotY + (targetY - currentRobotY) * smoothFactor;
+      } else {
+        x = targetX;
+        y = targetY;
+      }
+      
+      // Update tracked position
+      currentRobotX = x;
+      currentRobotY = y;
       
       // Keep robot completely upright - no tilting at all
       // Always face forward/horizontal (0 degrees)
@@ -541,12 +594,34 @@ const SignIn = () => {
     }, 500);
 
     const handleResize = () => {
+      // 🛡️ PRODUCTION FIX: Store current robot position before recalculating paths
+      // This ensures continuity when paths are recalculated
+      let currentRobotX = robotPosition.x;
+      let currentRobotY = robotPosition.y;
+      
+      // If robot is currently moving, use calculated position
+      if (robotRef.current && !isPaused) {
+        const currentPathElapsed = performance.now() - pathStartTime;
+        const currentPathProgress = Math.min(Math.max(currentPathElapsed / pathDuration, 0), 1);
+        const t = currentPathProgress;
+        const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        currentRobotX = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
+        currentRobotY = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
+      }
+      
+      // Recalculate paths
       paths = createRoamingPaths();
       if (currentPathIndex < paths.length) {
         currentPath = paths[currentPathIndex];
+        
+        // 🛡️ PRODUCTION FIX: Adjust current path start to match robot's current position
+        // This prevents jumps when viewport is resized
+        currentPath.start.x = currentRobotX;
+        currentPath.start.y = currentRobotY;
+        
+        // Reset path timing to continue from current position
+        pathStartTime = performance.now();
       }
-      // 🛡️ PRODUCTION FIX: Reset path timing on resize to prevent animation glitches
-      pathStartTime = performance.now();
     };
     window.addEventListener('resize', handleResize);
 
