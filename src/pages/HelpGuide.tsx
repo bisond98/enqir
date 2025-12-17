@@ -456,15 +456,14 @@ const HelpGuide = () => {
       // Start position: at bottom screen border, centered horizontally
       const startX = window.innerWidth / 2;
       const startY = window.innerHeight;
-      const visibleHeight = 100; // Only show top 100px initially
 
-      // Initialize robot peeping out from bottom
+      // Initialize robot at start position
       setRobotPosition({ x: startX, y: startY });
       if (robotRef.current) {
         robotRef.current.style.display = 'block';
         robotRef.current.style.left = `${startX}px`;
         robotRef.current.style.top = `${startY}px`;
-        robotRef.current.style.transform = `translate(-50%, ${-visibleHeight}px) rotate(0deg)`;
+        robotRef.current.style.transform = `translate3d(-50%, -50%, 0) rotate(0deg)`;
         robotRef.current.style.transition = 'none'; // Disable CSS transitions
       }
 
@@ -475,7 +474,6 @@ const HelpGuide = () => {
       let lastTimestamp = 0;
       let currentAngle = 0; // Track current rotation angle for smooth interpolation
       let targetAngle = 0; // Target angle for smooth rotation
-      let currentVisibleHeight = 100; // Track visible height for smooth transitions
 
       // Define multiple roaming paths across the screen - robot goes outside and enters from outside
       const createRoamingPaths = () => {
@@ -487,6 +485,15 @@ const HelpGuide = () => {
         const chatbotX = screenWidth - (isMobile ? 16 : 24) - (chatbotButtonSize / 2);
         const chatbotY = screenHeight - (isMobile ? 80 : 24) - (chatbotButtonSize / 2);
         
+        // Calculate notice position for robot to push
+        let noticeX = screenWidth / 2;
+        let noticeY = 100; // Approximate notice position (will be updated dynamically)
+        if (noticeRef.current) {
+          const noticeRect = noticeRef.current.getBoundingClientRect();
+          noticeX = noticeRect.left + noticeRect.width / 2;
+          noticeY = noticeRect.top + noticeRect.height / 2;
+        }
+        
         // Off-screen positions - enough distance to fully exit but not too far
         const offScreenRight = screenWidth + 150;
         const offScreenLeft = -150;
@@ -497,35 +504,38 @@ const HelpGuide = () => {
         const path1End = { x: offScreenRight, y: screenHeight / 2 };
         const path2End = { x: screenWidth - padding, y: padding };
         const path3End = { x: screenWidth / 2, y: offScreenTop };
-        const path4End = { x: screenWidth / 2, y: screenHeight / 2 };
-        const path5End = { x: offScreenLeft, y: screenHeight / 2 };
-        const path6End = { x: padding, y: padding };
-        const path7End = { x: screenWidth / 2, y: offScreenBottom + 300 };
-        const path8End = { x: chatbotX, y: chatbotY };
-        const path9End = { x: offScreenRight, y: chatbotY };
-        const path10End = { x: screenWidth / 2, y: screenHeight };
+        const path4End = { x: noticeX, y: noticeY - 80 }; // Approach notice from above (closer)
+        const path5End = { x: noticeX, y: noticeY + 40 }; // Push notice (closer, below it)
+        const path6End = { x: offScreenLeft, y: screenHeight / 2 };
+        const path7End = { x: padding, y: padding };
+        const path8End = { x: screenWidth / 2, y: offScreenBottom + 300 };
+        const path9End = { x: chatbotX, y: chatbotY };
+        const path10End = { x: offScreenRight, y: chatbotY };
+        const path11End = { x: screenWidth / 2, y: screenHeight };
         
         return [
           // Path 1: Bottom center -> Exit right off-screen
-          { start: path10End, end: path1End, visibleHeight: 200 },
+          { start: path11End, end: path1End },
           // Path 2: Enter from right off-screen -> Top right (connects from path1)
-          { start: path1End, end: path2End, visibleHeight: 200 },
+          { start: path1End, end: path2End },
           // Path 3: Top right -> Exit top off-screen (connects from path2)
-          { start: path2End, end: path3End, visibleHeight: 200 },
-          // Path 4: Enter from top off-screen -> Center (connects from path3)
-          { start: path3End, end: path4End, visibleHeight: 200 },
-          // Path 5: Center -> Exit left off-screen (connects from path4)
-          { start: path4End, end: path5End, visibleHeight: 200 },
-          // Path 6: Enter from left off-screen -> Top left (connects from path5)
-          { start: path5End, end: path6End, visibleHeight: 200 },
-          // Path 7: Top left -> Exit bottom off-screen (connects from path6, robot fully exits)
-          { start: path6End, end: path7End, visibleHeight: 0 },
-          // Path 8: Enter from bottom off-screen -> Chat icon (connects from path7)
-          { start: path7End, end: path8End, visibleHeight: 200 },
-          // Path 9: Chat icon -> Exit right off-screen (connects from path8)
-          { start: path8End, end: path9End, visibleHeight: 200 },
-          // Path 10: Enter from right off-screen -> Bottom center (connects from path9, loops back to path1)
-          { start: path9End, end: path10End, visibleHeight: 100 },
+          { start: path2End, end: path3End },
+          // Path 4: Enter from top off-screen -> Approach notice from above (connects from path3)
+          { start: path3End, end: path4End },
+          // Path 5: Push notice - move down to push it (connects from path4)
+          { start: path4End, end: path5End },
+          // Path 6: Exit left off-screen (connects from path5)
+          { start: path5End, end: path6End },
+          // Path 7: Enter from left off-screen -> Top left (connects from path6)
+          { start: path6End, end: path7End },
+          // Path 8: Top left -> Exit bottom off-screen (connects from path7, robot fully exits)
+          { start: path7End, end: path8End },
+          // Path 9: Enter from bottom off-screen -> Chat icon (connects from path8)
+          { start: path8End, end: path9End },
+          // Path 10: Chat icon -> Exit right off-screen (connects from path9)
+          { start: path9End, end: path10End },
+          // Path 11: Enter from right off-screen -> Bottom center (connects from path10, loops back to path1)
+          { start: path10End, end: path11End },
         ];
       };
 
@@ -534,7 +544,6 @@ const HelpGuide = () => {
       const pathDuration = 3000; // 3 seconds per path segment
       const pauseDuration = 1500; // 1.5 seconds pause at each stop
       const rotationSmoothing = 0.12; // Smoother rotation (lower = smoother)
-      const heightSmoothing = 0.1; // Smooth height transitions
       let isPaused = false;
       let pauseStartTime = 0;
       let pauseProgress = 0;
@@ -545,6 +554,14 @@ const HelpGuide = () => {
         if (lastTimestamp === 0) lastTimestamp = timestamp;
         const deltaTime = Math.min(timestamp - lastTimestamp, 16.67); // Cap at 60fps
         lastTimestamp = timestamp;
+        
+        // Recalculate paths periodically if notice position changed (notice might not be rendered initially)
+        if (noticeRef.current && Math.random() < 0.1) { // 10% chance per frame to recalculate paths
+          paths = createRoamingPaths();
+          if (currentPathIndex < paths.length) {
+            currentPath = paths[currentPathIndex];
+          }
+        }
         
         // Handle pause state
         if (isPaused) {
@@ -597,34 +614,17 @@ const HelpGuide = () => {
         const x = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
         const y = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
         
-        // Calculate target rotation angle based on movement direction
-        // Use velocity-based angle for smoother rotation
-        const dx = currentPath.end.x - currentPath.start.x;
-        const dy = currentPath.end.y - currentPath.start.y;
-        targetAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+        // Keep robot upright - no side tilting, only stays straight up
+        // Robot remains at 0 degrees rotation regardless of movement direction
+        targetAngle = 0; // Always upright, no tilt to sides
+        currentAngle = 0; // Keep at 0 degrees
         
-        // Smoothly interpolate rotation angle for continuous movement
-        // Normalize angles to -180 to 180 range for shortest path
-        let angleDiff = targetAngle - currentAngle;
-        if (angleDiff > 180) angleDiff -= 360;
-        if (angleDiff < -180) angleDiff += 360;
-        
-        // Smooth interpolation towards target angle
-        currentAngle += angleDiff * rotationSmoothing;
-        
-        // Normalize current angle
-        if (currentAngle > 180) currentAngle -= 360;
-        if (currentAngle < -180) currentAngle += 360;
-        
-        // Smoothly transition visible height
-        const targetHeight = currentPath.visibleHeight;
-        currentVisibleHeight += (targetHeight - currentVisibleHeight) * heightSmoothing;
-        
-        // Update robot position smoothly using transform
+        // Update robot position smoothly using GPU-accelerated transform (matches SignIn)
         if (robotRef.current) {
           robotRef.current.style.left = `${x}px`;
           robotRef.current.style.top = `${y}px`;
-          robotRef.current.style.transform = `translate(-50%, ${-currentVisibleHeight}px) rotate(${currentAngle}deg)`;
+          robotRef.current.style.transform = `translate3d(-50%, -50%, 0) rotate(${currentAngle}deg)`;
+          robotRef.current.style.willChange = 'transform, left, top';
         }
         
         setRobotPosition({ x, y });
@@ -632,6 +632,14 @@ const HelpGuide = () => {
       };
 
       animationFrameId = requestAnimationFrame(animate);
+
+      // Recalculate paths periodically to update notice position (notice might not be rendered initially)
+      const recalculatePathsInterval = setInterval(() => {
+        paths = createRoamingPaths();
+        if (currentPathIndex < paths.length) {
+          currentPath = paths[currentPathIndex];
+        }
+      }, 500); // Update every 500ms to catch notice position changes
 
       // Recalculate paths on window resize
       const handleResize = () => {
@@ -644,6 +652,7 @@ const HelpGuide = () => {
 
       return () => {
         isRunning = false;
+        clearInterval(recalculatePathsInterval);
         window.removeEventListener('resize', handleResize);
         if (animationFrameId !== null) {
           cancelAnimationFrame(animationFrameId);
@@ -1132,10 +1141,10 @@ const HelpGuide = () => {
                   style={{
                     position: 'absolute',
                     left: `${robotPosition.x || window.innerWidth / 2}px`,
-                    top: `${robotPosition.y || window.innerHeight}px`, // Start at bottom screen border
-                    width: '200px',
-                    height: '200px',
-                    transform: 'translate(-50%, -100px)', // Start with only head/shoulders visible (peeping straight up)
+                    top: `${robotPosition.y || window.innerHeight}px`,
+                    width: '80px', // Changed to match SignIn robot size
+                    height: '80px', // Changed to match SignIn robot size
+                    transform: 'translate3d(-50%, -50%, 0) rotate(0deg)', // GPU-accelerated transform
                     pointerEvents: 'auto',
                     cursor: 'pointer',
                     zIndex: 70,
@@ -1143,49 +1152,52 @@ const HelpGuide = () => {
                     transition: 'none', // Disable CSS transitions for smooth animation
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
+                    transformStyle: 'preserve-3d', // GPU acceleration
+                    perspective: '1000px', // GPU acceleration
+                    touchAction: 'none', // Mobile optimization
                     background: 'transparent',
                     padding: 0,
                     margin: 0
                   }}
                 >
-                  {/* Cute Floating Robot Mascot - Smooth & Polished */}
-                  <svg width="200" height="200" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
+                  {/* Cute Floating Robot Mascot - Smooth & Polished (matches SignIn size) */}
+                  <svg width="80" height="80" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
                     <defs>
-                      <filter id="cyan-glow">
+                      <filter id="cyan-glow-helpguide">
                         <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                         <feMerge>
                           <feMergeNode in="coloredBlur"/>
                           <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                       </filter>
-                      <filter id="soft-shadow">
+                      <filter id="soft-shadow-helpguide">
                         <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
                         <feOffset in="coloredBlur" dx="0" dy="3"/>
                         <feComponentTransfer>
                           <feFuncA type="linear" slope="0.25"/>
                         </feComponentTransfer>
                       </filter>
-                      <linearGradient id="whiteMatte" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <linearGradient id="whiteMatte-helpguide" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 1 }} />
                         <stop offset="50%" style={{ stopColor: '#fafafa', stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: '#f0f0f0', stopOpacity: 1 }} />
                       </linearGradient>
-                      <linearGradient id="lightGrey" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <linearGradient id="lightGrey-helpguide" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.4 }} />
                         <stop offset="50%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.5 }} />
                         <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
                       </linearGradient>
-                      <radialGradient id="cyanGlow" cx="50%" cy="50%">
+                      <radialGradient id="cyanGlow-helpguide" cx="50%" cy="50%">
                         <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 1 }} />
                         <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.95 }} />
                         <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.85 }} />
                         <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.6 }} />
                       </radialGradient>
-                      <radialGradient id="eyeHighlight" cx="30%" cy="30%">
+                      <radialGradient id="eyeHighlight-helpguide" cx="30%" cy="30%">
                         <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
                         <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
                       </radialGradient>
-                      <clipPath id="faceClip">
+                      <clipPath id="faceClip-helpguide">
                         <ellipse cx="50" cy="32" rx="18" ry="20"/>
                       </clipPath>
                     </defs>
@@ -1198,8 +1210,8 @@ const HelpGuide = () => {
                     
                     {/* Body - smooth pill-shaped torso, floating */}
                     <g id="body-group">
-                      <ellipse cx="50" cy="65" rx="28" ry="32" fill="url(#whiteMatte)" stroke="none"/>
-                      <ellipse cx="50" cy="65" rx="26" ry="30" fill="url(#lightGrey)"/>
+                      <ellipse cx="50" cy="65" rx="28" ry="32" fill="url(#whiteMatte-helpguide)" stroke="none"/>
+                      <ellipse cx="50" cy="65" rx="26" ry="30" fill="url(#lightGrey-helpguide)"/>
                       
                       {/* Chest panel with Enqir Assistant - smoother */}
                       <rect x="35" y="58" width="30" height="10" rx="2.5" fill="#1a1a1a" opacity="0.92">
@@ -1226,8 +1238,8 @@ const HelpGuide = () => {
                     
                     {/* Head - rounded, soft */}
                     <g id="head-group">
-                      <ellipse cx="50" cy="30" rx="22" ry="26" fill="url(#whiteMatte)" stroke="none"/>
-                      <ellipse cx="50" cy="30" rx="20" ry="24" fill="url(#lightGrey)"/>
+                      <ellipse cx="50" cy="30" rx="22" ry="26" fill="url(#whiteMatte-helpguide)" stroke="none"/>
+                      <ellipse cx="50" cy="30" rx="20" ry="24" fill="url(#lightGrey-helpguide)"/>
                       
                       {/* Antenna on top - smoother */}
                       <line x1="50" y1="8" x2="50" y2="12" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round">
@@ -1257,22 +1269,22 @@ const HelpGuide = () => {
                         <animate attributeName="opacity" values="0.96;0.98;0.96" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                       </ellipse>
                       {/* Subtle screen reflection */}
-                      <ellipse cx="50" cy="28" rx="12" ry="8" fill="url(#eyeHighlight)" opacity="0.15"/>
+                      <ellipse cx="50" cy="28" rx="12" ry="8" fill="url(#eyeHighlight-helpguide)" opacity="0.15"/>
                       
                       {/* Eyes - cyan/teal glowing ovals with smooth animations */}
                       <g id="eyes-group">
-                        <ellipse cx="42" cy="28" rx="5.5" ry="6.5" fill="url(#cyanGlow)" style={{ filter: 'url(#cyan-glow)' }}>
+                        <ellipse cx="42" cy="28" rx="5.5" ry="6.5" fill="url(#cyanGlow-helpguide)" style={{ filter: 'url(#cyan-glow-helpguide)' }}>
                           <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                           <animate attributeName="ry" values="6.5;7;6.5" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                         </ellipse>
-                        <ellipse cx="58" cy="28" rx="5.5" ry="6.5" fill="url(#cyanGlow)" style={{ filter: 'url(#cyan-glow)' }}>
+                        <ellipse cx="58" cy="28" rx="5.5" ry="6.5" fill="url(#cyanGlow-helpguide)" style={{ filter: 'url(#cyan-glow-helpguide)' }}>
                           <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
                           <animate attributeName="ry" values="6.5;7;6.5" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s"/>
                         </ellipse>
                         
                         {/* Eye highlights for depth */}
-                        <ellipse cx="43" cy="27" rx="2" ry="2.5" fill="url(#eyeHighlight)"/>
-                        <ellipse cx="57" cy="27" rx="2" ry="2.5" fill="url(#eyeHighlight)"/>
+                        <ellipse cx="43" cy="27" rx="2" ry="2.5" fill="url(#eyeHighlight-helpguide)"/>
+                        <ellipse cx="57" cy="27" rx="2" ry="2.5" fill="url(#eyeHighlight-helpguide)"/>
                         
                         {/* Smooth blink animation - more frequent and visible */}
                         <rect x="36" y="24" width="12" height="8" fill="#1a1a1a" rx="4" opacity="0">
@@ -1294,10 +1306,10 @@ const HelpGuide = () => {
                     <g id="arms-group">
                       {/* Left arm */}
                       <g id="left-arm" transform-origin="25 60">
-                        <ellipse cx="25" cy="60" rx="8" ry="14" fill="url(#whiteMatte)" stroke="none" transform="rotate(-15 25 60)"/>
-                        <ellipse cx="25" cy="60" rx="6" ry="12" fill="url(#lightGrey)" transform="rotate(-15 25 60)"/>
+                        <ellipse cx="25" cy="60" rx="8" ry="14" fill="url(#whiteMatte-helpguide)" stroke="none" transform="rotate(-15 25 60)"/>
+                        <ellipse cx="25" cy="60" rx="6" ry="12" fill="url(#lightGrey-helpguide)" transform="rotate(-15 25 60)"/>
                         {/* Hand */}
-                        <circle cx="20" cy="70" r="5" fill="url(#whiteMatte)">
+                        <circle cx="20" cy="70" r="5" fill="url(#whiteMatte-helpguide)">
                           <animate attributeName="r" values="5;5.3;5" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                         </circle>
                         <animateTransform
@@ -1314,10 +1326,10 @@ const HelpGuide = () => {
                       
                       {/* Right arm */}
                       <g id="right-arm" transform-origin="75 60">
-                        <ellipse cx="75" cy="60" rx="8" ry="14" fill="url(#whiteMatte)" stroke="none" transform="rotate(15 75 60)"/>
-                        <ellipse cx="75" cy="60" rx="6" ry="12" fill="url(#lightGrey)" transform="rotate(15 75 60)"/>
+                        <ellipse cx="75" cy="60" rx="8" ry="14" fill="url(#whiteMatte-helpguide)" stroke="none" transform="rotate(15 75 60)"/>
+                        <ellipse cx="75" cy="60" rx="6" ry="12" fill="url(#lightGrey-helpguide)" transform="rotate(15 75 60)"/>
                         {/* Hand */}
-                        <circle cx="80" cy="70" r="5" fill="url(#whiteMatte)">
+                        <circle cx="80" cy="70" r="5" fill="url(#whiteMatte-helpguide)">
                           <animate attributeName="r" values="5;5.3;5" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="1.5s"/>
                         </circle>
                         <animateTransform
