@@ -2911,8 +2911,8 @@ export default function PostEnquiry() {
                     </div>
                   )}
 
-                  {/* Upload Progress - Enhanced for Non-Verified Users */}
-                  {!authLoading && !isUserVerified && idUploadLoading && (
+                  {/* Upload Progress - Hidden for cleaner UI, but state updates continue internally */}
+                  {false && !authLoading && !isUserVerified && idUploadLoading && (
                     <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl">
                       <div className="flex items-center justify-between">
                         <span className="text-sm sm:text-base font-semibold text-slate-800">
@@ -2961,7 +2961,8 @@ export default function PostEnquiry() {
                       )}
                     </Button>
                     
-                    {loading && (
+                    {/* Loading Progress - Hidden for cleaner UI, but state updates continue internally */}
+                    {false && loading && (
                       <div className="mt-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
