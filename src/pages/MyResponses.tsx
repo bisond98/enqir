@@ -501,9 +501,9 @@ const MyResponses = () => {
                 const isHighlighted = highlightSubmissionId === submission.id;
                 return (
                   <div key={submission.id} ref={isHighlighted ? highlightedSubmissionRef : undefined}>
-                  <Card className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-visible transition-all duration-300 ${isExpired || isEnquiryDeleted ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-800 shadow-sm' : 'bg-white border border-gray-800 hover:border-gray-900 hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.02]'}`}>
+                  <Card className={`group relative rounded-2xl overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : 'border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] cursor-pointer'}`}>
                     {/* Card Header - Solid black background */}
-                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
+                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 rounded-t-2xl ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
                       <div className="flex items-center justify-between gap-1 sm:gap-2">
                         <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
                           {isExpired || isEnquiryDeleted ? (
@@ -543,7 +543,7 @@ const MyResponses = () => {
                     </div>
                     
                     {/* Card Content - Rest with white background */}
-                    <CardContent className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-5 overflow-visible space-y-3 sm:space-y-4">
+                    <CardContent className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-5 rounded-b-2xl space-y-3 sm:space-y-4">
 
                       {/* Response Information Group */}
                       <div className="space-y-1.5 sm:space-y-2 pb-2 pt-3 sm:pt-0">
