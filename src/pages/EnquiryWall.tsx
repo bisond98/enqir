@@ -5109,7 +5109,7 @@ export default function EnquiryWall() {
                                       <div className="flex items-start gap-1 sm:gap-1.5">
                                         {/* Location - Left aligned */}
                                         {enquiry.location && (
-                                          <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                          <div className="relative inline-flex items-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                             style={{
                                               boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                               transformStyle: 'preserve-3d',
@@ -5140,7 +5140,7 @@ export default function EnquiryWall() {
                                             {/* Additional depth layer */}
                                             <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                             
-                                            <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>at - </span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-black relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>at - </span>
                                             <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-md ring-2 ring-gray-300/50"
                                               style={{
                                                 transform: 'translateZ(12px)',
@@ -5149,11 +5149,11 @@ export default function EnquiryWall() {
                                             >
                                               <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
                                             </div>
-                                            <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{enquiry.location}</span>
+                                            <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-black relative z-10" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{enquiry.location}</span>
                                           </div>
                                         )}
                                         {/* Before Date - Left aligned, close to location */}
-                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                        <div className="relative inline-flex items-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                           style={{
                                             boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                             transformStyle: 'preserve-3d',
@@ -5184,7 +5184,7 @@ export default function EnquiryWall() {
                                           {/* Additional depth layer */}
                                           <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                           
-                                          <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-gray-800 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>
+                                          <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-black whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>
                                             before {formatDate(deadlineDate.toISOString())}
                                           </span>
                                         </div>
@@ -5233,7 +5233,7 @@ export default function EnquiryWall() {
                             {/* Desktop Budget */}
                             <div className="hidden sm:flex pt-2 sm:pt-3">
                               {enquiry.budget && (
-                                <div className="relative flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-0.5 sm:py-1 transform-gpu transition-all duration-500 ease-out"
+                                <div className="relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-md sm:rounded-lg px-1 sm:px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
                                     boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
@@ -5249,24 +5249,24 @@ export default function EnquiryWall() {
                                   />
                                   
                                   {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-md sm:rounded-t-lg bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
                                   {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-md sm:rounded-l-lg bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-md sm:rounded-r-lg bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
                                   {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-md sm:rounded-b-lg bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
                                   {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                  <div className="absolute inset-1 rounded-sm sm:rounded-md bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
                                   {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                   
-                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base md:text-lg whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-xs sm:text-sm whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                             </div>
@@ -5275,7 +5275,7 @@ export default function EnquiryWall() {
                             <div className="block sm:hidden pt-2">
                               {enquiry.budget && (
                                 <div className="relative flex items-center justify-center">
-                                  <div className="relative flex items-center gap-1 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg px-2 py-1 transform-gpu transition-all duration-500 ease-out"
+                                  <div className="relative flex items-center gap-0.5 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-md px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
                                     style={{
                                       boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                       transformStyle: 'preserve-3d',
@@ -5306,9 +5306,9 @@ export default function EnquiryWall() {
                                     {/* Additional depth layer */}
                                     <div className="absolute inset-0.5 rounded-lg bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                     
-                                    <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
-                                    <span className="font-extrabold text-black text-sm sm:text-base relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
-                                    <span className="font-extrabold text-gray-900 text-sm sm:text-base whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                    <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
+                                    <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
+                                    <span className="font-extrabold text-gray-900 text-xs sm:text-sm whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                   </div>
                                 </div>
                               )}
@@ -5606,20 +5606,20 @@ export default function EnquiryWall() {
                                   />
                                   
                                   {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-md sm:rounded-t-lg bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
                                   {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-md sm:rounded-l-lg bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-md sm:rounded-r-lg bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
                                   {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-md sm:rounded-b-lg bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
                                   {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                  <div className="absolute inset-1 rounded-sm sm:rounded-md bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
                                   {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                   
                                   <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
                                   <span className="font-extrabold text-black text-xs sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
