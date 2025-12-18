@@ -656,14 +656,14 @@ const EnquiryResponsesPage = () => {
                       scale: showOnlyTrustBadged ? 1.1 : 1
                     }}
                     transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                  >
-                    <Filter 
+                >
+                  <Filter 
                       className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 transition-colors duration-300"
-                      style={{
-                        fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
-                        color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
-                      }}
-                    />
+                    style={{
+                      fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
+                      color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
+                    }}
+                  />
                   </motion.div>
                 </motion.button>
               </DropdownMenuTrigger>
@@ -692,10 +692,10 @@ const EnquiryResponsesPage = () => {
 
         <div className="space-y-3 sm:space-y-5 lg:space-y-8">
           <AnimatePresence mode="popLayout" initial={false}>
-            {visibleResponses.length > 0 ? (
-              visibleResponses.map((response, index) => (
+          {visibleResponses.length > 0 ? (
+            visibleResponses.map((response, index) => (
                 <motion.div 
-                  key={response.id}
+                key={response.id} 
                   layout
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -712,8 +712,8 @@ const EnquiryResponsesPage = () => {
                     height: 'auto', 
                     transformStyle: 'preserve-3d'
                   }}
-                  className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
-                >
+                className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
+              >
                 {/* Card Header - Mobile optimized */}
                 <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
                   <div className="flex items-center justify-between gap-2 sm:gap-4">
@@ -843,22 +843,22 @@ const EnquiryResponsesPage = () => {
                             }}
                           >
                             <span className="text-gray-800 text-base sm:text-lg lg:text-xl font-black drop-shadow-sm">₹</span>
-                          </div>
+                        </div>
                           <span className="text-xs sm:text-sm lg:text-base font-bold text-gray-800 tracking-wider drop-shadow-sm"
                             style={{
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}
                           >Seller's Quote</span>
-                        </div>
+                      </div>
                         <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-black leading-none text-center transform group-hover/quote:scale-105 transition-transform duration-300"
                           style={{
                             transform: 'translateZ(15px)',
                             textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15)'
                           }}
                         >
-                          {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
-                        </p>
+                        {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
+                      </p>
                       </div>
                       
                       {/* Hover glow effect */}
@@ -946,11 +946,11 @@ const EnquiryResponsesPage = () => {
                   </p>
                   
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
-                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
-                      <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
-                    </div>
-                    <Button
+                  <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
+                    <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                  </div>
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
@@ -961,12 +961,12 @@ const EnquiryResponsesPage = () => {
                     <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 sm:group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
                     <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
-                  </div>
                 </div>
                 </div>
+              </div>
               </motion.div>
-              ))
-            ) : (
+            ))
+          ) : (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

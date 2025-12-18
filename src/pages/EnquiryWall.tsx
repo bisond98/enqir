@@ -4887,7 +4887,7 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-gray-300 bg-white rounded-none overflow-hidden relative' : 'border border-gray-300 bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-gray-300 bg-white rounded-none overflow-hidden relative' : 'border border-gray-300 bg-white rounded-none flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px] xl:min-h-[600px] relative'
                     } transition-all duration-300 cursor-pointer ${
                       isEnquiryDisabled(enquiry) 
                         ? 'opacity-70 bg-gray-50 border-gray-300 grayscale cursor-not-allowed' 
@@ -4954,7 +4954,7 @@ export default function EnquiryWall() {
                         <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className={`${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`} style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)' }}>
+                      <div className={`${viewMode === 'grid' ? 'px-2 sm:px-4 py-1.5 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`} style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)' }}>
                         <div className="flex justify-between items-center relative">
                           <div className="flex items-center gap-2 sm:gap-2">
                             {/* Show verified badge if: 
@@ -4993,13 +4993,13 @@ export default function EnquiryWall() {
                           {/* First Half - Top: Title and Description */}
                           <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10 overflow-hidden" style={{ flex: '1 1 50%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                             {/* Category-specific 2D Sketches - List View Only */}
-                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.3]">
+                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.2]">
                               {getCategorySketch(enquiry.category)}
                             </div>
                             <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0 relative z-10">
                               {/* Need Label - Above Title */}
                               <div className="text-left">
-                                <div className="relative inline-block bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
                                     boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                     transformStyle: 'preserve-3d',
@@ -5007,7 +5007,7 @@ export default function EnquiryWall() {
                                   }}
                                 >
                                   {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
                                     style={{
                                       boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
                                     }}
@@ -5034,30 +5034,34 @@ export default function EnquiryWall() {
                               <div className="mb-1.5 sm:mb-3">
                                 <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
-                                    boxShadow: '0 15px 30px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.08)',
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.18), 0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.12)',
                                     transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
+                                    perspective: '1200px',
+                                    transform: 'translateZ(10px)'
                                   }}
                                 >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-gray-300/50" 
+                                  {/* 3D Border Effect - Enhanced */}
+                                  <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-gray-300/60" 
                                     style={{
-                                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.12)'
+                                      boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1)'
                                     }}
                                   />
                                   
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                  {/* Top highlight for 3D effect - Enhanced */}
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/80 via-white/40 to-transparent pointer-events-none" />
                                   
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                  {/* Side highlights for depth - Enhanced */}
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                  {/* Bottom shadow for depth - Enhanced */}
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/20 via-black/10 to-transparent pointer-events-none" />
                                   
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                  {/* Inner depth shadow - Enhanced */}
+                                  <div className="absolute inset-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                  
+                                  {/* Additional depth layer */}
+                                  <div className="absolute inset-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                   
                                   <h3 className={`relative z-10 text-base sm:text-lg lg:text-xl font-black tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-black text-center antialiased ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
@@ -5065,8 +5069,8 @@ export default function EnquiryWall() {
                                       WebkitFontSmoothing: 'antialiased',
                                       MozOsxFontSmoothing: 'grayscale',
                                       textRendering: 'optimizeLegibility',
-                                      transform: 'translateZ(15px)',
-                                      textShadow: '0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.08)'
+                                      transform: 'translateZ(20px)',
+                                      textShadow: '0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.5)'
                                     }}>
                                       {enquiry.title}
                                     </h3>
@@ -5101,108 +5105,95 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
-                                      {/* Location - Right aligned above date */}
-                                      {enquiry.location && (
-                                        <div className="relative flex items-center gap-1.5 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                    <div className="flex flex-col mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
+                                      <div className="flex items-start gap-1 sm:gap-1.5">
+                                        {/* Location - Left aligned */}
+                                        {enquiry.location && (
+                                          <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                            style={{
+                                              boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
+                                              transformStyle: 'preserve-3d',
+                                              perspective: '1200px',
+                                              transform: 'translateZ(8px)'
+                                            }}
+                                          >
+                                            {/* 3D Border Effect - Enhanced */}
+                                            <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
+                                              style={{
+                                                boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
+                                              }}
+                                            />
+                                            
+                                            {/* Top highlight for 3D effect - Enhanced */}
+                                            <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                            
+                                            {/* Side highlights for depth - Enhanced */}
+                                            <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                            <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                            
+                                            {/* Bottom shadow for depth - Enhanced */}
+                                            <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                            
+                                            {/* Inner depth shadow - Enhanced */}
+                                            <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                            
+                                            {/* Additional depth layer */}
+                                            <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                            
+                                            <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>at - </span>
+                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-md ring-2 ring-gray-300/50"
+                                              style={{
+                                                transform: 'translateZ(12px)',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.6)'
+                                              }}
+                                            >
+                                              <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                            </div>
+                                            <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{enquiry.location}</span>
+                                          </div>
+                                        )}
+                                        {/* Before Date - Left aligned, close to location */}
+                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                           style={{
-                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                            boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                             transformStyle: 'preserve-3d',
-                                            perspective: '1000px'
+                                            perspective: '1200px',
+                                            transform: 'translateZ(8px)'
                                           }}
                                         >
-                                          {/* 3D Border Effect */}
-                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                          {/* 3D Border Effect - Enhanced */}
+                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
                                             style={{
-                                              boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                             }}
                                           />
                                           
-                                          {/* Top highlight for 3D effect */}
-                                          <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                          {/* Top highlight for 3D effect - Enhanced */}
+                                          <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                           
-                                          {/* Side highlights for depth */}
-                                          <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                          <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                          {/* Side highlights for depth - Enhanced */}
+                                          <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                          <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                           
-                                          {/* Bottom shadow for depth */}
-                                          <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                          {/* Bottom shadow for depth - Enhanced */}
+                                          <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                           
-                                          {/* Inner depth shadow */}
-                                          <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                          {/* Inner depth shadow - Enhanced */}
+                                          <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                           
-                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>at - </span>
-                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
-                                            style={{
-                                              transform: 'translateZ(10px)'
-                                            }}
-                                          >
-                                            <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
-                                          </div>
-                                          <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
+                                          {/* Additional depth layer */}
+                                          <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                          
+                                          <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-gray-800 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>
+                                            before {formatDate(deadlineDate.toISOString())}
+                                          </span>
                                         </div>
-                                      )}
-                                      <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                        style={{
-                                          boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                          transformStyle: 'preserve-3d',
-                                          perspective: '1000px'
-                                        }}
-                                      >
-                                        {/* 3D Border Effect */}
-                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
-                                          style={{
-                                            boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                          }}
-                                        />
-                                        
-                                        {/* Top highlight for 3D effect */}
-                                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                        
-                                        {/* Side highlights for depth */}
-                                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                        
-                                        {/* Bottom shadow for depth */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                        
-                                        {/* Inner depth shadow */}
-                                        <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                        
-                                        <span className="relative z-10 text-[10px] sm:text-xs text-gray-900 font-semibold whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
-                                          before {formatDate(deadlineDate.toISOString())}
-                                        </span>
-                                      </div>
-                                      <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 transform-gpu transition-all duration-500 ease-out"
-                                        style={{
-                                          boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2)',
-                                          transformStyle: 'preserve-3d',
-                                          perspective: '1000px'
-                                        }}
-                                      >
-                                        {/* 3D Border Effect */}
-                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-red-800/50" 
-                                          style={{
-                                            boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.2), inset 0 -1px 3px rgba(0,0,0,0.3)'
-                                          }}
-                                        />
-                                        
-                                        {/* Top highlight for 3D effect */}
-                                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/30 via-white/10 to-transparent pointer-events-none" />
-                                        
-                                        {/* Side highlights for depth */}
-                                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-                                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
-                                        
-                                        {/* Bottom shadow for depth */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/30 via-black/15 to-transparent pointer-events-none" />
-                                        
-                                        {/* Inner depth shadow */}
-                                        <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/20 pointer-events-none" />
-                                        
-                                        <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
-                                          {formatDeadlineText(enquiry.deadline)}
-                                        </span>
+                                        {/* Countdown Timer - Close to before */}
+                                        <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
+                                          <span className="text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap">
+                                            {formatDeadlineText(enquiry.deadline)}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   );
@@ -5244,34 +5235,38 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="relative flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-0.5 sm:py-1 transform-gpu transition-all duration-500 ease-out"
                                   style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                    boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
+                                    perspective: '1200px',
+                                    transform: 'translateZ(8px)'
                                   }}
                                 >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                  {/* 3D Border Effect - Enhanced */}
+                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
                                     style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                     }}
                                   />
                                   
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                  {/* Top highlight for 3D effect - Enhanced */}
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                  {/* Side highlights for depth - Enhanced */}
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                  {/* Bottom shadow for depth - Enhanced */}
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                  {/* Inner depth shadow - Enhanced */}
+                                  <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
-                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base md:text-lg whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                  {/* Additional depth layer */}
+                                  <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  
+                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base md:text-lg whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                             </div>
@@ -5282,34 +5277,38 @@ export default function EnquiryWall() {
                                 <div className="relative flex items-center justify-center">
                                   <div className="relative flex items-center gap-1 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg px-2 py-1 transform-gpu transition-all duration-500 ease-out"
                                     style={{
-                                      boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                      boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                       transformStyle: 'preserve-3d',
-                                      perspective: '1000px'
+                                      perspective: '1200px',
+                                      transform: 'translateZ(8px)'
                                     }}
                                   >
-                                    {/* 3D Border Effect */}
-                                    <div className="absolute inset-0 rounded-lg border-2 border-gray-300/50" 
+                                    {/* 3D Border Effect - Enhanced */}
+                                    <div className="absolute inset-0 rounded-lg border-2 border-gray-300/60" 
                                       style={{
-                                        boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                       }}
                                     />
                                     
-                                    {/* Top highlight for 3D effect */}
-                                    <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                    {/* Top highlight for 3D effect - Enhanced */}
+                                    <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                     
-                                    {/* Side highlights for depth */}
-                                    <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                    <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                    {/* Side highlights for depth - Enhanced */}
+                                    <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                    <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                     
-                                    {/* Bottom shadow for depth */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                    {/* Bottom shadow for depth - Enhanced */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                     
-                                    {/* Inner depth shadow */}
-                                    <div className="absolute inset-0.5 rounded-md bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                    {/* Inner depth shadow - Enhanced */}
+                                    <div className="absolute inset-1 rounded-md bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                     
-                                    <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
-                                    <span className="font-extrabold text-black text-sm sm:text-base relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
-                                    <span className="font-extrabold text-gray-900 text-sm sm:text-base whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                    {/* Additional depth layer */}
+                                    <div className="absolute inset-0.5 rounded-lg bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                    
+                                    <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
+                                    <span className="font-extrabold text-black text-sm sm:text-base relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
+                                    <span className="font-extrabold text-gray-900 text-sm sm:text-base whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                   </div>
                                 </div>
                               )}
@@ -5367,7 +5366,7 @@ export default function EnquiryWall() {
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4 relative z-10">
                             {/* Need Label - Above Title */}
                             <div className="text-left">
-                              <div className="relative inline-block bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                              <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                 style={{
                                   boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                   transformStyle: 'preserve-3d',
@@ -5375,7 +5374,7 @@ export default function EnquiryWall() {
                                 }}
                               >
                                 {/* 3D Border Effect */}
-                                <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
                                   style={{
                                     boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
                                   }}
@@ -5394,13 +5393,13 @@ export default function EnquiryWall() {
                                 {/* Inner depth shadow */}
                                 <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                 
-                                <span className="relative z-10 text-xs sm:text-sm md:text-base text-black font-bold tracking-wide" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Need</span>
+                                <span className="relative z-10 text-[8px] sm:text-sm md:text-base text-black font-bold tracking-wide" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Need</span>
                               </div>
                             </div>
                             
                             {/* Title - 3D White Tile Style */}
-                            <div className="mb-1.5 sm:mb-3">
-                              <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 transform-gpu transition-all duration-500 ease-out"
+                            <div className="mb-1 sm:mb-3">
+                              <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-2 sm:px-4 lg:px-5 py-1.5 sm:py-3 lg:py-3.5 transform-gpu transition-all duration-500 ease-out"
                                 style={{
                                   boxShadow: '0 15px 30px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.08)',
                                   transformStyle: 'preserve-3d',
@@ -5427,7 +5426,7 @@ export default function EnquiryWall() {
                                 {/* Inner depth shadow */}
                                 <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                 
-                                <h3 className={`relative z-10 text-sm sm:text-base lg:text-lg font-black tracking-tight leading-tight line-clamp-2 text-black text-center antialiased ${
+                                <h3 className={`relative z-10 text-xs sm:text-base lg:text-lg font-black tracking-tight leading-tight line-clamp-2 text-black text-center antialiased ${
                                     isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
                                   }`} style={{
                                     WebkitFontSmoothing: 'antialiased',
@@ -5471,7 +5470,7 @@ export default function EnquiryWall() {
                                     <div className="flex flex-col items-end gap-1 sm:gap-1.5 pt-2">
                                       {/* Location - Right aligned above date */}
                                       {enquiry.location && (
-                                        <div className="relative flex items-center gap-1.5 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                           style={{
                                             boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                             transformStyle: 'preserve-3d',
@@ -5479,7 +5478,7 @@ export default function EnquiryWall() {
                                           }}
                                         >
                                           {/* 3D Border Effect */}
-                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
                                             style={{
                                               boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
                                             }}
@@ -5498,19 +5497,19 @@ export default function EnquiryWall() {
                                           {/* Inner depth shadow */}
                                           <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                           
-                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>at - </span>
-                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
+                                          <span className="text-[8px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>at - </span>
+                                          <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
                                             style={{
                                               transform: 'translateZ(10px)'
                                             }}
                                           >
-                                            <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                            <MapPin className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
                                           </div>
-                                          <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
+                                          <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
                                         </div>
                                       )}
-                                      <div className="flex items-center gap-2 sm:gap-3">
-                                        <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                      <div className="flex items-center gap-1.5 sm:gap-3">
+                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                         style={{
                                           boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                           transformStyle: 'preserve-3d',
@@ -5518,7 +5517,7 @@ export default function EnquiryWall() {
                                         }}
                                       >
                                         {/* 3D Border Effect */}
-                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
                                           style={{
                                             boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
                                           }}
@@ -5537,38 +5536,12 @@ export default function EnquiryWall() {
                                         {/* Inner depth shadow */}
                                         <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                         
-                                        <span className="relative z-10 text-[10px] sm:text-xs font-medium text-gray-800 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
+                                        <span className="relative z-10 text-[8px] sm:text-xs font-medium text-gray-800 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
                                           before {formatDate(deadlineDate.toISOString())}
                                         </span>
                                       </div>
-                                      <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 transform-gpu transition-all duration-500 ease-out"
-                                        style={{
-                                          boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2)',
-                                          transformStyle: 'preserve-3d',
-                                          perspective: '1000px'
-                                        }}
-                                      >
-                                        {/* 3D Border Effect */}
-                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-red-800/50" 
-                                          style={{
-                                            boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.2), inset 0 -1px 3px rgba(0,0,0,0.3)'
-                                          }}
-                                        />
-                                        
-                                        {/* Top highlight for 3D effect */}
-                                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/30 via-white/10 to-transparent pointer-events-none" />
-                                        
-                                        {/* Side highlights for depth */}
-                                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-                                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
-                                        
-                                        {/* Bottom shadow for depth */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/30 via-black/15 to-transparent pointer-events-none" />
-                                        
-                                        {/* Inner depth shadow */}
-                                        <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/20 pointer-events-none" />
-                                        
-                                        <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                                      <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
+                                        <span className="text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap">
                                           {formatDeadlineText(enquiry.deadline)}
                                         </span>
                                       </div>
@@ -5617,36 +5590,40 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="relative flex items-center gap-1.5 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                <div className="relative flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                    boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
+                                    perspective: '1200px',
+                                    transform: 'translateZ(8px)'
                                   }}
                                 >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                  {/* 3D Border Effect - Enhanced */}
+                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
                                     style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                     }}
                                   />
                                   
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                  {/* Top highlight for 3D effect - Enhanced */}
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                  {/* Side highlights for depth - Enhanced */}
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                  {/* Bottom shadow for depth - Enhanced */}
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                  {/* Inner depth shadow - Enhanced */}
+                                  <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
-                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
-                                  <span className="truncate font-extrabold text-gray-900 text-sm sm:text-base md:text-lg tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                  {/* Additional depth layer */}
+                                  <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  
+                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-xs sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
+                                  <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                             </div>
@@ -5664,11 +5641,11 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-white flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between bg-white'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'px-2 pt-2 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 bg-white flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col px-1.5 pt-1.5 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 justify-between bg-white'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
                           {/* Desktop Layout */}
-                          <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
+                          <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full relative">
                             {/* All Content Elements in Order */}
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto mt-4 sm:mt-6 lg:mt-8">
                               {/* Category */}
@@ -5679,34 +5656,47 @@ export default function EnquiryWall() {
                             </div>
                             
                             {/* Right: Action Button - Desktop */}
-                            <div className="flex-shrink-0 w-auto self-start -mt-4 sm:-mt-3 lg:-mt-2">
+                            <div className="flex-shrink-0 w-auto self-start" style={{ position: 'relative', zIndex: 20 }}>
                               {isOwnEnquiry(enquiry) ? (
                                 <button 
                                   type="button"
                                   disabled
                                   className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 sm:border-4 border-black text-white rounded-md sm:rounded-xl cursor-not-allowed"
-                                  style={{ backgroundColor: '#000000' }}
+                                  style={{ backgroundColor: '#000000', transform: 'translateY(-30px)' }}
                                 >
                                   Your Enquiry
                                 </button>
                               ) : authUser ? (
                                 isDealClosed(enquiry) ? (
-                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" style={{ transform: 'translateY(-30px)' }} disabled>
                                     Deal Closed
                                   </Button>
                                 ) : isEnquiryOutdated(enquiry) ? (
-                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                  <Button variant="outline" size="sm" className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-semibold border-2 border-gray-300 bg-white text-gray-500" style={{ transform: 'translateY(-30px)' }} disabled>
                                     Expired
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
+                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black text-white border-0 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                     style={{
                                       background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
                                       boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)',
+                                      transform: 'translateY(-30px)',
                                       transformStyle: 'preserve-3d',
                                       perspective: '1000px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.transform = 'translateY(-30px) scale(1.05)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.transform = 'translateY(-30px)';
+                                    }}
+                                    onMouseDown={(e) => {
+                                      e.currentTarget.style.transform = 'translateY(-30px) scale(0.95)';
+                                    }}
+                                    onMouseUp={(e) => {
+                                      e.currentTarget.style.transform = 'translateY(-30px) scale(1.05)';
                                     }}
                                   >
                                     {/* 3D Border Effect */}
