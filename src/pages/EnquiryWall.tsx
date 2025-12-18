@@ -1336,6 +1336,631 @@ export default function EnquiryWall() {
     }
   }, [currentTime]);
 
+  // Category-specific sketches function for list view
+  const getCategorySketch = (category: string) => {
+    const categoryLower = category?.toLowerCase() || '';
+    
+    // Automobile & Transportation
+    if (categoryLower.includes('automobile') || categoryLower.includes('vehicle') || categoryLower.includes('car') || 
+        categoryLower.includes('transportation') || categoryLower.includes('logistics') || categoryLower.includes('bicycle')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - modern vehicle silhouette */}
+          <path d="M 30 50 L 45 30 L 70 20 L 130 20 L 170 15 L 230 15 L 270 20 L 295 20 L 310 30 L 310 50 L 300 70 L 280 80 L 120 80 L 80 70 L 60 50 Z" 
+                stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M 130 20 L 130 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 270 20 L 270 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Top right - wheel detail */}
+          <circle cx="320" cy="40" r="18" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="320" cy="40" r="10" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <circle cx="320" cy="40" r="4" fill="white" opacity="0.9"/>
+          {/* Bottom left - wheel */}
+          <circle cx="80" cy="250" r="22" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="80" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="80" cy="250" r="5" fill="white"/>
+          {/* Bottom right - wheel */}
+          <circle cx="320" cy="250" r="22" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="320" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="320" cy="250" r="5" fill="white"/>
+          {/* Center - road lines spanning full width */}
+          <path d="M 20 150 L 380 150" stroke="white" strokeWidth="2" fill="none" strokeDasharray="8,6" opacity="0.7"/>
+          <path d="M 20 200 L 380 200" stroke="white" strokeWidth="2" fill="none" strokeDasharray="8,6" opacity="0.7"/>
+          {/* Decorative speed lines */}
+          <path d="M 50 100 L 50 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 350 100 L 350 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 50 230 L 50 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 350 230 L 350 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+        </svg>
+      );
+    }
+    
+    // Electronics, Tech, Gaming
+    if (categoryLower.includes('electronic') || categoryLower.includes('gaming') || categoryLower.includes('computer') || 
+        categoryLower.includes('mobile') || categoryLower.includes('technology') || categoryLower.includes('photography')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - modern device */}
+          <rect x="30" y="30" width="80" height="60" rx="5" stroke="white" strokeWidth="3" fill="none"/>
+          <rect x="40" y="40" width="60" height="40" rx="3" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <rect x="50" y="50" width="40" height="20" rx="2" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Top right - signal waves */}
+          <path d="M 280 40 Q 320 30, 360 40" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 280 60 Q 320 55, 360 60" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          <path d="M 280 80 Q 320 75, 360 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Bottom left - circuit nodes */}
+          <circle cx="50" cy="250" r="15" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="50" cy="250" r="8" fill="white" opacity="0.9"/>
+          <circle cx="120" cy="250" r="15" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="120" cy="250" r="8" fill="white" opacity="0.9"/>
+          <path d="M 65 250 L 105 250" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
+          {/* Bottom right - tech elements */}
+          <circle cx="320" cy="250" r="18" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="320" cy="250" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="320" cy="250" r="4" fill="white"/>
+          <circle cx="350" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="350" cy="250" r="6" fill="white" opacity="0.8"/>
+          {/* Center - connecting data lines */}
+          <path d="M 130 100 Q 200 80, 270 100" stroke="white" strokeWidth="2" fill="none" strokeDasharray="4,4" opacity="0.7"/>
+          <path d="M 130 200 Q 200 180, 270 200" stroke="white" strokeWidth="2" fill="none" strokeDasharray="4,4" opacity="0.7"/>
+          {/* Side tech indicators */}
+          <circle cx="30" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="30" cy="150" r="5" fill="white" opacity="0.8"/>
+          <circle cx="370" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="370" cy="150" r="5" fill="white" opacity="0.8"/>
+        </svg>
+      );
+    }
+    
+    // Construction, Real Estate, Home
+    if (categoryLower.includes('construction') || categoryLower.includes('real-estate') || categoryLower.includes('building') || 
+        categoryLower.includes('home') || categoryLower.includes('renovation')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - modern building */}
+          <rect x="30" y="40" width="70" height="80" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 25 40 L 65 15 L 105 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <rect x="40" y="60" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          <rect x="75" y="60" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          <rect x="40" y="90" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          <rect x="75" y="90" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          {/* Top right - building detail */}
+          <rect x="300" y="50" width="60" height="70" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 295 50 L 330 25 L 365 50" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <rect x="310" y="70" width="12" height="15" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          <rect x="338" y="70" width="12" height="15" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          {/* Bottom left - foundation/base */}
+          <path d="M 20 250 L 120 250" stroke="white" strokeWidth="3" fill="none" opacity="0.8"/>
+          {/* Bottom right - building element */}
+          <rect x="280" y="200" width="80" height="80" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 275 200 L 330 160 L 385 200" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <rect x="295" y="220" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <rect x="325" y="220" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <rect x="295" y="250" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <rect x="325" y="250" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          {/* Center - connecting architectural lines */}
+          <path d="M 100 120 Q 200 100, 300 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 100 200 Q 200 180, 300 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+        </svg>
+      );
+    }
+    
+    // Fashion, Beauty, Jewelry, Apparel
+    if (categoryLower.includes('fashion') || categoryLower.includes('beauty') || categoryLower.includes('jewelry') || 
+        categoryLower.includes('clothing') || categoryLower.includes('apparel') || categoryLower.includes('accessories') ||
+        categoryLower.includes('bags') || categoryLower.includes('luggage') || categoryLower.includes('sneakers')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - elegant hanger */}
+          <path d="M 50 40 Q 70 35, 90 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <path d="M 70 40 L 70 100" stroke="white" strokeWidth="3" fill="none"/>
+          {/* Top right - garment detail */}
+          <path d="M 310 50 Q 280 60, 280 120 L 340 120 Q 330 60, 310 50" 
+                stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <path d="M 295 80 Q 310 75, 325 80" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          {/* Bottom left - jewelry/accessory */}
+          <circle cx="60" cy="240" r="22" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="60" cy="240" r="14" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="60" cy="240" r="6" fill="white" opacity="0.9"/>
+          {/* Bottom right - fashion element */}
+          <path d="M 320 220 Q 340 210, 360 220" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <path d="M 320 240 Q 340 230, 360 240" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <path d="M 320 260 Q 340 250, 360 260" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
+          {/* Center - connecting elegant lines */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="150" cy="150" r="4" fill="white" opacity="0.8"/>
+          <circle cx="250" cy="150" r="4" fill="white" opacity="0.8"/>
+          {/* Side decorative elements */}
+          <circle cx="30" cy="150" r="8" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="370" cy="150" r="8" stroke="white" strokeWidth="2.5" fill="none"/>
+        </svg>
+      );
+    }
+    
+    // Food, Beverage, Restaurant
+    if (categoryLower.includes('food') || categoryLower.includes('restaurant') || categoryLower.includes('catering') || 
+        categoryLower.includes('beverage') || categoryLower.includes('kitchen') || categoryLower.includes('dining')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - elegant plate */}
+          <ellipse cx="80" cy="60" rx="40" ry="12" stroke="white" strokeWidth="3" fill="none"/>
+          <ellipse cx="80" cy="55" rx="35" ry="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="80" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Top right - utensil */}
+          <path d="M 320 40 L 320 120" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 315 40 Q 310 45, 305 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <path d="M 315 50 Q 310 55, 305 50" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8"/>
+          {/* Bottom left - utensil */}
+          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 45 200 Q 40 205, 35 200" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+          <path d="M 45 210 Q 40 215, 35 210" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8"/>
+          {/* Bottom right - plate with food */}
+          <ellipse cx="320" cy="240" rx="45" ry="15" stroke="white" strokeWidth="3" fill="none"/>
+          <ellipse cx="320" cy="235" rx="40" ry="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="320" cy="220" r="20" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
+          <circle cx="320" cy="220" r="10" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Center - connecting culinary elements */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="18" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="8" fill="white" opacity="0.6"/>
+        </svg>
+      );
+    }
+    
+    // Health, Medical, Beauty Products
+    if (categoryLower.includes('health') || categoryLower.includes('medical') || categoryLower.includes('pharmacy') ||
+        categoryLower.includes('beauty-products')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - medical cross */}
+          <rect x="40" y="40" width="30" height="70" rx="5" stroke="white" strokeWidth="3.5" fill="none"/>
+          <rect x="20" y="70" width="70" height="30" rx="5" stroke="white" strokeWidth="3.5" fill="none"/>
+          {/* Top right - pulse/heartbeat */}
+          <path d="M 300 50 Q 320 40, 340 50 T 380 50" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 300 70 Q 320 65, 340 70 T 380 70" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 300 90 Q 320 85, 340 90 T 380 90" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Bottom left - medical element */}
+          <circle cx="60" cy="240" r="20" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 55 240 L 60 250 L 65 240" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <circle cx="60" cy="240" r="8" fill="white" opacity="0.8"/>
+          {/* Bottom right - pulse line */}
+          <path d="M 280 240 Q 320 220, 360 240 T 380 240" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 280 260 Q 320 240, 360 260 T 380 260" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          {/* Center - connecting health elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="15" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="6" fill="white" opacity="0.8"/>
+        </svg>
+      );
+    }
+    
+    // Education, Books, Training, Tutoring
+    if (categoryLower.includes('education') || categoryLower.includes('book') || categoryLower.includes('learning') ||
+        categoryLower.includes('training') || categoryLower.includes('tutoring')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - book */}
+          <path d="M 30 40 L 30 120 L 110 120 L 110 40 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 70 40 L 70 120" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 40 60 L 100 60" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 40 80 L 100 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 40 100 L 100 100" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Top right - academic cap */}
+          <path d="M 300 50 Q 330 35, 360 50 L 360 70 Q 330 60, 300 70 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 310 60 L 350 60" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+          {/* Bottom left - stacked books */}
+          <path d="M 40 200 L 40 280 L 120 280 L 120 200 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 60 200 L 60 280" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Bottom right - book detail */}
+          <path d="M 280 200 L 280 280 L 360 280 L 360 200 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 320 200 L 320 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 300 220 L 340 220" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 300 240 L 340 240" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Center - connecting knowledge lines */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        </svg>
+      );
+    }
+    
+    // Art, Antiques, Collectibles, Memorabilia, Vintage
+    if (categoryLower.includes('art') || categoryLower.includes('antique') || categoryLower.includes('collectible') ||
+        categoryLower.includes('memorabilia') || categoryLower.includes('vintage') || categoryLower.includes('souvenir')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - frame */}
+          <rect x="30" y="30" width="80" height="100" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 20 30 L 70 15 L 120 30" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Top right - art element */}
+          <circle cx="320" cy="60" r="25" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 295 60 Q 320 50, 345 60" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom left - collectible */}
+          <rect x="40" y="200" width="60" height="80" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom right - vintage element */}
+          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 330 220 L 330 280" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Center - connecting elements */}
+          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Sports, Outdoor, Fitness, Gym
+    if (categoryLower.includes('sports') || categoryLower.includes('outdoor') || categoryLower.includes('fitness') ||
+        categoryLower.includes('gym') || categoryLower.includes('garden')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - ball */}
+          <circle cx="60" cy="50" r="22" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 38 50 L 82 50" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 60 28 L 60 72" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 45 35 Q 60 30, 75 35" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Top right - fitness element */}
+          <path d="M 320 40 L 320 100" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 300 70 L 340 70" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="320" cy="70" r="5" fill="white" opacity="0.9"/>
+          {/* Bottom left - outdoor element */}
+          <path d="M 40 220 Q 80 200, 120 220" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 40 250 Q 80 230, 120 250" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          {/* Bottom right - sports element */}
+          <circle cx="340" cy="240" r="28" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 312 240 L 368 240" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <path d="M 340 212 L 340 268" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="340" cy="240" r="8" fill="white" opacity="0.8"/>
+          {/* Center - connecting lines */}
+          <path d="M 140 150 Q 200 130, 260 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        </svg>
+      );
+    }
+    
+    // Entertainment, Events, Wedding, Media
+    if (categoryLower.includes('entertainment') || categoryLower.includes('event') || categoryLower.includes('wedding') ||
+        categoryLower.includes('media') || categoryLower.includes('musical')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - event decoration */}
+          <path d="M 50 40 Q 70 30, 90 40" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="70" cy="40" r="5" fill="white" opacity="0.9"/>
+          <circle cx="60" cy="35" r="3" fill="white" opacity="0.8"/>
+          <circle cx="80" cy="35" r="3" fill="white" opacity="0.8"/>
+          {/* Top right - musical note */}
+          <circle cx="330" cy="50" r="10" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 330 60 L 330 100" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 330 100 Q 340 95, 350 100" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          {/* Bottom left - celebration element */}
+          <path d="M 40 220 Q 60 210, 80 220" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="60" cy="240" r="7" fill="white" opacity="0.9"/>
+          <circle cx="80" cy="250" r="7" fill="white" opacity="0.9"/>
+          <circle cx="50" cy="245" r="5" fill="white" opacity="0.8"/>
+          {/* Bottom right - event element */}
+          <path d="M 300 240 Q 340 220, 360 240" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 300 260 Q 340 240, 360 260" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <path d="M 300 280 Q 340 260, 360 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
+          {/* Center - connecting elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
+          <circle cx="200" cy="150" r="4" fill="white" opacity="0.8"/>
+        </svg>
+      );
+    }
+    
+    // Pets, Animals, Baby & Kids, Childcare
+    if (categoryLower.includes('pet') || categoryLower.includes('animal') || categoryLower.includes('baby') ||
+        categoryLower.includes('kid') || categoryLower.includes('childcare') || categoryLower.includes('family')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - pet/animal */}
+          <circle cx="60" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="55" cy="45" r="3" fill="white" opacity="0.6"/>
+          <circle cx="65" cy="45" r="3" fill="white" opacity="0.6"/>
+          <path d="M 55 60 Q 60 65, 65 60" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Top right - baby element */}
+          <circle cx="330" cy="60" r="18" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 320 50 Q 330 45, 340 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Bottom left - family element */}
+          <path d="M 40 220 Q 60 210, 80 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="50" cy="240" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          <circle cx="70" cy="240" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Bottom right - childcare element */}
+          <path d="M 300 220 Q 340 210, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="320" cy="250" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Center - connecting elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Business, Professional Services, Legal, Financial, Insurance, Marketing
+    if (categoryLower.includes('business') || categoryLower.includes('professional') || categoryLower.includes('legal') ||
+        categoryLower.includes('financial') || categoryLower.includes('insurance') || categoryLower.includes('marketing') ||
+        categoryLower.includes('advertising') || categoryLower.includes('office')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - document/briefcase */}
+          <rect x="30" y="30" width="70" height="60" rx="4" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 30 30 L 100 30" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <path d="M 50 50 L 80 50" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 50 70 L 80 70" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 50 90 L 80 90" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Top right - business element */}
+          <circle cx="330" cy="50" r="18" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 325 50 L 335 50 M 330 45 L 330 55" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="330" cy="50" r="6" fill="white" opacity="0.8"/>
+          {/* Bottom left - professional element */}
+          <rect x="40" y="200" width="60" height="70" rx="4" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 50 220 L 90 220" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 50 240 L 90 240" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          <path d="M 50 260 L 90 260" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+          {/* Bottom right - financial element */}
+          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="330" cy="250" r="15" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="330" cy="250" r="7" fill="white" opacity="0.8"/>
+          {/* Center - connecting professional lines */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        </svg>
+      );
+    }
+    
+    // Jobs, Employment
+    if (categoryLower.includes('job') || categoryLower.includes('employment')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - person icon */}
+          <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 60 62 L 60 90" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 45 75 L 75 75" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Top right - briefcase */}
+          <rect x="300" y="40" width="50" height="40" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 310 40 L 340 40" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom left - job element */}
+          <path d="M 40 200 L 40 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 30 240 L 50 240" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom right - employment element */}
+          <circle cx="340" cy="240" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 335 240 L 345 240 M 340 235 L 340 245" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Center - connecting elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Travel, Tourism
+    if (categoryLower.includes('travel') || categoryLower.includes('tourism')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - location pin */}
+          <path d="M 60 40 L 60 80 L 40 100 L 80 100 L 60 80 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="60" cy="50" r="3" fill="white" opacity="0.6"/>
+          {/* Top right - travel element */}
+          <path d="M 320 40 L 320 100" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="320" cy="70" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Bottom left - map element */}
+          <rect x="30" y="200" width="80" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 50 220 L 100 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          <path d="M 50 240 L 100 240" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Bottom right - travel path */}
+          <path d="M 280 220 Q 320 200, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 280 250 Q 320 230, 360 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Center - connecting elements */}
+          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Renewable Energy, Waste Management, Industrial, Raw Materials
+    if (categoryLower.includes('renewable') || categoryLower.includes('energy') || categoryLower.includes('waste') ||
+        categoryLower.includes('industrial') || categoryLower.includes('raw-material')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - energy symbol */}
+          <circle cx="60" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 40 50 L 80 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          <path d="M 60 30 L 60 70" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Top right - industrial element */}
+          <rect x="300" y="30" width="60" height="50" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 310 50 L 350 50" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Bottom left - waste/industrial */}
+          <rect x="30" y="200" width="70" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 40 220 L 90 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Bottom right - energy element */}
+          <circle cx="340" cy="240" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 320 240 L 360 240" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          <path d="M 340 220 L 340 260" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Center - connecting lines */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Security, Safety
+    if (categoryLower.includes('security') || categoryLower.includes('safety')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - shield */}
+          <path d="M 50 40 Q 50 20, 70 20 L 90 20 Q 110 20, 110 40 L 110 80 Q 110 100, 90 100 L 70 100 Q 50 100, 50 80 Z" 
+                stroke="white" strokeWidth="3.5" fill="none"/>
+          <rect x="85" y="50" width="18" height="30" rx="3" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="94" cy="65" r="3" fill="white" opacity="0.9"/>
+          {/* Top right - lock */}
+          <rect x="300" y="40" width="45" height="55" rx="4" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 310 40 Q 320 28, 330 40" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
+          <circle cx="320" cy="67" r="5" fill="white" opacity="0.9"/>
+          {/* Bottom left - security element */}
+          <path d="M 30 200 Q 70 180, 110 200" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 30 230 Q 70 210, 110 230" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          {/* Bottom right - safety element */}
+          <circle cx="340" cy="240" r="20" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 330 240 L 350 240 M 340 230 L 340 250" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+          <circle cx="340" cy="240" r="6" fill="white" opacity="0.8"/>
+          {/* Center - connecting elements */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        </svg>
+      );
+    }
+    
+    // Government, Public, Non-Profit, Charity
+    if (categoryLower.includes('government') || categoryLower.includes('public') || categoryLower.includes('non-profit') ||
+        categoryLower.includes('charity')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - building/government */}
+          <rect x="30" y="30" width="80" height="90" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 20 30 L 70 15 L 120 30" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 50 60 L 90 60" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          <path d="M 50 80 L 90 80" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Top right - public element */}
+          <circle cx="330" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 325 50 L 335 50 M 330 45 L 330 55" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom left - charity element */}
+          <path d="M 40 200 Q 60 190, 80 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="50" cy="240" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Bottom right - government building */}
+          <rect x="280" y="200" width="80" height="80" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 275 200 L 330 170 L 385 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Center - connecting lines */}
+          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Tools, Equipment, Appliances, Repair Services
+    if (categoryLower.includes('tool') || categoryLower.includes('equipment') || categoryLower.includes('appliance') ||
+        categoryLower.includes('repair')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - tool */}
+          <rect x="40" y="30" width="30" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 55 30 L 55 100" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="55" cy="50" r="6" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Top right - equipment */}
+          <rect x="300" y="40" width="50" height="50" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 310 60 L 340 60" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Bottom left - appliance */}
+          <rect x="30" y="200" width="60" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 50 220 L 80 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Bottom right - repair element */}
+          <path d="M 300 200 L 300 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 280 240 L 320 240" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Center - connecting elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Cleaning Services
+    if (categoryLower.includes('cleaning')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - cleaning tool */}
+          <path d="M 50 40 L 50 100" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <circle cx="50" cy="70" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Top right - cleaning element */}
+          <path d="M 320 50 Q 340 40, 360 50" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 320 70 Q 340 65, 360 70" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom left - cleaning wave */}
+          <path d="M 30 220 Q 60 200, 90 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 30 250 Q 60 230, 90 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom right - cleaning element */}
+          <circle cx="340" cy="240" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 335 240 L 345 240" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Center - connecting elements */}
+          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Thrift, Second-hand
+    if (categoryLower.includes('thrift')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - thrift item */}
+          <path d="M 30 40 L 30 120 L 110 120 L 110 40 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 70 40 L 70 120" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Top right - second-hand element */}
+          <circle cx="330" cy="60" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="330" cy="60" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom left - thrift box */}
+          <path d="M 40 200 L 40 280 L 120 280 L 120 200 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom right - thrift element */}
+          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <circle cx="320" cy="250" r="6" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          <circle cx="340" cy="250" r="6" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
+          {/* Center - connecting elements */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Agriculture, Farming
+    if (categoryLower.includes('agriculture') || categoryLower.includes('farming')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - plant/growth */}
+          <path d="M 50 100 L 50 40" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 40 60 Q 50 50, 60 60" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          <path d="M 40 80 Q 50 70, 60 80" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
+          {/* Top right - farming element */}
+          <circle cx="330" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 320 50 Q 330 40, 340 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom left - agriculture element */}
+          <path d="M 30 200 Q 70 180, 110 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 30 230 Q 70 210, 110 230" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom right - farming tool */}
+          <path d="M 300 220 L 300 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 290 250 L 310 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Center - connecting elements */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        </svg>
+      );
+    }
+    
+    // Personal, Service (generic)
+    if (categoryLower.includes('personal') || categoryLower.includes('service')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+          {/* Top left - person */}
+          <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          <path d="M 60 62 L 60 90" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+          {/* Top right - service element */}
+          <circle cx="330" cy="60" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          <path d="M 325 60 L 335 60 M 330 55 L 330 65" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+          {/* Bottom left - personal element */}
+          <path d="M 40 200 Q 80 180, 120 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Bottom right - service element */}
+          <path d="M 300 220 Q 340 200, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+          {/* Center - connecting elements */}
+          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+          <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+        </svg>
+      );
+    }
+    
+    // Other/Default - Professional abstract design
+    return (
+      <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
+        {/* Top left - geometric shape */}
+        <circle cx="60" cy="50" r="22" stroke="white" strokeWidth="3" fill="none"/>
+        <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+        <circle cx="60" cy="50" r="5" fill="white" opacity="0.8"/>
+        {/* Top right - abstract element */}
+        <rect x="300" y="30" width="60" height="60" rx="7" stroke="white" strokeWidth="3" fill="none"/>
+        <path d="M 330 50 L 330 80" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+        <path d="M 300 50 L 360 50" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+        <path d="M 300 80 L 360 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
+        {/* Bottom left - connecting element */}
+        <path d="M 30 200 Q 100 180, 170 200" stroke="white" strokeWidth="2.5" fill="none" strokeDasharray="4,4" opacity="0.7"/>
+        {/* Bottom right - abstract shape */}
+        <path d="M 280 220 Q 340 200, 360 220" stroke="white" strokeWidth="3" fill="none"/>
+        <circle cx="340" cy="250" r="18" stroke="white" strokeWidth="3" fill="none"/>
+        <path d="M 335 250 L 345 250 M 340 245 L 340 255" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
+        <circle cx="340" cy="250" r="6" fill="white" opacity="0.8"/>
+        {/* Center - connecting lines */}
+        <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
+      </svg>
+    );
+  };
+
   if (loading) {
     return <LoadingAnimation message="Loading enquiries" />;
   }
@@ -1343,7 +1968,7 @@ export default function EnquiryWall() {
   return (
     <Layout>
       <div 
-        className="flex flex-col flex-grow bg-gradient-to-br from-background to-muted/20"
+        className="flex flex-col flex-grow bg-white"
         style={{
           touchAction: 'pan-y pinch-zoom', // Allow vertical scroll but prevent double-tap zoom
           WebkitTextSizeAdjust: '100%', // Prevent text size adjustment that triggers zoom
@@ -1877,13 +2502,13 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-black bg-white rounded-none overflow-hidden relative' : 'border border-black bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
+                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-gray-300 bg-white rounded-none overflow-hidden relative' : 'border border-gray-300 bg-white rounded-none flex flex-col min-h-[300px] sm:min-h-0 lg:min-h-[400px] xl:min-h-[450px] relative'
                     } transition-all duration-300 cursor-pointer ${
                       isEnquiryDisabled(enquiry) 
-                        ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' 
+                        ? 'opacity-70 bg-gray-50 border-gray-300 grayscale cursor-not-allowed' 
                         : viewMode === 'list' 
-                          ? 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
-                          : 'rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-4 border-l-green-500 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
+                          ? 'rounded-2xl border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
+                          : 'rounded-2xl border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-green-500 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
                     } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
@@ -1981,8 +2606,12 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
-                            <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0">
+                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10 bg-black overflow-hidden" style={{ flex: '1 1 50%' }}>
+                            {/* Category-specific 2D Sketches - List View Only */}
+                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.25]">
+                              {getCategorySketch(enquiry.category)}
+                            </div>
+                            <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0 relative z-10">
                               {/* Need Label - Above Title */}
                               <div className="text-left">
                                 <div className="relative inline-block bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
@@ -2088,6 +2717,46 @@ export default function EnquiryWall() {
                                   
                                   return (
                                     <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
+                                      {/* Location - Right aligned above date */}
+                                      {enquiry.location && (
+                                        <div className="relative flex items-center gap-1.5 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                          style={{
+                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                            transformStyle: 'preserve-3d',
+                                            perspective: '1000px'
+                                          }}
+                                        >
+                                          {/* 3D Border Effect */}
+                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                            style={{
+                                              boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                            }}
+                                          />
+                                          
+                                          {/* Top highlight for 3D effect */}
+                                          <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                          
+                                          {/* Side highlights for depth */}
+                                          <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                                          <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                          
+                                          {/* Bottom shadow for depth */}
+                                          <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                          
+                                          {/* Inner depth shadow */}
+                                          <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                          
+                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>at - </span>
+                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
+                                            style={{
+                                              transform: 'translateZ(10px)'
+                                            }}
+                                          >
+                                            <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                          </div>
+                                          <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
+                                        </div>
+                                      )}
                                       <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                         style={{
                                           boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
@@ -2183,11 +2852,134 @@ export default function EnquiryWall() {
                               </p>
                             </div>
                             )}
+                            
+                            {/* Budget - Moved to CardHeader to extend black background */}
+                            {/* Desktop Budget */}
+                            <div className="hidden sm:flex pt-2 sm:pt-3">
+                              {enquiry.budget && (
+                                <div className="relative flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-0.5 sm:py-1 transform-gpu transition-all duration-500 ease-out"
+                                  style={{
+                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                    transformStyle: 'preserve-3d',
+                                    perspective: '1000px'
+                                  }}
+                                >
+                                  {/* 3D Border Effect */}
+                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                    style={{
+                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                    }}
+                                  />
+                                  
+                                  {/* Top highlight for 3D effect */}
+                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                  
+                                  {/* Side highlights for depth */}
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                  
+                                  {/* Bottom shadow for depth */}
+                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                  
+                                  {/* Inner depth shadow */}
+                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                  
+                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base md:text-lg whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Mobile Budget */}
+                            <div className="block sm:hidden pt-2">
+                              {enquiry.budget && (
+                                <div className="relative flex items-center justify-center">
+                                  <div className="relative flex items-center gap-1 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg px-2 py-1 transform-gpu transition-all duration-500 ease-out"
+                                    style={{
+                                      boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                      transformStyle: 'preserve-3d',
+                                      perspective: '1000px'
+                                    }}
+                                  >
+                                    {/* 3D Border Effect */}
+                                    <div className="absolute inset-0 rounded-lg border-2 border-gray-300/50" 
+                                      style={{
+                                        boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                      }}
+                                    />
+                                    
+                                    {/* Top highlight for 3D effect */}
+                                    <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                    
+                                    {/* Side highlights for depth */}
+                                    <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                                    <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                    
+                                    {/* Bottom shadow for depth */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                    
+                                    {/* Inner depth shadow */}
+                                    <div className="absolute inset-0.5 rounded-md bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                    
+                                    <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
+                                    <span className="font-extrabold text-black text-sm sm:text-base relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
+                                    <span className="font-extrabold text-gray-900 text-sm sm:text-base whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
-                          <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
+                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10 bg-black overflow-hidden">
+                          {/* 2D Sketches - Safely Enquire Here */}
+                          <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]">
+                            <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                              {/* Shield icon for safety */}
+                              <path d="M 50 80 Q 50 50, 80 50 L 120 50 Q 150 50, 150 80 L 150 120 Q 150 150, 120 150 L 100 170 L 80 150 Q 50 150, 50 120 Z" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M 100 100 L 100 130 M 90 120 L 100 130 L 110 120" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                              
+                              {/* Lock icon */}
+                              <rect x="250" y="100" width="40" height="50" rx="4" 
+                                    stroke="white" strokeWidth="2" fill="none"/>
+                              <path d="M 270 100 L 270 80 Q 270 60, 290 60 Q 310 60, 310 80 L 310 100" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                              <circle cx="270" cy="125" r="3" fill="white"/>
+                              
+                              {/* Message/question bubble */}
+                              <path d="M 200 200 Q 180 200, 180 220 L 180 240 Q 180 250, 190 250 L 200 260 L 210 250 Q 220 250, 220 240 L 220 220 Q 220 200, 200 200" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                              <circle cx="200" cy="210" r="2" fill="white"/>
+                              <circle cx="200" cy="220" r="2" fill="white"/>
+                              <circle cx="200" cy="230" r="2" fill="white"/>
+                              
+                              {/* Connection lines */}
+                              <path d="M 150 100 Q 175 100, 200 100" 
+                                    stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="3,3" opacity="0.6"/>
+                              <path d="M 150 140 Q 175 140, 200 180" 
+                                    stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="3,3" opacity="0.6"/>
+                              
+                              {/* Check mark for verification */}
+                              <circle cx="320" cy="80" r="15" 
+                                      stroke="white" strokeWidth="2" fill="none"/>
+                              <path d="M 315 80 L 318 83 L 325 76" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                              
+                              {/* Arrow pointing to enquiry */}
+                              <path d="M 280 200 L 300 200 M 295 195 L 300 200 L 295 205" 
+                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                              
+                              {/* Decorative dots */}
+                              <circle cx="60" cy="200" r="2" fill="white" opacity="0.5"/>
+                              <circle cx="340" cy="200" r="2" fill="white" opacity="0.5"/>
+                              <circle cx="60" cy="250" r="2" fill="white" opacity="0.5"/>
+                              <circle cx="340" cy="250" r="2" fill="white" opacity="0.5"/>
+                            </svg>
+                          </div>
+                          <div className="space-y-1.5 sm:space-y-3 lg:space-y-4 relative z-10">
                             {/* Need Label - Above Title */}
                             <div className="text-left">
                               <div className="relative inline-block bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
@@ -2291,8 +3083,49 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex items-center justify-end gap-2 sm:gap-3 pt-2">
-                                      <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                    <div className="flex flex-col items-end gap-1 sm:gap-1.5 pt-2">
+                                      {/* Location - Right aligned above date */}
+                                      {enquiry.location && (
+                                        <div className="relative flex items-center gap-1.5 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                          style={{
+                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
+                                            transformStyle: 'preserve-3d',
+                                            perspective: '1000px'
+                                          }}
+                                        >
+                                          {/* 3D Border Effect */}
+                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
+                                            style={{
+                                              boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
+                                            }}
+                                          />
+                                          
+                                          {/* Top highlight for 3D effect */}
+                                          <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                                          
+                                          {/* Side highlights for depth */}
+                                          <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                                          <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                                          
+                                          {/* Bottom shadow for depth */}
+                                          <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                                          
+                                          {/* Inner depth shadow */}
+                                          <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                                          
+                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>at - </span>
+                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
+                                            style={{
+                                              transform: 'translateZ(10px)'
+                                            }}
+                                          >
+                                            <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                          </div>
+                                          <span className="truncate text-[10px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
+                                        </div>
+                                      )}
+                                      <div className="flex items-center gap-2 sm:gap-3">
+                                        <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                         style={{
                                           boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                           transformStyle: 'preserve-3d',
@@ -2353,6 +3186,7 @@ export default function EnquiryWall() {
                                         <span className="relative z-10 text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                                           {formatDeadlineText(enquiry.deadline)}
                                         </span>
+                                      </div>
                                       </div>
                                     </div>
                                   );
@@ -2430,44 +3264,6 @@ export default function EnquiryWall() {
                                   <span className="truncate font-extrabold text-gray-900 text-sm sm:text-base md:text-lg tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
-                              {enquiry.location && (
-                                <div className="relative flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
-                                    style={{
-                                      transform: 'translateZ(10px)'
-                                    }}
-                                  >
-                                    <MapPin className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-gray-700" />
-                                  </div>
-                                  <span className="truncate text-[10px] sm:text-sm md:text-base font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
-                                </div>
-                              )}
                             </div>
                             
                             {/* Category */}
@@ -2483,86 +3279,13 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-gray-50 flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'p-2 sm:p-5 lg:p-6 xl:p-7 bg-white flex flex-col justify-start sm:justify-center flex-1 min-h-0' : 'flex-1 flex flex-col p-2 sm:p-5 lg:p-6 xl:p-7 justify-between bg-white'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 50%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
                           {/* Desktop Layout */}
                           <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-between w-full">
                             {/* All Content Elements in Order */}
-                            <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
-                              {/* Budget */}
-                              {enquiry.budget && (
-                                <div className="relative flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-0.5 sm:py-1 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-sm sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base md:text-lg whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
-                                </div>
-                              )}
-                              {/* Location */}
-                              {enquiry.location && (
-                                <div className="relative flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out flex-shrink-0"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
-                                    style={{
-                                      transform: 'translateZ(10px)'
-                                    }}
-                                  >
-                                    <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
-                                  </div>
-                                  <span className="text-[10px] sm:text-xs md:text-sm font-semibold whitespace-nowrap relative z-10 text-gray-800" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
-                                </div>
-                              )}
+                            <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto mt-4 sm:mt-6 lg:mt-8">
                               {/* Category */}
                               <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
@@ -2571,7 +3294,7 @@ export default function EnquiryWall() {
                             </div>
                             
                             {/* Right: Action Button - Desktop */}
-                            <div className="flex-shrink-0 w-auto mt-6 lg:mt-8">
+                            <div className="flex-shrink-0 w-auto self-start -mt-4 sm:-mt-3 lg:-mt-2">
                               {isOwnEnquiry(enquiry) ? (
                                 <button 
                                   type="button"
@@ -2639,89 +3362,10 @@ export default function EnquiryWall() {
                             </div>
                           </div>
                           
-                          {/* Mobile Layout - Budget, Location, Category and Button at Bottom */}
-                          <div className="block sm:hidden w-full mt-auto space-y-3 pt-4">
-                            {/* Budget - Mobile Only - Bigger and Centered */}
-                            {enquiry.budget && (
-                              <div className="relative flex items-center justify-center" style={{ marginTop: '-24px' }}>
-                                <div className="relative flex items-center gap-1 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg px-2 py-1 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg border-2 border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <span className="font-bold text-gray-900 text-[8px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-sm sm:text-base relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-sm sm:text-base whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{formatIndianCurrency(enquiry.budget)}</span>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Spacer to maintain card height */}
-                            <div className="h-6 sm:hidden"></div>
-                            
-                            {/* Location and Category - In a line above Sell Button (Mobile Only) */}
-                            <div className="w-full flex items-center justify-between sm:hidden mb-2">
-                              {/* Location */}
-                              {enquiry.location && (
-                                <div className="relative flex items-center gap-1 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out flex-shrink-0"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg border-2 border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <div className="flex items-center justify-center w-3 h-3 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
-                                    style={{
-                                      transform: 'translateZ(10px)'
-                                    }}
-                                  >
-                                    <MapPin className="h-2 w-2 text-gray-700" />
-                                  </div>
-                                  <span className="text-[10px] font-semibold whitespace-nowrap relative z-10 text-gray-800" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
-                                </div>
-                              )}
+                          {/* Mobile Layout - Location, Category and Button at Bottom */}
+                          <div className="block sm:hidden w-full mt-auto space-y-3 pt-0 -mt-6">
+                            {/* Category - In a line above Sell Button (Mobile Only) */}
+                            <div className="w-full flex items-center justify-between sm:hidden mb-2 mt-4">
                               {/* Category */}
                               <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
                                 <span>{enquiry.category.replace('-', ' ')}</span>
@@ -2798,7 +3442,7 @@ export default function EnquiryWall() {
                           </div>
                           </>
                         ) : (
-                          <div className="space-y-1.5 sm:space-y-2.5 mt-auto sm:mt-6 lg:mt-8">
+                          <div className="space-y-1.5 sm:space-y-2.5 mt-auto sm:-mt-6 lg:-mt-4">
                             {isOwnEnquiry(enquiry) ? (
                               <button 
                                 type="button"
