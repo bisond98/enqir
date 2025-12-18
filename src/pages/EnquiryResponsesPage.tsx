@@ -90,7 +90,6 @@ const EnquiryResponsesPage = () => {
   const [sortBy, setSortBy] = useState<'default' | 'price-high' | 'price-low' | 'newest' | 'oldest'>('oldest');
   // Filter state for trust-badged responses
   const [showOnlyTrustBadged, setShowOnlyTrustBadged] = useState(false);
-  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
   const sortResponses = (responses: Response[], sortType: string) => {
     console.log('🔍 SortResponses called:', { sortType, responseCount: responses.length, responses: responses.map(r => ({ id: r.id, price: r.price })) });
@@ -643,10 +642,7 @@ const EnquiryResponsesPage = () => {
             </DropdownMenu>
             
             {/* Trust Badge Filter */}
-            <DropdownMenu 
-              open={filterDropdownOpen} 
-              onOpenChange={setFilterDropdownOpen}
-            >
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -680,7 +676,6 @@ const EnquiryResponsesPage = () => {
                   checked={showOnlyTrustBadged}
                   onCheckedChange={(checked) => {
                     setShowOnlyTrustBadged(checked);
-                    setFilterDropdownOpen(false);
                   }}
                   className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm text-white flex items-center justify-center text-center [&>span]:hidden ${
                     showOnlyTrustBadged 
@@ -812,38 +807,54 @@ const EnquiryResponsesPage = () => {
                     </div>
                     
                     {/* Seller's Quote - Mobile optimized */}
-                    <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 flex-shrink-0 w-full lg:w-auto mt-6 sm:mt-8 lg:mt-10 transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/quote z-20"
+                    <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 flex-shrink-0 w-full lg:w-auto mt-6 sm:mt-8 lg:mt-10 transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/quote z-20"
                       style={{
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.25), 0 10px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.1)',
                         transformStyle: 'preserve-3d',
                         perspective: '1000px'
                       }}
                     >
-                      
                       {/* 3D Border Effect */}
-                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border-2 border-red-800/40" 
+                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border-2 border-gray-300/50" 
                         style={{
-                          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.25)'
+                          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15)'
                         }}
                       />
                       
                       {/* Top highlight for 3D effect */}
-                      <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+                      <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                      
+                      {/* Side highlights for depth */}
+                      <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-2xl sm:rounded-l-3xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                      <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-2xl sm:rounded-r-3xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
                       
                       {/* Bottom shadow for depth */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-2xl sm:rounded-b-3xl bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
+                      <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-2xl sm:rounded-b-3xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                      
+                      {/* Inner depth shadow */}
+                      <div className="absolute inset-2 rounded-xl sm:rounded-2xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                       
                       {/* Content */}
                       <div className="relative z-10">
                         <div className="flex items-center justify-center space-x-2.5 sm:space-x-3 mb-4 sm:mb-5">
-                          <div className="relative w-7 h-7 sm:w-9 sm:h-9 lg:w-11 lg:h-11 bg-gradient-to-br from-white to-gray-100 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.8)] ring-2 ring-white/40 transform group-hover/quote:scale-110 transition-transform duration-300">
-                            <span className="text-red-700 text-base sm:text-lg lg:text-xl font-black drop-shadow-sm">₹</span>
+                          <div className="relative w-7 h-7 sm:w-9 sm:h-9 lg:w-11 lg:h-11 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"
+                            style={{
+                              transform: 'translateZ(10px)'
+                            }}
+                          >
+                            <span className="text-gray-800 text-base sm:text-lg lg:text-xl font-black drop-shadow-sm">₹</span>
                           </div>
-                          <span className="text-xs sm:text-sm lg:text-base font-bold text-white tracking-wider drop-shadow-md">Seller's Quote</span>
+                          <span className="text-xs sm:text-sm lg:text-base font-bold text-gray-800 tracking-wider drop-shadow-sm"
+                            style={{
+                              transform: 'translateZ(10px)',
+                              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                          >Seller's Quote</span>
                         </div>
-                        <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-white leading-none text-center drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover/quote:scale-105 transition-transform duration-300"
+                        <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-black leading-none text-center transform group-hover/quote:scale-105 transition-transform duration-300"
                           style={{
-                            textShadow: '0 4px 8px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.25)'
+                            transform: 'translateZ(15px)',
+                            textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15)'
                           }}
                         >
                           {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
@@ -851,7 +862,7 @@ const EnquiryResponsesPage = () => {
                       </div>
                       
                       {/* Hover glow effect */}
-                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-red-400/0 via-red-500/0 to-red-600/0 group-hover/quote:from-red-400/10 group-hover/quote:via-red-500/10 group-hover/quote:to-red-600/10 transition-all duration-500 pointer-events-none" />
+                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/0 via-gray-100/0 to-gray-200/0 group-hover/quote:from-white/20 group-hover/quote:via-gray-100/10 group-hover/quote:to-gray-200/10 transition-all duration-500 pointer-events-none" />
                     </div>
                   </div>
                   
