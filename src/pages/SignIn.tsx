@@ -205,12 +205,6 @@ const SignIn = () => {
     const containerElement = document.querySelector('.signin-container');
     if (!cardElement || !robotRef.current) return;
 
-    // 🛡️ MOBILE FIX: Cache DOM elements to avoid expensive queries every frame
-    let cachedEnqirSpan: HTMLElement | null = null;
-    let cacheTimestamp = 0;
-    const CACHE_DURATION = 1000; // Refresh cache every second
-    const isMobileDevice = window.innerWidth < 640; // Detect mobile once
-
     let animationFrameId: number | null = null;
     let isRunning = true;
     let currentPathIndex = 0;
@@ -221,32 +215,6 @@ const SignIn = () => {
       let isPaused = false;
       let pauseStartTime = 0;
       let pauseDuration = 1500; // 1.5 second pause to show pushing effort
-      // 🛡️ PRODUCTION FIX: Track actual robot position for continuity
-      let currentRobotX = 0;
-      let currentRobotY = 0;
-      
-    // 🛡️ MOBILE FIX: Handle page visibility changes (mobile browsers pause when tab hidden)
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden - pause animation
-        isRunning = false;
-        if (animationFrameId !== null) {
-          cancelAnimationFrame(animationFrameId);
-          animationFrameId = null;
-        }
-      } else {
-        // Page is visible - resume animation
-        isRunning = true;
-        lastTimestamp = 0; // Reset to recalculate timing
-        // 🛡️ PRODUCTION FIX: Use requestAnimationFrame timestamp for consistency
-        // Don't set pathStartTime here - let animate() handle it with proper timestamp
-        pathStartTime = 0; // Reset so it gets set properly in animate()
-        if (robotRef.current) {
-          animationFrameId = requestAnimationFrame(animate);
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const createRoamingPaths = () => {
       const cardRect = cardElement.getBoundingClientRect();
@@ -341,63 +309,24 @@ const SignIn = () => {
 
     let paths = createRoamingPaths();
     let currentPath = paths[currentPathIndex];
-    // 🛡️ MOBILE FIX: Slightly faster on mobile for better performance (use cached isMobileDevice)
-    const pathDuration = isMobileDevice ? 3500 : 4000; // 3.5s on mobile, 4s on desktop
+    const pathDuration = 4000;
     const rotationSmoothing = 0.12;
-    // 🛡️ FIX: Track actual start time for consistent timing regardless of frame rate
-    let animationStartTime = 0;
-    let pathStartTime = 0; // Track when current path started
 
              const animate = (timestamp: number) => {
              if (!isRunning || !robotRef.current) return;
              
-             // 🛡️ FIX: Initialize start time on first frame
-             if (animationStartTime === 0) {
-               animationStartTime = timestamp;
-               pathStartTime = timestamp;
+             if (lastTimestamp === 0) lastTimestamp = timestamp;
+             const deltaTime = Math.min(timestamp - lastTimestamp, 16.67);
              lastTimestamp = timestamp;
-               // 🛡️ PRODUCTION FIX: Initialize robot position from first path
-               if (currentPath && currentRobotX === 0 && currentRobotY === 0) {
-                 currentRobotX = currentPath.start.x;
-                 currentRobotY = currentPath.start.y;
-               }
-             } else if (lastTimestamp === 0) {
-               // 🛡️ MOBILE FIX: Handle case where animation resumes after being paused
-               lastTimestamp = timestamp;
-               if (pathStartTime === 0) {
-                 pathStartTime = timestamp;
-               }
-             }
-             
-             // 🛡️ PRODUCTION FIX: Always ensure pathStartTime is valid (safeguard)
-             // This prevents animation from getting stuck if pathStartTime is somehow invalid
-             if (pathStartTime <= 0 || pathStartTime > timestamp) {
-               console.warn('⚠️ Robot animation: Invalid pathStartTime, resetting to current timestamp');
-               pathStartTime = timestamp;
-             }
-             
-             // 🛡️ FIX: Use actual elapsed time but clamp to prevent huge jumps when tab returns
-             // This ensures consistent animation speed in both localhost and production
-             // Allow up to 100ms to handle throttling, but prevent huge jumps that break animation
-             const rawDelta = timestamp - lastTimestamp;
-             const deltaTime = Math.min(rawDelta, 100); // Clamp to 100ms max per frame
-             lastTimestamp = timestamp;
-             
-             // 🛡️ MOBILE FIX: Cache DOM queries and throttle distance calculations on mobile
-             const now = performance.now();
-             const shouldCheckDistance = !isMobileDevice || (now - cacheTimestamp) > 200; // Check every 200ms on mobile
-             
-             if (!cachedEnqirSpan || (now - cacheTimestamp) > CACHE_DURATION) {
-               const welcomeEl = document.querySelector('.welcome-heading');
-               cachedEnqirSpan = welcomeEl?.querySelector('.enqir-text') as HTMLElement;
-               cacheTimestamp = now;
-             }
              
              // Check robot position relative to "Enqir" text for HARD push interaction
-             // 🛡️ MOBILE FIX: Throttle distance calculations on mobile for better performance
-             if (shouldCheckDistance && cachedEnqirSpan && containerElement && robotRef.current) {
+             const welcomeElement = document.querySelector('.welcome-heading');
+             const containerElement = document.querySelector('.signin-container');
+             const enqirSpan = welcomeElement?.querySelector('.enqir-text') as HTMLElement;
+             
+             if (enqirSpan && containerElement && robotRef.current) {
                const containerRect = containerElement.getBoundingClientRect();
-               const enqirRect = cachedEnqirSpan.getBoundingClientRect();
+               const enqirRect = enqirSpan.getBoundingClientRect();
                const robotRect = robotRef.current.getBoundingClientRect();
                
                const enqirCenterX = enqirRect.left + enqirRect.width / 2 - containerRect.left;
@@ -432,15 +361,6 @@ const SignIn = () => {
                    y: prev.y * 0.92
                  }));
                }
-             } else if (!shouldCheckDistance) {
-               // 🛡️ MOBILE FIX: Continue text push animation even when distance check is throttled
-               // Only update if currently pushing
-               setTextPushOffset(prev => {
-                 if (Math.abs(prev.x) > 0.1 || Math.abs(prev.y) > 0.1) {
-                   return { x: prev.x * 0.98, y: prev.y * 0.98 };
-                 }
-                 return prev;
-               });
              }
       
       // Handle pause state
@@ -453,8 +373,7 @@ const SignIn = () => {
           isPaused = false;
           setIsRobotPaused(false);
           pauseStartTime = 0;
-          // 🛡️ FIX: Reset path start time when moving to next path
-          pathStartTime = timestamp;
+          pathProgress = 0;
           currentPathIndex = (currentPathIndex + 1) % paths.length;
           paths = createRoamingPaths();
           if (currentPathIndex < paths.length) {
@@ -463,23 +382,12 @@ const SignIn = () => {
         } else {
           // Keep robot at pause position and trigger blink
           setIsRobotPaused(true);
-          // 🛡️ MOBILE FIX: Only continue if visible
-          if (isRunning && !document.hidden) {
           animationFrameId = requestAnimationFrame(animate);
-          }
           return;
         }
       }
       
-      // 🛡️ FIX: Use absolute time-based progress instead of accumulating deltaTime
-      // This ensures animation speed is consistent regardless of frame rate (localhost vs production)
-      // 🛡️ PRODUCTION FIX: Ensure pathStartTime is always valid
-      if (pathStartTime === 0 || pathStartTime > timestamp) {
-        pathStartTime = timestamp;
-      }
-      
-      const pathElapsed = timestamp - pathStartTime;
-      const pathProgress = Math.min(Math.max(pathElapsed / pathDuration, 0), 1); // Clamp between 0 and 1
+      pathProgress += deltaTime / pathDuration;
       
       if (pathProgress >= 1) {
         // Check if this path should pause
@@ -487,39 +395,13 @@ const SignIn = () => {
           isPaused = true;
           setIsRobotPaused(true);
           pauseStartTime = timestamp;
-          // Keep pathStartTime as is during pause - don't reset it
+          pathProgress = 1; // Keep at end position during pause
         } else {
-          // 🛡️ PRODUCTION FIX: Move to next path with proper continuity
-          // Store current robot position (at end of path) before changing path
-          const currentRobotX = currentPath.end.x;
-          const currentRobotY = currentPath.end.y;
-          
-          // Move to next path
+          pathProgress = 0;
           currentPathIndex = (currentPathIndex + 1) % paths.length;
-          
-          // 🛡️ PRODUCTION FIX: Only recalculate paths if we've completed a full cycle
-          // This prevents unnecessary recalculations that can cause jumps
-          if (currentPathIndex === 0) {
           paths = createRoamingPaths();
-          }
-          
           if (currentPathIndex < paths.length) {
             currentPath = paths[currentPathIndex];
-            
-            // 🛡️ PRODUCTION FIX: Ensure continuity - new path MUST start from robot's current position
-            // This prevents any jumps when transitioning between paths
-            // Use actual tracked position, not calculated end position
-            if (currentRobotX !== 0 || currentRobotY !== 0) {
-              currentPath.start.x = currentRobotX;
-              currentPath.start.y = currentRobotY;
-            } else {
-              // Fallback: use previous end position
-              currentPath.start.x = currentRobotX || currentPath.start.x;
-              currentPath.start.y = currentRobotY || currentPath.start.y;
-            }
-            
-            // Reset path start time for new path
-            pathStartTime = timestamp;
           }
         }
       }
@@ -527,38 +409,13 @@ const SignIn = () => {
       const t = pathProgress;
       const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      // 🛡️ PRODUCTION FIX: Calculate target position with continuity check
-      let targetX: number;
-      let targetY: number;
-      
-      if (isPaused) {
-        targetX = currentPath.end.x;
-        targetY = currentPath.end.y;
-      } else {
-        targetX = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
-        targetY = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
-      }
-      
-      // 🛡️ PRODUCTION FIX: Ensure smooth transition - prevent large jumps
-      // Use tracked position instead of state (which might be stale)
-      const distance = Math.sqrt(Math.pow(targetX - currentRobotX, 2) + Math.pow(targetY - currentRobotY, 2));
-      
-      // If jump is too large (>50px), smoothly interpolate to prevent visible jump
-      const maxJump = 50;
-      let x: number, y: number;
-      if (distance > maxJump && pathProgress < 0.1 && currentRobotX !== 0 && currentRobotY !== 0) {
-        // Smooth interpolation for first 10% of path to prevent jumps
-        const smoothFactor = Math.min(pathProgress * 10, 1); // 0 to 1 over first 10% of path
-        x = currentRobotX + (targetX - currentRobotX) * smoothFactor;
-        y = currentRobotY + (targetY - currentRobotY) * smoothFactor;
-      } else {
-        x = targetX;
-        y = targetY;
-      }
-      
-      // Update tracked position
-      currentRobotX = x;
-      currentRobotY = y;
+      // If paused, keep at end position
+      const x = isPaused 
+        ? currentPath.end.x 
+        : currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
+      const y = isPaused 
+        ? currentPath.end.y 
+        : currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
       
       // Keep robot completely upright - no tilting at all
       // Always face forward/horizontal (0 degrees)
@@ -569,58 +426,23 @@ const SignIn = () => {
       setRobotAngle(currentAngle);
       
       if (robotRef.current) {
-        // 🛡️ MOBILE FIX: Use GPU-accelerated transforms for better mobile performance
         robotRef.current.style.left = `${x}px`;
         robotRef.current.style.top = `${y}px`;
-        robotRef.current.style.transform = `translate3d(-50%, -50%, 0) rotate(${currentAngle}deg)`;
-        robotRef.current.style.willChange = 'transform, left, top';
+        robotRef.current.style.transform = `translate(-50%, -50%) rotate(${currentAngle}deg)`;
       }
       
-      // 🛡️ MOBILE FIX: Continue animation only if running and visible
-      if (isRunning && !document.hidden) {
       animationFrameId = requestAnimationFrame(animate);
-      }
     };
 
-    // 🛡️ MOBILE FIX: Start animation after delay, but check if page is visible
+    // Start animation after a short delay
     const startTimeout = setTimeout(() => {
-      if (isRunning && !document.hidden && robotRef.current) {
-        // Reset timing for fresh start
-        lastTimestamp = 0;
-        pathStartTime = 0;
-        animationStartTime = 0;
       animationFrameId = requestAnimationFrame(animate);
-      }
     }, 500);
 
     const handleResize = () => {
-      // 🛡️ PRODUCTION FIX: Store current robot position before recalculating paths
-      // This ensures continuity when paths are recalculated
-      let currentRobotX = robotPosition.x;
-      let currentRobotY = robotPosition.y;
-      
-      // If robot is currently moving, use calculated position
-      if (robotRef.current && !isPaused) {
-        const currentPathElapsed = performance.now() - pathStartTime;
-        const currentPathProgress = Math.min(Math.max(currentPathElapsed / pathDuration, 0), 1);
-        const t = currentPathProgress;
-        const easeProgress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        currentRobotX = currentPath.start.x + (currentPath.end.x - currentPath.start.x) * easeProgress;
-        currentRobotY = currentPath.start.y + (currentPath.end.y - currentPath.start.y) * easeProgress;
-      }
-      
-      // Recalculate paths
       paths = createRoamingPaths();
       if (currentPathIndex < paths.length) {
         currentPath = paths[currentPathIndex];
-        
-        // 🛡️ PRODUCTION FIX: Adjust current path start to match robot's current position
-        // This prevents jumps when viewport is resized
-        currentPath.start.x = currentRobotX;
-        currentPath.start.y = currentRobotY;
-        
-        // Reset path timing to continue from current position
-        pathStartTime = performance.now();
       }
     };
     window.addEventListener('resize', handleResize);
@@ -629,13 +451,8 @@ const SignIn = () => {
       isRunning = false;
       clearTimeout(startTimeout);
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
-      }
-      // 🛡️ MOBILE FIX: Clean up will-change for performance
-      if (robotRef.current) {
-        robotRef.current.style.willChange = 'auto';
       }
     };
   }, []);
@@ -659,15 +476,11 @@ const SignIn = () => {
             <h1 className="welcome-heading text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight leading-tight drop-shadow-2xl" style={{ textShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)', overflow: 'visible' }}>
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black" style={{ letterSpacing: '0.02em' }}>Welcome to</span>{" "}
               <span 
-                className="text-blue-600 font-black enqir-text inline-block" 
+                className="text-blue-600 font-black enqir-text inline-block transition-transform duration-75 ease-out" 
                 style={{ 
-                  transform: `translate3d(${textPushOffset.x}px, ${textPushOffset.y}px, 0) rotate(${textPushOffset.x * 1.2}deg) scale(${1 + Math.abs(textPushOffset.x) * 0.01})`,
+                  transform: `translate(${textPushOffset.x}px, ${textPushOffset.y}px) rotate(${textPushOffset.x * 1.2}deg) scale(${1 + Math.abs(textPushOffset.x) * 0.01})`,
                   transformOrigin: 'center center',
-                  filter: isPushingText ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))' : 'none',
-                  willChange: 'transform',
-                  transition: 'none', // No transition - animation is handled by requestAnimationFrame
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
+                  filter: isPushingText ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))' : 'none'
                 }}
               >
                 Enqir
@@ -981,18 +794,12 @@ const SignIn = () => {
               top: `${robotPosition.y || 0}px`,
               width: '80px',
               height: '80px',
-              // 🛡️ MOBILE FIX: GPU acceleration and mobile optimizations
-              transform: `translate3d(-50%, -50%, 0) rotate(${robotAngle || 0}deg)`,
-              willChange: 'transform, left, top',
+              transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
+              willChange: 'transform',
               transition: 'none',
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden',
-              WebkitTransform: `translate3d(-50%, -50%, 0) rotate(${robotAngle || 0}deg)`,
-              touchAction: 'none', // Prevent touch interference on mobile
               opacity: 1,
-              // 🛡️ MOBILE FIX: Force GPU layer for smoother animation
-              transformStyle: 'preserve-3d',
-              perspective: '1000px',
             }}
           >
             {/* Same Robot from HelpGuide - Smaller */}
@@ -1045,54 +852,28 @@ const SignIn = () => {
                       ENQIR
                     </text>
                     {/* Dynamic body animations - more frequent and engaging movements */}
-                    {/* 🚀 PUSHING: Body leans forward and shakes with pushing effort */}
+                    {/* Extra effort animation when pushing text - body shakes/vibrates */}
                     {isPushingText && (
                       <>
-                        {/* Body leans forward when pushing - more realistic pushing posture */}
-                        <animateTransform
-                          attributeName="transform"
-                          type="rotate"
-                          values="0 50 65; -8 50 65; -5 50 65; -10 50 65; -6 50 65; -8 50 65; 0 50 65"
-                          dur="0.4s"
-                          repeatCount="indefinite"
-                          calcMode="spline"
-                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                          keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
-                        />
-                        {/* Forward lean translation - body moves forward when pushing */}
                         <animateTransform
                           attributeName="transform"
                           type="translate"
-                          values="0,0; 3,2; 5,3; 4,2.5; 5,3; 3,2; 0,0"
-                          dur="0.4s"
+                          values="0,0; -2,0; 2,0; -1.5,0; 1.5,0; 0,0"
+                          dur="0.3s"
                           repeatCount="indefinite"
                           calcMode="spline"
-                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                          keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
-                          additive="sum"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.2;0.4;0.6;0.8;1"
                         />
-                        {/* Body shakes/vibrates with pushing effort */}
-                        <animateTransform
-                          attributeName="transform"
-                          type="translate"
-                          values="0,0; -1.5,0; 1.5,0; -1,0; 1,0; -0.5,0; 0,0"
-                          dur="0.2s"
-                          repeatCount="indefinite"
-                          calcMode="spline"
-                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                          keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                          additive="sum"
-                        />
-                        {/* Body compresses slightly when pushing - shows effort */}
                         <animateTransform
                           attributeName="transform"
                           type="scale"
-                          values="1,1; 1.08,0.95; 1.05,0.97; 1.1,0.94; 1.06,0.96; 1.08,0.95; 1,1"
-                          dur="0.4s"
+                          values="1,1; 1.05,0.98; 1,1; 1.03,0.99; 1,1"
+                          dur="0.3s"
                           repeatCount="indefinite"
                           calcMode="spline"
-                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                          keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.25;0.5;0.75;1"
                           additive="sum"
                         />
                       </>
@@ -1491,39 +1272,31 @@ const SignIn = () => {
                       <ellipse cx="20" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(-15 20 60)"/>
                       <ellipse cx="20" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(-15 20 60)"/>
                       <circle cx="16" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        {/* 🚀 PUSHING: Hand pulses more actively when pushing */}
-                        {/* 🧘 RELAXED: Hand is smaller and more subtle when relaxed */}
-                        {isPushingText ? (
-                          <animate attributeName="r" values="3;4.5;3.5;4;3.2;4.2;3" dur="0.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"/>
-                        ) : (
-                          <animate attributeName="r" values="3;3.2;2.8;3.1;2.9;3;3" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"/>
-                        )}
+                        <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                       </circle>
                       {/* Completely different hand movements for each action */}
-                      {/* 🚀 PUSHING: Left arm extends forward and pushes with force */}
+                      {/* Extra effort arm movement when pushing text */}
                       {isPushingText && (
                         <>
-                          {/* Arm extends forward (more horizontal) - like actually pushing */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -5 20 60; -8 20 60; -3 20 60; -5 20 60; -8 20 60; -15 20 60"
-                            dur="0.4s"
+                            values="-15 20 60; -25 20 60; -15 20 60; -30 20 60; -15 20 60"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                           />
-                          {/* Forward pushing motion - extends arm forward */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 8,-3; 12,-5; 10,-4; 12,-5; 8,-3; 0,0"
-                            dur="0.4s"
+                            values="0,0; -1,-2; 0,0; -1.5,-2.5; 0,0"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                             additive="sum"
                           />
                         </>
@@ -1690,30 +1463,29 @@ const SignIn = () => {
                           />
                         </>
                       )}
-                      {/* 🧘 RELAXED: Completely different relaxed arm position when NOT pushing - hangs down naturally */}
-                      {!isPushingText && (
+                      {robotAction === 'idle' && (
                         <>
-                          {/* Relaxed hanging arm - MUCH more vertical (hangs down at -30° to -35°) */}
+                          {/* Gentle floating arm movement */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="-15 20 60; -30 20 60; -35 20 60; -28 20 60; -32 20 60; -30 20 60; -15 20 60"
-                            dur="6s"
+                            values="-15 20 60; -18 20 60; -15 20 60; -17 20 60; -15 20 60"
+                            dur="3s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                           />
-                          {/* Relaxed sway - arm hangs DOWNWARD (positive Y = down) */}
+                          {/* Very subtle vertical drift */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -1.5,6; 1,5; -1,7; 0.5,4; -1.2,6.5; 0,0"
-                            dur="6s"
+                            values="0,0; 0,-0.5; 0,0; 0,-0.3; 0,0"
+                            dur="3s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
                             additive="sum"
                           />
                         </>
@@ -1723,41 +1495,33 @@ const SignIn = () => {
                       <ellipse cx="80" cy="60" rx="5" ry="9" fill="url(#whiteMatte-signin)" stroke="none" transform="rotate(15 80 60)"/>
                       <ellipse cx="80" cy="60" rx="4" ry="7" fill="url(#lightGrey-signin)" transform="rotate(15 80 60)"/>
                       <circle cx="84" cy="68" r="3" fill="url(#whiteMatte-signin)">
-                        {/* 🚀 PUSHING: Hand pulses more actively when pushing - synchronized with left */}
-                        {/* 🧘 RELAXED: Hand is smaller and more subtle when relaxed */}
-                        {isPushingText ? (
-                          <animate attributeName="r" values="3;4.5;3.5;4;3.2;4.2;3" dur="0.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.15;0.3;0.45;0.6;0.75;1" begin="0.2s"/>
-                        ) : (
-                          <animate attributeName="r" values="3;3.2;2.8;3.1;2.9;3;3" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.17;0.33;0.5;0.67;0.83;1" begin="2.5s"/>
-                        )}
+                        <animate attributeName="r" values="3;3.5;3;3.3;3" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1" begin="0.9s"/>
                       </circle>
                       {/* Completely different hand movements - right arm */}
-                      {/* 🚀 PUSHING: Right arm extends forward and pushes with force - synchronized with left */}
+                      {/* Extra effort arm movement when pushing text */}
                       {isPushingText && (
                         <>
-                          {/* Arm extends forward (more horizontal) - like actually pushing */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 5 80 60; 8 80 60; 3 80 60; 5 80 60; 8 80 60; 15 80 60"
-                            dur="0.4s"
+                            values="15 80 60; 25 80 60; 15 80 60; 30 80 60; 15 80 60"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
-                            begin="0.2s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.125s"
                           />
-                          {/* Forward pushing motion - extends arm forward */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; -8,-3; -12,-5; -10,-4; -12,-5; -8,-3; 0,0"
-                            dur="0.4s"
+                            values="0,0; 1,-2; 0,0; 1.5,-2.5; 0,0"
+                            dur="0.25s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.15;0.3;0.45;0.6;0.75;1"
-                            begin="0.2s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="0.125s"
                             additive="sum"
                           />
                         </>
@@ -1936,32 +1700,31 @@ const SignIn = () => {
                           />
                         </>
                       )}
-                      {/* 🧘 RELAXED: Completely different relaxed arm position when NOT pushing - right arm hangs down */}
-                      {!isPushingText && (
+                      {robotAction === 'idle' && (
                         <>
-                          {/* Relaxed hanging arm - MUCH more vertical (hangs down at 30° to 35°) - mirrors left */}
+                          {/* Gentle floating - synchronized */}
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
-                            values="15 80 60; 30 80 60; 35 80 60; 28 80 60; 32 80 60; 30 80 60; 15 80 60"
-                            dur="6s"
+                            values="15 80 60; 18 80 60; 15 80 60; 17 80 60; 15 80 60"
+                            dur="3s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="3s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="1.5s"
                           />
-                          {/* Relaxed sway - arm hangs DOWNWARD (positive Y = down, opposite X of left) */}
+                          {/* Very subtle vertical drift */}
                           <animateTransform
                             attributeName="transform"
                             type="translate"
-                            values="0,0; 1.5,6; -1,5; 1,7; -0.5,4; 1.2,6.5; 0,0"
-                            dur="6s"
+                            values="0,0; 0,-0.5; 0,0; 0,-0.3; 0,0"
+                            dur="3s"
                             repeatCount="indefinite"
                             calcMode="spline"
-                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
-                            keyTimes="0;0.17;0.33;0.5;0.67;0.83;1"
-                            begin="3s"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.25;0.5;0.75;1"
+                            begin="1.5s"
                             additive="sum"
                           />
                         </>

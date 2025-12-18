@@ -167,7 +167,7 @@ export const sendCustomSignInLink = functions.https.onRequest(async (req, res): 
       handleCodeInApp: true,
     };
 
-    const link = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+    await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
 
     // Note: The email is still sent by Firebase with default template
     // But we return the link so frontend can send custom email if needed

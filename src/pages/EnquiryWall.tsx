@@ -1340,36 +1340,204 @@ export default function EnquiryWall() {
   const getCategorySketch = (category: string) => {
     const categoryLower = category?.toLowerCase() || '';
     
+    // Pets, Animals, Baby & Kids, Childcare
+    if (categoryLower.includes('pet') || categoryLower.includes('animal') || categoryLower.includes('baby') ||
+        categoryLower.includes('kid') || categoryLower.includes('childcare') || categoryLower.includes('family')) {
+      return (
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Pet face - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <circle cx="0" cy="0" r="15" fill="none" stroke="white" strokeWidth="2"/>
+            <circle cx="-4" cy="-3" r="2" fill="white"/>
+            <circle cx="4" cy="-3" r="2" fill="white"/>
+            <path d="M-3 4 Q0 6 3 4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-10 0 L-7 -3 M10 0 L7 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Food bowl - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="18" ry="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="0" rx="14" ry="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <circle cx="-6" cy="-2" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="6" cy="-2" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Bone - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="12" ry="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-10" cy="0" r="3" fill="white" opacity="0.8"/>
+            <circle cx="10" cy="0" r="3" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Leash - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M 0 8 L 0 20" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M -2 20 L 2 20" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Paw print - bottom left */}
+          <g transform="translate(120, 220)" opacity="0.5">
+            <circle cx="0" cy="0" r="3" fill="white"/>
+            <circle cx="-3" cy="3" r="2" fill="white"/>
+            <circle cx="3" cy="3" r="2" fill="white"/>
+            <circle cx="-2" cy="5" r="1.5" fill="white"/>
+            <circle cx="2" cy="5" r="1.5" fill="white"/>
+          </g>
+          
+          {/* Pet house - bottom center */}
+          <g transform="translate(200, 240)" opacity="0.6">
+            <rect x="-15" y="-8" width="30" height="16" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-15 -8 L0 -18 L15 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-13" rx="5" ry="4" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Paw print - bottom right */}
+          <g transform="translate(280, 220)" opacity="0.5">
+            <circle cx="0" cy="0" r="3" fill="white"/>
+            <circle cx="-3" cy="3" r="2" fill="white"/>
+            <circle cx="3" cy="3" r="2" fill="white"/>
+            <circle cx="-2" cy="5" r="1.5" fill="white"/>
+            <circle cx="2" cy="5" r="1.5" fill="white"/>
+          </g>
+        </svg>
+      );
+    }
+    
     // Automobile & Transportation
     if (categoryLower.includes('automobile') || categoryLower.includes('vehicle') || categoryLower.includes('car') || 
         categoryLower.includes('transportation') || categoryLower.includes('logistics') || categoryLower.includes('bicycle')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - modern vehicle silhouette */}
-          <path d="M 30 50 L 45 30 L 70 20 L 130 20 L 170 15 L 230 15 L 270 20 L 295 20 L 310 30 L 310 50 L 300 70 L 280 80 L 120 80 L 80 70 L 60 50 Z" 
-                stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M 130 20 L 130 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 270 20 L 270 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Top right - wheel detail */}
-          <circle cx="320" cy="40" r="18" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="320" cy="40" r="10" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <circle cx="320" cy="40" r="4" fill="white" opacity="0.9"/>
-          {/* Bottom left - wheel */}
-          <circle cx="80" cy="250" r="22" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="80" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="80" cy="250" r="5" fill="white"/>
-          {/* Bottom right - wheel */}
-          <circle cx="320" cy="250" r="22" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="320" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="320" cy="250" r="5" fill="white"/>
-          {/* Center - road lines spanning full width */}
-          <path d="M 20 150 L 380 150" stroke="white" strokeWidth="2" fill="none" strokeDasharray="8,6" opacity="0.7"/>
-          <path d="M 20 200 L 380 200" stroke="white" strokeWidth="2" fill="none" strokeDasharray="8,6" opacity="0.7"/>
-          {/* Decorative speed lines */}
-          <path d="M 50 100 L 50 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 350 100 L 350 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 50 230 L 50 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 350 230 L 350 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Small car - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-9" y="-3" width="18" height="7" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-9 -3 Q-4 -6 4 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-1" width="4" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="2" y="-1" width="4" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="-4" cy="6" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="6" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Wheel - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -6 L0 6 M-6 0 L6 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Bicycle - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="-4" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 0 L4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -6 L-4 0 M0 -6 L4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="-6" width="2" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Car - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-18" y="-6" width="36" height="14" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-18 -6 Q-8 -12 8 -6" stroke="white" strokeWidth="2" fill="none"/>
+            <rect x="-12" y="-2" width="8" height="6" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="4" y="-2" width="8" height="6" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-8" cy="12" r="6" fill="none" stroke="white" strokeWidth="2"/>
+            <circle cx="8" cy="12" r="6" fill="none" stroke="white" strokeWidth="2"/>
+          </g>
+          
+          {/* Traffic sign - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <path d="M-4 -6 L4 -6 L0 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Motorcycle - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="-3" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="3" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -5 L-3 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-0.5" y="-5" width="1" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Gas pump - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-2.5" y="-8" width="5" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -8 L0 -11" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-12" r="1" fill="white" opacity="0.8"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Bicycle - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <circle cx="-8" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="8" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 0 L8 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -12 L-8 0 M0 -12 L8 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-2" y="-12" width="4" height="8" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Wheel - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -10 L0 10 M-10 0 L10 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Road - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M-50 0 L50 0" stroke="white" strokeWidth="2" fill="none" strokeDasharray="5,5"/>
+            <path d="M-50 8 L50 8" stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="4,4"/>
+          </g>
+          
+          {/* Truck - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-12" y="-4" width="24" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-12" y="-8" width="14" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-6" cy="10" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="6" cy="10" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Motorcycle - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <circle cx="-6" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="6" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -10 L-6 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="-10" width="2" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Gas pump - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-5" y="-12" width="10" height="18" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -12 L0 -18" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-20" r="2" fill="white" opacity="0.8"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Traffic sign - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <path d="M-6 -10 L6 -10 L0 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-7" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Speedometer - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -7 L0 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L3 -2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* License plate - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-8" y="-4" width="16" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -2 L6 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1378,35 +1546,131 @@ export default function EnquiryWall() {
     if (categoryLower.includes('electronic') || categoryLower.includes('gaming') || categoryLower.includes('computer') || 
         categoryLower.includes('mobile') || categoryLower.includes('technology') || categoryLower.includes('photography')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - modern device */}
-          <rect x="30" y="30" width="80" height="60" rx="5" stroke="white" strokeWidth="3" fill="none"/>
-          <rect x="40" y="40" width="60" height="40" rx="3" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <rect x="50" y="50" width="40" height="20" rx="2" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Top right - signal waves */}
-          <path d="M 280 40 Q 320 30, 360 40" stroke="white" strokeWidth="2.5" fill="none"/>
-          <path d="M 280 60 Q 320 55, 360 60" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          <path d="M 280 80 Q 320 75, 360 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Bottom left - circuit nodes */}
-          <circle cx="50" cy="250" r="15" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="50" cy="250" r="8" fill="white" opacity="0.9"/>
-          <circle cx="120" cy="250" r="15" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="120" cy="250" r="8" fill="white" opacity="0.9"/>
-          <path d="M 65 250 L 105 250" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
-          {/* Bottom right - tech elements */}
-          <circle cx="320" cy="250" r="18" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="320" cy="250" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="320" cy="250" r="4" fill="white"/>
-          <circle cx="350" cy="250" r="12" stroke="white" strokeWidth="2.5" fill="none"/>
-          <circle cx="350" cy="250" r="6" fill="white" opacity="0.8"/>
-          {/* Center - connecting data lines */}
-          <path d="M 130 100 Q 200 80, 270 100" stroke="white" strokeWidth="2" fill="none" strokeDasharray="4,4" opacity="0.7"/>
-          <path d="M 130 200 Q 200 180, 270 200" stroke="white" strokeWidth="2" fill="none" strokeDasharray="4,4" opacity="0.7"/>
-          {/* Side tech indicators */}
-          <circle cx="30" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none"/>
-          <circle cx="30" cy="150" r="5" fill="white" opacity="0.8"/>
-          <circle cx="370" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none"/>
-          <circle cx="370" cy="150" r="5" fill="white" opacity="0.8"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Signal waves - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M-6 -5 Q-2 -7 2 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -2 Q-2 -4 2 -2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 1 Q-2 -1 2 1" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Tablet - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-8" y="-9" width="16" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="0" cy="5" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Gaming controller - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <rect x="-7" y="-5" width="14" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-4" cy="0" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="0" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 4 L2 4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Phone - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-10" y="-18" width="20" height="36" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <rect x="-7" y="-14" width="14" height="24" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="10" r="2" fill="white"/>
+          </g>
+          
+          {/* Laptop - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-8" y="-6" width="16" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="-4" width="12" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-8 -6 L-4 -10 L4 -10 L8 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-8" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Camera - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <rect x="-5" y="-7" width="10" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M3 -7 L4 -9" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Headphones - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <path d="M-5 -4 Q-2 -5 0 -4 Q2 -5 5 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Signal waves - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M-12 -8 Q-4 -12 4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 -4 Q-4 -8 4 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 0 Q-4 -4 4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Tablet - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-12" y="-14" width="24" height="28" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-9" y="-11" width="18" height="22" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="0" cy="8" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Circuit board - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-18" y="-10" width="36" height="20" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-14 -6 L14 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-14 0 L14 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-14 6 L14 6" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="-7" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="7" cy="3" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Laptop - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-12" y="-8" width="24" height="16" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-10" y="-6" width="20" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-12 -8 L-6 -14 L6 -14 L12 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-11" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Headphones - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-8 -6 Q-4 -8 0 -6 Q4 -8 8 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-6" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="6" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Gaming controller - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-10" y="-6" width="20" height="14" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-5" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="5" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 5 L2 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Camera - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M4 -8 L5 -10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Smartwatch - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="-6" width="8" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M0 -8 L0 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 6 L0 8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* USB drive - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-4" y="-6" width="8" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-3" y="-6" width="6" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1415,31 +1679,135 @@ export default function EnquiryWall() {
     if (categoryLower.includes('construction') || categoryLower.includes('real-estate') || categoryLower.includes('building') || 
         categoryLower.includes('home') || categoryLower.includes('renovation')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - modern building */}
-          <rect x="30" y="40" width="70" height="80" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 25 40 L 65 15 L 105 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <rect x="40" y="60" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          <rect x="75" y="60" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          <rect x="40" y="90" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          <rect x="75" y="90" width="15" height="20" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          {/* Top right - building detail */}
-          <rect x="300" y="50" width="60" height="70" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 295 50 L 330 25 L 365 50" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <rect x="310" y="70" width="12" height="15" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          <rect x="338" y="70" width="12" height="15" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          {/* Bottom left - foundation/base */}
-          <path d="M 20 250 L 120 250" stroke="white" strokeWidth="3" fill="none" opacity="0.8"/>
-          {/* Bottom right - building element */}
-          <rect x="280" y="200" width="80" height="80" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 275 200 L 330 160 L 385 200" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <rect x="295" y="220" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <rect x="325" y="220" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <rect x="295" y="250" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <rect x="325" y="250" width="20" height="25" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          {/* Center - connecting architectural lines */}
-          <path d="M 100 120 Q 200 100, 300 120" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 100 200 Q 200 180, 300 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Hammer - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-4" y="-12" width="8" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -10 L2 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Wrench - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M-6 -4 L6 -4" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M0 -4 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Key - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="0" y="-1" width="8" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M6 -1 L6 1" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M5 0 L8 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* House - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-20" y="-15" width="40" height="30" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-20 -15 L0 -30 L20 -15" stroke="white" strokeWidth="2" fill="none"/>
+            <rect x="-12" y="-8" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="4" y="-8" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="8" width="12" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="14" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Blueprint - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-8" y="-7" width="16" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -4 L6 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 4 L6 4" stroke="white" strokeWidth="1" fill="none"/>
+            <rect x="-4" y="-2" width="6" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Drill - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <rect x="-2" y="-7" width="4" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-8" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -5 L1 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Ruler - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-8" y="-1" width="16" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -1 L-6 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1 L0 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 -1 L6 1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Hammer - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-16" width="12" height="8" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -14 L4 -14" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Saw - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-1" y="-12" width="2" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -12 L8 -12" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -8 L4 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Blueprint - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-16" y="-10" width="32" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-13 -7 L13 -7" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-13 0 L13 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-13 7 L13 7" stroke="white" strokeWidth="1" fill="none"/>
+            <rect x="-8" y="-5" width="10" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Wrench - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <path d="M-8 -6 L8 -6" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M0 -6 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Drill - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-3" y="-10" width="6" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-12" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -6 L1 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Ruler - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-12" y="-1.5" width="24" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-10 -1.5 L-10 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1.5 L0 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M10 -1.5 L10 1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Key - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="0" y="-1.5" width="10" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M6 -1.5 L6 1.5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Paint brush - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <path d="M0 -10 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -10 L0 -13 L2 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 6 L1 6" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Measuring tape - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -6 L0 6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       );
     }
@@ -1449,29 +1817,129 @@ export default function EnquiryWall() {
         categoryLower.includes('clothing') || categoryLower.includes('apparel') || categoryLower.includes('accessories') ||
         categoryLower.includes('bags') || categoryLower.includes('luggage') || categoryLower.includes('sneakers')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - elegant hanger */}
-          <path d="M 50 40 Q 70 35, 90 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <path d="M 70 40 L 70 100" stroke="white" strokeWidth="3" fill="none"/>
-          {/* Top right - garment detail */}
-          <path d="M 310 50 Q 280 60, 280 120 L 340 120 Q 330 60, 310 50" 
-                stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <path d="M 295 80 Q 310 75, 325 80" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          {/* Bottom left - jewelry/accessory */}
-          <circle cx="60" cy="240" r="22" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="60" cy="240" r="14" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="60" cy="240" r="6" fill="white" opacity="0.9"/>
-          {/* Bottom right - fashion element */}
-          <path d="M 320 220 Q 340 210, 360 220" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <path d="M 320 240 Q 340 230, 360 240" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <path d="M 320 260 Q 340 250, 360 260" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
-          {/* Center - connecting elegant lines */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="150" cy="150" r="4" fill="white" opacity="0.8"/>
-          <circle cx="250" cy="150" r="4" fill="white" opacity="0.8"/>
-          {/* Side decorative elements */}
-          <circle cx="30" cy="150" r="8" stroke="white" strokeWidth="2.5" fill="none"/>
-          <circle cx="370" cy="150" r="8" stroke="white" strokeWidth="2.5" fill="none"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Jewelry ring - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Perfume bottle - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-2" y="-8" width="4" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -8 Q0 -9 2 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -5 L1 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Lipstick - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <rect x="-2" y="-8" width="4" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -8 L0 -11 L2 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -5 L1 -5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Hanger with shirt - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <path d="M-15 -5 Q0 -10 15 -5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <path d="M0 -5 L0 20" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M0 0 Q-12 5 -15 20 L15 20 Q12 5 0 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Sunglasses - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <circle cx="-2" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="2" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 0 L5 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -3 L-2 3 M2 -3 L2 3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Watch - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -5 L0 -2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L3 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="0.8" fill="white" opacity="0.8"/>
+            <rect x="-1" y="-7" width="2" height="1.5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-1" y="5.5" width="2" height="1.5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Handbag - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-5" y="-6" width="10" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -6 L-4 -10 M4 -6 L4 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -10 Q0 -11 4 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Jewelry ring - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <circle cx="0" cy="0" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Perfume bottle - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-3" y="-12" width="6" height="18" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -12 Q0 -15 3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -8 L2 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="4" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Mirror - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="16" ry="22" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="0" rx="10" ry="14" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M-7 -7 L7 7 M7 -7 L-7 7" stroke="white" strokeWidth="1" opacity="0.5"/>
+          </g>
+          
+          {/* Lipstick - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-3" y="-12" width="6" height="18" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -12 L0 -16 L3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -8 L1 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Necklace - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-8 -8 Q0 -12 8 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-10" r="3" fill="white" opacity="0.8"/>
+            <path d="M-8 -8 L-8 0 M8 -8 L8 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Handbag - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-8" y="-10" width="16" height="20" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L-6 -16 M6 -10 L6 -16" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -16 Q0 -18 6 -16" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Sneaker - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <path d="M-10 4 Q-6 0 -2 -2 Q0 -3 2 -2 Q6 0 10 4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 2 L6 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 6 L-8 8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Sunglasses - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="-4" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-9 0 L9 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -5 L-4 5 M4 -5 L4 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Watch - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -7 L0 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+            <rect x="-2" y="-9" width="4" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-2" y="7" width="4" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
         </svg>
       );
     }
@@ -1480,28 +1948,124 @@ export default function EnquiryWall() {
     if (categoryLower.includes('food') || categoryLower.includes('restaurant') || categoryLower.includes('catering') || 
         categoryLower.includes('beverage') || categoryLower.includes('kitchen') || categoryLower.includes('dining')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - elegant plate */}
-          <ellipse cx="80" cy="60" rx="40" ry="12" stroke="white" strokeWidth="3" fill="none"/>
-          <ellipse cx="80" cy="55" rx="35" ry="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="80" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Top right - utensil */}
-          <path d="M 320 40 L 320 120" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 315 40 Q 310 45, 305 40" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <path d="M 315 50 Q 310 55, 305 50" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8"/>
-          {/* Bottom left - utensil */}
-          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 45 200 Q 40 205, 35 200" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-          <path d="M 45 210 Q 40 215, 35 210" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8"/>
-          {/* Bottom right - plate with food */}
-          <ellipse cx="320" cy="240" rx="45" ry="15" stroke="white" strokeWidth="3" fill="none"/>
-          <ellipse cx="320" cy="235" rx="40" ry="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="320" cy="220" r="20" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
-          <circle cx="320" cy="220" r="10" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Center - connecting culinary elements */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="18" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="8" fill="white" opacity="0.6"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Fork - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1.5 -12 Q-2.5 -9 -1.5 -12" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M-1 -10 Q-2 -7 -1 -10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8"/>
+          </g>
+          
+          {/* Spoon - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-10" rx="3" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Chef hat - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M-6 -8 Q0 -10 6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-8" width="12" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -5 L4 -5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Plate with food - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <ellipse cx="0" cy="0" rx="20" ry="6" fill="none" stroke="white" strokeWidth="2"/>
+            <circle cx="0" cy="-8" r="12" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-8" r="6" fill="white" opacity="0.6"/>
+          </g>
+          
+          {/* Cup - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <path d="M-4 -6 L-4 4 L4 4 L4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -6 Q0 -7 4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -4 L3 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pizza slice - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M0 -6 L-5 4 L5 4 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-2" cy="-1" r="1" fill="white" opacity="0.8"/>
+            <circle cx="2" cy="0" r="1" fill="white" opacity="0.8"/>
+            <circle cx="-1" cy="1" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Burger - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <ellipse cx="0" cy="-4" rx="5" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="0" rx="5" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="4" rx="5" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-2" cy="-2" r="0.8" fill="white" opacity="0.8"/>
+            <circle cx="2" cy="2" r="0.8" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Fork - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -18 L0 18" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -18 Q-4 -14 -2 -18" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M-1 -16 Q-3 -12 -1 -16" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8"/>
+          </g>
+          
+          {/* Chef hat - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M-10 -12 Q0 -16 10 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-10" y="-12" width="20" height="18" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Spoon - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M0 -18 L0 18" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-16" rx="4" ry="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Knife - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <path d="M0 -15 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -15 L0 -19 L2 -15" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Wine glass - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-3 -12 L-3 8 L3 8 L3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -12 Q0 -15 3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 8 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="12" rx="4" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Cup - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <path d="M-6 -10 L-6 6 L6 6 L6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -10 Q0 -12 6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -6 L4 -6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pizza slice - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <path d="M0 -10 L-8 6 L8 6 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-3" cy="-2" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="0" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="-2" cy="2" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Burger - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <ellipse cx="0" cy="-6" rx="8" ry="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="0" rx="8" ry="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="0" cy="6" rx="8" ry="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-3" cy="-3" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="3" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Coffee cup - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <path d="M-5 -10 L-5 6 L5 6 L5 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 -10 Q0 -12 5 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 -8 L8 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1510,25 +2074,128 @@ export default function EnquiryWall() {
     if (categoryLower.includes('health') || categoryLower.includes('medical') || categoryLower.includes('pharmacy') ||
         categoryLower.includes('beauty-products')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - medical cross */}
-          <rect x="40" y="40" width="30" height="70" rx="5" stroke="white" strokeWidth="3.5" fill="none"/>
-          <rect x="20" y="70" width="70" height="30" rx="5" stroke="white" strokeWidth="3.5" fill="none"/>
-          {/* Top right - pulse/heartbeat */}
-          <path d="M 300 50 Q 320 40, 340 50 T 380 50" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 300 70 Q 320 65, 340 70 T 380 70" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 300 90 Q 320 85, 340 90 T 380 90" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Bottom left - medical element */}
-          <circle cx="60" cy="240" r="20" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 55 240 L 60 250 L 65 240" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <circle cx="60" cy="240" r="8" fill="white" opacity="0.8"/>
-          {/* Bottom right - pulse line */}
-          <path d="M 280 240 Q 320 220, 360 240 T 380 240" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 280 260 Q 320 240, 360 260 T 380 260" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          {/* Center - connecting health elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="15" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="6" fill="white" opacity="0.8"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Pulse/heartbeat - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M-8 -2 Q-2 -4 2 -2 T8 -2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-8 0 Q-2 -2 2 0 T8 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-8 2 Q-2 0 2 2 T8 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Pill bottle - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-4" y="-8" width="8" height="14" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -8 Q0 -9 4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -5 L3 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -2 L3 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Heart - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M0 -4 Q-3 -4 -4 -2 Q-4 0 0 4 Q4 0 4 -2 Q3 -4 0 -4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Medical cross - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-8" y="-20" width="16" height="40" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <rect x="-20" y="-8" width="40" height="16" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+          </g>
+          
+          {/* Syringe - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-1" y="-6" width="2" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -6 L0 -8 L1 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-0.5 -3 L0.5 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-0.5 -1 L0.5 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="6" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Bandage - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <rect x="-6" y="-1.5" width="12" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -1.5 L-4 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1.5 L0 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M4 -1.5 L4 1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Thermometer - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-1" y="-10" width="2" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-11" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-0.5 -7 L0.5 -7" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-0.5 -4 L0.5 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pulse/heartbeat - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M-12 -4 Q-4 -8 4 -4 T12 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 0 Q-4 -4 4 0 T12 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 4 Q-4 0 4 4 T12 4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Pill bottle - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-6" y="-12" width="12" height="22" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -12 Q0 -14 6 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -8 L4 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Stethoscope - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 7 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 12 Q0 14 4 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-2.5" cy="12" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="2.5" cy="12" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Syringe - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-2" y="-10" width="4" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -10 L0 -13 L2 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -6 L1 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="8" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Heart - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M0 -6 Q-4 -6 -6 -3 Q-6 0 0 6 Q6 0 6 -3 Q4 -6 0 -6" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Bandage - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-10" y="-2" width="20" height="5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -2 L-6 3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -2 L0 3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 -2 L6 3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Thermometer - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <rect x="-1.5" y="-12" width="3" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-14" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-0.5 -8 L0.5 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-0.5 -4 L0.5 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pills - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="-3" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 0 L-1 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="3" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M3 0 L1 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Face cream jar - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-4" y="-10" width="8" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -10 Q0 -12 4 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-6" r="2" fill="white" opacity="0.8"/>
+            <path d="M-2 -2 L2 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1537,27 +2204,137 @@ export default function EnquiryWall() {
     if (categoryLower.includes('education') || categoryLower.includes('book') || categoryLower.includes('learning') ||
         categoryLower.includes('training') || categoryLower.includes('tutoring')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - book */}
-          <path d="M 30 40 L 30 120 L 110 120 L 110 40 Z" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 70 40 L 70 120" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 40 60 L 100 60" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 40 80 L 100 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 40 100 L 100 100" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Top right - academic cap */}
-          <path d="M 300 50 Q 330 35, 360 50 L 360 70 Q 330 60, 300 70 Z" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 310 60 L 350 60" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
-          {/* Bottom left - stacked books */}
-          <path d="M 40 200 L 40 280 L 120 280 L 120 200 Z" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 60 200 L 60 280" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Bottom right - book detail */}
-          <path d="M 280 200 L 280 280 L 360 280 L 360 200 Z" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 320 200 L 320 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 300 220 L 340 220" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 300 240 L 340 240" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Center - connecting knowledge lines */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Pencil - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-1" y="-8" width="2" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -8 L0 -11 L1 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 4 L1 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Notebook - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -7 L6 -7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -1 L4 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 2 L4 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 5 L4 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Graduation cap - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M-8 -4 Q0 -8 8 -4 L8 0 Q0 -2 -8 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -3 L6 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="-6" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Book - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-18" y="-20" width="36" height="40" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M0 -20 L0 20" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-12 -10 L-2 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 0 L-2 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 10 L-2 10" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Calculator - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="-5" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 -2 L2 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 2 L2 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Globe - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 Q0 -3 6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 Q0 3 6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -6 L0 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Ruler - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-8" y="-1" width="16" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -1 L-6 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1 L0 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 -1 L6 1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pencil - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <rect x="-1.5" y="-12" width="3" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1.5 -12 L0 -16 L1.5 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1.5 6 L1.5 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Notebook - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -10 L8 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -6 L6 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 -2 L6 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 2 L6 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 6 L6 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Graduation cap - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M-12 -6 Q0 -12 12 -6 L12 0 Q0 -4 -12 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -5 L8 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="-8" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Calculator - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-3 -4 L3 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 4 L3 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Microscope - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-2" y="-12" width="4" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-14" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 6 L4 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="8" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Ruler - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-12" y="-1.5" width="24" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-10 -1.5 L-10 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1.5 L0 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M10 -1.5 L10 1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Globe - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 0 Q0 -4 8 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 0 Q0 4 8 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Compass - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -7 L0 7 M-7 0 L7 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M0 -7 L0 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Eraser - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-5" y="-3" width="10" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -3 L-3 -6 L3 -6 L5 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -3 L3 -3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1566,20 +2343,137 @@ export default function EnquiryWall() {
     if (categoryLower.includes('art') || categoryLower.includes('antique') || categoryLower.includes('collectible') ||
         categoryLower.includes('memorabilia') || categoryLower.includes('vintage') || categoryLower.includes('souvenir')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - frame */}
-          <rect x="30" y="30" width="80" height="100" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 20 30 L 70 15 L 120 30" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Top right - art element */}
-          <circle cx="320" cy="60" r="25" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 295 60 Q 320 50, 345 60" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom left - collectible */}
-          <rect x="40" y="200" width="60" height="80" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom right - vintage element */}
-          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 330 220 L 330 280" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Center - connecting elements */}
-          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Small picture frame - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -10 L0 -15 L8 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Paint brush - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -8 L0 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -8 L0 -11 L2 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 4 L1 4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Palette - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M-6 -4 Q-4 -6 0 -6 Q4 -6 6 -4 L4 4 Q0 6 -4 4 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-3" cy="-3" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="-3" r="1" fill="white" opacity="0.8"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Picture frame - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-20" y="-25" width="40" height="50" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-20 -25 L0 -35 L20 -25" stroke="white" strokeWidth="2" fill="none"/>
+            <rect x="-15" y="-20" width="30" height="40" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -15 L8 -15" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 0 L8 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 15 L8 15" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Vintage camera - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-5" y="-6" width="10" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M4 -6 L5 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Old lamp - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M0 -8 L0 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-6" rx="4" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -6 Q-2 -8 0 -6 Q2 -8 4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-5" r="1" fill="white" opacity="0.8"/>
+            <path d="M-1.5 4 L1.5 4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Trophy - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <circle cx="0" cy="-5" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-3" y="-1" width="6" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="7" width="8" height="1.5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Old lamp (antique) - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -15 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-12" rx="8" ry="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -12 Q-4 -16 0 -12 Q4 -16 8 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-10" r="2" fill="white" opacity="0.8"/>
+            <path d="M-3 8 L3 8" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Vintage car - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-12" y="-4" width="24" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-12 -4 Q-4 -8 4 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-8" y="0" width="6" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="2" y="0" width="6" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="-6" cy="8" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="6" cy="8" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Gramophone - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <ellipse cx="0" cy="-8" rx="12" ry="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-12 -8 L-8 0 L8 0 L12 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-4" y="0" width="8" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="-8" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Paint brush - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <path d="M0 -15 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -15 L0 -20 L3 -15" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 8 L2 8" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Palette - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-10 -6 Q-6 -10 0 -10 Q6 -10 10 -6 L8 6 Q0 10 -8 6 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-5" cy="-5" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="5" cy="-5" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Vintage camera - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-8" y="-10" width="16" height="14" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-5" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-5" r="2" fill="white" opacity="0.8"/>
+            <path d="M6 -10 L8 -12" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Sculpture - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="-8" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-3" y="-3" width="6" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="7" width="8" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Trophy - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="0" cy="-6" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-5" y="-1" width="10" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="9" width="12" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Old clock - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -8 L0 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1" opacity="0.6"/>
+          </g>
         </svg>
       );
     }
@@ -1588,26 +2482,131 @@ export default function EnquiryWall() {
     if (categoryLower.includes('sports') || categoryLower.includes('outdoor') || categoryLower.includes('fitness') ||
         categoryLower.includes('gym') || categoryLower.includes('garden')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - ball */}
-          <circle cx="60" cy="50" r="22" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 38 50 L 82 50" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 60 28 L 60 72" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 45 35 Q 60 30, 75 35" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Top right - fitness element */}
-          <path d="M 320 40 L 320 100" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 300 70 L 340 70" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="320" cy="70" r="5" fill="white" opacity="0.9"/>
-          {/* Bottom left - outdoor element */}
-          <path d="M 40 220 Q 80 200, 120 220" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 40 250 Q 80 230, 120 250" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          {/* Bottom right - sports element */}
-          <circle cx="340" cy="240" r="28" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 312 240 L 368 240" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <path d="M 340 212 L 340 268" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="340" cy="240" r="8" fill="white" opacity="0.8"/>
-          {/* Center - connecting lines */}
-          <path d="M 140 150 Q 200 130, 260 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Dumbbell - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-4" y="-2" width="8" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="-3" width="4" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="2" y="-3" width="4" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Basketball - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -6 L0 6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -4 Q0 -2 4 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Tennis racket - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L-6 9" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M6 0 L6 9" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 1 L5 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 -1 L5 -1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Ball - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <circle cx="0" cy="0" r="15" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-15 0 L15 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -15 L0 15" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-10 -10 Q0 -5 10 -10" stroke="white" strokeWidth="1" fill="none" opacity="0.7"/>
+          </g>
+          
+          {/* Trophy - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <circle cx="0" cy="-5" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="-1" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-5" y="9" width="10" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -5 L-5 -7 M4 -5 L5 -7" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Water bottle - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <rect x="-2" y="-8" width="4" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -8 Q0 -9 2 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -5 L1 -5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Running shoe - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <path d="M-6 3 Q-4 0 -2 -1 Q0 -2 2 -1 Q4 0 6 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 1 L4 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 4 L-5 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Dumbbell - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <rect x="-6" y="-3" width="12" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-10" y="-5" width="6" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="4" y="-5" width="6" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Basketball - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="9" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-9 0 L9 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -9 L0 9" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 -6 Q0 -3 6 -6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Trophy - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <circle cx="0" cy="-8" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-5" y="-1" width="10" height="13" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="12" width="12" height="2.5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -8 L-7 -10 M5 -8 L7 -10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Tennis racket - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 0 L-8 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M8 0 L8 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 1.5 L6 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 -1.5 L6 -1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Yoga mat - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-10" y="-2" width="20" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -2 L-8 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -2 L0 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M8 -2 L8 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Running shoe - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <path d="M-10 4 Q-6 0 -3 -2 Q0 -4 3 -2 Q6 0 10 4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 2 L6 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 5 L-8 7" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Water bottle - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <rect x="-3" y="-12" width="6" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -12 Q0 -14 3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -8 L1 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Jump rope - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <path d="M-8 -8 Q0 0 8 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-8" cy="-8" r="2" fill="white" opacity="0.8"/>
+            <circle cx="8" cy="-8" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Garden tools - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <path d="M0 -10 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -10 L0 -14 L3 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 6 L2 6" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1616,29 +2615,120 @@ export default function EnquiryWall() {
     if (categoryLower.includes('entertainment') || categoryLower.includes('event') || categoryLower.includes('wedding') ||
         categoryLower.includes('media') || categoryLower.includes('musical')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - event decoration */}
-          <path d="M 50 40 Q 70 30, 90 40" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="70" cy="40" r="5" fill="white" opacity="0.9"/>
-          <circle cx="60" cy="35" r="3" fill="white" opacity="0.8"/>
-          <circle cx="80" cy="35" r="3" fill="white" opacity="0.8"/>
-          {/* Top right - musical note */}
-          <circle cx="330" cy="50" r="10" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 330 60 L 330 100" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 330 100 Q 340 95, 350 100" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          {/* Bottom left - celebration element */}
-          <path d="M 40 220 Q 60 210, 80 220" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="60" cy="240" r="7" fill="white" opacity="0.9"/>
-          <circle cx="80" cy="250" r="7" fill="white" opacity="0.9"/>
-          <circle cx="50" cy="245" r="5" fill="white" opacity="0.8"/>
-          {/* Bottom right - event element */}
-          <path d="M 300 240 Q 340 220, 360 240" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 300 260 Q 340 240, 360 260" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <path d="M 300 280 Q 340 260, 360 280" stroke="white" strokeWidth="2.5" fill="none" opacity="0.8"/>
-          {/* Center - connecting elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
-          <circle cx="200" cy="150" r="4" fill="white" opacity="0.8"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Music note - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 6 L0 15" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 15 Q3 13 6 15" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Party hat - top left center */}
+          <g transform="translate(120, 50)" opacity="0.6">
+            <path d="M-5 5 L0 -6 L5 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="5" rx="5" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Confetti - top center left */}
+          <g transform="translate(180, 45)" opacity="0.5">
+            <path d="M-2 -2 L2 2 M2 -2 L-2 2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white"/>
+          </g>
+          
+          {/* Stage - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-20" y="-8" width="40" height="16" rx="1" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-20 -8 L-15 -15 L15 -15 L20 -8" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-15 -15 L-15 -12 L15 -12 L15 -15" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Balloon - top center right */}
+          <g transform="translate(220, 45)" opacity="0.5">
+            <path d="M0 -8 Q-3 -10 -3 -5 Q-3 -1 0 0 Q3 -1 3 -5 Q3 -10 0 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L0 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Microphone - top right center */}
+          <g transform="translate(280, 50)" opacity="0.6">
+            <rect x="-2" y="-10" width="4" height="15" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 5 Q0 6 4 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -10 L-3 -12 L3 -12 L2 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Camera - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-6" y="-8" width="12" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="2" fill="white" opacity="0.8"/>
+            <path d="M4 -8 L5 -10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Food plate - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="12" ry="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-6" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-6" r="4" fill="white" opacity="0.6"/>
+          </g>
+          
+          {/* Drinks glass - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M-4 -12 L-4 8 L4 8 L4 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -12 Q0 -15 4 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -8 L2 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Microphone - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-3" y="-15" width="6" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 5 Q0 8 6 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -15 L-5 -18 L5 -18 L3 -15" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Music note - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 8 L0 20" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 20 Q4 18 8 20" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Camera - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-5" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-5" r="2.5" fill="white" opacity="0.8"/>
+            <path d="M6 -10 L8 -12" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Party hat - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <path d="M-6 6 L0 -8 L6 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="6" rx="6" ry="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Confetti - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <path d="M-3 -3 L3 3 M3 -3 L-3 3" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white"/>
+          </g>
+          
+          {/* Balloon - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <path d="M0 -10 Q-4 -12 -4 -6 Q-4 -2 0 0 Q4 -2 4 -6 Q4 -12 0 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L0 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Cake - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-8" y="-8" width="16" height="8" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-6" y="-12" width="12" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-3" cy="-9" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="-9" r="1" fill="white" opacity="0.8"/>
+            <circle cx="0" cy="-11" r="1" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       );
     }
@@ -1648,23 +2738,185 @@ export default function EnquiryWall() {
         categoryLower.includes('kid') || categoryLower.includes('childcare') || categoryLower.includes('family')) {
       return (
         <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - pet/animal */}
-          <circle cx="60" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="55" cy="45" r="3" fill="white" opacity="0.6"/>
-          <circle cx="65" cy="45" r="3" fill="white" opacity="0.6"/>
-          <path d="M 55 60 Q 60 65, 65 60" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Top right - baby element */}
-          <circle cx="330" cy="60" r="18" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 320 50 Q 330 45, 340 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Bottom left - family element */}
-          <path d="M 40 220 Q 60 210, 80 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="50" cy="240" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          <circle cx="70" cy="240" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Bottom right - childcare element */}
-          <path d="M 300 220 Q 340 210, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="320" cy="250" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Center - connecting elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+          {/* Heart shape outline - items arranged within */}
+          {/* Top left - Jack Russell Terrier face */}
+          <circle cx="120" cy="80" r="20" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="115" cy="75" r="3" fill="white"/>
+          <circle cx="125" cy="75" r="3" fill="white"/>
+          <path d="M 115 90 Q 120 95, 125 90" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 105 70 L 110 65 M 130 65 L 135 70" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 100 85 Q 120 80, 140 85" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Top right - Labrador face with tongue */}
+          <circle cx="280" cy="80" r="22" stroke="white" strokeWidth="3" fill="none"/>
+          <circle cx="275" cy="75" r="3" fill="white"/>
+          <circle cx="285" cy="75" r="3" fill="white"/>
+          <path d="M 270 90 Q 280 95, 290 90" stroke="white" strokeWidth="2.5" fill="none"/>
+          <ellipse cx="285" cy="88" rx="2" ry="3" fill="white"/>
+          <path d="M 295 70 L 300 65 M 305 70 L 310 65" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Lower right - Pug face with wrinkles */}
+          <circle cx="300" cy="200" r="18" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 290 195 Q 300 190, 310 195" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="295" cy="195" r="2.5" fill="white"/>
+          <circle cx="305" cy="195" r="2.5" fill="white"/>
+          <path d="M 295 210 Q 300 215, 305 210" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 290 200 Q 300 198, 310 200" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 290 205 Q 300 203, 310 205" stroke="white" strokeWidth="1.5" fill="none"/>
+          
+          {/* Food bag - top left, overflowing with kibble */}
+          <path d="M 50 50 L 50 120 L 100 120 L 100 50 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 50 50 L 75 30 L 100 50" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 60 70 L 90 70" stroke="white" strokeWidth="2" fill="none"/>
+          <circle cx="70" cy="85" r="3" fill="white"/>
+          <circle cx="65" cy="90" r="2" fill="white"/>
+          <circle cx="75" cy="90" r="2" fill="white"/>
+          <circle cx="68" cy="95" r="2" fill="white"/>
+          <circle cx="72" cy="95" r="2" fill="white"/>
+          <circle cx="70" cy="100" r="2" fill="white"/>
+          <circle cx="65" cy="105" r="2" fill="white"/>
+          <circle cx="75" cy="105" r="2" fill="white"/>
+          
+          {/* Double food bowl - lower left */}
+          <ellipse cx="100" cy="240" rx="30" ry="10" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 70 240 L 130 240" stroke="white" strokeWidth="2.5" fill="none"/>
+          <ellipse cx="85" cy="240" rx="20" ry="7" stroke="white" strokeWidth="2" fill="none"/>
+          <ellipse cx="115" cy="240" rx="20" ry="7" stroke="white" strokeWidth="2" fill="none"/>
+          <circle cx="80" cy="235" r="2" fill="white"/>
+          <circle cx="90" cy="235" r="2" fill="white"/>
+          <circle cx="110" cy="235" r="2" fill="white"/>
+          <circle cx="120" cy="235" r="2" fill="white"/>
+          
+          {/* Large cartoon bone - center bottom */}
+          <ellipse cx="200" cy="250" rx="20" ry="6" stroke="white" strokeWidth="3.5" fill="none"/>
+          <circle cx="180" cy="250" r="5" fill="white"/>
+          <circle cx="220" cy="250" r="5" fill="white"/>
+          <path d="M 185 250 L 215 250" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Grooming brush - upper left */}
+          <rect x="60" y="130" width="25" height="8" rx="2" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 60 130 L 85 130" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 65 125 L 65 138" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 70 125 L 70 138" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 75 125 L 75 138" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 80 125 L 80 138" stroke="white" strokeWidth="1.5" fill="none"/>
+          
+          {/* Syringe - lower left */}
+          <path d="M 50 200 L 50 240" stroke="white" strokeWidth="2.5" fill="none"/>
+          <rect x="45" y="200" width="10" height="15" rx="1" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 47 205 L 53 205" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 47 210 L 53 210" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 47 215 L 53 215" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 50 240 L 45 245 L 55 245 Z" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* First aid kit - upper right */}
+          <rect x="320" y="50" width="50" height="40" rx="3" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 320 50 L 370 50" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 345 50 L 345 90" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 335 70 L 355 70" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 335 60 L 355 60" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 335 80 L 355 80" stroke="white" strokeWidth="2.5" fill="none"/>
+          
+          {/* Dog house - center */}
+          <rect x="150" y="120" width="100" height="70" rx="3" stroke="white" strokeWidth="3.5" fill="none"/>
+          <path d="M 140 120 L 200 80 L 260 120" stroke="white" strokeWidth="3.5" fill="none"/>
+          <ellipse cx="200" cy="100" rx="10" ry="8" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 190 150 L 190 190 L 210 190 L 210 150" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 195 100 Q 200 95, 205 100" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Pet carrier bag - lower right */}
+          <path d="M 320 200 Q 340 190, 360 200 L 360 240 Q 340 250, 320 240 Z" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 330 200 L 330 240" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 350 200 L 350 240" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 320 220 L 360 220" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 340 200 L 340 190" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 335 190 L 345 190" stroke="white" strokeWidth="2.5" fill="none"/>
+          
+          {/* Bow tie - upper left */}
+          <path d="M 100 60 L 110 65 L 100 70 Z" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 110 60 L 120 65 L 110 70 Z" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="110" cy="65" r="2" fill="white"/>
+          
+          {/* Small ball - lower right */}
+          <circle cx="330" cy="220" r="10" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 320 220 L 340 220" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 330 210 L 330 230" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* V-shaped stick/chew toy - lower middle */}
+          <path d="M 180 230 L 200 250 L 220 230" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 185 235 L 195 245" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 205 235 L 215 245" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Slipper - upper right */}
+          <path d="M 300 100 Q 310 95, 320 100 L 325 120 Q 320 125, 315 120 L 310 110 Q 305 105, 300 110 Z" 
+                stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 305 105 L 315 105" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Dog whistle - mid left */}
+          <path d="M 80 150 L 100 150" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="80" cy="150" r="3" fill="white"/>
+          <path d="M 100 150 L 105 145 L 105 155 Z" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Retractable leash - lower left */}
+          <circle cx="70" cy="200" r="8" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="70" cy="200" r="4" fill="white"/>
+          <path d="M 70 200 Q 90 210, 110 220" stroke="white" strokeWidth="2.5" fill="none" strokeDasharray="3,3"/>
+          
+          {/* Dog collar with leash - upper right */}
+          <ellipse cx="250" cy="120" rx="15" ry="6" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="245" cy="120" r="2" fill="white"/>
+          <circle cx="250" cy="120" r="2" fill="white"/>
+          <circle cx="255" cy="120" r="2" fill="white"/>
+          <path d="M 265 120 L 280 110" stroke="white" strokeWidth="2.5" fill="none"/>
+          <circle cx="280" cy="110" r="4" stroke="white" strokeWidth="2" fill="none"/>
+          
+          {/* Rosette award ribbon - upper right */}
+          <circle cx="340" cy="100" r="15" stroke="white" strokeWidth="3" fill="none"/>
+          <path d="M 325 100 L 340 85 L 355 100" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 325 100 L 340 115 L 355 100" stroke="white" strokeWidth="2.5" fill="none"/>
+          <path d="M 330 90 L 350 90" stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 330 110 L 350 110" stroke="white" strokeWidth="2" fill="none"/>
+          <circle cx="340" cy="100" r="5" fill="white"/>
+          <path d="M 337 100 L 343 100" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 340 97 L 340 103" stroke="white" strokeWidth="1.5" fill="none"/>
+          
+          {/* Paw prints scattered */}
+          <circle cx="90" cy="180" r="4" fill="white"/>
+          <circle cx="85" cy="185" r="3" fill="white"/>
+          <circle cx="95" cy="185" r="3" fill="white"/>
+          <circle cx="88" cy="190" r="2.5" fill="white"/>
+          <circle cx="92" cy="190" r="2.5" fill="white"/>
+          
+          <circle cx="350" cy="150" r="4" fill="white"/>
+          <circle cx="345" cy="155" r="3" fill="white"/>
+          <circle cx="355" cy="155" r="3" fill="white"/>
+          <circle cx="348" cy="160" r="2.5" fill="white"/>
+          <circle cx="352" cy="160" r="2.5" fill="white"/>
+          
+          <circle cx="150" cy="250" r="4" fill="white"/>
+          <circle cx="145" cy="255" r="3" fill="white"/>
+          <circle cx="155" cy="255" r="3" fill="white"/>
+          <circle cx="148" cy="260" r="2.5" fill="white"/>
+          <circle cx="152" cy="260" r="2.5" fill="white"/>
+          
+          {/* Decorative dots and circles */}
+          <circle cx="110" cy="110" r="2" fill="white"/>
+          <circle cx="130" cy="100" r="2" fill="white"/>
+          <circle cx="270" cy="120" r="2" fill="white"/>
+          <circle cx="290" cy="130" r="2" fill="white"/>
+          <circle cx="160" cy="200" r="2" fill="white"/>
+          <circle cx="240" cy="200" r="2" fill="white"/>
+          
+          {/* Wavy lines */}
+          <path d="M 140 60 Q 145 65, 150 60" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 250 60 Q 255 65, 260 60" stroke="white" strokeWidth="1.5" fill="none"/>
+          <path d="M 170 230 Q 175 235, 180 230" stroke="white" strokeWidth="1.5" fill="none"/>
+          
+          {/* Starburst - upper middle */}
+          <path d="M 200 50 L 205 60 M 200 50 L 195 60 M 200 50 L 200 40 M 200 50 L 200 60" 
+                stroke="white" strokeWidth="2" fill="none"/>
+          <path d="M 200 50 L 210 55 M 200 50 L 190 55 M 200 50 L 210 45 M 200 50 L 190 45" 
+                stroke="white" strokeWidth="2" fill="none"/>
         </svg>
       );
     }
@@ -1674,28 +2926,137 @@ export default function EnquiryWall() {
         categoryLower.includes('financial') || categoryLower.includes('insurance') || categoryLower.includes('marketing') ||
         categoryLower.includes('advertising') || categoryLower.includes('office')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - document/briefcase */}
-          <rect x="30" y="30" width="70" height="60" rx="4" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 30 30 L 100 30" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <path d="M 50 50 L 80 50" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 50 70 L 80 70" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 50 90 L 80 90" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Top right - business element */}
-          <circle cx="330" cy="50" r="18" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 325 50 L 335 50 M 330 45 L 330 55" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="330" cy="50" r="6" fill="white" opacity="0.8"/>
-          {/* Bottom left - professional element */}
-          <rect x="40" y="200" width="60" height="70" rx="4" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 50 220 L 90 220" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 50 240 L 90 240" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          <path d="M 50 260 L 90 260" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-          {/* Bottom right - financial element */}
-          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="3" fill="none"/>
-          <circle cx="330" cy="250" r="15" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="330" cy="250" r="7" fill="white" opacity="0.8"/>
-          {/* Center - connecting professional lines */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Document - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -7 L6 -7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -1 L4 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 2 L4 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Chart - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-7" y="-7" width="14" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 4 L-2 2 L0 4 L2 1 L4 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 4 L-4 7" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 4 L0 7" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M4 3 L4 7" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Dollar sign - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -7 L0 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -3 L4 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 3 L4 3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Briefcase - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-18" y="-12" width="36" height="24" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-18 -12 L18 -12" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-12 -6 L12 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-12 0 L12 0" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Pen - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <path d="M0 -8 L0 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -8 L0 -11 L1 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-0.5 5 L0.5 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Handshake - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="-3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 2 L-1 3 L1 3 L3 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Credit card - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-6" y="-3" width="12" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -1 L4 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 1 L2 1" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="2" r="0.8" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Document - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -10 L8 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 -6 L5 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 -2 L5 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 2 L5 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Chart - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-10" y="-10" width="20" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 6 L-3 3 L0 6 L3 2 L6 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 6 L-6 10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 6 L0 10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 5 L6 10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Dollar sign - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -10 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 -5 L5 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 5 L5 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Contract - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-6" y="-10" width="12" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -2 L3 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="4" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Pen - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M0 -12 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -12 L0 -15 L2 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 8 L1 8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Calculator - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="-6" width="8" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 -3 L2 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Handshake - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="-4" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 3 L-1 5 L1 5 L4 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Credit card - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-8" y="-5" width="16" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -3 L6 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Clipboard - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="-10" width="2" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 0 L4 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1703,45 +3064,238 @@ export default function EnquiryWall() {
     // Jobs, Employment
     if (categoryLower.includes('job') || categoryLower.includes('employment')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - person icon */}
-          <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 60 62 L 60 90" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 45 75 L 75 75" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Top right - briefcase */}
-          <rect x="300" y="40" width="50" height="40" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 310 40 L 340 40" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom left - job element */}
-          <path d="M 40 200 L 40 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 30 240 L 50 240" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom right - employment element */}
-          <circle cx="340" cy="240" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 335 240 L 345 240 M 340 235 L 340 245" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Center - connecting elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Resume - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-6" y="-7" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -7 L6 -7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 -1 L4 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 2 L4 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Briefcase - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-8" y="-6" width="16" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -6 L8 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 -3 L5 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-5 0 L5 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Clock - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -7 L0 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L4 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Person - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <circle cx="0" cy="0" r="12" fill="none" stroke="white" strokeWidth="2"/>
+            <circle cx="-3" cy="-2" r="1.5" fill="white"/>
+            <circle cx="3" cy="-2" r="1.5" fill="white"/>
+            <path d="M-2 3 Q0 4 2 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 12 L0 20" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-8 20 L8 20" stroke="white" strokeWidth="2" fill="none"/>
+          </g>
+          
+          {/* ID badge - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-5" y="-7" width="10" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-2" r="2" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 4 L2 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Star award - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M0 -6 L1.5 -1.5 L6 -1.5 L2 1 L3 6 L0 3 L-3 6 L-2 1 L-6 -1.5 L-1.5 -1.5 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Handshake - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <circle cx="-2.5" cy="0" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="2.5" cy="0" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2.5 2 L-1 2.5 L1 2.5 L2.5 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Resume - left */}
+          <g transform="translate(120, 150)" opacity="0.6">
+            <rect x="-10" y="-12" width="20" height="24" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-10 -12 L10 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 -4 L6 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Briefcase - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-15" y="-10" width="30" height="20" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-15 -10 L15 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-10 -5 L10 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-10 0 L10 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Clock - right */}
+          <g transform="translate(280, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -10 L0 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L5 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* ID badge - bottom left */}
+          <g transform="translate(100, 240)" opacity="0.5">
+            <rect x="-8" y="-10" width="16" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="3" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-4 5 L4 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Star award - bottom right */}
+          <g transform="translate(300, 240)" opacity="0.5">
+            <path d="M0 -8 L2 -2 L8 -2 L3 1 L5 7 L0 4 L-5 7 L-3 1 L-8 -2 L-2 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
         </svg>
       );
     }
     
     // Travel, Tourism
-    if (categoryLower.includes('travel') || categoryLower.includes('tourism')) {
+    if (categoryLower.includes('travel') || categoryLower.includes('tourism') || categoryLower === 'travel-tourism') {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - location pin */}
-          <path d="M 60 40 L 60 80 L 40 100 L 80 100 L 60 80 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="60" cy="50" r="3" fill="white" opacity="0.6"/>
-          {/* Top right - travel element */}
-          <path d="M 320 40 L 320 100" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="320" cy="70" r="8" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Bottom left - map element */}
-          <rect x="30" y="200" width="80" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 50 220 L 100 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          <path d="M 50 240 L 100 240" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Bottom right - travel path */}
-          <path d="M 280 220 Q 320 200, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 280 250 Q 320 230, 360 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Center - connecting elements */}
-          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Suitcase - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-7" y="-6" width="14" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-7 -6 L7 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-5" y="-4" width="4" height="5" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="1" y="-4" width="4" height="5" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="0" cy="-2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Ship - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M-8 3 Q-3 0 3 3 L3 9 Q-3 12 -8 9 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 3 L-5 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 3 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-2" cy="6" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Location pin - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M0 -7 L-5 0 L0 5 L5 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Airplane - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <path d="M-20 0 L20 0" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <path d="M0 -15 L0 15" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-12 -5 L0 0 L12 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="2" fill="white"/>
+          </g>
+          
+          {/* Map - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-8" y="-7" width="16" height="14" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -4 L6 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 4 L6 4" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="-2" cy="-2" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Compass - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -6 L0 6 M-6 0 L6 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+            <path d="M0 -6 L0 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Hotel key - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-2" y="-6" width="4" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-7" r="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-7" r="1" fill="white" opacity="0.8"/>
+            <path d="M-1 -3 L1 -3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Suitcase - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <rect x="-10" y="-8" width="20" height="18" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-10 -8 L10 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-5" width="5" height="6" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="1" y="-5" width="5" height="6" fill="none" stroke="white" strokeWidth="1"/>
+            <circle cx="0" cy="-2" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Ship - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M-12 4 Q-4 0 4 4 L4 12 Q-4 16 -12 12 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 4 L-6 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 4 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-3" cy="7" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Location pin - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M0 -10 L-6 0 L0 6 L6 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-5" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Train - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-10" y="-4" width="20" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-10" y="-8" width="12" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-5" cy="10" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="5" cy="10" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-8" y="-6" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Hotel key - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-3" y="-8" width="6" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-10" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-10" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M-1 -4 L1 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Map - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-12" y="-10" width="24" height="20" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -6 L8 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 0 L8 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-8 6 L8 6" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="-2" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="4" cy="3" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Compass - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -8 L0 8 M-8 0 L8 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M0 -8 L0 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Camera - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M4 -8 L5 -10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Passport - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-4" r="2" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 4 L3 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1750,23 +3304,141 @@ export default function EnquiryWall() {
     if (categoryLower.includes('renewable') || categoryLower.includes('energy') || categoryLower.includes('waste') ||
         categoryLower.includes('industrial') || categoryLower.includes('raw-material')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - energy symbol */}
-          <circle cx="60" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 40 50 L 80 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          <path d="M 60 30 L 60 70" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Top right - industrial element */}
-          <rect x="300" y="30" width="60" height="50" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 310 50 L 350 50" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Bottom left - waste/industrial */}
-          <rect x="30" y="200" width="70" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 40 220 L 90 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Bottom right - energy element */}
-          <circle cx="340" cy="240" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 320 240 L 360 240" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          <path d="M 340 220 L 340 260" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Center - connecting lines */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Wind turbine - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-6" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -8 L2 -4 M2 -8 L-2 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Battery - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <rect x="-4" y="-7" width="8" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-3" y="-6" width="6" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 -1 L2 -1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M3 -3 L4 -3 L4 3 L3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Recycle symbol - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M-4 -4 L0 -6 L4 -4 L3 -2 L-3 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M4 4 L0 6 L-4 4 L-3 2 L3 2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 0 L-6 -2 L-4 -4 L-2 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Solar panel - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-18" y="-12" width="36" height="24" rx="1" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-18 -12 L18 -12" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-18 0 L18 0" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-18 12 L18 12" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-9 -6 L9 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-9 6 L9 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Factory - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-7" y="-6" width="14" height="12" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-7 -6 L0 -10 L7 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-5" y="-3" width="4" height="5" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="1" y="-3" width="4" height="5" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-1 3 L1 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Lightbulb - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="-5" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-2" y="-1" width="4" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -4 L1 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Cog/Gear - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="3" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -5 L0 5 M-5 0 L5 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Wind turbine - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-8" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -10 L3 -6 M3 -10 L-3 -6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Factory - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-10" y="-8" width="20" height="18" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-10 -8 L0 -14 L10 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-4" width="5" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <rect x="1" y="-4" width="5" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-1 4 L1 4" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Battery - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-6" y="-10" width="12" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-4" y="-8" width="8" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M-2 -6 L2 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 -2 L2 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M4 -5 L5 -5 L5 5 L4 5" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Recycle symbol - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <path d="M-6 -6 L0 -9 L6 -6 L4 -3 L-4 -3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M6 6 L0 9 L-6 6 L-4 3 L4 3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L-9 -3 L-6 -6 L-3 -3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Oil barrel - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-6" y="-10" width="12" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 10 L6 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 6 L3 6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Recycle bin - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-6" y="-10" width="12" height="20" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -6 L4 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -2 L3 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="2" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Lightbulb - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="-6" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-2" y="-1" width="4" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -5 L1 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -3 L1 -3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Cog/Gear - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -6 L0 6 M-6 0 L6 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Power plug - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-4" y="-6" width="8" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -6 L4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="-2" width="2" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-1" y="2" width="2" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
         </svg>
       );
     }
@@ -1774,25 +3446,131 @@ export default function EnquiryWall() {
     // Security, Safety
     if (categoryLower.includes('security') || categoryLower.includes('safety')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - shield */}
-          <path d="M 50 40 Q 50 20, 70 20 L 90 20 Q 110 20, 110 40 L 110 80 Q 110 100, 90 100 L 70 100 Q 50 100, 50 80 Z" 
-                stroke="white" strokeWidth="3.5" fill="none"/>
-          <rect x="85" y="50" width="18" height="30" rx="3" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="94" cy="65" r="3" fill="white" opacity="0.9"/>
-          {/* Top right - lock */}
-          <rect x="300" y="40" width="45" height="55" rx="4" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 310 40 Q 320 28, 330 40" stroke="white" strokeWidth="3" fill="none" opacity="0.9"/>
-          <circle cx="320" cy="67" r="5" fill="white" opacity="0.9"/>
-          {/* Bottom left - security element */}
-          <path d="M 30 200 Q 70 180, 110 200" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 30 230 Q 70 210, 110 230" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          {/* Bottom right - safety element */}
-          <circle cx="340" cy="240" r="20" stroke="white" strokeWidth="3" fill="none"/>
-          <path d="M 330 240 L 350 240 M 340 230 L 340 250" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-          <circle cx="340" cy="240" r="6" fill="white" opacity="0.8"/>
-          {/* Center - connecting elements */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Lock - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <rect x="-4" y="-4" width="8" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -4 Q-2 -6 0 -4 Q2 -6 4 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="2" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Key - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="3.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="0" y="-1" width="7" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M5 -1 L5 1" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M4 0 L7 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Camera - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <rect x="-4" y="-6" width="8" height="7" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-3" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M3 -6 L4 -8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Shield - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <path d="M0 -15 Q-8 -15 -10 -5 L-10 10 Q-10 20 0 25 Q10 20 10 10 L10 -5 Q8 -15 0 -15" fill="none" stroke="white" strokeWidth="2"/>
+            <rect x="-6" y="-5" width="12" height="15" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="2" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Padlock - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-3" y="-3" width="6" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -3 Q-1.5 -5 0 -3 Q1.5 -5 3 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="2" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Alarm - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="3" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -5 L0 -9" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-11" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Safety helmet - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <path d="M-5 -7 Q0 -10 5 -7 L5 0 Q5 3 0 3 Q-5 3 -5 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -5 L3 -5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Lock - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <rect x="-6" y="-6" width="12" height="18" rx="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -6 Q-3 -9 0 -6 Q3 -9 6 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="3" r="3" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Key - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="0" y="-1.5" width="10" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M6 -1.5 L6 1.5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M5 0 L9 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Camera - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-6" y="-8" width="12" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+            <path d="M4 -8 L5 -10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Fingerprint - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="8" ry="12" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -8 Q-2 -6 0 -8 Q2 -10 4 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -4 Q-1 -2 0 -4 Q1 -6 3 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 Q0 2 2 0" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 4 Q0 6 2 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Padlock - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <rect x="-5" y="-5" width="10" height="15" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -5 Q-2 -8 0 -5 Q2 -8 5 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="2" r="3" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Alarm - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -6 L0 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-12" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Safety helmet - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <path d="M-6 -8 Q0 -12 6 -8 L6 0 Q6 4 0 4 Q-6 4 -6 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -3 L1 -3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Security badge - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -5 L-3 0 L0 5 L3 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Fire extinguisher - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-3" y="-10" width="6" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -10 Q0 -12 3 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -6 L1 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -2 L1 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 8 L2 8" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1801,23 +3579,134 @@ export default function EnquiryWall() {
     if (categoryLower.includes('government') || categoryLower.includes('public') || categoryLower.includes('non-profit') ||
         categoryLower.includes('charity')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - building/government */}
-          <rect x="30" y="30" width="80" height="90" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 20 30 L 70 15 L 120 30" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 50 60 L 90 60" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          <path d="M 50 80 L 90 80" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Top right - public element */}
-          <circle cx="330" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 325 50 L 335 50 M 330 45 L 330 55" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom left - charity element */}
-          <path d="M 40 200 Q 60 190, 80 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="50" cy="240" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Bottom right - government building */}
-          <rect x="280" y="200" width="80" height="80" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 275 200 L 330 170 L 385 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Center - connecting lines */}
-          <path d="M 110 150 Q 200 130, 290 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Flag - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="0" y="-8" width="8" height="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M1 -6 L6 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M1 -4 L6 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Scales of justice - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -7 L0 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 0 L5 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-4" cy="-5" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="-5" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Heart - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M0 -4 Q-3 -4 -4 -2 Q-4 0 0 4 Q4 0 4 -2 Q3 -4 0 -4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Building - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-20" y="-15" width="40" height="30" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-20 -15 L0 -30 L20 -15" stroke="white" strokeWidth="2" fill="none"/>
+            <rect x="-12" y="-8" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="4" y="-8" width="8" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Document - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-5" y="-7" width="10" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -7 L5 -7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -4 L3 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -1 L3 -1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Gavel - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M0 -7 L0 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-4" y="-9" width="8" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -9 L2 -9" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="3" width="2" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Certificate - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-5" y="-6" width="10" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -6 L5 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -3 L3 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M0 -1.5 L0 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1.5 0 L1.5 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Flag - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="0" y="-12" width="10" height="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M1 -10 L7 -10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M1 -7 L7 -7" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Scales of justice - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M0 -10 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 0 L6 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-5" cy="-6" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="5" cy="-6" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Heart - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M0 -6 Q-5 -6 -7 -3 Q-7 0 0 6 Q7 0 7 -3 Q5 -6 0 -6" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Document with seal - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-6" y="-10" width="12" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -10 L6 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -6 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 -2 L3 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="4" r="2.5" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M0 2 L0 6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 4 L2 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Gavel - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M0 -10 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-6" y="-12" width="12" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -12 L3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-2" y="6" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Document - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -4 L3 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Hand helping - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <ellipse cx="0" cy="0" rx="6" ry="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -6 L-1 -8 L0 -6 L1 -8 L3 -6" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Donation box - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <ellipse cx="0" cy="-6" rx="3" ry="1.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Certificate - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-7" y="-8" width="14" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-7 -8 L7 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="0" r="2" fill="none" stroke="white" strokeWidth="1"/>
+            <path d="M0 -2 L0 2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1826,22 +3715,130 @@ export default function EnquiryWall() {
     if (categoryLower.includes('tool') || categoryLower.includes('equipment') || categoryLower.includes('appliance') ||
         categoryLower.includes('repair')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - tool */}
-          <rect x="40" y="30" width="30" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 55 30 L 55 100" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="55" cy="50" r="6" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Top right - equipment */}
-          <rect x="300" y="40" width="50" height="50" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 310 60 L 340 60" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Bottom left - appliance */}
-          <rect x="30" y="200" width="60" height="70" rx="3" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 50 220 L 80 220" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Bottom right - repair element */}
-          <path d="M 300 200 L 300 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 280 240 L 320 240" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Center - connecting elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Screwdriver - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1.5 -8 L0 -11 L1.5 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1" y="5" width="2" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Hammer - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -7 L0 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-4" y="-11" width="8" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -9 L2 -9" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Gear - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4.5" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -7 L0 7 M-7 0 L7 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="2" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Wrench - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <path d="M-10 -6 L10 -6" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <path d="M0 -6 L0 12" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Drill - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-2" y="-6" width="4" height="11" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-7" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -4 L1 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -1 L1 -1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pliers - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M-3 -5 L-3 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M3 -5 L3 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -5 Q0 -2 3 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 5 Q0 2 3 5" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Measuring tape - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-7" y="-1" width="14" height="2" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -1 L-5 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1 L0 1" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M5 -1 L5 1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Screwdriver - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -12 L0 -16 L2 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-1.5" y="6" width="3" height="6" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Hammer - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M0 -10 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-5" y="-14" width="10" height="8" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -12 L3 -12" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Gear - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -10 L0 10 M-10 0 L10 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Drill - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-3" y="-10" width="6" height="18" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="-12" r="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1 -8 L1 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 -4 L1 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Pliers - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-4 -8 L-4 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M4 -8 L4 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -8 Q0 -4 4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 8 Q0 4 4 8" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Measuring tape - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-10" y="-1.5" width="20" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -1.5 L-8 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M0 -1.5 L0 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M8 -1.5 L8 1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Toolbox - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <rect x="-8" y="-6" width="16" height="14" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -6 L8 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -2 L4 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="0" cy="-1" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Saw - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-0.5" y="-8" width="1" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <path d="M-4 -6 L4 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Level - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-8" y="-1.5" width="16" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+            <path d="M-6 -1.5 L-6 1.5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M6 -1.5 L6 1.5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1849,21 +3846,130 @@ export default function EnquiryWall() {
     // Cleaning Services
     if (categoryLower.includes('cleaning')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - cleaning tool */}
-          <path d="M 50 40 L 50 100" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <circle cx="50" cy="70" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Top right - cleaning element */}
-          <path d="M 320 50 Q 340 40, 360 50" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 320 70 Q 340 65, 360 70" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom left - cleaning wave */}
-          <path d="M 30 220 Q 60 200, 90 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 30 250 Q 60 230, 90 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom right - cleaning element */}
-          <circle cx="340" cy="240" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 335 240 L 345 240" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Center - connecting elements */}
-          <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Broom - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 6 L5 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 8 L4 8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 10 L3 10" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Mop - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -7 L0 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-3" y="5" width="6" height="3" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 7 L2 7" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 9 L1 9" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Water drop - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <path d="M0 -6 Q-3 -5 -3 -1 Q-3 2 0 6 Q3 2 3 -1 Q3 -5 0 -6" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Spray bottle - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-10" y="-20" width="20" height="35" rx="2" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-6 -20 L6 -20" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-6 -20 L-6 -25" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="0" cy="-27" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -27 L0 -30" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Vacuum - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="6" ry="4" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L-6 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M6 0 L6 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 8 L6 8" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Bucket - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M-4 -6 L-4 5 L4 5 L4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -6 Q0 -7 4 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -4 L3 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Sponge - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-5" y="-4" width="10" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-2" cy="-1" r="0.8" fill="white" opacity="0.8"/>
+            <circle cx="2" cy="-1" r="0.8" fill="white" opacity="0.8"/>
+            <circle cx="-2" cy="1" r="0.8" fill="white" opacity="0.8"/>
+            <circle cx="2" cy="1" r="0.8" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Broom - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -12 L0 12" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 8 L6 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 10 L5 10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-4 12 L4 12" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Mop - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M0 -10 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-4" y="8" width="8" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 10 L3 10" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 12 L2 12" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Water drop - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M0 -8 Q-4 -6 -4 -2 Q-4 2 0 8 Q4 2 4 -2 Q4 -6 0 -8" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Vacuum - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <ellipse cx="0" cy="0" rx="8" ry="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 0 L-8 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M8 0 L8 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-8 10 L8 10" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Bucket - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-6 -8 L-6 8 L6 8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -8 Q0 -10 6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -4 L4 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-3 0 L3 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Sponge - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-6" y="-5" width="12" height="10" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-3" cy="-2" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="-2" r="1" fill="white" opacity="0.8"/>
+            <circle cx="-3" cy="2" r="1" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Gloves - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <ellipse cx="-3" cy="0" rx="3" ry="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <ellipse cx="3" cy="0" rx="3" ry="6" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Detergent bottle - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-4" y="-8" width="8" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -8 Q0 -10 4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Duster - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <path d="M0 -8 L0 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-3" y="4" width="6" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 6 L2 6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 8 L1 8" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
         </svg>
       );
     }
@@ -1871,22 +3977,121 @@ export default function EnquiryWall() {
     // Thrift, Second-hand
     if (categoryLower.includes('thrift')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - thrift item */}
-          <path d="M 30 40 L 30 120 L 110 120 L 110 40 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 70 40 L 70 120" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Top right - second-hand element */}
-          <circle cx="330" cy="60" r="20" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="330" cy="60" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom left - thrift box */}
-          <path d="M 40 200 L 40 280 L 120 280 L 120 200 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 50 200 L 50 280" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom right - thrift element */}
-          <path d="M 300 220 L 300 280 L 360 280 L 360 220 Z" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <circle cx="320" cy="250" r="6" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          <circle cx="340" cy="250" r="6" stroke="white" strokeWidth="1" fill="none" opacity="0.4"/>
-          {/* Center - connecting elements */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Tag - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M-5 -4 L5 -4 L5 4 L-5 4 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -4 L-2 -7 L2 -7 L5 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Recycle symbol - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M-5 -5 L0 -7 L5 -5 L4 -2 L-4 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M5 5 L0 7 L-5 5 L-4 2 L4 2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 0 L-7 -2 L-5 -5 L-2 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Price tag - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <rect x="-5" y="-4" width="10" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -4 L-2 -7 L2 -7 L5 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-1 -1 L1 -1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Box - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <rect x="-18" y="-18" width="36" height="36" fill="none" stroke="white" strokeWidth="2"/>
+            <path d="M-18 -18 L-6 -30 L12 -30 L18 -18" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-6 -30 L-6 -12" stroke="white" strokeWidth="2" fill="none"/>
+          </g>
+          
+          {/* Shopping bag - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <rect x="-5" y="-6" width="10" height="12" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -6 L-2 -9 L2 -9 L5 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -3 L2 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Discount badge - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <circle cx="0" cy="0" r="5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-2 -2 L2 2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M2 -2 L-2 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Used item - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-4" y="-4" width="8" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -4 L4 4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M4 -4 L-4 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Tag - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M-6 -6 L6 -6 L6 6 L-6 6 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -6 L-3 -9 L3 -9 L6 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Recycle symbol - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M-6 -6 L0 -9 L6 -6 L4 -3 L-4 -3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M6 6 L0 9 L-6 6 L-4 3 L4 3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 0 L-9 -3 L-6 -6 L-3 -3 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Price tag - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <rect x="-6" y="-5" width="12" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -5 L-3 -8 L3 -8 L6 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -1 L2 -1" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Shopping bag - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <rect x="-6" y="-8" width="12" height="16" rx="1" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L-3 -12 L3 -12 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 0 L2 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Discount badge - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="7" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -3 L3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M3 -3 L-3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Vintage item - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="4" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M-3 -3 L3 3 M3 -3 L-3 3" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Second-hand badge - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -3 L3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M3 -3 L-3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Used item - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-5" y="-5" width="10" height="10" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -5 L5 5" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M5 -5 L-5 5" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Bargain tag - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <path d="M-4 -4 L4 -4 L4 4 L-4 4 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 -4 L0 -7 L4 -4" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       );
     }
@@ -1894,22 +4099,87 @@ export default function EnquiryWall() {
     // Agriculture, Farming
     if (categoryLower.includes('agriculture') || categoryLower.includes('farming')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - plant/growth */}
-          <path d="M 50 100 L 50 40" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 40 60 Q 50 50, 60 60" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          <path d="M 40 80 Q 50 70, 60 80" stroke="white" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          {/* Top right - farming element */}
-          <circle cx="330" cy="50" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 320 50 Q 330 40, 340 50" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom left - agriculture element */}
-          <path d="M 30 200 Q 70 180, 110 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 30 230 Q 70 210, 110 230" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom right - farming tool */}
-          <path d="M 300 220 L 300 280" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 290 250 L 310 250" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Center - connecting elements */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Plant - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <path d="M0 -18 L0 8" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M0 -8 Q-5 -6 -5 -2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -4 Q5 -2 5 2" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 Q-7 2 -7 7" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 4 Q7 6 7 11" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Tractor wheel - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
+            <path d="M0 -10 L0 10 M-10 0 L10 0" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <circle cx="0" cy="0" r="2.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Seed packet - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <rect x="-8" y="-10" width="16" height="20" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-8 -10 L8 -10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="2.5" fill="white" opacity="0.8"/>
+            <path d="M-3 4 L3 4" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Shovel - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <path d="M0 -12 L0 10" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-3 -12 L3 -12 L1.5 -9 L-1.5 -9 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1.5 6 L1.5 6" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Hoe - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <path d="M0 -10 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L8 0" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+            <rect x="6" y="-2" width="4" height="4" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Watering can - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-4 -8 L-4 6 L4 6 L4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -8 Q0 -10 4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -4 L2 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-6 -6 L-4 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="-5" cy="-7" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Corn - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-1.5" y="-8" width="3" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-1.5 -8 Q0 -9 1.5 -8" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1.5 -4 Q0 -5 1.5 -4" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1.5 0 Q0 -1 1.5 0" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Barn - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <rect x="-6" y="-6" width="12" height="14" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -6 L0 -12 L6 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <rect x="-3" y="-1" width="6" height="5" rx="0.5" fill="none" stroke="white" strokeWidth="1"/>
+          </g>
+          
+          {/* Wheat - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <path d="M0 -8 L0 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-2 -6 L2 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1.5 -3 L1.5 -3" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-1 0 L1 0" stroke="white" strokeWidth="1" fill="none"/>
+            <circle cx="-1" cy="-4" r="1" fill="white" opacity="0.8"/>
+            <circle cx="1" cy="-2" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Tractor - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <rect x="-8" y="-3" width="16" height="8" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <rect x="-8" y="-6" width="10" height="5" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-4" cy="8" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="8" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
         </svg>
       );
     }
@@ -1917,46 +4187,161 @@ export default function EnquiryWall() {
     // Personal, Service (generic)
     if (categoryLower.includes('personal') || categoryLower.includes('service')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          {/* Top left - person */}
-          <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          <path d="M 60 62 L 60 90" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-          {/* Top right - service element */}
-          <circle cx="330" cy="60" r="15" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M 325 60 L 335 60 M 330 55 L 330 65" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
-          {/* Bottom left - personal element */}
-          <path d="M 40 200 Q 80 180, 120 200" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Bottom right - service element */}
-          <path d="M 300 220 Q 340 200, 360 220" stroke="white" strokeWidth="2" fill="none" opacity="0.6"/>
-          {/* Center - connecting elements */}
-          <path d="M 120 150 Q 200 130, 280 150" stroke="white" strokeWidth="1" fill="none" opacity="0.3"/>
-          <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="1.5" fill="none" opacity="0.4"/>
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Top section icons - distributed across top */}
+          {/* Heart - top left */}
+          <g transform="translate(60, 40)" opacity="0.6">
+            <path d="M0 -4 Q-2.5 -4 -3 -2 Q-3 0 0 4 Q3 0 3 -2 Q2.5 -4 0 -4" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Star - top left center */}
+          <g transform="translate(120, 45)" opacity="0.6">
+            <path d="M0 -6 L1.5 -1.5 L6 -1.5 L2 1 L3 6 L0 3 L-3 6 L-2 1 L-6 -1.5 L-1.5 -1.5 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Handshake - top center left */}
+          <g transform="translate(180, 50)" opacity="0.6">
+            <circle cx="-3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="3" cy="0" r="2.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 2 L-1 3 L1 3 L3 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Person - top center */}
+          <g transform="translate(200, 80)" opacity="0.7">
+            <circle cx="0" cy="0" r="12" fill="none" stroke="white" strokeWidth="2"/>
+            <circle cx="-3" cy="-2" r="1.5" fill="white"/>
+            <circle cx="3" cy="-2" r="1.5" fill="white"/>
+            <path d="M-2 3 Q0 4 2 3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 12 L0 20" stroke="white" strokeWidth="2" fill="none"/>
+            <path d="M-8 20 L8 20" stroke="white" strokeWidth="2" fill="none"/>
+          </g>
+          
+          {/* Smile - top center right */}
+          <g transform="translate(220, 50)" opacity="0.6">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-1.5" cy="-1.5" r="0.8" fill="white" opacity="0.8"/>
+            <circle cx="1.5" cy="-1.5" r="0.8" fill="white" opacity="0.8"/>
+            <path d="M-2 1.5 Q0 2.5 2 1.5" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Phone call - top right center */}
+          <g transform="translate(280, 45)" opacity="0.6">
+            <path d="M-5 -5 Q-1.5 -6 0 -5 Q1.5 -6 5 -5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 5 Q-1.5 6 0 5 Q1.5 6 5 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-5 -5 L-5 5" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M5 -5 L5 5" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Gift - top right */}
+          <g transform="translate(340, 40)" opacity="0.6">
+            <rect x="-5" y="-6" width="10" height="12" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-5 -6 L5 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -6 L0 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-3" r="1" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Heart - left */}
+          <g transform="translate(100, 150)" opacity="0.6">
+            <path d="M0 -5 Q-3 -5 -5 -2 Q-5 0 0 5 Q5 0 5 -2 Q3 -5 0 -5" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Star - left center */}
+          <g transform="translate(150, 150)" opacity="0.6">
+            <path d="M0 -8 L2 -2 L7 -2 L3 1 L5 6 L0 3 L-5 6 L-3 1 L-7 -2 L-2 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+          </g>
+          
+          {/* Handshake - center */}
+          <g transform="translate(200, 150)" opacity="0.6">
+            <circle cx="-4" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="4" cy="0" r="3" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-4 3 L-1 5 L1 5 L4 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Smile - right center */}
+          <g transform="translate(250, 150)" opacity="0.6">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="white" strokeWidth="1.5"/>
+            <circle cx="-2" cy="-2" r="1" fill="white" opacity="0.8"/>
+            <circle cx="2" cy="-2" r="1" fill="white" opacity="0.8"/>
+            <path d="M-3 2 Q0 4 3 2" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Phone call - right */}
+          <g transform="translate(300, 150)" opacity="0.6">
+            <path d="M-6 -6 Q-2 -8 0 -6 Q2 -8 6 -6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 6 Q-2 8 0 6 Q2 8 6 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-6 -6 L-6 6" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M6 -6 L6 6" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Gift - bottom left */}
+          <g transform="translate(80, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="16" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 -8 L0 8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="-4" r="1.5" fill="white" opacity="0.8"/>
+          </g>
+          
+          {/* Service badge - bottom center left */}
+          <g transform="translate(140, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-3 -3 L3 3 M3 -3 L-3 3" stroke="white" strokeWidth="1.5" fill="none"/>
+          </g>
+          
+          {/* Calendar - bottom center right */}
+          <g transform="translate(260, 240)" opacity="0.5">
+            <rect x="-6" y="-8" width="12" height="14" rx="0.5" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M-6 -8 L6 -8" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M-4 -6 L4 -6" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 -2 L2 -2" stroke="white" strokeWidth="1" fill="none"/>
+            <path d="M-2 2 L2 2" stroke="white" strokeWidth="1" fill="none"/>
+          </g>
+          
+          {/* Clock - bottom right */}
+          <g transform="translate(320, 240)" opacity="0.5">
+            <circle cx="0" cy="0" r="6" fill="none" stroke="white" strokeWidth="1.5"/>
+            <path d="M0 -6 L0 -3" stroke="white" strokeWidth="1.5" fill="none"/>
+            <path d="M0 0 L3 0" stroke="white" strokeWidth="1.5" fill="none"/>
+            <circle cx="0" cy="0" r="1" fill="white" opacity="0.8"/>
+          </g>
         </svg>
       );
     }
     
-    // Other/Default - Professional abstract design
+    // Other/Default - Simple abstract design
     return (
-      <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-        {/* Top left - geometric shape */}
-        <circle cx="60" cy="50" r="22" stroke="white" strokeWidth="3" fill="none"/>
-        <circle cx="60" cy="50" r="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-        <circle cx="60" cy="50" r="5" fill="white" opacity="0.8"/>
-        {/* Top right - abstract element */}
-        <rect x="300" y="30" width="60" height="60" rx="7" stroke="white" strokeWidth="3" fill="none"/>
-        <path d="M 330 50 L 330 80" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-        <path d="M 300 50 L 360 50" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-        <path d="M 300 80 L 360 80" stroke="white" strokeWidth="2" fill="none" opacity="0.8"/>
-        {/* Bottom left - connecting element */}
-        <path d="M 30 200 Q 100 180, 170 200" stroke="white" strokeWidth="2.5" fill="none" strokeDasharray="4,4" opacity="0.7"/>
-        {/* Bottom right - abstract shape */}
-        <path d="M 280 220 Q 340 200, 360 220" stroke="white" strokeWidth="3" fill="none"/>
-        <circle cx="340" cy="250" r="18" stroke="white" strokeWidth="3" fill="none"/>
-        <path d="M 335 250 L 345 250 M 340 245 L 340 255" stroke="white" strokeWidth="2.5" fill="none" opacity="0.9"/>
-        <circle cx="340" cy="250" r="6" fill="white" opacity="0.8"/>
-        {/* Center - connecting lines */}
-        <path d="M 100 150 Q 200 130, 300 150" stroke="white" strokeWidth="2" fill="none" opacity="0.7"/>
-        <circle cx="200" cy="150" r="10" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7"/>
+      <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Circle - top center */}
+        <g transform="translate(200, 80)" opacity="0.7">
+          <circle cx="0" cy="0" r="15" fill="none" stroke="white" strokeWidth="2"/>
+          <circle cx="0" cy="0" r="10" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7"/>
+          <circle cx="0" cy="0" r="5" fill="white" opacity="0.8"/>
+        </g>
+        
+        {/* Triangle - left */}
+        <g transform="translate(120, 150)" opacity="0.6">
+          <path d="M0 -10 L-8 10 L8 10 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+        </g>
+        
+        {/* Square - center */}
+        <g transform="translate(200, 150)" opacity="0.6">
+          <rect x="-12" y="-12" width="24" height="24" rx="2" fill="none" stroke="white" strokeWidth="1.5"/>
+          <path d="M-8 -8 L8 8 M8 -8 L-8 8" stroke="white" strokeWidth="1" opacity="0.6"/>
+        </g>
+        
+        {/* Hexagon - right */}
+        <g transform="translate(280, 150)" opacity="0.6">
+          <path d="M0 -10 L8 -5 L8 5 L0 10 L-8 5 L-8 -5 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+        </g>
+        
+        {/* Diamond - bottom left */}
+        <g transform="translate(100, 240)" opacity="0.5">
+          <path d="M0 -8 L8 0 L0 8 L-8 0 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+        </g>
+        
+        {/* Star - bottom right */}
+        <g transform="translate(300, 240)" opacity="0.5">
+          <path d="M0 -6 L2 -2 L6 -2 L3 1 L4 5 L0 3 L-4 5 L-3 1 L-6 -2 L-2 -2 Z" fill="none" stroke="white" strokeWidth="1.5"/>
+        </g>
       </svg>
     );
   };
@@ -2569,7 +4954,7 @@ export default function EnquiryWall() {
                         <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className={`bg-black ${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`}>
+                      <div className={`${viewMode === 'grid' ? 'px-3 sm:px-4 py-2 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`} style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)' }}>
                         <div className="flex justify-between items-center relative">
                           <div className="flex items-center gap-2 sm:gap-2">
                             {/* Show verified badge if: 
@@ -2606,9 +4991,9 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10 bg-black overflow-hidden" style={{ flex: '1 1 50%' }}>
+                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10 overflow-hidden" style={{ flex: '1 1 50%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                             {/* Category-specific 2D Sketches - List View Only */}
-                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.25]">
+                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.3]">
                               {getCategorySketch(enquiry.category)}
                             </div>
                             <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0 relative z-10">
@@ -2932,7 +5317,7 @@ export default function EnquiryWall() {
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10 bg-black overflow-hidden">
+                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10 overflow-hidden" style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                           {/* 2D Sketches - Safely Enquire Here */}
                           <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]">
                             <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
