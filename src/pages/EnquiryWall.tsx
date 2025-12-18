@@ -74,6 +74,10 @@ export default function EnquiryWall() {
   const [hasMore, setHasMore] = useState(true);
   const enquiriesPerPage = 10;
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsDropdownRef = useRef<HTMLDivElement>(null);
+  const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isClickingSuggestionRef = useRef<boolean>(false);
+  const preventSuggestionsRef = useRef<boolean>(false);
   
   // Scroll sound effect refs
   const categoriesScrollRef = useRef<HTMLDivElement>(null);
@@ -174,6 +178,39 @@ export default function EnquiryWall() {
       clearTimeout(timer);
     };
   }, [hasScrolled]);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    if (!showSuggestions) return;
+    
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      
+      // Check if click is outside both input and dropdown
+      if (
+        searchInputRef.current && 
+        !searchInputRef.current.contains(target) &&
+        suggestionsDropdownRef.current &&
+        !suggestionsDropdownRef.current.contains(target)
+      ) {
+        setShowSuggestions(false);
+        // Clear any pending blur timeout
+        if (blurTimeoutRef.current) {
+          clearTimeout(blurTimeoutRef.current);
+          blurTimeoutRef.current = null;
+        }
+      }
+    };
+
+    // Use mousedown and touchstart to catch clicks before blur
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showSuggestions]);
 
   // Lock viewport when suggestions are shown to prevent zoom
   useEffect(() => {
@@ -731,7 +768,10 @@ export default function EnquiryWall() {
         // Generate suggestions from actual enquiry data
         const suggestions = generateSuggestions(value);
         setSearchSuggestions(suggestions);
-        setShowSuggestions(suggestions.length > 0);
+        // Only show suggestions if we're not preventing them (e.g., after selecting a suggestion)
+        if (!preventSuggestionsRef.current) {
+          setShowSuggestions(suggestions.length > 0);
+        }
         
         // Perform AI search - call directly to avoid dependency issues
         if (!value.trim()) {
@@ -855,8 +895,21 @@ export default function EnquiryWall() {
 
   // Handle suggestion click without zoom
   const handleSuggestionClick = (suggestion: string) => {
+    // Mark that we're clicking a suggestion to prevent blur handler interference
+    isClickingSuggestionRef.current = true;
+    
+    // Prevent suggestions from showing when debouncedSearch runs
+    preventSuggestionsRef.current = true;
+    
+    // Clear any pending blur timeout
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
+    
     // Close suggestions immediately
     setShowSuggestions(false);
+    setSearchSuggestions([]);
     
     // Pre-calculate category
     const matchingCategory = findMatchingCategory(suggestion);
@@ -869,8 +922,14 @@ export default function EnquiryWall() {
       setSelectedCategory(matchingCategory);
     }
     
-    // Trigger search
+    // Trigger search (but prevent suggestions from showing)
     handleSearchChange(suggestion);
+    
+    // Reset the flags after a short delay
+    setTimeout(() => {
+      isClickingSuggestionRef.current = false;
+      preventSuggestionsRef.current = false;
+    }, 500);
   };
 
   // Handle category selection - clear search when "all" is selected
@@ -1341,8 +1400,34 @@ export default function EnquiryWall() {
                       handleSearchChange(searchTerm);
                     }
                   }}
-                  onFocus={() => setShowSuggestions(searchSuggestions.length > 0)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  onFocus={() => {
+                    // Only show suggestions if not clicking a suggestion and not prevented
+                    if (!isClickingSuggestionRef.current && !preventSuggestionsRef.current) {
+                      setShowSuggestions(searchSuggestions.length > 0);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Clear any existing timeout
+                    if (blurTimeoutRef.current) {
+                      clearTimeout(blurTimeoutRef.current);
+                    }
+                    
+                    // Check if the blur is caused by clicking on a suggestion
+                    const relatedTarget = e.relatedTarget as HTMLElement;
+                    const isClickingDropdown = relatedTarget && suggestionsDropdownRef.current && 
+                      suggestionsDropdownRef.current.contains(relatedTarget);
+                    
+                    // Only hide suggestions if not clicking a suggestion and not clicking dropdown
+                    if (!isClickingSuggestionRef.current && !isClickingDropdown) {
+                      blurTimeoutRef.current = setTimeout(() => {
+                        // Double check before hiding
+                        if (!isClickingSuggestionRef.current) {
+                          setShowSuggestions(false);
+                        }
+                        blurTimeoutRef.current = null;
+                      }, 150);
+                    }
+                  }}
                     className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
@@ -1387,6 +1472,12 @@ export default function EnquiryWall() {
                 {/* AI Search Suggestions Dropdown - Absolute with Layout Isolation */}
                 {showSuggestions && searchSuggestions.length > 0 && (
                   <div 
+                    ref={suggestionsDropdownRef}
+                    onMouseDown={(e) => {
+                      // Prevent input blur when clicking anywhere in dropdown
+                      e.preventDefault();
+                      isClickingSuggestionRef.current = true;
+                    }}
                     className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
                     style={{
                       touchAction: 'pan-y',
@@ -1408,6 +1499,9 @@ export default function EnquiryWall() {
                           e.preventDefault();
                           e.stopPropagation();
                           
+                          // Mark that we're clicking a suggestion
+                          isClickingSuggestionRef.current = true;
+                          
                           // Blur input to prevent keyboard zoom
                           if (searchInputRef.current) {
                             searchInputRef.current.blur();
@@ -1417,6 +1511,12 @@ export default function EnquiryWall() {
                           handleSuggestionClick(suggestion);
                         }}
                         onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
+                          // Mark that we're clicking a suggestion
+                          isClickingSuggestionRef.current = true;
+                          
                           if (searchInputRef.current) {
                             searchInputRef.current.blur();
                           }
