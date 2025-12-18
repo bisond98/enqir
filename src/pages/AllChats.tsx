@@ -1,14 +1,36 @@
 import { useEffect, useState } from "react";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useNavigate } from "react-router-dom";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import Layout from "@/components/Layout";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useAuth } from "@/contexts/AuthContext";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { useChats } from "@/contexts/ChatContext";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { db } from "@/firebase";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { Card } from "@/components/ui/card";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { Button } from "@/components/ui/button";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { MessageSquare, Clock, ArrowLeft } from "lucide-react";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 import { motion } from "framer-motion";
+// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
+
 
 interface ChatThread {
   id: string;

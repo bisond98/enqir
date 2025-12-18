@@ -105,9 +105,18 @@ const Dashboard = () => {
   const [, forceUpdate] = useState({});
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
+      // Check URL search params first (for auto-navigation)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlMode = urlParams.get('mode');
+      if (urlMode === 'buyer' || urlMode === 'seller') {
+        console.log('Initial viewMode from URL:', urlMode);
+        localStorage.setItem('dashboardViewMode', urlMode);
+        return urlMode;
+      }
+      // Fallback to localStorage
       const saved = localStorage.getItem('dashboardViewMode');
       const mode = (saved === 'buyer' || saved === 'seller') ? saved : 'buyer';
-      console.log('Initial viewMode:', mode);
+      console.log('Initial viewMode from localStorage:', mode);
       return mode;
     }
     return 'buyer';
@@ -144,12 +153,25 @@ const Dashboard = () => {
     };
   }, [hasScrolled]);
 
-  // Sync viewMode with localStorage on mount and when it changes
+  // Sync viewMode with URL params or localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('dashboardViewMode');
-    if (saved && (saved === 'buyer' || saved === 'seller') && saved !== viewMode) {
-      console.log('Syncing viewMode from localStorage:', saved);
-      setViewMode(saved);
+    // Check URL params on mount
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlMode = urlParams.get('mode');
+    if (urlMode === 'buyer' || urlMode === 'seller') {
+      console.log('Setting viewMode from URL param:', urlMode);
+      setViewMode(urlMode);
+      localStorage.setItem('dashboardViewMode', urlMode);
+      // Clean up URL param after setting
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else {
+      // Sync with localStorage if no URL param
+      const saved = localStorage.getItem('dashboardViewMode');
+      if (saved && (saved === 'buyer' || saved === 'seller') && saved !== viewMode) {
+        console.log('Syncing viewMode from localStorage:', saved);
+        setViewMode(saved);
+      }
     }
   }, []);
 
@@ -314,8 +336,8 @@ const Dashboard = () => {
             const enquiriesSnapshot = await getDocs(query(
                 collection(db, 'enquiries'),
                 where('userId', '==', user.uid),
-                orderBy('createdAt', 'desc'),
-                limit(10)
+                orderBy('createdAt', 'desc')
+                // Removed limit to show all user's enquiries (matching My Enquiries page)
             ));
             const data: Enquiry[] = [];
             enquiriesSnapshot.forEach((doc) => {
@@ -334,13 +356,13 @@ const Dashboard = () => {
               allEnquiriesSnapshot.forEach((doc) => {
                 data.push({ id: doc.id, ...doc.data() } as Enquiry);
               });
-              // Sort in JavaScript and limit
+              // Sort in JavaScript (no limit - show all enquiries)
               data.sort((a, b) => {
                 const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
                 const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
                 return dateB.getTime() - dateA.getTime();
               });
-              return data.slice(0, 10);
+              return data; // Return all enquiries, not limited to 10
             } else {
               throw orderByError;
             }
@@ -747,8 +769,8 @@ const Dashboard = () => {
         const enquiriesQueryWithOrder = query(
           collection(db, 'enquiries'),
           where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc'),
-          limit(10)
+          orderBy('createdAt', 'desc')
+          // Removed limit to show all user's enquiries (matching My Enquiries page)
         );
         
         const handleSnapshot = (snapshot: any) => {
@@ -766,6 +788,7 @@ const Dashboard = () => {
             }
             
             // Include all enquiries except pending payment
+            // Show all statuses: pending, live, rejected, completed, deal_closed
             if (data.status !== 'pending_payment') {
               enquiriesData.push({ id: doc.id, ...data } as Enquiry);
             }

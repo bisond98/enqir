@@ -839,8 +839,8 @@ export default function PostEnquiry() {
             });
             
             // Navigate immediately without delay
-            console.log('🚀🚀🚀 NAVIGATING TO LIVE ENQUIRIES NOW...');
-            navigate("/enquiries");
+            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD WITH BUYER MODE NOW...');
+            navigate("/dashboard?mode=buyer");
             
           } else if (currentStatus === 'rejected') {
             hasNavigatedFlag = true;
@@ -857,8 +857,8 @@ export default function PostEnquiry() {
             });
             
             // Navigate immediately without delay
-            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD NOW...');
-            navigate("/dashboard");
+            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD WITH BUYER MODE NOW...');
+            navigate("/dashboard?mode=buyer");
             
           } else {
             // Update status without navigating
@@ -1556,9 +1556,9 @@ export default function PostEnquiry() {
         // 🤖 AI Processing - Skip for verified users, they're already auto-approved
         if (isUserVerified) {
           console.log('✅ Trust Badge User: Enquiry automatically approved and made live!');
-          // Auto-navigate verified users to live enquiries page
+          // Auto-navigate verified users to dashboard with buyer mode
           setTimeout(() => {
-            navigate("/enquiries");
+            navigate("/dashboard?mode=buyer");
           }, 3000);
         } else {
           // Process the enquiry with AI in real-time (non-blocking)

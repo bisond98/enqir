@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -87,6 +87,9 @@ const EnquiryResponsesPage = () => {
   
   // Sorting state - default to oldest first (first come first)
   const [sortBy, setSortBy] = useState<'default' | 'price-high' | 'price-low' | 'newest' | 'oldest'>('oldest');
+  // Filter state for trust-badged responses
+  const [showOnlyTrustBadged, setShowOnlyTrustBadged] = useState(false);
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
   const sortResponses = (responses: Response[], sortType: string) => {
     console.log('🔍 SortResponses called:', { sortType, responseCount: responses.length, responses: responses.map(r => ({ id: r.id, price: r.price })) });
@@ -177,9 +180,27 @@ const EnquiryResponsesPage = () => {
       filteredResponses = responses.filter(r => r.sellerId === user.uid);
     }
     
+    // Apply trust badge filter if enabled
+    if (showOnlyTrustBadged) {
+      filteredResponses = filteredResponses.filter(response => {
+        // Check if response has trust badge (same logic as in card display)
+        return (
+          (userProfiles[response.sellerId]?.isProfileVerified || 
+           userProfiles[response.sellerId]?.isVerified || 
+           userProfiles[response.sellerId]?.trustBadge || 
+           userProfiles[response.sellerId]?.isIdentityVerified) || 
+          (response as any).userProfileVerified || 
+          (response as any).isProfileVerified ||
+          (response as any).userVerified ||
+          response.isIdentityVerified ||
+          (response as any).govIdUrl
+        );
+      });
+    }
+    
     // Apply sorting
     return sortResponses(filteredResponses, sortBy);
-  }, [enquiry, user, responses, sortBy]);
+  }, [enquiry, user, responses, sortBy, showOnlyTrustBadged, userProfiles]);
 
   // Debug logging (can be removed in production)
   console.log('EnquiryResponsesPage: Debug info:', {
@@ -420,26 +441,28 @@ const EnquiryResponsesPage = () => {
     }
   };
 
-  // Sanitize seller name to remove email addresses and protect privacy
-  const sanitizeSellerName = (name: string | undefined | null): string => {
-    if (!name) return 'Seller';
+  // Generate seller code from sellerId
+  const getSellerCode = (sellerId: string | undefined | null): string => {
+    if (!sellerId) return 'User #0000';
     
-    // Check if the name contains an email pattern
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailPattern.test(name.trim())) {
-      // If it's an email, extract the part before @ or return generic name
-      const namePart = name.split('@')[0];
-      // Capitalize first letter and return
-      return namePart.charAt(0).toUpperCase() + namePart.slice(1) || 'Seller';
-    }
+    // Generate a consistent code from sellerId
+    // Take first 4 characters of the ID and convert to a number, then format as 4-digit code
+    const hash = sellerId.split('').reduce((acc, char) => {
+      return acc + char.charCodeAt(0);
+    }, 0);
     
-    // If it contains @ symbol but not a full email, sanitize it
-    if (name.includes('@')) {
-      const sanitized = name.split('@')[0];
-      return sanitized.charAt(0).toUpperCase() + sanitized.slice(1) || 'Seller';
-    }
-    
-    return name;
+    // Generate a 4-digit code (0000-9999)
+    const code = (hash % 10000).toString().padStart(4, '0');
+    return `User #${code}`;
+  };
+  
+  // Get seller code initial for avatar
+  const getSellerCodeInitial = (sellerId: string | undefined | null): string => {
+    if (!sellerId) return '#';
+    const code = getSellerCode(sellerId);
+    // Return the last digit for more variety (e.g., "9" from "User #2349")
+    const codeNumber = code.replace('User #', '');
+    return codeNumber.charAt(codeNumber.length - 1) || '#';
   };
 
   if (loading) {
@@ -504,7 +527,7 @@ const EnquiryResponsesPage = () => {
         
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
         {/* Sorting Controls - Simple Design */}
-        {visibleResponses.length > 1 && (
+        {responses.length > 0 && (
           <div className="mb-3 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             {/* Amount Sort */}
             <DropdownMenu>
@@ -617,6 +640,47 @@ const EnquiryResponsesPage = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            
+            {/* Trust Badge Filter */}
+            <DropdownMenu 
+              open={filterDropdownOpen} 
+              onOpenChange={setFilterDropdownOpen}
+            >
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="p-1.5 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 flex items-center justify-center"
+                  title={showOnlyTrustBadged ? "Click to remove filter" : "Filter trust-badged responses"}
+                >
+                  <Filter 
+                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0"
+                    style={{
+                      fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
+                      color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
+                    }}
+                  />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
+                showOnlyTrustBadged 
+                  ? "bg-[#800020] border-[#6b0019]" 
+                  : "bg-blue-600 border-blue-700"
+              }`}>
+                <DropdownMenuCheckboxItem
+                  checked={showOnlyTrustBadged}
+                  onCheckedChange={(checked) => {
+                    setShowOnlyTrustBadged(checked);
+                    setFilterDropdownOpen(false);
+                  }}
+                  className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm text-white flex items-center justify-center text-center [&>span]:hidden ${
+                    showOnlyTrustBadged 
+                      ? "hover:bg-[#6b0019] hover:text-white focus:bg-[#6b0019] focus:text-white" 
+                      : "hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white"
+                  }`}
+                >
+                  {showOnlyTrustBadged ? "Cancel filter" : "Trust badge only"}
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
 
@@ -625,7 +689,8 @@ const EnquiryResponsesPage = () => {
             visibleResponses.map((response, index) => (
               <div 
                 key={response.id} 
-                className="group/card bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden shadow-sm sm:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] sm:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] transition-all duration-300 sm:hover:-translate-y-1"
+                className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
+                style={{ display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d' }}
               >
                 {/* Card Header - Mobile optimized */}
                 <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
@@ -635,22 +700,43 @@ const EnquiryResponsesPage = () => {
                         #{index + 1}
                       </div>
                       <div className="min-w-0">
-                        <span className="text-xs sm:text-sm lg:text-lg font-bold text-white block leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <span className="text-xs sm:text-sm lg:text-lg font-bold text-white leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
+                          <span className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-300 font-medium">
+                            {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + response.createdAt.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                          </span>
+                        </div>
                         <span className="text-[9px] sm:text-[10px] lg:text-xs text-gray-300 font-medium hidden sm:block">Response #{index + 1}</span>
                       </div>
                     </div>
-                    <Badge 
-                      variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}
-                      className={`text-[9px] sm:text-[10px] lg:text-sm px-2 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 font-bold flex-shrink-0 shadow-md ${
-                        response.status === 'approved' 
-                          ? 'bg-green-600 hover:bg-green-700 text-white border border-green-500 sm:border-2' 
-                          : response.status === 'rejected'
-                          ? 'bg-red-600 hover:bg-red-700 text-white border border-red-500 sm:border-2'
-                          : 'bg-yellow-500 hover:bg-yellow-600 text-white border border-yellow-400 sm:border-2'
-                      }`}
-                    >
-                      {response.status || 'pending'}
-                    </Badge>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Trust Badge - Right side of card */}
+                      {((userProfiles[response.sellerId]?.isProfileVerified || 
+                         userProfiles[response.sellerId]?.isVerified || 
+                         userProfiles[response.sellerId]?.trustBadge || 
+                         userProfiles[response.sellerId]?.isIdentityVerified) || 
+                        (response as any).userProfileVerified || 
+                        (response as any).isProfileVerified ||
+                        (response as any).userVerified ||
+                        response.isIdentityVerified ||
+                        (response as any).govIdUrl) && (
+                        <div className="bg-blue-600 rounded-full p-1 sm:p-1.5 ring-2 sm:ring-4 ring-blue-600 shadow-md sm:shadow-lg flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
+                        </div>
+                      )}
+                      <Badge 
+                        variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}
+                        className={`text-[9px] sm:text-[10px] lg:text-sm px-2 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 font-bold flex-shrink-0 shadow-md ${
+                          response.status === 'approved' 
+                            ? 'bg-green-600 hover:bg-green-700 text-white border border-green-500 sm:border-2' 
+                            : response.status === 'rejected'
+                            ? 'bg-red-600 hover:bg-red-700 text-white border border-red-500 sm:border-2'
+                            : 'bg-yellow-500 hover:bg-yellow-600 text-white border border-yellow-400 sm:border-2'
+                        }`}
+                      >
+                        {response.status || 'pending'}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
                 
@@ -661,49 +747,23 @@ const EnquiryResponsesPage = () => {
                 <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6">
                     {/* Seller Info - Mobile optimized */}
-                    <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0 w-full lg:w-auto">
-                      <div className="relative flex-shrink-0">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl flex-shrink-0 ring-2 sm:ring-4 ring-blue-100">
-                          <span className="text-white font-black text-lg sm:text-xl lg:text-3xl">
-                            {sanitizeSellerName(response.sellerName).charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        {((userProfiles[response.sellerId]?.isProfileVerified || 
-                           userProfiles[response.sellerId]?.isVerified || 
-                           userProfiles[response.sellerId]?.trustBadge || 
-                           userProfiles[response.sellerId]?.isIdentityVerified) || 
-                          (response as any).userProfileVerified || 
-                          (response as any).isProfileVerified ||
-                          (response as any).userVerified ||
-                          response.isIdentityVerified ||
-                          (response as any).govIdUrl) && (
-                          <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 bg-white rounded-full p-0.5 sm:p-1 ring-2 sm:ring-4 ring-white shadow-md sm:shadow-lg">
-                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-600" />
-                          </div>
-                        )}
-                      </div>
+                    <div className="flex items-center flex-1 min-w-0 w-full lg:w-auto">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                          <h4 className="font-black text-sm sm:text-base lg:text-xl text-black truncate">{sanitizeSellerName(response.sellerName)}</h4>
-                        </div>
-                        <div className="flex items-center space-x-1.5 sm:space-x-2">
-                          <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-                          <span className="text-[10px] sm:text-xs lg:text-sm text-gray-600 font-medium">
-                            {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
-                          </span>
+                          <h4 className="font-black text-sm sm:text-base lg:text-xl text-black truncate">{getSellerCode(response.sellerId)}</h4>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Price Quote - Mobile optimized */}
-                    <div className="bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl p-3 sm:p-5 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-md sm:shadow-lg lg:hover:shadow-xl transition-all duration-200">
-                      <div className="flex items-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-3">
+                    {/* Seller's Quote - Mobile optimized */}
+                    <div className="bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl p-3 sm:p-5 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-md sm:shadow-lg lg:hover:shadow-xl transition-all duration-200 mt-6 sm:mt-8 lg:mt-10">
+                      <div className="flex items-center justify-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-3">
                         <div className="w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
                           <span className="text-white text-xs sm:text-sm lg:text-base font-black">₹</span>
                         </div>
-                        <span className="text-[10px] sm:text-xs lg:text-base font-bold text-black">Price Quote</span>
+                        <span className="text-[10px] sm:text-xs lg:text-base font-bold text-black">Seller's Quote</span>
                       </div>
-                      <p className="font-black text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-black leading-none">
+                      <p className="font-black text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-black leading-none text-center">
                         {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
                       </p>
                     </div>
@@ -721,7 +781,7 @@ const EnquiryResponsesPage = () => {
                       </div>
                       <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message</span>
                     </div>
-                    <div className="bg-gray-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                    <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
                       <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
                     </div>
                   </div>
@@ -783,7 +843,7 @@ const EnquiryResponsesPage = () => {
                 
                 {/* Footer Section - Mobile optimized */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-5 lg:pt-6">
-                  <div className="text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto">
+                  <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
                     <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                   </div>
@@ -805,19 +865,48 @@ const EnquiryResponsesPage = () => {
           ) : (
             <div className="text-center py-6 sm:py-10 bg-white rounded-lg border-2 border-gray-200 shadow-md">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+                {showOnlyTrustBadged ? (
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
+                ) : (
+                  <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+                )}
               </div>
-              <h3 className="text-base sm:text-xl font-black text-gray-900 mb-2">No Responses Yet</h3>
-              <p className="text-xs sm:text-sm text-gray-700 mb-4 max-w-md mx-auto leading-relaxed">
-                {user && enquiry && user.uid === enquiry.userId
-                  ? "Your enquiry hasn't received any approved responses yet. Sellers are reviewing your request and will respond soon."
-                  : "Be the first to respond to this enquiry!"}
-              </p>
-              {user && enquiry && user.uid === enquiry.userId && (
-                <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-500">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
-                  <span>Searching for matching sellers...</span>
-                </div>
+              {showOnlyTrustBadged ? (
+                <>
+                  <h3 className="text-base sm:text-xl font-black text-gray-900 mb-2">No Trust-Badged Sellers Yet</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-4 max-w-md mx-auto leading-relaxed">
+                    Don't worry! More verified sellers are joining every day. Check back soon or view all responses to see what's available now.
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowOnlyTrustBadged(false)}
+                    className="mt-4 border-[0.5px] border-black rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    View All Responses
+                  </Button>
+                  {user && enquiry && user.uid === enquiry.userId && (
+                    <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-500 mt-4">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
+                      <span>Waiting for verified sellers to respond...</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h3 className="text-base sm:text-xl font-black text-gray-900 mb-2">No Responses Yet</h3>
+                  <p className="text-xs sm:text-sm text-gray-700 mb-4 max-w-md mx-auto leading-relaxed">
+                    {user && enquiry && user.uid === enquiry.userId
+                      ? "Your enquiry hasn't received any approved responses yet. Sellers are reviewing your request and will respond soon."
+                      : "Be the first to respond to this enquiry!"}
+                  </p>
+                  {user && enquiry && user.uid === enquiry.userId && (
+                    <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-500">
+                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
+                      <span>Searching for matching sellers...</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

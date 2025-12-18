@@ -14,3 +14,6 @@ echo ""
 echo "✅ Push complete! Check GitHub: https://github.com/bisond98/enqir/commits/main"
 echo "   Vercel should auto-deploy in 1-2 minutes"
 
+
+
+

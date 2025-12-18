@@ -338,7 +338,7 @@ const SellerResponse = () => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             console.log('🔄 Auto-redirecting to dashboard');
-            navigate('/dashboard');
+            navigate('/dashboard?mode=seller');
             return 0;
           }
           return prev - 1;

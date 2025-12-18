@@ -355,7 +355,7 @@ const SignIn = () => {
              if (animationStartTime === 0) {
                animationStartTime = timestamp;
                pathStartTime = timestamp;
-               lastTimestamp = timestamp;
+             lastTimestamp = timestamp;
                // 🛡️ PRODUCTION FIX: Initialize robot position from first path
                if (currentPath && currentRobotX === 0 && currentRobotY === 0) {
                  currentRobotX = currentPath.start.x;
@@ -465,7 +465,7 @@ const SignIn = () => {
           setIsRobotPaused(true);
           // 🛡️ MOBILE FIX: Only continue if visible
           if (isRunning && !document.hidden) {
-            animationFrameId = requestAnimationFrame(animate);
+          animationFrameId = requestAnimationFrame(animate);
           }
           return;
         }
@@ -500,7 +500,7 @@ const SignIn = () => {
           // 🛡️ PRODUCTION FIX: Only recalculate paths if we've completed a full cycle
           // This prevents unnecessary recalculations that can cause jumps
           if (currentPathIndex === 0) {
-            paths = createRoamingPaths();
+          paths = createRoamingPaths();
           }
           
           if (currentPathIndex < paths.length) {
@@ -578,7 +578,7 @@ const SignIn = () => {
       
       // 🛡️ MOBILE FIX: Continue animation only if running and visible
       if (isRunning && !document.hidden) {
-        animationFrameId = requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
       }
     };
 
@@ -589,7 +589,7 @@ const SignIn = () => {
         lastTimestamp = 0;
         pathStartTime = 0;
         animationStartTime = 0;
-        animationFrameId = requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
       }
     }, 500);
 

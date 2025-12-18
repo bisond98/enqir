@@ -1984,8 +1984,8 @@ export default function EnquiryWall() {
                           <CardHeader className="p-2 sm:p-5 flex flex-col justify-center flex-1 min-h-0 relative z-10" style={{ flex: '1 1 50%' }}>
                             <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0">
                               {/* Need Label - Above Title */}
-                              <div className="text-center">
-                                <span className="text-[7px] sm:text-[9px] text-gray-500 font-semibold tracking-wide">Need</span>
+                              <div className="text-left">
+                                <span className="text-xs sm:text-sm md:text-base text-black font-bold tracking-wide">Need</span>
                               </div>
                               
                               {/* Title - Mobile: allows 3 lines, Desktop: 1 line - Professional typography */}
@@ -2027,11 +2027,11 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col items-center sm:items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
-                                      <span className="text-[8px] sm:text-[10px] text-gray-900 font-semibold whitespace-nowrap">
+                                    <div className="flex flex-col items-end mt-0.5 sm:mt-1 gap-0.5 sm:gap-1">
+                                      <span className="text-xs sm:text-sm md:text-base text-gray-900 font-semibold whitespace-nowrap">
                                         before {formatDate(deadlineDate.toISOString())}
                                       </span>
-                                      <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-red-600">
+                                      <span className="text-xs sm:text-sm md:text-base font-semibold text-red-600">
                                         {formatDeadlineText(enquiry.deadline)}
                                       </span>
                                     </div>
@@ -2073,8 +2073,8 @@ export default function EnquiryWall() {
                         <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10">
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4">
                             {/* Need Label - Above Title */}
-                            <div className="text-center">
-                              <span className="text-[7px] sm:text-[9px] text-gray-500 font-semibold tracking-wide">Need</span>
+                            <div className="text-left">
+                              <span className="text-xs sm:text-sm md:text-base text-black font-bold tracking-wide">Need</span>
                             </div>
                             
                             {/* Title - Professional typography */}
@@ -2117,16 +2117,13 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex items-center gap-3 pt-2">
+                                    <div className="flex items-center justify-end gap-3 pt-2">
                                       <div className="flex items-center gap-2 text-gray-600">
-                                        <span className="text-sm font-medium">
-                                          Deadline:
-                                        </span>
-                                        <span className="text-sm font-semibold text-gray-900">
-                                          {formatDate(deadlineDate.toISOString())}
+                                        <span className="text-xs sm:text-sm md:text-base font-medium">
+                                          before {formatDate(deadlineDate.toISOString())}
                                         </span>
                                       </div>
-                                      <span className="inline-flex items-center px-2.5 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-md border border-red-200">
+                                      <span className="inline-flex items-center px-2.5 py-1 bg-red-50 text-red-700 text-xs sm:text-sm md:text-base font-semibold rounded-md border border-red-200">
                                         {formatDeadlineText(enquiry.deadline)}
                                       </span>
                                     </div>
@@ -2175,9 +2172,9 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-3 py-1 sm:py-1.5 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
-                                  <span className="font-black text-black text-xl sm:text-3xl md:text-4xl relative z-10">₹</span>
-                                  <span className="truncate font-black text-gray-900 text-lg sm:text-2xl md:text-3xl relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-bold text-gray-900 text-[10px] sm:text-xs tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-xl sm:text-3xl md:text-4xl relative z-10" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
+                                  <span className="truncate font-extrabold text-gray-900 text-lg sm:text-2xl md:text-3xl tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {enquiry.location && (
@@ -2215,9 +2212,9 @@ export default function EnquiryWall() {
                               {enquiry.budget && (
                                 <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <span className="font-semibold text-gray-700 text-[9px] sm:text-[10px] relative z-10">budget -</span>
-                                  <span className="font-black text-black text-lg sm:text-2xl md:text-3xl relative z-10">₹</span>
-                                  <span className="font-black text-gray-900 text-base sm:text-xl md:text-2xl whitespace-nowrap relative z-10">{formatIndianCurrency(enquiry.budget)}</span>
+                                  <span className="font-bold text-gray-900 text-[10px] sm:text-xs tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-lg sm:text-2xl md:text-3xl relative z-10" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-base sm:text-xl md:text-2xl whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
@@ -2287,10 +2284,10 @@ export default function EnquiryWall() {
                             {/* Budget - Mobile Only - Bigger and Centered */}
                             {enquiry.budget && (
                               <div className="relative flex items-center justify-center" style={{ marginTop: '-24px' }}>
-                                <div className="flex items-center gap-1">
-                                  <span className="font-semibold text-gray-700 text-[10px]">budget -</span>
-                                  <span className="font-black text-black text-xl">₹</span>
-                                  <span className="font-black text-gray-900 text-lg whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-1 rounded-lg px-2 py-1">
+                                  <span className="font-bold text-gray-900 text-xs tracking-wide" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-xl" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-lg whitespace-nowrap tracking-tight" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               </div>
                             )}

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -103,20 +103,11 @@ const Admin = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [profileVerifications, setProfileVerifications] = useState<any[]>([]);
-  const [userReports, setUserReports] = useState<any[]>([]);
-  const [reportEmails, setReportEmails] = useState<{[key: string]: {reporterEmail?: string, reportedUserEmail?: string}}>({});
-  const [reportUserNames, setReportUserNames] = useState<{[key: string]: {reportedUserName?: string, reporterName?: string}}>({});
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
-  const [warningMessage, setWarningMessage] = useState('');
-  const [selectedReportForWarning, setSelectedReportForWarning] = useState<string | null>(null);
-  const [sendingWarning, setSendingWarning] = useState(false);
   const [selectedSellerSubmission, setSelectedSellerSubmission] = useState<SellerSubmission | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
-  
-  // Initialize authorization state immediately from sessionStorage
-  const secureLinkAccess = typeof window !== 'undefined' ? sessionStorage.getItem('admin_secure_link_accessed') : null;
   const [loading, setLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(!!secureLinkAccess);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [processingVerification, setProcessingVerification] = useState<string | null>(null);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
@@ -124,18 +115,6 @@ const Admin = () => {
     autoApprovePremium: true,
     autoApproveFree: true
   });
-
-  const reportsSectionRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
-
-  // Scroll to reports section if hash is present
-  useEffect(() => {
-    if (location.hash === '#reports' && reportsSectionRef.current) {
-      setTimeout(() => {
-        reportsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 500); // Wait for page to load
-    }
-  }, [location.hash, isAuthorized]);
 
   // Load AI settings
   useEffect(() => {
@@ -174,19 +153,15 @@ const Admin = () => {
     }
   };
 
-  // Check admin access - STRICTLY require secure link access (no direct access allowed)
+  // Check admin access - require secure link access
   useEffect(() => {
     const checkAdminAccess = async () => {
-      // STRICT CHECK: Must have accessed via secure link (stored in sessionStorage)
-      // Even if user has admin role in Firestore, they MUST use the secret link first
+      // First check: Must have accessed via secure link (stored in sessionStorage)
       const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
       const secureLinkTimestamp = sessionStorage.getItem('admin_secure_link_timestamp');
       
-      console.log('🔐 Admin: Starting authorization check - secureLinkAccess:', secureLinkAccess, 'authUser:', authUser?.uid);
-      
-      // NO ACCESS without secure link - this is the primary security check
       if (!secureLinkAccess) {
-        console.log('🔒 Admin: No secure link access found - ACCESS DENIED. Must use secret link.');
+        console.log('🔒 Admin: No secure link access found - redirecting');
         setIsAuthorized(false);
         setLoading(false);
         return;
@@ -199,7 +174,7 @@ const Admin = () => {
         const hoursSinceAccess = (now - timestamp) / (1000 * 60 * 60);
         
         if (hoursSinceAccess > 24) {
-          console.log('🔒 Admin: Secure link session expired - ACCESS DENIED. Must use secret link again.');
+          console.log('🔒 Admin: Secure link session expired - redirecting');
           sessionStorage.removeItem('admin_secure_link_accessed');
           sessionStorage.removeItem('admin_secure_link_timestamp');
           setIsAuthorized(false);
@@ -208,36 +183,37 @@ const Admin = () => {
         }
       }
 
-      // If sessionStorage exists and is valid, grant access
-      // This handles the case where AdminAccess just granted access and redirected
-      if (secureLinkAccess) {
-        console.log('✅ Admin: Secure link access confirmed - granting admin access, authUser:', authUser?.uid || 'not ready yet');
-        setIsAuthorized(true);
+      if (!authUser) {
+        setIsAuthorized(false);
         setLoading(false);
-        
-        // Verify in Firestore in background (for logging, but don't block access)
-        if (authUser) {
-          const userProfileRef = doc(db, 'userProfiles', authUser.uid);
-          getDoc(userProfileRef).then((userProfileSnap) => {
-            if (userProfileSnap.exists()) {
-              const userData = userProfileSnap.data();
-              if (userData.role === 'admin' || userData.isAdmin === true) {
-                console.log('✅ Admin: Firestore confirms admin role');
-              } else {
-                console.log('⚠️ Admin: Firestore doesn\'t have admin role yet, but secure link access is valid');
-              }
-            }
-          }).catch((error) => {
-            console.error('Error verifying admin in Firestore:', error);
-          });
-        }
         return;
       }
 
-      // This should never be reached due to early return above, but keeping as safety
-      console.log('🔒 Admin: No secure link access - ACCESS DENIED');
-      setIsAuthorized(false);
-      setLoading(false);
+      try {
+        const userProfileRef = doc(db, 'userProfiles', authUser.uid);
+        const userProfileSnap = await getDoc(userProfileRef);
+
+        if (userProfileSnap.exists()) {
+          const userData = userProfileSnap.data();
+          if (userData.role === 'admin' || userData.isAdmin === true) {
+            setIsAuthorized(true);
+            return;
+          }
+        }
+
+        // Fallback: Check email (for backward compatibility)
+        if (authUser.email === 'admin@example.com') {
+          setIsAuthorized(true);
+          return;
+        }
+
+        setIsAuthorized(false);
+      } catch (error) {
+        console.error('Error checking admin access:', error);
+        setIsAuthorized(false);
+      } finally {
+        setLoading(false);
+      }
     };
 
     checkAdminAccess();
@@ -731,9 +707,8 @@ const Admin = () => {
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeSellerSubmissions) unsubscribeSellerSubmissions();
     };
-  }, [authUser]);
-
-  // Fetch profile verification requests - SIMPLE & REALTIME
+  }, [authUser]); 
+      // Fetch profile verification requests - SIMPLE & REALTIME
   useEffect(() => {
     if (!authUser) return;
 
@@ -804,123 +779,6 @@ const Admin = () => {
 
     loadProfileVerifications();
   }, [authUser]);
-
-  // Load user reports
-  useEffect(() => {
-    if (!isAuthorized) return;
-    
-    const reportsQuery = query(
-      collection(db, 'userReports'),
-      orderBy('timestamp', 'desc')
-    );
-    
-    const unsubscribe = onSnapshot(reportsQuery, async (snapshot) => {
-      const reports = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setUserReports(reports);
-      
-      // Fetch email addresses and names for all reports
-      const emailMap: {[key: string]: {reporterEmail?: string, reportedUserEmail?: string}} = {};
-      const nameMap: {[key: string]: {reportedUserName?: string, reporterName?: string}} = {};
-      
-      await Promise.all(reports.map(async (report) => {
-        const emails: {reporterEmail?: string, reportedUserEmail?: string} = {};
-        const names: {reportedUserName?: string, reporterName?: string} = {};
-        
-        // Fetch reporter email and name
-        if (report.reportedBy) {
-          try {
-            const reporterDoc = await getDoc(doc(db, 'userProfiles', report.reportedBy));
-            if (reporterDoc.exists()) {
-              const reporterData = reporterDoc.data();
-              emails.reporterEmail = reporterData.email || null;
-              names.reporterName = reporterData.fullName || reporterData.email || report.reporterName || null;
-            }
-          } catch (err) {
-            console.error('Error fetching reporter data:', err);
-          }
-        }
-        
-        // Fetch reported user email and name
-        if (report.reportedUserId) {
-          try {
-            const reportedUserDoc = await getDoc(doc(db, 'userProfiles', report.reportedUserId));
-            if (reportedUserDoc.exists()) {
-              const reportedUserData = reportedUserDoc.data();
-              emails.reportedUserEmail = reportedUserData.email || null;
-              names.reportedUserName = reportedUserData.fullName || reportedUserData.email || report.reportedUserName || null;
-            }
-          } catch (err) {
-            console.error('Error fetching reported user data:', err);
-          }
-        }
-        
-        emailMap[report.id] = emails;
-        nameMap[report.id] = names;
-      }));
-      
-      setReportEmails(emailMap);
-      setReportUserNames(nameMap);
-    }, (error) => {
-      console.error('Error loading user reports:', error);
-      // Fallback: try one-time fetch
-      getDocs(collection(db, 'userReports')).then(async (snap) => {
-        const reports = snap.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setUserReports(reports);
-        
-        // Fetch emails and names in fallback too
-        const emailMap: {[key: string]: {reporterEmail?: string, reportedUserEmail?: string}} = {};
-        const nameMap: {[key: string]: {reportedUserName?: string, reporterName?: string}} = {};
-        
-        await Promise.all(reports.map(async (report) => {
-          const emails: {reporterEmail?: string, reportedUserEmail?: string} = {};
-          const names: {reportedUserName?: string, reporterName?: string} = {};
-          
-          if (report.reportedBy) {
-            try {
-              const reporterDoc = await getDoc(doc(db, 'userProfiles', report.reportedBy));
-              if (reporterDoc.exists()) {
-                const reporterData = reporterDoc.data();
-                emails.reporterEmail = reporterData.email || null;
-                names.reporterName = reporterData.fullName || reporterData.email || report.reporterName || null;
-              }
-            } catch (err) {
-              console.error('Error fetching reporter data:', err);
-            }
-          }
-          
-          if (report.reportedUserId) {
-            try {
-              const reportedUserDoc = await getDoc(doc(db, 'userProfiles', report.reportedUserId));
-              if (reportedUserDoc.exists()) {
-                const reportedUserData = reportedUserDoc.data();
-                emails.reportedUserEmail = reportedUserData.email || null;
-                names.reportedUserName = reportedUserData.fullName || reportedUserData.email || report.reportedUserName || null;
-              }
-            } catch (err) {
-              console.error('Error fetching reported user data:', err);
-            }
-          }
-          
-          emailMap[report.id] = emails;
-          nameMap[report.id] = names;
-        }));
-        
-        setReportEmails(emailMap);
-        setReportUserNames(nameMap);
-      }).catch((err) => {
-        console.error('Error in fallback fetch for reports:', err);
-        setUserReports([]);
-      });
-    });
-    
-    return () => unsubscribe();
-  }, [isAuthorized]);
 
   const approveEnquiry = async (id: string) => {
     try {
@@ -1068,105 +926,6 @@ const Admin = () => {
       setProcessingVerification(null);
     }
   };
-
-  const markReportAsReviewed = async (reportId: string) => {
-    try {
-      await updateDoc(doc(db, 'userReports', reportId), {
-        reviewed: true,
-        reviewedAt: serverTimestamp(),
-        reviewedBy: authUser?.uid,
-        status: 'reviewed'
-      });
-      toast({ 
-        title: 'Report Reviewed', 
-        description: 'Report has been marked as reviewed' 
-      });
-    } catch (error) {
-      console.error('Error marking report as reviewed:', error);
-      toast({ 
-        title: 'Error', 
-        description: 'Failed to mark report as reviewed', 
-        variant: 'destructive' 
-      });
-    }
-  };
-
-  const sendWarningToUser = async (reportId: string, reportedUserId: string) => {
-    if (!warningMessage.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a warning message',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    setSendingWarning(true);
-    try {
-      const report = userReports.find(r => r.id === reportId);
-      
-      // IMPORTANT: Verify we're sending to the reported user, NOT the reporter
-      // report.reportedUserId = the user who was reported (should receive warning)
-      // report.reportedBy = the user who made the report (should NOT receive warning)
-      if (!report || report.reportedUserId !== reportedUserId) {
-        toast({
-          title: 'Error',
-          description: 'Invalid report data. Cannot send warning.',
-          variant: 'destructive'
-        });
-        setSendingWarning(false);
-        return;
-      }
-      
-      const reportedUserName = reportUserNames[reportId]?.reportedUserName || report?.reportedUserName || reportedUserId;
-      
-      // Create warning message with prefix
-      const warningText = `⚠️ WARNING FROM ADMIN: ${warningMessage.trim()}`;
-      
-      // Send admin warning message to the REPORTED USER (not the reporter)
-      // recipientId must be report.reportedUserId (the person who was reported)
-      await addDoc(collection(db, 'chatMessages'), {
-        enquiryId: 'admin_warning',
-        sellerId: 'admin',
-        senderId: authUser?.uid || 'admin',
-        senderName: 'Admin',
-        senderType: 'admin',
-        message: warningText,
-        isAdminMessage: true,
-        adminMessageType: 'warning',
-        recipientId: report.reportedUserId, // Send to the reported user, NOT report.reportedBy
-        timestamp: serverTimestamp()
-      });
-
-      // Update report with admin notes if not already set
-      if (report && !report.adminNotes) {
-        await updateDoc(doc(db, 'userReports', reportId), {
-          adminNotes: `Warning sent: ${warningMessage.trim()}`,
-          reviewedBy: authUser?.uid,
-          reviewedAt: serverTimestamp()
-        });
-      }
-
-      toast({
-        title: 'Warning Sent',
-        description: `Warning message has been sent to ${reportedUserName}`
-      });
-
-      // Reset form
-      setWarningMessage('');
-      setSelectedReportForWarning(null);
-    } catch (error) {
-      console.error('Error sending warning:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to send warning message',
-        variant: 'destructive'
-      });
-    } finally {
-      setSendingWarning(false);
-    }
-  };
-
   const rejectEnquiry = async (id: string) => {
     try {
       const enquiry = pending.find(e => e.id === id);
@@ -1507,49 +1266,41 @@ const Admin = () => {
     responseRate: responseRate + '%'
   });
 
-  // Debug: Log authorization state
-  console.log('🔐 Admin: Authorization check - loading:', loading, 'isAuthorized:', isAuthorized, 'authUser:', authUser?.uid);
-  console.log('🔐 Admin: sessionStorage check:', sessionStorage.getItem('admin_secure_link_accessed'));
-
   if (loading) {
-    console.log('⏳ Admin: Still loading, showing loading animation');
     return <LoadingAnimation message="Loading admin data" />;
   }
 
   // Check authorization before rendering admin panel
   if (!isAuthorized) {
     const secureLinkAccess = sessionStorage.getItem('admin_secure_link_accessed');
-    console.log('🚫 Admin: Not authorized, secureLinkAccess:', secureLinkAccess);
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <Lock className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-slate-900">Admin Access Required</h1>
-            <p className="text-slate-600 mt-2">You must access the admin panel through the secret private link.</p>
-          </CardHeader>
-          <CardContent className="p-8 text-center">
-            {!secureLinkAccess ? (
-              <>
-                <p className="text-slate-600 mb-4">Direct access to /admin is not allowed for security reasons.</p>
-                <p className="text-sm text-slate-500 mb-4">Please use the secure admin access link to gain access.</p>
-              </>
-            ) : (
-              <p className="text-slate-600 mb-4">Your session may have expired. Please use the secure admin access link again.</p>
-            )}
-            <Button onClick={() => navigate('/')} className="w-full" size="lg">
-              Go Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+          <Card className="max-w-md w-full mx-4">
+            <CardContent className="p-8 text-center">
+              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+              {!secureLinkAccess ? (
+                <>
+                  <p className="text-slate-600 mb-4">You must use the secure admin access link to access this page.</p>
+                  <p className="text-sm text-slate-500 mb-4">Direct access to /admin is not allowed for security reasons.</p>
+                </>
+              ) : (
+                <p className="text-slate-600 mb-4">You need admin privileges to access this page.</p>
+              )}
+              <Button onClick={() => navigate('/')} className="w-full" size="lg">
+                Go Home
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
     );
   }
 
-  // Render admin panel (we already checked !isAuthorized above, so if we reach here, user is authorized)
-  console.log('✅ Admin: Rendering admin panel - user is authorized');
   return (
-    <div className="min-h-screen bg-black">
+    <Layout>
+      <div className="min-h-screen bg-black">
         {/* Dark Header */}
         <div className="bg-black border-b border-gray-900 shadow-lg">
           <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
@@ -1833,34 +1584,8 @@ const Admin = () => {
             <PremiumPlanTester />
           </TabsContent>
 
-            <TabsContent value="manual" className="mt-6">
-              {/* Add Dummy Enquiries Section */}
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm overflow-hidden mb-6">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 mb-5">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Database className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-blue-900 mb-2">Add Dummy Enquiries</h2>
-                      <p className="text-sm text-blue-700 leading-relaxed">
-                        Add 46 realistic Indian market enquiries with multilingual content (Hindi, Tamil, Telugu, Malayalam, Kannada, Bengali, English).
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <Button
-                      onClick={() => navigate('/admin/add-enquiries')}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-200"
-                    >
-                      <Database className="h-5 w-5 mr-2" />
-                      Go to Add Enquiries Page
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            <div className="mt-6 space-y-6 sm:space-y-8">
-              {/* Buyer Submissions Section */}
+            <TabsContent value="manual" className="mt-6 space-y-6 sm:space-y-8">
+            {/* Buyer Submissions Section */}
               <Card className="bg-black border border-gray-900 shadow-lg overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-b border-gray-900 px-5 sm:px-6 py-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -2450,180 +2175,6 @@ const Admin = () => {
           )}
                 </CardContent>
         </Card>
-
-        {/* User Reports Section */}
-              <Card ref={reportsSectionRef} id="user-reports-section" className="bg-white border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-200 px-5 sm:px-6 py-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                        <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
-                      </div>
-                      <div>
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">User Reports</h2>
-                        <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                          {userReports.filter(r => !r.reviewed).length} pending report{userReports.filter(r => !r.reviewed).length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-red-100 text-red-800 border border-red-200">
-                      {userReports.length} total
-                    </Badge>
-                  </div>
-                </div>
-                
-                <CardContent className="p-4 sm:p-6">
-          {userReports.length === 0 ? (
-                    <div className="text-center py-12 sm:py-16">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
-                      </div>
-                      <p className="text-sm sm:text-base text-gray-600 font-medium">No reports</p>
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1">No user reports submitted yet</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4 sm:space-y-6">
-              {userReports.map((report) => (
-                        <Card key={report.id} className={`border ${report.reviewed ? 'border-gray-200 bg-gray-50' : 'border-red-200 bg-white'} hover:shadow-md transition-all duration-200`}>
-                          <CardContent className="p-4 sm:p-6">
-                            <div className="space-y-3">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div>
-                                      <p className="text-xs sm:text-sm text-gray-500 mb-1">Reported User:</p>
-                                      <h3 className="text-base sm:text-lg font-bold text-gray-900">
-                                        {reportUserNames[report.id]?.reportedUserName || report.reportedUserName || report.reportedUserId}
-                                      </h3>
-                                    </div>
-                                    {!report.reviewed && (
-                                      <Badge className="bg-red-100 text-red-800 text-[10px] sm:text-xs px-2 py-0.5">
-                                        Pending
-                                      </Badge>
-                                    )}
-                                    {report.reviewed && (
-                                      <Badge className="bg-green-100 text-green-800 text-[10px] sm:text-xs px-2 py-0.5">
-                                        Reviewed
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <p className="text-xs sm:text-sm text-gray-600">
-                                    Reported by: <span className="font-semibold">{reportUserNames[report.id]?.reporterName || report.reporterName || report.reportedBy}</span>
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-                                <div>
-                                  <span className="text-gray-500">Reason:</span>
-                                  <span className="ml-2 font-semibold text-gray-900">{report.reason}</span>
-                                </div>
-                                {report.enquiryTitle && (
-                                  <div>
-                                    <span className="text-gray-500">Enquiry:</span>
-                                    <span className="ml-2 font-semibold text-gray-900 truncate">{report.enquiryTitle}</span>
-                                  </div>
-                                )}
-                                <div>
-                                  <span className="text-gray-500">Reported User ID:</span>
-                                  <span className="ml-2 font-mono text-[10px] text-gray-600">{report.reportedUserId}</span>
-                                </div>
-                                <div>
-                                  <span className="text-gray-500">Date:</span>
-                                  <span className="ml-2 text-gray-600">
-                                    {report.timestamp?.toDate?.()?.toLocaleDateString() || 'Recently'}
-                                  </span>
-                                </div>
-                                {reportEmails[report.id]?.reportedUserEmail && (
-                                  <div>
-                                    <span className="text-gray-500">Reported User Email:</span>
-                                    <span className="ml-2 font-semibold text-gray-900 break-all">{reportEmails[report.id].reportedUserEmail}</span>
-                                  </div>
-                                )}
-                                {reportEmails[report.id]?.reporterEmail && (
-                                  <div>
-                                    <span className="text-gray-500">Reporter Email:</span>
-                                    <span className="ml-2 font-semibold text-gray-900 break-all">{reportEmails[report.id].reporterEmail}</span>
-                                  </div>
-                                )}
-                              </div>
-                              
-                              {report.reportDetails && (
-                                <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                  <p className="text-xs font-semibold text-gray-700 mb-1">Additional Details:</p>
-                                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{report.reportDetails}</p>
-                                </div>
-                              )}
-                              
-                              {report.adminNotes && (
-                                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                                  <p className="text-xs font-semibold text-blue-700 mb-1">Admin Notes:</p>
-                                  <p className="text-xs sm:text-sm text-blue-600 leading-relaxed">{report.adminNotes}</p>
-                                </div>
-                              )}
-                              
-                              {!report.reviewed && (
-                                <div className="space-y-3 mt-4">
-                                  {selectedReportForWarning === report.id ? (
-                                    <div className="space-y-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                      <label className="text-xs sm:text-sm font-semibold text-gray-700 block">
-                                        Warning Message:
-                                      </label>
-                                      <Textarea
-                                        value={warningMessage}
-                                        onChange={(e) => setWarningMessage(e.target.value)}
-                                        placeholder="Enter warning message to send to the reported user..."
-                                        className="text-xs sm:text-sm min-h-[80px] border-gray-300"
-                                      />
-                                      <div className="flex gap-2">
-                                        <Button
-                                          onClick={() => sendWarningToUser(report.id, report.reportedUserId)}
-                                          disabled={sendingWarning || !warningMessage.trim()}
-                                          className="bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto"
-                                        >
-                                          {sendingWarning ? 'Sending...' : 'Send Warning'}
-                                        </Button>
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedReportForWarning(null);
-                                            setWarningMessage('');
-                                          }}
-                                          variant="outline"
-                                          className="text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto"
-                                        >
-                                          Cancel
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="flex flex-row gap-2">
-                                      <Button
-                                        onClick={() => markReportAsReviewed(report.id)}
-                                        className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto"
-                                      >
-                                        Mark as Reviewed
-                                      </Button>
-                                      <Button
-                                        onClick={() => setSelectedReportForWarning(report.id)}
-                                        variant="destructive"
-                                        className="text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto"
-                                      >
-                                        <AlertTriangle className="h-4 w-4 mr-1" />
-                                        Send Warning
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-              ))}
-            </div>
-          )}
-                </CardContent>
-        </Card>
-
               {/* Review Modal - Clean White Design */}
         {selectedEnquiry && (
                 <>
@@ -2773,11 +2324,11 @@ const Admin = () => {
           </div>
                 </CardContent>
         </Card>
-            </div>
           </TabsContent>
         </Tabs>
         </div>
-    </div>
+      </div>
+    </Layout>
   );
 };
 

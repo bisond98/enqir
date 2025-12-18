@@ -1,36 +1,14 @@
 import { useEffect, useState, useRef } from "react";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { useNavigate } from "react-router-dom";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import Layout from "@/components/Layout";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { useAuth } from "@/contexts/AuthContext";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { useChats } from "@/contexts/ChatContext";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { db } from "@/firebase";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { Card } from "@/components/ui/card";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 import { Button } from "@/components/ui/button";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, ArrowLeftRight, ArrowLeft } from "lucide-react";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
-// 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
-
 
 interface ChatThread {
   id: string;
@@ -44,7 +22,6 @@ interface ChatThread {
   enquiryData?: any; // Store enquiry data to check status
   isDisabled?: boolean; // Mark if chat should be disabled
   unreadCount?: number; // Count of unread messages in this thread
-  isAdminChat?: boolean; // Mark if this is an admin chat (warning/suspension)
 }
 
 export default function MyChats() {
@@ -394,14 +371,6 @@ export default function MyChats() {
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/'); }}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
                 <div className="w-10 h-10"></div>
               </div>
             </div>
@@ -424,16 +393,7 @@ export default function MyChats() {
                 </div>
             
                   {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
-                    {/* Arrow Indicator */}
-                    <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                      className="mb-2 sm:mb-3"
-                    >
-                      <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                    </motion.div>
+                  <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
@@ -584,10 +544,10 @@ export default function MyChats() {
                             </motion.span>
                           )}
                             
-                            {/* Unread Badge - Seller (on left side) */}
+                            {/* Unread Badge - Seller */}
                             {viewMode === 'seller' && sellerUnreadCount > 0 && (
                             <motion.span 
-                                className="absolute -top-1 -left-1 sm:-top-1.5 sm:-left-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
+                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
                               animate={{
                                   scale: [1, 1.3, 1],
                                   rotate: [0, 15, -15, 0]
@@ -672,9 +632,6 @@ export default function MyChats() {
               {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
-                const isAdminWarning = chat.isAdminChat || chat.enquiryId === 'admin_warning' || (chat.enquiryTitle?.includes('Warning') || chat.enquiryTitle?.includes('⚠️'));
-                // For admin warnings, users should not be able to open chat
-                const shouldDisableChat = isDisabled || isAdminWarning;
                 
                 // Only animate on first render of this view
                 const shouldAnimate = !hasAnimated.current;
@@ -736,12 +693,8 @@ export default function MyChats() {
                     style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-[0.5px] ${
-                        isAdminWarning 
-                          ? 'border-red-600 bg-gradient-to-br from-red-50 via-red-100 to-red-200' 
-                          : 'border-black bg-gradient-to-br from-white via-white to-gray-50'
-                      } rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
-                        isDisabled
+                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                        isDisabled 
                           ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
                           : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
                       }`}
@@ -755,16 +708,9 @@ export default function MyChats() {
                         </>
                       )}
                       {/* Animated background gradient */}
-                      {!isDisabled && !isAdminWarning && (
+                      {!isDisabled && (
                         <motion.div
                           className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 via-green-50/10 to-transparent opacity-0 group-hover:opacity-100"
-                          transition={{ duration: 0.4 }}
-                        />
-                      )}
-                      {/* Red gradient for admin warnings */}
-                      {!isDisabled && isAdminWarning && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-br from-red-200/30 via-red-100/20 to-transparent opacity-0 group-hover:opacity-100"
                           transition={{ duration: 0.4 }}
                         />
                       )}
@@ -774,7 +720,7 @@ export default function MyChats() {
                         {/* Chat avatar – rounded, WhatsApp-style green bubble with creative animation */}
                         <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 relative">
                           {/* Glowing ring effect */}
-                          {!isDisabled && !isAdminWarning && (
+                          {!isDisabled && (
                             <motion.div
                               className="absolute inset-0 rounded-full bg-emerald-400/30 blur-xl"
                               animate={{
@@ -788,32 +734,11 @@ export default function MyChats() {
                               }}
                             />
                           )}
-                          {/* Red glowing ring for admin warnings */}
-                          {!isDisabled && isAdminWarning && (
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-red-400/40 blur-xl"
-                              animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.4, 0.7, 0.4],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            />
-                          )}
                           
                           <motion.div 
                             className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
-                              isDisabled 
-                                ? 'bg-gray-400' 
-                                : isAdminWarning 
-                                ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' 
-                                : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
-                            } flex items-center justify-center border-[0.5px] ${
-                              isAdminWarning ? 'border-red-700' : 'border-black'
-                            } shadow-lg relative overflow-hidden`}
+                              isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
+                            } flex items-center justify-center border-[0.5px] border-black shadow-lg relative overflow-hidden`}
                             animate={!isDisabled ? {
                               rotate: [0, 360],
                               scale: [1, 1.1, 1],
@@ -898,11 +823,7 @@ export default function MyChats() {
                         {/* Enquiry heading as tile title */}
                         <motion.h3 
                           className={`text-xs sm:text-sm lg:text-base font-black mb-1.5 sm:mb-2 lg:mb-3 text-center line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem] ${
-                            isDisabled 
-                              ? 'text-gray-500' 
-                              : isAdminWarning 
-                              ? 'text-red-800' 
-                              : 'text-black'
+                            isDisabled ? 'text-gray-500' : 'text-black'
                           }`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -937,11 +858,7 @@ export default function MyChats() {
                         {/* Last message preview with typing effect */}
                         <motion.p 
                           className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
-                            isDisabled 
-                              ? 'text-gray-400' 
-                              : isAdminWarning 
-                              ? 'text-red-700' 
-                              : 'text-gray-600'
+                            isDisabled ? 'text-gray-400' : 'text-gray-600'
                           }`}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -1031,23 +948,22 @@ export default function MyChats() {
                             transition: { duration: 0.1 }
                           } : {}}
                         >
-                          {!isAdminWarning ? (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              disabled={isDisabled}
-                              className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
-                                isDisabled
-                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                                  : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
-                              }`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isDisabled) {
-                                  openChat(chat);
-                                }
-                              }}
-                            >
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isDisabled}
+                            className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
+                              isDisabled
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isDisabled) {
+                                openChat(chat);
+                              }
+                            }}
+                          >
                             {/* Physical button depth effect */}
                             {!isDisabled && (
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -1087,11 +1003,6 @@ export default function MyChats() {
                             </motion.span>
                             <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
                           </Button>
-                          ) : (
-                            <div className="w-full border-[0.5px] border-red-300 bg-red-50 text-red-700 text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl text-center">
-                              View Warning Only
-                            </div>
-                          )}
                         </motion.div>
                       </div>
                     </Card>
