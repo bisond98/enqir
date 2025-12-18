@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -647,18 +648,28 @@ const EnquiryResponsesPage = () => {
               onOpenChange={setFilterDropdownOpen}
             >
               <DropdownMenuTrigger asChild>
-                <button
-                  className="p-1.5 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 flex items-center justify-center"
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-1.5 sm:p-2 rounded-full transition-all duration-300 hover:bg-gray-100 flex items-center justify-center"
                   title={showOnlyTrustBadged ? "Click to remove filter" : "Filter trust-badged responses"}
                 >
-                  <Filter 
-                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0"
-                    style={{
-                      fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
-                      color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
+                  <motion.div
+                    animate={{
+                      rotate: showOnlyTrustBadged ? 0 : 0,
+                      scale: showOnlyTrustBadged ? 1.1 : 1
                     }}
-                  />
-                </button>
+                    transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  >
+                    <Filter 
+                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 transition-colors duration-300"
+                      style={{
+                        fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
+                        color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
+                      }}
+                    />
+                  </motion.div>
+                </motion.button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
                 showOnlyTrustBadged 
@@ -685,13 +696,29 @@ const EnquiryResponsesPage = () => {
         )}
 
         <div className="space-y-3 sm:space-y-5 lg:space-y-8">
-          {visibleResponses.length > 0 ? (
-            visibleResponses.map((response, index) => (
-              <div 
-                key={response.id} 
-                className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
-                style={{ display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d' }}
-              >
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visibleResponses.length > 0 ? (
+              visibleResponses.map((response, index) => (
+                <motion.div 
+                  key={response.id}
+                  layout
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ 
+                    opacity: { duration: 0.4, ease: [0.4, 0, 0.2, 1], delay: index * 0.03 },
+                    y: { duration: 0.4, ease: [0.4, 0, 0.2, 1], delay: index * 0.03 },
+                    scale: { duration: 0.4, ease: [0.4, 0, 0.2, 1], delay: index * 0.03 },
+                    layout: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
+                  }}
+                  style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    height: 'auto', 
+                    transformStyle: 'preserve-3d'
+                  }}
+                  className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
+                >
                 {/* Card Header - Mobile optimized */}
                 <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
                   <div className="flex items-center justify-between gap-2 sm:gap-4">
@@ -744,8 +771,37 @@ const EnquiryResponsesPage = () => {
                 <div className="p-3 sm:p-5 lg:p-8 xl:p-10 space-y-3 sm:space-y-4 lg:space-y-7 relative z-10 bg-white">
                 
                 {/* Seller Info & Price Group - Mobile optimized */}
-                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6">
+                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6 relative">
+                  {/* Minimal 2D Storytelling Sketches - Around the red tile in white space */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.05] pointer-events-none" style={{ width: '100%', height: '120%', zIndex: 1 }}>
+                    <svg viewBox="0 0 400 300" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      {/* Connection lines around tile */}
+                      <path d="M50 80 Q200 50 350 80" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                      <path d="M50 220 Q200 250 350 220" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                      
+                      {/* Buyer icon (top left) */}
+                      <circle cx="50" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
+                      <path d="M50 68 L50 55 M45 63 L55 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                      
+                      {/* Seller icon (top right) */}
+                      <circle cx="350" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
+                      <path d="M350 68 L350 55 M345 63 L355 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                      
+                      {/* Enquiry box (top center) */}
+                      <rect x="170" y="40" width="60" height="35" stroke="currentColor" strokeWidth="2" rx="4" className="text-gray-800"/>
+                      <path d="M175 52 L225 52 M175 60 L210 60" stroke="currentColor" strokeWidth="1.5" className="text-gray-800"/>
+                      
+                      {/* Trust badge (bottom center) */}
+                      <circle cx="200" cy="250" r="10" stroke="currentColor" strokeWidth="2" className="text-blue-600"/>
+                      <path d="M196 250 L199 253 L204 247" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"/>
+                      
+                      {/* Decorative dots */}
+                      <circle cx="80" cy="150" r="3" fill="currentColor" className="text-gray-600"/>
+                      <circle cx="320" cy="150" r="3" fill="currentColor" className="text-gray-600"/>
+                    </svg>
+                  </div>
+                  
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6 relative z-10">
                     {/* Seller Info - Mobile optimized */}
                     <div className="flex items-center flex-1 min-w-0 w-full lg:w-auto">
                       <div className="min-w-0 flex-1">
@@ -756,16 +812,46 @@ const EnquiryResponsesPage = () => {
                     </div>
                     
                     {/* Seller's Quote - Mobile optimized */}
-                    <div className="bg-white border-[0.5px] border-black rounded-xl sm:rounded-2xl p-3 sm:p-5 lg:p-7 flex-shrink-0 w-full lg:w-auto shadow-md sm:shadow-lg lg:hover:shadow-xl transition-all duration-200 mt-6 sm:mt-8 lg:mt-10">
-                      <div className="flex items-center justify-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-3">
-                        <div className="w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                          <span className="text-white text-xs sm:text-sm lg:text-base font-black">₹</span>
+                    <div className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 flex-shrink-0 w-full lg:w-auto mt-6 sm:mt-8 lg:mt-10 transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/quote z-20"
+                      style={{
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.25), 0 10px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                        transformStyle: 'preserve-3d',
+                        perspective: '1000px'
+                      }}
+                    >
+                      
+                      {/* 3D Border Effect */}
+                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border-2 border-red-800/40" 
+                        style={{
+                          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.25)'
+                        }}
+                      />
+                      
+                      {/* Top highlight for 3D effect */}
+                      <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+                      
+                      {/* Bottom shadow for depth */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-2xl sm:rounded-b-3xl bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
+                      
+                      {/* Content */}
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-center space-x-2.5 sm:space-x-3 mb-4 sm:mb-5">
+                          <div className="relative w-7 h-7 sm:w-9 sm:h-9 lg:w-11 lg:h-11 bg-gradient-to-br from-white to-gray-100 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.8)] ring-2 ring-white/40 transform group-hover/quote:scale-110 transition-transform duration-300">
+                            <span className="text-red-700 text-base sm:text-lg lg:text-xl font-black drop-shadow-sm">₹</span>
+                          </div>
+                          <span className="text-xs sm:text-sm lg:text-base font-bold text-white tracking-wider drop-shadow-md">Seller's Quote</span>
                         </div>
-                        <span className="text-[10px] sm:text-xs lg:text-base font-bold text-black">Seller's Quote</span>
+                        <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-white leading-none text-center drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] transform group-hover/quote:scale-105 transition-transform duration-300"
+                          style={{
+                            textShadow: '0 4px 8px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.25)'
+                          }}
+                        >
+                          {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
+                        </p>
                       </div>
-                      <p className="font-black text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-black leading-none text-center">
-                        {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
-                      </p>
+                      
+                      {/* Hover glow effect */}
+                      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-red-400/0 via-red-500/0 to-red-600/0 group-hover/quote:from-red-400/10 group-hover/quote:via-red-500/10 group-hover/quote:to-red-600/10 transition-all duration-500 pointer-events-none" />
                     </div>
                   </div>
                   
@@ -774,7 +860,7 @@ const EnquiryResponsesPage = () => {
                 {/* Message & Notes Group - Mobile optimized */}
                 <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
                   {/* Message Section - Mobile optimized */}
-                  <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
                     <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
                         <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
@@ -842,28 +928,41 @@ const EnquiryResponsesPage = () => {
                 )}
                 
                 {/* Footer Section - Mobile optimized */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-5 lg:pt-6">
-                  <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
-                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
-                    <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
-                  </div>
-                  <Button
+                <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2 lg:pt-3">
+                  {/* Privacy message */}
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-black text-center font-normal italic">
+                    Engage with verified sellers while your identity stays private.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
+                      <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                    </div>
+                    <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#16a34a] to-[#22c55e] hover:from-[#22c55e] hover:to-[#16a34a] text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 sm:hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
+                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#15803d] to-[#16a34a] hover:from-[#166534] hover:to-[#15803d] text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 sm:hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
                   >
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full sm:group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none" />
                     <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 sm:group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
                     <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
+                  </div>
                 </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-6 sm:py-10 bg-white rounded-lg border-2 border-gray-200 shadow-md">
+              </motion.div>
+              ))
+            ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="text-center py-6 sm:py-10 bg-white rounded-lg border-2 border-gray-200 shadow-md"
+            >
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 {showOnlyTrustBadged ? (
                   <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
@@ -874,7 +973,7 @@ const EnquiryResponsesPage = () => {
               {showOnlyTrustBadged ? (
                 <>
                   <h3 className="text-base sm:text-xl font-black text-gray-900 mb-2">No Trust-Badged Sellers Yet</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-4 max-w-md mx-auto leading-relaxed">
+                  <p className="text-[10px] sm:text-xs text-gray-600 mb-4 max-w-md mx-auto leading-relaxed">
                     Don't worry! More verified sellers are joining every day. Check back soon or view all responses to see what's available now.
                   </p>
                   <Button
@@ -908,8 +1007,9 @@ const EnquiryResponsesPage = () => {
                   )}
                 </>
               )}
-            </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         {(() => {

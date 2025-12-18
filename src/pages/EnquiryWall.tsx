@@ -1988,16 +1988,21 @@ export default function EnquiryWall() {
                                 <span className="text-xs sm:text-sm md:text-base text-black font-bold tracking-wide">Need</span>
                               </div>
                               
-                              {/* Title - Mobile: allows 3 lines, Desktop: 1 line - Professional typography */}
-                              <h3 className={`text-xl sm:text-3xl lg:text-4xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-white text-center antialiased font-heading border-[0.5px] border-red-700 bg-red-700 px-2 py-1 rounded-lg ${
-                                    isEnquiryDisabled(enquiry) ? 'text-gray-500 bg-gray-400' : ''
-                                  }`} style={{
-                                    WebkitFontSmoothing: 'antialiased',
-                                    MozOsxFontSmoothing: 'grayscale',
-                                    textRendering: 'optimizeLegibility'
-                                  }}>
-                                    {enquiry.title}
-                                  </h3>
+                              {/* Title - Simple Red Tile Style */}
+                              <div className="mb-1.5 sm:mb-3">
+                                <div className="bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-xl sm:rounded-2xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 shadow-lg">
+                                  <h3 className={`text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-white text-center antialiased ${
+                                      isEnquiryDisabled(enquiry) ? 'text-gray-300 opacity-70' : ''
+                                    }`} style={{
+                                      WebkitFontSmoothing: 'antialiased',
+                                      MozOsxFontSmoothing: 'grayscale',
+                                      textRendering: 'optimizeLegibility',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                                    }}>
+                                      {enquiry.title}
+                                    </h3>
+                                </div>
+                              </div>
                               
                               {/* "before [date]" below title, centered on mobile */}
                               {enquiry.deadline && (() => {
@@ -2077,17 +2082,20 @@ export default function EnquiryWall() {
                               <span className="text-xs sm:text-sm md:text-base text-black font-bold tracking-wide">Need</span>
                             </div>
                             
-                            {/* Title - Professional typography */}
+                            {/* Title - Simple Red Tile Style */}
                             <div className="mb-1.5 sm:mb-3">
-                              <h3 className={`text-lg sm:text-2xl lg:text-3xl font-bold sm:font-semibold tracking-normal sm:tracking-tight leading-relaxed sm:leading-tight line-clamp-1 truncate text-white text-center antialiased font-heading border-[0.5px] border-red-700 bg-red-700 px-2 py-1 rounded-lg ${
-                                  isEnquiryDisabled(enquiry) ? 'text-gray-500 bg-gray-400' : ''
-                                }`} style={{
-                                  WebkitFontSmoothing: 'antialiased',
-                                  MozOsxFontSmoothing: 'grayscale',
-                                  textRendering: 'optimizeLegibility'
-                                }}>
-                                  {enquiry.title}
-                                </h3>
+                              <div className="bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-xl sm:rounded-2xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 shadow-lg">
+                                <h3 className={`text-base sm:text-xl lg:text-2xl font-black tracking-tight leading-tight line-clamp-2 text-white text-center antialiased ${
+                                    isEnquiryDisabled(enquiry) ? 'text-gray-300 opacity-70' : ''
+                                  }`} style={{
+                                    WebkitFontSmoothing: 'antialiased',
+                                    MozOsxFontSmoothing: 'grayscale',
+                                    textRendering: 'optimizeLegibility',
+                                    textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                                  }}>
+                                    {enquiry.title}
+                                  </h3>
+                              </div>
                               
                               {/* "before [date]" below title, right aligned */}
                               {enquiry.deadline && (() => {
@@ -2210,11 +2218,10 @@ export default function EnquiryWall() {
                             <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 flex-1 min-w-0 overflow-x-auto">
                               {/* Budget */}
                               {enquiry.budget && (
-                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 bg-white rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <span className="font-bold text-gray-900 text-[10px] sm:text-xs tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-lg sm:text-2xl md:text-3xl relative z-10" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-base sm:text-xl md:text-2xl whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-shrink-0">
+                                  <span className="font-bold text-gray-900 text-[10px] sm:text-xs tracking-wide" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-lg sm:text-2xl md:text-3xl" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
+                                  <span className="font-extrabold text-gray-900 text-base sm:text-xl md:text-2xl whitespace-nowrap tracking-tight" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                               {/* Location */}
