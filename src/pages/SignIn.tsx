@@ -499,11 +499,13 @@ const SignIn = () => {
             <CardContent className="px-5 sm:px-7 lg:px-9 pt-7 sm:pt-9 lg:pt-11 pb-7 sm:pb-9 lg:pb-11 relative z-10">
               {/* Error Display */}
               {error && (
-                <Alert className="mb-4 sm:mb-6 border border-red-200 bg-red-50 rounded-lg relative z-20">
-                  <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
-                  <AlertDescription className="text-[10px] sm:text-xs text-red-800 ml-2 whitespace-nowrap">
-                    {error}
-                  </AlertDescription>
+                <Alert className="mb-4 sm:mb-6 border border-red-600 bg-red-600 rounded-lg relative z-20">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-white flex-shrink-0" />
+                    <AlertDescription className="text-[10px] sm:text-xs text-white whitespace-nowrap text-center sm:text-left">
+                      {error}
+                    </AlertDescription>
+                  </div>
                 </Alert>
               )}
 
@@ -559,7 +561,37 @@ const SignIn = () => {
               {!showVerificationSent && (
                 <>
               <Tabs defaultValue="signin" value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full relative z-20">
-                    <TabsList className="relative inline-flex items-center bg-gray-100 border border-gray-300 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 shadow-sm w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200 z-20">
+                    <TabsList className="relative inline-flex items-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 border-2 border-gray-300/60 rounded-2xl p-1.5 sm:p-2 mb-6 sm:mb-8 w-full h-auto grid grid-cols-2 gap-1 overflow-hidden transition-all duration-200 z-20 transform-gpu"
+                      style={{
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.18), 0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.12)',
+                        transformStyle: 'preserve-3d',
+                        perspective: '1200px',
+                        transform: 'translateZ(10px)'
+                      }}
+                    >
+                      {/* 3D Border Effect */}
+                      <div className="absolute inset-0 rounded-2xl border-2 border-gray-300/60 pointer-events-none" 
+                        style={{
+                          boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1)',
+                          zIndex: 1
+                        }}
+                      />
+                      
+                      {/* Top highlight for 3D effect */}
+                      <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-2xl bg-gradient-to-b from-white/80 via-white/40 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      
+                      {/* Side highlights for depth */}
+                      <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      
+                      {/* Bottom shadow for depth */}
+                      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-2xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      
+                      {/* Inner depth shadow */}
+                      <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" style={{ zIndex: 1 }} />
+                      
+                      {/* Additional depth layer */}
+                      <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" style={{ zIndex: 1 }} />
                       {/* Animated Background Slider - High depth intense dark black selection, no shadow */}
                       <motion.div 
                         className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl pointer-events-none"
@@ -568,6 +600,7 @@ const SignIn = () => {
                           zIndex: 0,
                           backgroundColor: '#000000',
                           background: 'linear-gradient(180deg, #000000 0%, #000000 100%)',
+                          boxShadow: '0 4px 8px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.5)',
                         }}
                         animate={{
                           x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
@@ -579,8 +612,26 @@ const SignIn = () => {
                           mass: 0.5
                         }}
                       >
-                        {/* Depth highlight effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                        {/* 3D Border Effect for selection */}
+                        <div className="absolute inset-0 rounded-xl border border-black/80 pointer-events-none" 
+                          style={{
+                            boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.6)',
+                            zIndex: 1
+                          }}
+                        />
+                        
+                        {/* Top highlight for 3D effect */}
+                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-xl bg-gradient-to-b from-white/15 via-white/5 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                        
+                        {/* Side highlights for depth */}
+                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-xl bg-gradient-to-r from-white/10 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-xl bg-gradient-to-l from-white/10 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                        
+                        {/* Bottom shadow for depth */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-xl bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                        
+                        {/* Inner depth shadow */}
+                        <div className="absolute inset-0.5 rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/50 pointer-events-none" style={{ zIndex: 1 }} />
                       </motion.div>
                       
                       {/* Log In Button - Text always visible, clear selection */}
