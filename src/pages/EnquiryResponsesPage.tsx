@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -714,6 +714,115 @@ const EnquiryResponsesPage = () => {
                   }}
                 className="group/card border border-black bg-white rounded-2xl border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] overflow-hidden relative"
               >
+                {/* Trust-Conveying Background Sketches - Covering entire card */}
+                <div className="absolute inset-0 opacity-[0.12] pointer-events-none" style={{ zIndex: 1 }}>
+                  <svg viewBox="0 0 400 600" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                    {/* Trust flow connection lines */}
+                    <path d="M50 80 Q200 50 350 80" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-blue-600"/>
+                    <path d="M50 220 Q200 250 350 220" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-blue-600"/>
+                    <path d="M50 350 Q200 380 350 350" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-blue-600"/>
+                    <path d="M50 480 Q200 510 350 480" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-blue-600"/>
+                    <path d="M200 80 L200 120" stroke="currentColor" strokeWidth="2" strokeDasharray="4,4" className="text-blue-500"/>
+                    <path d="M200 180 L200 220" stroke="currentColor" strokeWidth="2" strokeDasharray="4,4" className="text-blue-500"/>
+                    <path d="M200 310 L200 350" stroke="currentColor" strokeWidth="2" strokeDasharray="4,4" className="text-blue-500"/>
+                    <path d="M200 440 L200 480" stroke="currentColor" strokeWidth="2" strokeDasharray="4,4" className="text-blue-500"/>
+                    
+                    {/* Buyer icon with trust indicator (top left) */}
+                    <circle cx="50" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
+                    <path d="M50 68 L50 55 M45 63 L55 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                    {/* Trust checkmark near buyer */}
+                    <circle cx="70" cy="70" r="6" fill="currentColor" className="text-blue-600"/>
+                    <path d="M67 70 L69 72 L73 68" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Seller icon with trust indicator (top right) */}
+                    <circle cx="350" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
+                    <path d="M350 68 L350 55 M345 63 L355 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
+                    {/* Trust checkmark near seller */}
+                    <circle cx="330" cy="70" r="6" fill="currentColor" className="text-blue-600"/>
+                    <path d="M327 70 L329 72 L333 68" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Enquiry box with verification badge (top center) */}
+                    <rect x="170" y="40" width="60" height="35" stroke="currentColor" strokeWidth="2" rx="4" className="text-gray-800"/>
+                    <path d="M175 52 L225 52 M175 60 L210 60" stroke="currentColor" strokeWidth="1.5" className="text-gray-800"/>
+                    {/* Verification badge on enquiry */}
+                    <circle cx="220" cy="45" r="5" fill="currentColor" className="text-green-600"/>
+                    <path d="M218 45 L219.5 46.5 L222 44" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Large Trust badge (center) - More prominent */}
+                    <circle cx="200" cy="300" r="14" stroke="currentColor" strokeWidth="3" className="text-blue-600"/>
+                    <circle cx="200" cy="300" r="10" fill="currentColor" className="text-blue-600"/>
+                    <path d="M196 300 L199 303 L204 297" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Additional trust badge (bottom center) */}
+                    <circle cx="200" cy="500" r="12" stroke="currentColor" strokeWidth="2.5" className="text-blue-600"/>
+                    <circle cx="200" cy="500" r="8" fill="currentColor" className="text-blue-600"/>
+                    <path d="M197 500 L199.5 502.5 L203 498" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Shield icons for trust (scattered throughout) */}
+                    <path d="M80 150 L80 170 L90 175 L100 170 L100 150 Q100 145 90 140 Q80 145 80 150 Z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" className="text-blue-600"/>
+                    <path d="M85 150 L85 165 L90 168 L95 165 L95 150" stroke="white" strokeWidth="1" fill="white" fillOpacity="0.3"/>
+                    
+                    <path d="M320 150 L320 170 L330 175 L340 170 L340 150 Q340 145 330 140 Q320 145 320 150 Z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" className="text-blue-600"/>
+                    <path d="M325 150 L325 165 L330 168 L335 165 L335 150" stroke="white" strokeWidth="1" fill="white" fillOpacity="0.3"/>
+                    
+                    <path d="M80 380 L80 400 L90 405 L100 400 L100 380 Q100 375 90 370 Q80 375 80 380 Z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" className="text-blue-600"/>
+                    <path d="M85 380 L85 395 L90 398 L95 395 L95 380" stroke="white" strokeWidth="1" fill="white" fillOpacity="0.3"/>
+                    
+                    <path d="M320 380 L320 400 L330 405 L340 400 L340 380 Q340 375 330 370 Q320 375 320 380 Z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" className="text-blue-600"/>
+                    <path d="M325 380 L325 395 L330 398 L335 395 L335 380" stroke="white" strokeWidth="1" fill="white" fillOpacity="0.3"/>
+                    
+                    {/* Additional trust checkmarks scattered */}
+                    <circle cx="120" cy="120" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M118 120 L119.5 121.5 L122 119" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="280" cy="120" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M278 120 L279.5 121.5 L282 119" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="150" cy="200" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M148 200 L149.5 201.5 L152 199" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="250" cy="200" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M248 200 L249.5 201.5 L252 199" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="120" cy="350" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M118 350 L119.5 351.5 L122 349" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="280" cy="350" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M278 350 L279.5 351.5 L282 349" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="150" cy="430" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M148 430 L149.5 431.5 L152 429" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    <circle cx="250" cy="430" r="5" fill="currentColor" className="text-green-500"/>
+                    <path d="M248 430 L249.5 431.5 L252 429" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    
+                    {/* Verification lock icons */}
+                    <rect x="60" y="190" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" className="text-blue-600"/>
+                    <path d="M64 190 L64 185 Q64 183 66 183 Q68 183 68 185 L68 190" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-blue-600"/>
+                    
+                    <rect x="332" y="190" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" className="text-blue-600"/>
+                    <path d="M336 190 L336 185 Q336 183 338 183 Q340 183 340 185 L340 190" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-blue-600"/>
+                    
+                    <rect x="60" y="420" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" className="text-blue-600"/>
+                    <path d="M64 420 L64 415 Q64 413 66 413 Q68 413 68 415 L68 420" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-blue-600"/>
+                    
+                    <rect x="332" y="420" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" className="text-blue-600"/>
+                    <path d="M336 420 L336 415 Q336 413 338 413 Q340 413 340 415 L340 420" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-blue-600"/>
+                    
+                    {/* Decorative trust dots */}
+                    <circle cx="100" cy="140" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="300" cy="140" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="180" cy="180" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="220" cy="180" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="100" cy="340" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="300" cy="340" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="180" cy="380" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="220" cy="380" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="100" cy="460" r="3" fill="currentColor" className="text-blue-500"/>
+                    <circle cx="300" cy="460" r="3" fill="currentColor" className="text-blue-500"/>
+                  </svg>
+                </div>
+                
                 {/* Card Header - Mobile optimized */}
                 <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
                   <div className="flex items-center justify-between gap-2 sm:gap-4">
@@ -723,7 +832,6 @@ const EnquiryResponsesPage = () => {
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <span className="text-xs sm:text-sm lg:text-lg font-bold text-white leading-tight">Seller {index + 1} of {visibleResponses.length}</span>
                           <span className="text-[8px] sm:text-[9px] lg:text-[10px] text-gray-300 font-medium">
                             {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + response.createdAt.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                           </span>
@@ -767,41 +875,13 @@ const EnquiryResponsesPage = () => {
                 
                 {/* Seller Info & Price Group - Mobile optimized */}
                 <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6 relative">
-                  {/* Minimal 2D Storytelling Sketches - Around the red tile in white space */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.05] pointer-events-none" style={{ width: '100%', height: '120%', zIndex: 1 }}>
-                    <svg viewBox="0 0 400 300" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      {/* Connection lines around tile */}
-                      <path d="M50 80 Q200 50 350 80" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
-                      <path d="M50 220 Q200 250 350 220" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
-                      
-                      {/* Buyer icon (top left) */}
-                      <circle cx="50" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
-                      <path d="M50 68 L50 55 M45 63 L55 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
-                      
-                      {/* Seller icon (top right) */}
-                      <circle cx="350" cy="80" r="12" stroke="currentColor" strokeWidth="2" className="text-gray-800"/>
-                      <path d="M350 68 L350 55 M345 63 L355 63" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-800"/>
-                      
-                      {/* Enquiry box (top center) */}
-                      <rect x="170" y="40" width="60" height="35" stroke="currentColor" strokeWidth="2" rx="4" className="text-gray-800"/>
-                      <path d="M175 52 L225 52 M175 60 L210 60" stroke="currentColor" strokeWidth="1.5" className="text-gray-800"/>
-                      
-                      {/* Trust badge (bottom center) */}
-                      <circle cx="200" cy="250" r="10" stroke="currentColor" strokeWidth="2" className="text-blue-600"/>
-                      <path d="M196 250 L199 253 L204 247" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"/>
-                      
-                      {/* Decorative dots */}
-                      <circle cx="80" cy="150" r="3" fill="currentColor" className="text-gray-600"/>
-                      <circle cx="320" cy="150" r="3" fill="currentColor" className="text-gray-600"/>
-                    </svg>
-                  </div>
-                  
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6 relative z-10">
                     {/* Seller Info - Mobile optimized */}
                     <div className="flex items-center flex-1 min-w-0 w-full lg:w-auto">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                          <h4 className="font-black text-sm sm:text-base lg:text-xl text-black truncate">{getSellerCode(response.sellerId)}</h4>
+                          <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black truncate border border-black rounded px-2 py-1">{getSellerCode(response.sellerId)}</h4>
+                          <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black">Seller {index + 1}/{visibleResponses.length}</span>
                         </div>
                       </div>
                     </div>
@@ -835,30 +915,33 @@ const EnquiryResponsesPage = () => {
                       <div className="absolute inset-2 rounded-xl sm:rounded-2xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                       
                       {/* Content */}
-                      <div className="relative z-10">
-                        <div className="flex items-center justify-center space-x-2.5 sm:space-x-3 mb-4 sm:mb-5">
-                          <div className="relative w-7 h-7 sm:w-9 sm:h-9 lg:w-11 lg:h-11 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"
-                            style={{
-                              transform: 'translateZ(10px)'
-                            }}
-                          >
-                            <span className="text-gray-800 text-base sm:text-lg lg:text-xl font-black drop-shadow-sm">₹</span>
-                        </div>
-                          <span className="text-xs sm:text-sm lg:text-base font-bold text-gray-800 tracking-wider drop-shadow-sm"
+                      <div className="relative z-10 flex items-center min-h-full py-4 sm:py-6 lg:py-8">
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 tracking-tight drop-shadow-sm flex items-center"
                             style={{
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}
-                          >Seller's Quote</span>
-                      </div>
-                        <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-black leading-none text-center transform group-hover/quote:scale-105 transition-transform duration-300"
-                          style={{
-                            transform: 'translateZ(15px)',
-                            textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15)'
-                          }}
-                        >
-                        {response.price?.includes('₹') ? response.price : `₹${response.price || 'N/A'}`}
-                      </p>
+                          >Seller {index + 1} offer</span>
+                          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-600 mx-2 sm:mx-3 lg:mx-4 flex-shrink-0" style={{ transform: 'translateZ(10px)' }} />
+                          <div className="flex items-center space-x-1 sm:space-x-1.5">
+                            <div className="relative w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"
+                              style={{
+                                transform: 'translateZ(10px)'
+                              }}
+                            >
+                              <span className="text-gray-800 text-xs sm:text-sm lg:text-base font-black drop-shadow-sm">₹</span>
+                            </div>
+                            <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-black leading-none transform group-hover/quote:scale-105 transition-transform duration-300"
+                              style={{
+                                transform: 'translateZ(15px)',
+                                textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15)'
+                              }}
+                            >
+                              {response.price?.includes('₹') ? response.price.replace('₹', '') : response.price || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       
                       {/* Hover glow effect */}
@@ -871,12 +954,12 @@ const EnquiryResponsesPage = () => {
                 {/* Message & Notes Group - Mobile optimized */}
                 <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
                   {/* Message Section - Mobile optimized */}
-                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200 border border-gray-300">
                     <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
                         <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                       </div>
-                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message</span>
+                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message from the seller</span>
                     </div>
                     <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
                       <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
@@ -940,9 +1023,9 @@ const EnquiryResponsesPage = () => {
                 
                 {/* Footer Section - Mobile optimized */}
                 <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2 lg:pt-3">
-                  {/* Privacy message */}
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-black text-center font-normal italic">
-                    Engage with verified sellers while your identity stays private.
+                  {/* Security message */}
+                  <p className="text-[8px] sm:text-[10px] lg:text-xs text-gray-600 text-center font-normal mb-2 sm:mb-3">
+                    Finalize deals securely, with optional contact exchange through encrypted chat.
                   </p>
                   
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
