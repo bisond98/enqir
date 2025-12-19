@@ -97,6 +97,32 @@
     @apply items-center justify-between;
   }
   
+  /* Mobile list view card flex proportions - 75% black, 25% white */
+  .mobile-black-section {
+    flex: 1 1 75% !important;
+    flex-grow: 3 !important;
+    flex-basis: 75% !important;
+  }
+  
+  .mobile-white-section {
+    flex: 1 1 25% !important;
+    flex-basis: 25% !important;
+  }
+  
+  /* Desktop: revert to 50/50 */
+  @media (min-width: 640px) {
+    .mobile-black-section {
+      flex: 1 1 50% !important;
+      flex-grow: 1 !important;
+      flex-basis: 50% !important;
+    }
+    
+    .mobile-white-section {
+      flex: 1 1 50% !important;
+      flex-basis: 50% !important;
+    }
+  }
+  
   .mobile-gap {
     @apply gap-3;
   }
