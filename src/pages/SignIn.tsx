@@ -501,7 +501,7 @@ const SignIn = () => {
               {error && (
                 <Alert className="mb-4 sm:mb-6 border border-red-200 bg-red-50 rounded-lg relative z-20">
                   <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
-                  <AlertDescription className="text-xs sm:text-sm text-red-800 ml-2">
+                  <AlertDescription className="text-[10px] sm:text-xs text-red-800 ml-2 whitespace-nowrap">
                     {error}
                   </AlertDescription>
                 </Alert>

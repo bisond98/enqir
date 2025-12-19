@@ -217,9 +217,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error: new Error('Phone authentication disabled') };
       }
     } catch (error: any) {
+      let errorTitle = 'Sign up failed';
+      let errorDescription = error.message;
+      
+      // Handle weak password error with cleaner message
+      if (error.code === 'auth/weak-password') {
+        errorTitle = 'Password should be at least 6 characters';
+        errorDescription = '';
+      }
+      
       toast({
-        title: 'Sign up failed',
-        description: error.message,
+        title: errorTitle,
+        description: errorDescription,
         variant: 'destructive',
       });
       setLoading(false);
