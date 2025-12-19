@@ -90,6 +90,8 @@ const EnquiryResponsesPage = () => {
   const [sortBy, setSortBy] = useState<'default' | 'price-high' | 'price-low' | 'newest' | 'oldest'>('oldest');
   // Filter state for trust-badged responses
   const [showOnlyTrustBadged, setShowOnlyTrustBadged] = useState(false);
+  // Control dropdown open state to prevent auto-opening on mobile
+  const [isTrustBadgeDropdownOpen, setIsTrustBadgeDropdownOpen] = useState(false);
 
   const sortResponses = (responses: Response[], sortType: string) => {
     console.log('🔍 SortResponses called:', { sortType, responseCount: responses.length, responses: responses.map(r => ({ id: r.id, price: r.price })) });
@@ -642,7 +644,11 @@ const EnquiryResponsesPage = () => {
             </DropdownMenu>
             
             {/* Trust Badge Filter */}
-            <DropdownMenu>
+            <DropdownMenu 
+              open={isTrustBadgeDropdownOpen} 
+              onOpenChange={setIsTrustBadgeDropdownOpen}
+              modal={true}
+            >
               <DropdownMenuTrigger asChild>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -667,17 +673,23 @@ const EnquiryResponsesPage = () => {
                   </motion.div>
                 </motion.button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
-                showOnlyTrustBadged 
-                  ? "bg-[#800020] border-[#6b0019]" 
-                  : "bg-blue-600 border-blue-700"
-              }`}>
+              <DropdownMenuContent 
+                align="end" 
+                className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 transition-all duration-200 ease-in-out ${
+                  showOnlyTrustBadged 
+                    ? "bg-[#800020] border-[#6b0019]" 
+                    : "bg-blue-600 border-blue-700"
+                }`}
+                sideOffset={8}
+              >
                 <DropdownMenuCheckboxItem
                   checked={showOnlyTrustBadged}
                   onCheckedChange={(checked) => {
                     setShowOnlyTrustBadged(checked);
+                    // Close dropdown after selection for better UX
+                    setTimeout(() => setIsTrustBadgeDropdownOpen(false), 150);
                   }}
-                  className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm text-white flex items-center justify-center text-center [&>span]:hidden ${
+                  className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm text-white flex items-center justify-center text-center [&>span]:hidden transition-colors duration-150 ${
                     showOnlyTrustBadged 
                       ? "hover:bg-[#6b0019] hover:text-white focus:bg-[#6b0019] focus:text-white" 
                       : "hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white"
