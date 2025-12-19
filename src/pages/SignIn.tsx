@@ -600,7 +600,7 @@ const SignIn = () => {
                           zIndex: 2,
                           backgroundColor: '#000000',
                           background: '#000000',
-                          boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 -2px 4px rgba(0,0,0,0.5)',
+                          boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.5)',
                           transformStyle: 'preserve-3d',
                           perspective: '1200px',
                           transform: 'translateZ(20px)'
@@ -618,7 +618,7 @@ const SignIn = () => {
                         {/* 3D Border Effect - deep black */}
                         <div className="absolute inset-0 rounded-xl border-2 border-black pointer-events-none"
                           style={{
-                            boxShadow: 'inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
+                            boxShadow: 'inset 0 -3px 6px rgba(0,0,0,0.6)',
                             zIndex: 1
                           }}
                         />
