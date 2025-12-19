@@ -592,15 +592,18 @@ const SignIn = () => {
                       
                       {/* Additional depth layer */}
                       <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" style={{ zIndex: 1 }} />
-                      {/* Animated Background Slider - High depth intense dark black selection, no shadow */}
+                      {/* Animated Background Slider - Deep black matching login button */}
                       <motion.div 
                         className="absolute top-1.5 bottom-1.5 sm:top-2 sm:bottom-2 rounded-xl pointer-events-none"
                         style={{ 
                           width: 'calc(50% - 4px)',
-                          zIndex: 0,
+                          zIndex: 2,
                           backgroundColor: '#000000',
-                          background: 'linear-gradient(180deg, #000000 0%, #000000 100%)',
-                          boxShadow: '0 4px 8px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.5)',
+                          background: '#000000',
+                          boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 -2px 4px rgba(0,0,0,0.5)',
+                          transformStyle: 'preserve-3d',
+                          perspective: '1200px',
+                          transform: 'translateZ(20px)'
                         }}
                         animate={{
                           x: activeTab === 'signin' ? '4px' : 'calc(100% + 4px)',
@@ -612,26 +615,19 @@ const SignIn = () => {
                           mass: 0.5
                         }}
                       >
-                        {/* 3D Border Effect for selection */}
-                        <div className="absolute inset-0 rounded-xl border border-black/80 pointer-events-none" 
+                        {/* 3D Border Effect - deep black */}
+                        <div className="absolute inset-0 rounded-xl border-2 border-black pointer-events-none"
                           style={{
-                            boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.6)',
+                            boxShadow: 'inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
                             zIndex: 1
                           }}
                         />
-                        
-                        {/* Top highlight for 3D effect */}
-                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-xl bg-gradient-to-b from-white/15 via-white/5 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                        
-                        {/* Side highlights for depth */}
-                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-xl bg-gradient-to-r from-white/10 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-xl bg-gradient-to-l from-white/10 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                        
-                        {/* Bottom shadow for depth */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-xl bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                        
+
+                        {/* Bottom shadow for depth only */}
+                        <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl bg-gradient-to-t from-black via-black to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
                         {/* Inner depth shadow */}
-                        <div className="absolute inset-0.5 rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/50 pointer-events-none" style={{ zIndex: 1 }} />
+                        <div className="absolute inset-1 rounded-lg bg-gradient-to-br from-transparent via-transparent to-black pointer-events-none" style={{ zIndex: 1 }} />
                       </motion.div>
                       
                       {/* Log In Button - Text always visible, clear selection */}
@@ -717,19 +713,51 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-black via-gray-900 to-black hover:from-gray-900 hover:via-black hover:to-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-2 border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20 transform-gpu"
+                      style={{
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5)',
+                        transformStyle: 'preserve-3d',
+                        perspective: '1200px',
+                        transform: 'translateZ(20px)'
+                      }}
                     >
+                      {/* 3D Border Effect */}
+                      <div className="absolute inset-0 rounded-2xl border-2 border-gray-800 pointer-events-none"
+                        style={{
+                          boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
+                          zIndex: 1
+                        }}
+                      />
+
+                      {/* Top highlight for 3D effect */}
+                      <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-2xl bg-gradient-to-b from-white/20 via-white/8 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Side highlights for depth */}
+                      <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-2xl bg-gradient-to-r from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-2xl bg-gradient-to-l from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Bottom shadow for depth */}
+                      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-2xl bg-gradient-to-t from-black/80 via-black/50 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Inner depth shadow */}
+                      <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/60 pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Additional depth layer */}
+                      <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/8 via-transparent to-black/40 pointer-events-none" style={{ zIndex: 1 }} />
+
                       {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent rounded-2xl pointer-events-none" style={{ zIndex: 2 }} />
+                      
                       {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" style={{ zIndex: 2 }} />
+                          
                           {loading ? (
-                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                        <div className="flex items-center justify-center space-x-3 relative z-10" style={{ transform: 'translateZ(10px)' }}>
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Logging in...</span>
                         </div>
                           ) : (
-                        <span className="relative z-10">Log In</span>
+                        <span className="relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Log In</span>
                           )}
                     </Button>
                   </form>
@@ -797,19 +825,51 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20"
+                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-black via-gray-900 to-black hover:from-gray-900 hover:via-black hover:to-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-2 border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20 transform-gpu"
+                      style={{
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5)',
+                        transformStyle: 'preserve-3d',
+                        perspective: '1200px',
+                        transform: 'translateZ(20px)'
+                      }}
                     >
+                      {/* 3D Border Effect */}
+                      <div className="absolute inset-0 rounded-2xl border-2 border-gray-800 pointer-events-none"
+                        style={{
+                          boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
+                          zIndex: 1
+                        }}
+                      />
+
+                      {/* Top highlight for 3D effect */}
+                      <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-2xl bg-gradient-to-b from-white/20 via-white/8 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Side highlights for depth */}
+                      <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-2xl bg-gradient-to-r from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+                      <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-2xl bg-gradient-to-l from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Bottom shadow for depth */}
+                      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-2xl bg-gradient-to-t from-black/80 via-black/50 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Inner depth shadow */}
+                      <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/60 pointer-events-none" style={{ zIndex: 1 }} />
+
+                      {/* Additional depth layer */}
+                      <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/8 via-transparent to-black/40 pointer-events-none" style={{ zIndex: 1 }} />
+
                       {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent rounded-2xl pointer-events-none" style={{ zIndex: 2 }} />
+                      
                       {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" style={{ zIndex: 2 }} />
+                          
                           {loading ? (
-                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                        <div className="flex items-center justify-center space-x-3 relative z-10" style={{ transform: 'translateZ(10px)' }}>
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Creating account...</span>
                         </div>
                           ) : (
-                        <span className="relative z-10">Create Account</span>
+                        <span className="relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Create Account</span>
                           )}
                     </Button>
                   </form>
@@ -874,13 +934,13 @@ const SignIn = () => {
                   <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
                 </linearGradient>
                 <radialGradient id="cyanGlow-signin" cx="50%" cy="50%">
-                  <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 0.6 }} />
-                  <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.5 }} />
-                  <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.4 }} />
-                  <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.3 }} />
+                  <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
+                  <stop offset="40%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.6 }} />
+                  <stop offset="70%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.4 }} />
+                  <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
                 </radialGradient>
                 <radialGradient id="eyeHighlight-signin" cx="30%" cy="30%">
-                  <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
+                  <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
                   <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
                 </radialGradient>
               </defs>
@@ -898,8 +958,8 @@ const SignIn = () => {
                     <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
                       <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                     </rect>
-                    <text x="50" y="63" fontSize="3" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+                    <text x="50" y="63" fontSize="3.5" fill="#666666" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.8">
+                      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
                       ENQIR
                     </text>
                     {/* Dynamic body animations - more frequent and engaging movements */}
@@ -1221,7 +1281,7 @@ const SignIn = () => {
                 
                 {/* Eyes */}
                 <g id="eyes-group-signin">
-                  <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                  <ellipse cx="44" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)">
                     {/* Dynamic eye animations based on action */}
                     {robotAction === 'celebrate' && (
                       <>
@@ -1253,7 +1313,7 @@ const SignIn = () => {
                       </>
                     )}
                   </ellipse>
-                  <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)" style={{ filter: 'url(#cyan-glow-signin)' }}>
+                  <ellipse cx="56" cy="28" rx="3.5" ry="4" fill="url(#cyanGlow-signin)">
                     {/* Dynamic eye animations based on action */}
                     {robotAction === 'celebrate' && (
                       <>
