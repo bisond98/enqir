@@ -5629,11 +5629,16 @@ export default function EnquiryWall() {
                             
                             {/* Category */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
-                              <div>
-                                <Badge variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                  <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
-                                </Badge>
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3">
+                                {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                  ? enquiry.categories
+                                  : enquiry.category ? [enquiry.category] : []
+                                ).map((cat, index) => (
+                                  <Badge key={index} variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                    <span className="relative z-10">{cat.replace('-', ' ')}</span>
+                                  </Badge>
+                                ))}
                               </div>
                             </div>
                           </div>
@@ -5646,12 +5651,21 @@ export default function EnquiryWall() {
                           {/* Desktop Layout */}
                           <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-center w-full relative">
                             {/* All Content Elements in Order */}
-                            <div className="flex flex-nowrap items-center gap-1 sm:gap-2 md:gap-3 justify-center min-w-0 overflow-x-auto mt-4 sm:mt-6 lg:mt-8">
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-center w-full mt-4 sm:mt-6 lg:mt-8">
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                <span className="relative z-10">{enquiry.category.replace('-', ' ')}</span>
-                              </Badge>
+                              {(() => {
+                                const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                  ? enquiry.categories
+                                  : enquiry.category ? [enquiry.category] : []
+                                ).filter(cat => cat && typeof cat === 'string');
+                                
+                                return categoriesToShow.map((cat, index) => (
+                                  <Badge key={index} variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                    <span className="relative z-10">{String(cat).replace('-', ' ')}</span>
+                                  </Badge>
+                                ));
+                              })()}
                             </div>
                             
                             {/* Right: Action Button - Desktop */}
@@ -5741,9 +5755,20 @@ export default function EnquiryWall() {
                             {/* Category - In a line above Sell Button (Mobile Only) */}
                             <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
                               {/* Category */}
-                              <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
-                                <span>{enquiry.category.replace('-', ' ')}</span>
-                              </Badge>
+                              <div className="flex flex-wrap gap-1 justify-center">
+                                {(() => {
+                                  const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                    ? enquiry.categories
+                                    : enquiry.category ? [enquiry.category] : []
+                                  ).filter(cat => cat && typeof cat === 'string');
+                                  
+                                  return categoriesToShow.map((cat, index) => (
+                                    <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
+                                      <span>{String(cat).replace('-', ' ')}</span>
+                                    </Badge>
+                                  ));
+                                })()}
+                              </div>
                             </div>
                             
                             {/* Action Button - Mobile Only - At Bottom */}
