@@ -19,47 +19,14 @@ import { toast } from "@/hooks/use-toast";
 // Santa Skating Animation Component - Pure visual, no logic impact
 const SantaSkatingAnimation = () => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    // Check for prefers-reduced-motion
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    
-    // Handle tab visibility - pause when tab is inactive
-    const handleVisibilityChange = () => {
-      setIsPaused(document.hidden);
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  // Apply paused class when tab is inactive or reduced motion is preferred
-  useEffect(() => {
+    // Ensure animation runs continuously
     if (imgRef.current) {
-      if (isPaused || prefersReducedMotion) {
-        imgRef.current.classList.add('paused');
-        console.log('Animation paused:', { isPaused, prefersReducedMotion });
-      } else {
-        imgRef.current.classList.remove('paused');
-        console.log('Animation active');
-        // Force animation to start
-        imgRef.current.style.animation = 'santaSkating 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite';
-      }
+      imgRef.current.style.animation = 'santaSkating 8s linear infinite';
+      imgRef.current.style.animationPlayState = 'running';
     }
-  }, [isPaused, prefersReducedMotion]);
+  }, []);
 
   return (
     <div 

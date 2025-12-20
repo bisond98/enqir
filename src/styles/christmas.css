@@ -109,6 +109,7 @@
 /* Subtle border decorations */
 .christmas-border-top,
 .christmas-border-bottom {
+  display: none !important;
   position: fixed;
   left: 0;
   right: 0;
@@ -253,15 +254,15 @@
   }
 }
 
-/* Apply animation with premium easing - slow and smooth */
+/* Apply animation with constant speed - no slowing down */
 .santa-skating-image {
-  animation: santaSkating 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite !important;
+  animation: santaSkating 8s linear infinite !important;
   animation-fill-mode: both !important;
   animation-delay: 0s !important;
 }
 
-.santa-skating-image.paused {
-  animation-play-state: paused !important;
+.santa-skating-image {
+  animation-play-state: running !important;
 }
 
 /* Respect prefers-reduced-motion - only disable if user explicitly prefers reduced motion */

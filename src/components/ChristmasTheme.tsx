@@ -104,8 +104,6 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
       )}
       
       {/* Subtle border decorations */}
-      <div className="christmas-border-top"></div>
-      <div className="christmas-border-bottom"></div>
       
       {children}
     </div>
