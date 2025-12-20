@@ -2,13 +2,23 @@ import { useMemo } from 'react';
 
 export const HeaderSnow = () => {
   // Memoize snowflake data to ensure consistency across environments
+  // Use a seeded random function for consistent results
+  const seededRandom = (seed: number) => {
+    let value = seed;
+    return () => {
+      value = (value * 9301 + 49297) % 233280;
+      return value / 233280;
+    };
+  };
+
   const snowflakes = useMemo(() => {
+    const random = seededRandom(12345); // Fixed seed for consistency
     return [...Array(40)].map((_, i) => ({
       id: i,
-      left: Math.random() * 100,
-      animationDelay: Math.random() * 6,
-      animationDuration: 3 + Math.random() * 5,
-      fontSize: 8 + Math.random() * 10
+      left: random() * 100,
+      animationDelay: random() * 6,
+      animationDuration: 3 + random() * 5,
+      fontSize: 8 + random() * 10
     }));
   }, []); // Empty dependency array - only generate once
 

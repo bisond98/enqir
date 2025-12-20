@@ -29,13 +29,29 @@
 .header-snowflake {
   position: absolute;
   top: 0;
-  color: rgba(255, 255, 255, 0.9) !important; /* Force white color */
-  font-size: 1em;
+  color: #ffffff !important; /* Force pure white color */
+  font-size: 1em !important;
   animation: headerFall linear infinite;
   user-select: none;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important; /* Ensure white shadow */
   will-change: transform;
-  filter: brightness(1) !important; /* Prevent color shifts */
+  filter: brightness(1) saturate(1) !important; /* Prevent color shifts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 0.9 !important;
+  /* Override any parent color inheritance */
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Mobile-specific overrides for consistency */
+@media (max-width: 768px) {
+  .header-snowflake {
+    color: #ffffff !important;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important;
+    filter: brightness(1) saturate(1) !important;
+    opacity: 0.9 !important;
+  }
 }
 
 @keyframes headerFall {
@@ -58,12 +74,28 @@
 .snowflake {
   position: absolute;
   top: -10px;
-  color: rgba(255, 255, 255, 0.8) !important; /* Force white color */
-  font-size: 1em;
+  color: #ffffff !important; /* Force pure white color */
+  font-size: 1em !important;
   animation: fall linear infinite;
   user-select: none;
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.5) !important; /* Ensure white shadow */
-  filter: brightness(1) !important; /* Prevent color shifts */
+  filter: brightness(1) saturate(1) !important; /* Prevent color shifts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 0.8 !important;
+  /* Override any parent color inheritance */
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Mobile-specific overrides for consistency */
+@media (max-width: 768px) {
+  .snowflake {
+    color: #ffffff !important;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5) !important;
+    filter: brightness(1) saturate(1) !important;
+    opacity: 0.8 !important;
+  }
 }
 
 @keyframes fall {

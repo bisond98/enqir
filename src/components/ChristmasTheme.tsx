@@ -59,13 +59,23 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   // Memoize snowflake data to ensure consistency across environments
+  // Use a seeded random function for consistent results
+  const seededRandom = (seed: number) => {
+    let value = seed;
+    return () => {
+      value = (value * 9301 + 49297) % 233280;
+      return value / 233280;
+    };
+  };
+
   const landingSnowflakes = useMemo(() => {
+    const random = seededRandom(54321); // Fixed seed for consistency (different from header)
     return [...Array(50)].map((_, i) => ({
       id: i,
-      left: Math.random() * 100,
-      animationDelay: Math.random() * 5,
-      animationDuration: 3 + Math.random() * 5,
-      fontSize: 8 + Math.random() * 8
+      left: random() * 100,
+      animationDelay: random() * 5,
+      animationDuration: 3 + random() * 5,
+      fontSize: 8 + random() * 8
     }));
   }, []); // Empty dependency array - only generate once
 
