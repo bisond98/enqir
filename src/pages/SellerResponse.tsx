@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check } from "lucide-react";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
@@ -1198,8 +1199,9 @@ const SellerResponse = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Enhanced Header */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
                 <Button

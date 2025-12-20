@@ -41,16 +41,72 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const chatThreadMap = new Map<string, ChatThread>();
 
-      // 1. Load all chat messages where user has sent or received messages
-      const chatMessagesQuery = query(collection(db, "chatMessages"));
-      const chatMessagesSnapshot = await getDocs(chatMessagesQuery);
+      // 1. Load chat messages where user has sent or received messages (optimized with filters)
+      // Query messages where user is the sender
+      const sentMessagesQuery = query(
+        collection(db, "chatMessages"),
+        where("senderId", "==", user.uid)
+      );
+      
+      // Query messages where user is the seller (they responded to enquiry)
+      const receivedAsSellerQuery = query(
+        collection(db, "chatMessages"),
+        where("sellerId", "==", user.uid)
+      );
+      
+      // Execute both queries in parallel
+      const [sentMessagesSnapshot, receivedAsSellerSnapshot] = await Promise.all([
+        getDocs(sentMessagesQuery),
+        getDocs(receivedAsSellerQuery)
+      ]);
+      
+      // Combine results and deduplicate
+      const allMessageDocs = new Map<string, any>();
+      sentMessagesSnapshot.forEach((doc) => {
+        allMessageDocs.set(doc.id, doc);
+      });
+      receivedAsSellerSnapshot.forEach((doc) => {
+        allMessageDocs.set(doc.id, doc);
+      });
+      
+      // Also check for messages where user is the buyer (they posted the enquiry)
+      // We need to get enquiries first, then check messages for those enquiries
+      const buyerEnquiriesQuery = query(
+        collection(db, "enquiries"),
+        where("userId", "==", user.uid)
+      );
+      const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
+      const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
+      
+      // Query messages for buyer's enquiries
+      if (buyerEnquiryIds.length > 0) {
+        // Firestore 'in' query limit is 10, so we need to batch if more than 10
+        const buyerEnquiryBatches = [];
+        for (let i = 0; i < buyerEnquiryIds.length; i += 10) {
+          buyerEnquiryBatches.push(buyerEnquiryIds.slice(i, i + 10));
+        }
+        
+        const buyerMessagePromises = buyerEnquiryBatches.map(batch =>
+          getDocs(query(
+            collection(db, "chatMessages"),
+            where("enquiryId", "in", batch)
+          ))
+        );
+        
+        const buyerMessageSnapshots = await Promise.all(buyerMessagePromises);
+        buyerMessageSnapshots.forEach(snapshot => {
+          snapshot.forEach((doc) => {
+            allMessageDocs.set(doc.id, doc);
+          });
+        });
+      }
       
       // Process messages to find chats where user is involved
       // First pass: Collect all unique enquiry IDs and build thread map
       const enquiryIds = new Set<string>();
       const messageThreadData = new Map<string, { enquiryId: string; sellerId: string; senderId: string; messageData: any }>();
       
-      chatMessagesSnapshot.forEach((messageDoc) => {
+      allMessageDocs.forEach((messageDoc) => {
         const messageData = messageDoc.data();
         const enquiryId = messageData.enquiryId;
         const sellerId = messageData.sellerId;
@@ -450,7 +506,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return bTime - aTime;
       });
 
+      // Update chats immediately as they're ready - don't wait
       setAllChats(enrichedThreads);
+      // Only set loading to false after we have results (even if empty)
       setLoading(false);
     } catch (error) {
       console.error("Error loading active chats:", error);

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -761,8 +762,9 @@ const HelpGuide = () => {
         }}
       >
         {/* Header - Matching Dashboard Style - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
@@ -1208,20 +1210,38 @@ const HelpGuide = () => {
                       <animate attributeName="opacity" values="0.12;0.15;0.12" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                     </ellipse>
                     
-                    {/* Body - smooth pill-shaped torso, floating */}
+                    {/* Body - Santa Suit */}
                     <g id="body-group">
-                      <ellipse cx="50" cy="65" rx="28" ry="32" fill="url(#whiteMatte-helpguide)" stroke="none"/>
-                      <ellipse cx="50" cy="65" rx="26" ry="30" fill="url(#lightGrey-helpguide)"/>
-                      
-                      {/* Chest panel with Enqir Assistant - smoother */}
-                      <rect x="35" y="58" width="30" height="10" rx="2.5" fill="#1a1a1a" opacity="0.92">
-                        <animate attributeName="opacity" values="0.92;0.95;0.92" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      {/* Red Santa suit base */}
+                      <ellipse cx="50" cy="65" rx="28" ry="32" fill="#dc2626" stroke="#991b1b" strokeWidth="0.5"/>
+                      <ellipse cx="50" cy="65" rx="26" ry="30" fill="#ef4444"/>
+                      {/* Black belt */}
+                      <rect x="30" y="58" width="40" height="5" rx="1.5" fill="#1a1a1a" opacity="0.95">
+                        <animate attributeName="opacity" values="0.95;1;0.95" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                       </rect>
-                      <text x="50" y="64" fontSize="4" fill="#00d4ff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.95">
+                      {/* Belt buckle */}
+                      <rect x="45" y="58" width="10" height="5" rx="1" fill="#fbbf24" stroke="#d97706" strokeWidth="0.5"/>
+                      {/* White fur trim at bottom */}
+                      <ellipse cx="50" cy="92" rx="28" ry="4" fill="#ffffff" opacity="0.95"/>
+                      {/* Chest panel with Enqir Assistant */}
+                      <rect x="35" y="52" width="30" height="8" rx="2" fill="#1a1a1a" opacity="0.85">
+                        <animate attributeName="opacity" values="0.85;0.95;0.85" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                      </rect>
+                      <text x="50" y="58" fontSize="4" fill="#ffffff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.95">
                         <animate attributeName="opacity" values="0.95;1;0.95" dur="3s" repeatCount="indefinite"/>
                         ENQIR
                       </text>
-                      <text x="50" y="67.5" fontSize="3" fill="#ffffff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.9">ASSISTANT</text>
+                      <text x="50" y="61.5" fontSize="2.5" fill="#ffffff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.9">ASSISTANT</text>
+                      {/* Santa buttons */}
+                      <circle cx="50" cy="68" r="2" fill="#ffffff" opacity="0.9">
+                        <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="50" cy="74" r="2" fill="#ffffff" opacity="0.9">
+                        <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" begin="0.3s"/>
+                      </circle>
+                      <circle cx="50" cy="80" r="2" fill="#ffffff" opacity="0.9">
+                        <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" begin="0.6s"/>
+                      </circle>
                       
                       {/* Body floating animation - smoother easing */}
                       <animateTransform
@@ -1241,13 +1261,53 @@ const HelpGuide = () => {
                       <ellipse cx="50" cy="30" rx="22" ry="26" fill="url(#whiteMatte-helpguide)" stroke="none"/>
                       <ellipse cx="50" cy="30" rx="20" ry="24" fill="url(#lightGrey-helpguide)"/>
                       
-                      {/* Antenna on top - smoother */}
-                      <line x1="50" y1="8" x2="50" y2="12" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round">
+                      {/* Christmas Cap */}
+                      <g id="christmas-cap-helpguide">
+                        {/* Cap base - red */}
+                        <path d="M 28 15 Q 50 5 72 15 L 72 22 Q 50 12 28 22 Z" fill="#dc2626" stroke="#991b1b" strokeWidth="0.5">
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0,-0.5; 0,0"
+                            dur="5s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                          />
+                        </path>
+                        {/* White fur trim */}
+                        <path d="M 28 22 Q 50 12 72 22" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round">
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0,-0.5; 0,0"
+                            dur="5s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                          />
+                        </path>
+                        {/* White pom-pom */}
+                        <circle cx="50" cy="5" r="3" fill="#ffffff" stroke="#e5e5e5" strokeWidth="0.3">
+                          <animate attributeName="r" values="3;3.3;3" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                          <animateTransform
+                            attributeName="transform"
+                            type="translate"
+                            values="0,0; 0,-0.5; 0,0"
+                            dur="5s"
+                            repeatCount="indefinite"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                            keyTimes="0;0.5;1"
+                          />
+                        </circle>
+                      </g>
+                      {/* Original antenna - hidden behind cap */}
+                      <line x1="50" y1="8" x2="50" y2="12" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round" opacity="0" style={{ display: 'none' }}>
                         <animate attributeName="y2" values="12;11.5;12" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                       </line>
-                      <circle cx="50" cy="8" r="2.5" fill="#ffffff">
-                        <animate attributeName="r" values="2.5;2.8;2.5" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
-                      </circle>
                       
                       {/* Head floating animation - smoother with different phase */}
                       <animateTransform
@@ -1270,6 +1330,18 @@ const HelpGuide = () => {
                       </ellipse>
                       {/* Subtle screen reflection */}
                       <ellipse cx="50" cy="28" rx="12" ry="8" fill="url(#eyeHighlight-helpguide)" opacity="0.15"/>
+                      
+                      {/* Santa Beard */}
+                      <g id="santa-beard-helpguide">
+                        {/* Main beard shape */}
+                        <path d="M 32 42 Q 50 55 68 42 Q 50 52 32 42" fill="#ffffff" stroke="#e5e5e5" strokeWidth="0.4" opacity="0.95">
+                          <animate attributeName="opacity" values="0.95;1;0.95" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                        </path>
+                        {/* Beard texture lines */}
+                        <path d="M 38 44 Q 50 52 62 44" fill="none" stroke="#d1d5db" strokeWidth="0.3" opacity="0.4"/>
+                        <path d="M 36 46 Q 50 54 64 46" fill="none" stroke="#d1d5db" strokeWidth="0.3" opacity="0.4"/>
+                        <path d="M 34 48 Q 50 56 66 48" fill="none" stroke="#d1d5db" strokeWidth="0.3" opacity="0.4"/>
+                      </g>
                       
                       {/* Eyes - cyan/teal glowing ovals with smooth animations */}
                       <g id="eyes-group">

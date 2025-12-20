@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 // Trigger Vercel deployment
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -693,8 +694,9 @@ const Profile = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Seller Form Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">

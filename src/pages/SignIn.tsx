@@ -879,17 +879,34 @@ const SignIn = () => {
                 <animate attributeName="opacity" values="0.08;0.1;0.08" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
               </ellipse>
               
-                  {/* Body */}
+                  {/* Body - Santa Suit */}
                   <g id="body-group-signin">
-                    <ellipse cx="50" cy="65" rx="18" ry="20" fill="url(#whiteMatte-signin)" stroke="none"/>
-                    <ellipse cx="50" cy="65" rx="16" ry="18" fill="url(#lightGrey-signin)"/>
-                    <rect x="38" y="58" width="24" height="8" rx="2" fill="#1a1a1a" opacity="0.6">
-                      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    {/* Red Santa suit base */}
+                    <ellipse cx="50" cy="65" rx="18" ry="20" fill="#dc2626" stroke="#991b1b" strokeWidth="0.5"/>
+                    <ellipse cx="50" cy="65" rx="16" ry="18" fill="#ef4444"/>
+                    {/* Black belt */}
+                    <rect x="32" y="60" width="36" height="4" rx="1" fill="#1a1a1a" opacity="0.9">
+                      <animate attributeName="opacity" values="0.9;1;0.9" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                     </rect>
-                    <text x="50" y="63" fontSize="3.5" fill="#666666" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.8">
-                      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                    {/* Belt buckle */}
+                    <rect x="47" y="60" width="6" height="4" rx="0.5" fill="#fbbf24" stroke="#d97706" strokeWidth="0.3"/>
+                    {/* White fur trim at bottom */}
+                    <ellipse cx="50" cy="82" rx="18" ry="3" fill="#ffffff" opacity="0.95"/>
+                    {/* Chest panel with text */}
+                    <rect x="38" y="55" width="24" height="6" rx="1.5" fill="#1a1a1a" opacity="0.7">
+                      <animate attributeName="opacity" values="0.7;0.9;0.7" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                    </rect>
+                    <text x="50" y="59" fontSize="3.5" fill="#ffffff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.95">
+                      <animate attributeName="opacity" values="0.95;1;0.95" dur="2s" repeatCount="indefinite"/>
                       ENQIR
                     </text>
+                    {/* Santa buttons */}
+                    <circle cx="50" cy="70" r="1.5" fill="#ffffff" opacity="0.9">
+                      <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="50" cy="75" r="1.5" fill="#ffffff" opacity="0.9">
+                      <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" begin="0.3s"/>
+                    </circle>
                     {/* Dynamic body animations - more frequent and engaging movements */}
                     {/* Extra effort animation when pushing text - body shakes/vibrates */}
                     {isPushingText && (
@@ -1081,12 +1098,53 @@ const SignIn = () => {
                   <g id="head-group-signin">
                     <ellipse cx="50" cy="30" rx="14" ry="16" fill="url(#whiteMatte-signin)" stroke="none"/>
                     <ellipse cx="50" cy="30" rx="12" ry="14" fill="url(#lightGrey-signin)"/>
-                    <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
+                    {/* Christmas Cap */}
+                    <g id="christmas-cap-signin">
+                      {/* Cap base - red */}
+                      <path d="M 35 18 Q 50 8 65 18 L 65 25 Q 50 15 35 25 Z" fill="#dc2626" stroke="#991b1b" strokeWidth="0.5">
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-0.5; 0,0"
+                          dur="3s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                      </path>
+                      {/* White fur trim */}
+                      <path d="M 35 25 Q 50 15 65 25" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round">
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-0.5; 0,0"
+                          dur="3s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                      </path>
+                      {/* White pom-pom */}
+                      <circle cx="50" cy="8" r="2.5" fill="#ffffff" stroke="#e5e5e5" strokeWidth="0.3">
+                        <animate attributeName="r" values="2.5;2.8;2.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                        <animateTransform
+                          attributeName="transform"
+                          type="translate"
+                          values="0,0; 0,-0.5; 0,0"
+                          dur="3s"
+                          repeatCount="indefinite"
+                          calcMode="spline"
+                          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+                          keyTimes="0;0.5;1"
+                        />
+                      </circle>
+                    </g>
+                    {/* Original antenna - hidden behind cap */}
+                    <line x1="50" y1="8" x2="50" y2="11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" opacity="0" style={{ display: 'none' }}>
                       <animate attributeName="y2" values="11;9.5;11;10;11" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
                     </line>
-                    <circle cx="50" cy="8" r="1.5" fill="#ffffff" opacity="0.6">
-                      <animate attributeName="r" values="1.5;2.2;1.5;2;1.5" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.25;0.5;0.75;1"/>
-                    </circle>
                     {/* Dynamic head animations based on action */}
                     {robotAction === 'jump' && (
                       <animateTransform
@@ -1206,6 +1264,17 @@ const SignIn = () => {
                   <animate attributeName="opacity" values="0.6;0.65;0.6" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
                 </ellipse>
                 <ellipse cx="50" cy="28" rx="8" ry="6" fill="url(#eyeHighlight-signin)" opacity="0.1"/>
+                
+                {/* Santa Beard */}
+                <g id="santa-beard-signin">
+                  {/* Main beard shape */}
+                  <path d="M 38 40 Q 50 50 62 40 Q 50 48 38 40" fill="#ffffff" stroke="#e5e5e5" strokeWidth="0.3" opacity="0.95">
+                    <animate attributeName="opacity" values="0.95;1;0.95" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1"/>
+                  </path>
+                  {/* Beard texture lines */}
+                  <path d="M 42 42 Q 50 48 58 42" fill="none" stroke="#d1d5db" strokeWidth="0.2" opacity="0.4"/>
+                  <path d="M 40 44 Q 50 50 60 44" fill="none" stroke="#d1d5db" strokeWidth="0.2" opacity="0.4"/>
+                </g>
                 
                 {/* Eyes */}
                 <g id="eyes-group-signin">

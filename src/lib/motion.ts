@@ -7,7 +7,7 @@ export const fadeInUp: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -17,8 +17,9 @@ export const staggerContainer: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05
+      staggerChildren: 0.08,
+      delayChildren: 0.03,
+      ease: [0.16, 1, 0.3, 1]
     }
   }
 };
@@ -29,7 +30,7 @@ export const scaleIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -39,7 +40,7 @@ export const slideInFromLeft: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -48,7 +49,7 @@ export const slideInFromRight: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -57,23 +58,23 @@ export const hoverScale = {
   rest: { scale: 1 },
   hover: {
     scale: 1.02,
-    transition: { duration: 0.2, ease: "easeOut" }
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
   },
-  tap: { scale: 0.98 }
+  tap: { scale: 0.98, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }
 };
 
 export const hoverLift = {
   rest: { y: 0 },
   hover: {
     y: -4,
-    transition: { duration: 0.2, ease: "easeOut" }
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
 // Button press animation
 export const buttonTap = {
   scale: 0.95,
-  transition: { duration: 0.1 }
+  transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] }
 };
 
 // Card hover effect with shadow
@@ -85,7 +86,7 @@ export const cardHover = {
   hover: {
     scale: 1.015,
     boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-    transition: { duration: 0.25, ease: "easeOut" }
+    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -96,13 +97,13 @@ export const modalVariants: Variants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
   },
   exit: {
     opacity: 0,
     scale: 0.95,
     y: 20,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -112,7 +113,7 @@ export const listItem: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.3 }
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -123,15 +124,15 @@ export const pageTransition: Variants = {
     opacity: 1,
     y: 0,
     transition: { 
-      duration: 0.5, 
-      ease: [0.22, 1, 0.36, 1],
-      staggerChildren: 0.05
+      duration: 0.6, 
+      ease: [0.16, 1, 0.3, 1],
+      staggerChildren: 0.04
     }
   },
   exit: {
     opacity: 0,
     y: -8,
-    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -140,7 +141,7 @@ export const smoothFadeIn: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -151,7 +152,7 @@ export const cardFadeIn: Variants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
   }
 };
 

@@ -6,6 +6,7 @@ import { Button } from "../components/ui/button";
 import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "../contexts/AuthContext";
 import { NotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
@@ -1394,8 +1395,9 @@ const Dashboard = () => {
         )}
 
         {/* Header - Matching Profile/Seller Form Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
@@ -1423,21 +1425,21 @@ const Dashboard = () => {
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
-                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white" />
                       Dashboard.
               </h1>
             </div>
             
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-              <div className="text-center">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3">
-                    <VerifiedUser 
-                      name={userProfile?.fullName || ''}
-                      isVerified={userProfile?.isProfileVerified || false}
-                      className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
-                    />
+                <div className="text-center">
+                  <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                    <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3 dashboard-header-no-emoji">
+                      <VerifiedUser 
+                        name={userProfile?.fullName || ''}
+                        isVerified={userProfile?.isProfileVerified || false}
+                        className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
+                      />
                     </h2>
                   </div>
                   {/* Toggle - Creative Rotating Dial Design */}
@@ -1650,7 +1652,7 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Enquiries
                     </h2>
@@ -2184,7 +2186,7 @@ const Dashboard = () => {
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <Reply className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Your Responses
                     </h2>
@@ -2564,7 +2566,7 @@ const Dashboard = () => {
               <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                 {/* Header Section with Title - Centered */}
                 <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                     <Bookmark className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                     Saved Enquiries
                   </h2>
@@ -2790,7 +2792,7 @@ const Dashboard = () => {
               <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
                 {/* Header Section with Title - Centered */}
                 <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                     <Activity className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                     Quick Actions
                   </h2>

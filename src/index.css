@@ -46,10 +46,23 @@
   [class*="transition-"],
   [class*="motion-"],
   button:hover,
-  a:hover {
-    will-change: transform;
+  a:hover,
+  [data-framer-component],
+  [data-framer-name] {
+    will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Smooth transitions for all elements */
+  * {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Override for specific fast transitions */
+  button, a, [role="button"] {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   /* Optimize scrollable containers */
@@ -228,13 +241,13 @@
 
   /* Smooth fade-in utility */
   .animate-fade-in-smooth {
-    animation: fadeInSmooth 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fadeInSmooth 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: opacity, transform;
   }
 
   /* Smooth scale fade utility */
   .animate-scale-fade-in {
-    animation: scaleFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: scaleFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: opacity, transform;
   }
   
@@ -1262,26 +1275,26 @@
 @layer utilities {
   /* Mobile-First Animations */
   .animate-slide-up {
-    animation: slideUp 0.6s ease-out forwards;
+    animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
 
   .animate-slide-down {
-    animation: slideDown 0.6s ease-out forwards;
+    animation: slideDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: opacity;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s ease-out forwards;
+    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);

@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
@@ -22,14 +23,45 @@ interface ChatThread {
   enquiryData?: any; // Store enquiry data to check status
   isDisabled?: boolean; // Mark if chat should be disabled
   unreadCount?: number; // Count of unread messages in this thread
+  isAdminChat?: boolean; // Mark if this is an admin chat (warning/suspension)
 }
 
 export default function MyChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { allChats: preloadedChats, loading: chatsLoading, refreshChats } = useChats();
-  const [allChats, setAllChats] = useState<ChatThread[]>(preloadedChats);
-  const [loading, setLoading] = useState(chatsLoading);
+  // Initialize with preloaded chats immediately - don't wait for loading state
+  // Try to load from localStorage first for instant display, then use context
+  const [allChats, setAllChats] = useState<ChatThread[]>(() => {
+    // First try to get chats from context (if already loaded)
+    if (preloadedChats && preloadedChats.length > 0) {
+      return preloadedChats;
+    }
+    // Then try localStorage cache for instant display
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('myChats_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          // Only use cache if it's recent (less than 5 minutes old)
+          if (parsed.timestamp && Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+            return parsed.chats || [];
+          }
+        }
+      } catch (e) {
+        // Ignore cache errors
+      }
+    }
+    // Fallback to context or empty array
+    return preloadedChats || [];
+  });
+  // Only show loading if we truly have no chats - show chats immediately if available
+  const [loading, setLoading] = useState(() => {
+    // If we have chats (from cache or context), never show loading
+    const hasChats = allChats.length > 0;
+    return !hasChats && chatsLoading;
+  });
+  const [visibleChatsCount, setVisibleChatsCount] = useState(4);
   const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
@@ -38,8 +70,6 @@ export default function MyChats() {
     return 'buyer';
   });
   
-  // Track if animation has been initialized to prevent double animation
-  const hasAnimated = useRef(false);
   
   // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
   // Exclude disabled/expired chats from unread counts
@@ -54,34 +84,85 @@ export default function MyChats() {
   const handleToggleView = (mode: 'buyer' | 'seller') => {
     setViewMode(mode);
     localStorage.setItem('chatsViewMode', mode);
-    // Reset animation flag when switching views
-    hasAnimated.current = false;
   };
 
-  // Filter chats based on view mode (show all chats including disabled ones)
-  const chats = allChats.filter(chat => {
-    // Filter by view mode (don't exclude disabled chats - show them as disabled)
-    if (viewMode === 'buyer') {
-      return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
-    } else {
-      return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
+  // Helper function to check if chat is expired
+  const isChatExpired = useCallback((chat: ChatThread) => {
+    if (!chat.isDisabled || !chat.enquiryData) return false;
+    
+    // Check for expired (deadline passed)
+    if (chat.enquiryData.deadline) {
+      const now = new Date();
+      const deadline = chat.enquiryData.deadline?.toDate ? chat.enquiryData.deadline.toDate() : new Date(chat.enquiryData.deadline);
+      if (deadline < now) return true;
     }
-  });
+    
+    return false;
+  }, []);
 
-  // Use preloaded chats from context
+  // Filter chats based on view mode (show all chats including disabled ones)
+  // Then sort: live chats first, then expired chats
+  // Memoize to prevent unnecessary recalculations
+  const allFilteredChats = useMemo(() => {
+    return allChats
+      .filter(chat => {
+        // Filter by view mode (don't exclude disabled chats - show them as disabled)
+        if (viewMode === 'buyer') {
+          return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
+        } else {
+          return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
+        }
+      })
+      .sort((a, b) => {
+        // Check if chats are expired
+        const aExpired = isChatExpired(a);
+        const bExpired = isChatExpired(b);
+        
+        // Live chats (not expired) come first
+        if (aExpired && !bExpired) return 1; // a is expired, b is live - b comes first
+        if (!aExpired && bExpired) return -1; // a is live, b is expired - a comes first
+        
+        // If both are same status (both live or both expired), sort by updatedAt (newest first)
+        const aTime = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : (a.updatedAt ? new Date(a.updatedAt).getTime() : 0);
+        const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : (b.updatedAt ? new Date(b.updatedAt).getTime() : 0);
+        return bTime - aTime; // Newest first
+      });
+  }, [allChats, viewMode, isChatExpired]);
+
+  // Show only visible chats (pagination)
+  const chats = allFilteredChats.slice(0, visibleChatsCount);
+  const hasMoreChats = allFilteredChats.length > visibleChatsCount;
+
+  // Reset visible count when view mode changes
   useEffect(() => {
-    if (preloadedChats && preloadedChats.length > 0) {
+    setVisibleChatsCount(4);
+  }, [viewMode]);
+
+  const loadMoreChats = () => {
+    setVisibleChatsCount(prev => prev + 4);
+  };
+
+  // Use preloaded chats from context - update immediately when available
+  useEffect(() => {
+    // Always update chats immediately when they change - don't wait for loading
+    if (preloadedChats !== undefined) {
       setAllChats(preloadedChats);
-      setLoading(false);
-    } else {
-      setLoading(chatsLoading);
+      // Cache chats to localStorage for instant display on next visit
+      if (preloadedChats.length > 0 && typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('myChats_cache', JSON.stringify({
+            chats: preloadedChats,
+            timestamp: Date.now()
+          }));
+        } catch (e) {
+          // Ignore cache errors
+        }
+      }
+      // Never show loading if we have chats, even if context is still loading
+      // Only show loading if we truly have no chats AND context is still loading
+      setLoading(preloadedChats.length === 0 && chatsLoading);
     }
   }, [preloadedChats, chatsLoading]);
-
-  // Reset animation flag when view mode changes
-  useEffect(() => {
-    hasAnimated.current = false;
-  }, [viewMode]);
 
   // Real-time listener for unread message counts - Optimized
   useEffect(() => {
@@ -290,20 +371,6 @@ export default function MyChats() {
     return 'Closed';
   };
 
-  // Helper function to check if chat is expired
-  const isChatExpired = (chat: ChatThread) => {
-    if (!chat.isDisabled || !chat.enquiryData) return false;
-    
-    // Check for expired (deadline passed)
-    if (chat.enquiryData.deadline) {
-      const now = new Date();
-      const deadline = chat.enquiryData.deadline?.toDate ? chat.enquiryData.deadline.toDate() : new Date(chat.enquiryData.deadline);
-      if (deadline < now) return true;
-    }
-    
-    return false;
-  };
-
   // Function to clear expired chats (only those visible on current page)
   const clearExpiredChats = async () => {
     if (!user?.uid) return;
@@ -366,8 +433,9 @@ export default function MyChats() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Seller Form Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
@@ -611,8 +679,19 @@ export default function MyChats() {
 
         {/* Content - Inside Container */}
         <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {loading ? (
-            <p className="text-sm text-gray-500">Loading chats…</p>
+          {loading && allChats.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl p-2.5 sm:p-4 lg:p-5 animate-pulse">
+                  <div className="flex flex-col items-center h-full">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gray-300 mb-2 sm:mb-3 lg:mb-4"></div>
+                    <div className="h-4 sm:h-5 w-3/4 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-3 sm:h-4 w-full bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 sm:h-4 w-2/3 bg-gray-200 rounded"></div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           ) : chats.length === 0 ? (
             <Card className="border-2 border-black bg-gradient-to-br from-white to-gray-50 shadow-lg p-4 sm:p-6 text-center">
               <div className="flex flex-col items-center gap-2">
@@ -628,77 +707,26 @@ export default function MyChats() {
               </div>
             </Card>
           ) : (
+            <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
               {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
-                
-                // Only animate on first render of this view
-                const shouldAnimate = !hasAnimated.current;
+                const isAdminWarning = chat.isAdminChat && chat.enquiryTitle?.includes('Warning');
                 
                 return (
-                  <motion.div
+                  <div
                     key={chat.id}
-                    initial={shouldAnimate ? { 
-                      opacity: 0, 
-                      y: 50, 
-                      scale: 0.8,
-                      rotateX: -15,
-                      rotateY: 10
-                    } : {
-                      opacity: 1,
-                      y: 0,
-                      scale: 1,
-                      rotateX: 0,
-                      rotateY: 0
-                    }}
-                    animate={{ 
-                      opacity: 1, 
-                      y: 0, 
-                      scale: 1,
-                      rotateX: 0,
-                      rotateY: 0
-                    }}
-                    transition={shouldAnimate ? { 
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 15,
-                      delay: index * 0.08,
-                      duration: 0.6
-                    } : {
-                      duration: 0
-                    }}
-                    onAnimationComplete={() => {
-                      // Mark as animated after first animation completes
-                      if (shouldAnimate && index === chats.length - 1) {
-                        hasAnimated.current = true;
-                      }
-                    }}
-                    whileHover={!isDisabled ? { 
-                      y: -8,
-                      scale: 1.05,
-                      rotateY: 5,
-                      rotateX: 2,
-                      transition: { 
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 20
-                      }
-                    } : {}}
-                    whileTap={!isDisabled ? { 
-                      scale: 0.95,
-                      rotateY: -2,
-                      transition: { duration: 0.1 }
-                    } : {}}
-                    style={{ perspective: 1000 }}
                   >
                     <Card
-                      className={`border-[0.5px] border-black bg-gradient-to-br from-white via-white to-gray-50 rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
-                        isDisabled 
-                          ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]' 
-                          : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]'
+                      className={`border-[0.5px] border-black rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                        isAdminWarning
+                          ? 'bg-[#5C1A1A] text-white'
+                          : isDisabled 
+                            ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] bg-gradient-to-br from-white via-white to-gray-50' 
+                            : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99] bg-gradient-to-br from-white via-white to-gray-50'
                       }`}
-                      onClick={() => !isDisabled && openChat(chat)}
+                      onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
                       {/* Physical button depth effect */}
                       {!isDisabled && (
@@ -821,134 +849,52 @@ export default function MyChats() {
                         </div>
                       
                         {/* Enquiry heading as tile title */}
-                        <motion.h3 
+                        <h3 
                           className={`text-xs sm:text-sm lg:text-base font-black mb-1.5 sm:mb-2 lg:mb-3 text-center line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem] ${
-                            isDisabled ? 'text-gray-500' : 'text-black'
+                            isAdminWarning ? 'text-white' : isDisabled ? 'text-gray-500' : 'text-black'
                           }`}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 + index * 0.05 }}
-                          whileHover={!isDisabled ? { 
-                            scale: 1.08,
-                            x: [0, 3, -3, 0],
-                            transition: { duration: 0.3 }
-                          } : {}}
                         >
                           {chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`}
-                        </motion.h3>
+                        </h3>
                         
                         {/* Status badge for disabled chats */}
                         {isDisabled && statusText && (
-                          <motion.div 
+                          <div 
                             className="flex justify-center mb-1.5 sm:mb-2"
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ 
-                              type: "spring",
-                              delay: 0.3,
-                              stiffness: 200
-                            }}
                           >
                             <span className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 py-0.5 bg-gray-200 text-gray-600 rounded border border-gray-300 font-semibold">
                               {statusText}
                             </span>
-                          </motion.div>
+                          </div>
                         )}
                         
                         {/* Last message preview with typing effect */}
-                        <motion.p 
+                        <p 
                           className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
-                            isDisabled ? 'text-gray-400' : 'text-gray-600'
+                            isAdminWarning ? 'text-white/90' : isDisabled ? 'text-gray-400' : 'text-gray-600'
                           }`}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ 
-                            delay: 0.25 + index * 0.05,
-                            type: "spring",
-                            stiffness: 100
-                          }}
-                          whileHover={!isDisabled ? {
-                            scale: 1.05,
-                            transition: { duration: 0.2 }
-                          } : {}}
                         >
                           {typeof chat.lastMessage === 'string' 
                             ? chat.lastMessage 
                             : (chat.lastMessage?.text || "No messages yet")}
-                        </motion.p>
+                        </p>
                         
-                        {/* Timestamp with creative animation */}
-                        <motion.div 
+                        {/* Timestamp */}
+                        <div 
                           className={`flex items-center justify-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4 ${
-                            isDisabled ? 'text-gray-400' : 'text-gray-500'
+                            isAdminWarning ? 'text-white/80' : isDisabled ? 'text-gray-400' : 'text-gray-500'
                           }`}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ 
-                            delay: 0.3 + index * 0.05,
-                            type: "spring",
-                            stiffness: 150
-                          }}
                         >
-                          <motion.div
-                            animate={!isDisabled ? {
-                              rotate: [0, 360],
-                              scale: [1, 1.2, 1],
-                            } : {}}
-                            transition={{
-                              rotate: {
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "linear"
-                              },
-                              scale: {
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }
-                            }}
-                            whileHover={!isDisabled ? {
-                              rotate: 180,
-                              scale: 1.3,
-                              transition: { duration: 0.3 }
-                            } : {}}
-                          >
-                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                          </motion.div>
-                          <motion.span 
-                            className="truncate"
-                            animate={!isDisabled ? {
-                              opacity: [1, 0.7, 1],
-                            } : {}}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          >
+                          <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          <span className="truncate">
                             {formatTime(chat.updatedAt)}
-                          </motion.span>
-                        </motion.div>
+                          </span>
+                        </div>
                         
-                        {/* Open Chat button with creative effects */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.35 + index * 0.05 }}
-                          whileHover={!isDisabled ? { 
-                            scale: 1.08,
-                            y: -2,
-                            transition: { 
-                              type: "spring",
-                              stiffness: 400
-                            }
-                          } : {}}
-                          whileTap={!isDisabled ? { 
-                            scale: 0.92,
-                            transition: { duration: 0.1 }
-                          } : {}}
-                        >
-                          <Button
+                        {/* Open Chat button - Hidden for admin warnings */}
+                        {!isAdminWarning && (
+                          <div>
+                            <Button
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
@@ -973,43 +919,39 @@ export default function MyChats() {
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/openchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                             )}
                             
-                            <motion.span
-                              className="flex items-center justify-center relative z-10"
-                              animate={!isDisabled ? {
-                                x: [0, 3, -3, 0],
-                              } : {}}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                              whileHover={!isDisabled ? {
-                                x: [0, 5, -5, 0],
-                                transition: { duration: 0.3 }
-                              } : {}}
-                            >
-                              <motion.div
-                                animate={!isDisabled ? {
-                                  rotate: [0, 15, -15, 0],
-                                } : {}}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 group-hover/openchat:scale-110 transition-transform duration-200 relative z-10" />
-                              </motion.div>
-                            </motion.span>
-                            <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
-                          </Button>
-                        </motion.div>
+                            <span className="flex items-center justify-center relative z-10">
+                              <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 relative z-10" />
+                              <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
+                            </span>
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </Card>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
+            
+            {/* Load More Button */}
+            {hasMoreChats && (
+              <div className="flex justify-center mt-6 sm:mt-8">
+                <Button
+                  onClick={loadMoreChats}
+                  className="border-[0.5px] border-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 text-xs sm:text-sm font-black px-6 sm:px-8 py-2 sm:py-2.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/loadmore"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/loadmore:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                  <span className="relative z-10 flex items-center gap-2">
+                    Load More
+                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
+                  </span>
+                </Button>
+              </div>
+            )}
+            </>
           )}
           
           {/* Action Buttons - After Cards */}

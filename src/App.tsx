@@ -17,6 +17,8 @@ import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { ChristmasTheme } from "./components/ChristmasTheme";
+import "./styles/christmas.css";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import EnquiryWall from "./pages/EnquiryWall";
@@ -113,11 +115,12 @@ const App = () => {
               <UsageProvider>
                 {/* 🛡️ PROTECTED: ChatProvider wrapper - DO NOT REMOVE - Required for useChats hook */}
               <ChatProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                  <ScrollToTop />
-                  <Routes>
+                  <ChristmasTheme>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                    <ScrollToTop />
+                    <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiries" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
@@ -155,8 +158,9 @@ const App = () => {
                   <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
+                    </Routes>
+                    </BrowserRouter>
+                  </ChristmasTheme>
                 </ChatProvider>
               </UsageProvider>
           </NotificationProvider>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Rocket, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Eye, Shield, ImageIcon, Trash2, Search } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, query, where, getDocs, orderBy, limit, getDoc, doc, onSnapshot, deleteDoc } from "firebase/firestore";
@@ -390,8 +391,9 @@ const MyResponses = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Profile Page Style - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
               <div className="mb-4 sm:mb-6">
                 <div className="flex items-center justify-between">

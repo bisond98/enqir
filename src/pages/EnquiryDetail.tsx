@@ -25,6 +25,7 @@ import {
   ImageIcon
 } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -681,8 +682,9 @@ const EnquiryDetail = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         {/* Header - Matching Profile Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <HeaderSnow />
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Live Badge - Top Right Corner */}
             {enquiry.status === 'live' && (
               <div className="absolute top-4 sm:top-6 right-4 sm:right-6 lg:right-8 z-50">
