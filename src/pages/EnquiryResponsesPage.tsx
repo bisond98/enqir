@@ -676,9 +676,9 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuContent 
                 align="end" 
                 className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 transition-all duration-200 ease-in-out ${
-                  showOnlyTrustBadged 
-                    ? "bg-[#800020] border-[#6b0019]" 
-                    : "bg-blue-600 border-blue-700"
+                showOnlyTrustBadged 
+                  ? "bg-[#800020] border-[#6b0019]" 
+                  : "bg-blue-600 border-blue-700"
                 }`}
                 sideOffset={8}
               >
@@ -943,7 +943,7 @@ const EnquiryResponsesPage = () => {
                               }}
                             >
                               <span className="text-gray-800 text-xs sm:text-sm lg:text-base font-black drop-shadow-sm">₹</span>
-                            </div>
+                        </div>
                             <p className="font-black text-3xl sm:text-5xl lg:text-7xl xl:text-8xl text-black leading-none transform group-hover/quote:scale-105 transition-transform duration-300"
                               style={{
                                 transform: 'translateZ(15px)',

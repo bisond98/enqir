@@ -5065,15 +5065,15 @@ export default function EnquiryWall() {
                                   
                                   <h3 className={`relative z-10 text-base sm:text-lg lg:text-xl font-black tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-black text-center antialiased ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
-                                    }`} style={{
-                                      WebkitFontSmoothing: 'antialiased',
-                                      MozOsxFontSmoothing: 'grayscale',
+                                  }`} style={{
+                                    WebkitFontSmoothing: 'antialiased',
+                                    MozOsxFontSmoothing: 'grayscale',
                                       textRendering: 'optimizeLegibility',
                                       transform: 'translateZ(20px)',
                                       textShadow: '0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.5)'
-                                    }}>
-                                      {enquiry.title}
-                                    </h3>
+                                  }}>
+                                    {enquiry.title}
+                                  </h3>
                                 </div>
                               </div>
                               
@@ -5185,14 +5185,14 @@ export default function EnquiryWall() {
                                           <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                           
                                           <span className="relative z-10 text-[8px] sm:text-xs font-semibold text-black whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>
-                                            before {formatDate(deadlineDate.toISOString())}
-                                          </span>
+                                        before {formatDate(deadlineDate.toISOString())}
+                                      </span>
                                         </div>
                                         {/* Countdown Timer - Close to before */}
                                         <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
                                           <span className="text-[8px] sm:text-xs font-semibold text-white whitespace-nowrap">
-                                            {formatDeadlineText(enquiry.deadline)}
-                                          </span>
+                                        {formatDeadlineText(enquiry.deadline)}
+                                      </span>
                                         </div>
                                       </div>
                                     </div>
@@ -5428,15 +5428,15 @@ export default function EnquiryWall() {
                                 
                                 <h3 className={`relative z-10 text-xs sm:text-base lg:text-lg font-black tracking-tight leading-tight line-clamp-2 text-black text-center antialiased ${
                                     isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
-                                  }`} style={{
-                                    WebkitFontSmoothing: 'antialiased',
-                                    MozOsxFontSmoothing: 'grayscale',
+                                }`} style={{
+                                  WebkitFontSmoothing: 'antialiased',
+                                  MozOsxFontSmoothing: 'grayscale',
                                     textRendering: 'optimizeLegibility',
                                     transform: 'translateZ(15px)',
                                     textShadow: '0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.08)'
-                                  }}>
-                                    {enquiry.title}
-                                  </h3>
+                                }}>
+                                  {enquiry.title}
+                                </h3>
                               </div>
                               
                               {/* "before [date]" below title, right aligned */}
@@ -5542,8 +5542,8 @@ export default function EnquiryWall() {
                                       </div>
                                       <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
                                         <span className="text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap">
-                                          {formatDeadlineText(enquiry.deadline)}
-                                        </span>
+                                        {formatDeadlineText(enquiry.deadline)}
+                                      </span>
                                       </div>
                                       </div>
                                     </div>
@@ -5554,24 +5554,24 @@ export default function EnquiryWall() {
                                 }
                               })()}
                             </div>
-                            
-                            {/* Show verified badge if: 
-                                1. User has profile-level verification (applies to all enquiries), OR
-                                2. This specific enquiry has ID images (enquiry-specific verification) */}
-                            {((userProfiles[enquiry.userId]?.isProfileVerified || 
-                               userProfiles[enquiry.userId]?.isVerified || 
-                               userProfiles[enquiry.userId]?.trustBadge || 
-                               userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                              enquiry.idFrontImage || enquiry.idBackImage ||
-                              enquiry.isProfileVerified || enquiry.userVerified) && (
-                            <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
-                              <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
-                                isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
-                              }`}>
-                                <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
-                              </div>
-                            </div>
-                            )}
+                              
+                                {/* Show verified badge if: 
+                                    1. User has profile-level verification (applies to all enquiries), OR
+                                    2. This specific enquiry has ID images (enquiry-specific verification) */}
+                                {((userProfiles[enquiry.userId]?.isProfileVerified || 
+                                   userProfiles[enquiry.userId]?.isVerified || 
+                                   userProfiles[enquiry.userId]?.trustBadge || 
+                                   userProfiles[enquiry.userId]?.isIdentityVerified) || 
+                                  enquiry.idFrontImage || enquiry.idBackImage ||
+                                  enquiry.isProfileVerified || enquiry.userVerified) && (
+                                <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
+                                  <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
+                                    isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
+                                  }`}>
+                                    <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
+                                  </div>
+                                  </div>
+                                )}
                             
                             {/* Urgent Badge */}
                             {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (

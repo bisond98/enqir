@@ -1803,32 +1803,35 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
-          <div className="block md:hidden mb-4 animate-slide-up" style={{ animationDelay: '0.55s' }}>
-            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
-              <div className="relative">
-                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
-                <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
-              </div>
-              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
-              <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
-                We don't need your data; we already have a revenue model
-              </p>
-            </Card>
-          </div>
-
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
-            {features.map((feature, index) => (
-              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
+          {/* Mobile: All cards in one container for equal spacing and centering */}
+          <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
+            {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
+            <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
+              <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
                 <div className="relative">
-                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
+                  <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
-                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
-                <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
+                <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
+                <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
+                  We don't need your data; we already have a revenue model
+                </p>
               </Card>
-            ))}
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
+              {features.map((feature, index) => (
+                <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
+                  <div className="relative">
+                    <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
+                    <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
+                  </div>
+                  <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                  <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
+                </Card>
+              ))}
+            </div>
           </div>
 
           {/* Sell Section */}
@@ -2312,7 +2315,7 @@ const Landing = () => {
                               } else {
                                 return (
                                   <button 
-                                    className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                                    className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
                                     onClick={() => navigate(`/respond/${enquiry.id}`)}
                                   >
                                     <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
@@ -2324,7 +2327,7 @@ const Landing = () => {
                             })()
                           ) : (
                             <button 
-                              className="w-full h-9 bg-gray-100 hover:bg-gray-200 text-black text-[10px] font-black rounded-t-lg rounded-b-xl border border-black hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                              className="w-full h-9 bg-gray-100 hover:bg-gray-200 text-black text-[10px] font-black rounded-t-lg rounded-b-xl border border-black hover:border-black transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
                               onClick={() => navigate('/signin')}
                             >
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
@@ -2402,7 +2405,7 @@ const Landing = () => {
                             } else {
                               return (
                                 <button 
-                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
                                   {/* Physical button depth effect */}
