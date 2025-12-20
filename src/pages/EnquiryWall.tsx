@@ -1344,7 +1344,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('pet') || categoryLower.includes('animal') || categoryLower.includes('baby') ||
         categoryLower.includes('kid') || categoryLower.includes('childcare') || categoryLower.includes('family')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Pet face - top center */}
           <g transform="translate(200, 80)" opacity="0.7">
             <circle cx="0" cy="0" r="15" fill="none" stroke="white" strokeWidth="2"/>
@@ -1408,7 +1408,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('automobile') || categoryLower.includes('vehicle') || categoryLower.includes('car') || 
         categoryLower.includes('transportation') || categoryLower.includes('logistics') || categoryLower.includes('bicycle')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Small car - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -1546,7 +1546,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('electronic') || categoryLower.includes('gaming') || categoryLower.includes('computer') || 
         categoryLower.includes('mobile') || categoryLower.includes('technology') || categoryLower.includes('photography')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Signal waves - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -1679,7 +1679,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('construction') || categoryLower.includes('real-estate') || categoryLower.includes('building') || 
         categoryLower.includes('home') || categoryLower.includes('renovation')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Hammer - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -1817,7 +1817,7 @@ export default function EnquiryWall() {
         categoryLower.includes('clothing') || categoryLower.includes('apparel') || categoryLower.includes('accessories') ||
         categoryLower.includes('bags') || categoryLower.includes('luggage') || categoryLower.includes('sneakers')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Jewelry ring - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -1948,7 +1948,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('food') || categoryLower.includes('restaurant') || categoryLower.includes('catering') || 
         categoryLower.includes('beverage') || categoryLower.includes('kitchen') || categoryLower.includes('dining')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Fork - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2074,7 +2074,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('health') || categoryLower.includes('medical') || categoryLower.includes('pharmacy') ||
         categoryLower.includes('beauty-products')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Pulse/heartbeat - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2204,7 +2204,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('education') || categoryLower.includes('book') || categoryLower.includes('learning') ||
         categoryLower.includes('training') || categoryLower.includes('tutoring')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Pencil - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2343,7 +2343,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('art') || categoryLower.includes('antique') || categoryLower.includes('collectible') ||
         categoryLower.includes('memorabilia') || categoryLower.includes('vintage') || categoryLower.includes('souvenir')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Small picture frame - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2482,7 +2482,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('sports') || categoryLower.includes('outdoor') || categoryLower.includes('fitness') ||
         categoryLower.includes('gym') || categoryLower.includes('garden')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Dumbbell - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2615,7 +2615,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('entertainment') || categoryLower.includes('event') || categoryLower.includes('wedding') ||
         categoryLower.includes('media') || categoryLower.includes('musical')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Music note - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -2926,7 +2926,7 @@ export default function EnquiryWall() {
         categoryLower.includes('financial') || categoryLower.includes('insurance') || categoryLower.includes('marketing') ||
         categoryLower.includes('advertising') || categoryLower.includes('office')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Document - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3064,7 +3064,7 @@ export default function EnquiryWall() {
     // Jobs, Employment
     if (categoryLower.includes('job') || categoryLower.includes('employment')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Resume - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3163,7 +3163,7 @@ export default function EnquiryWall() {
     // Travel, Tourism
     if (categoryLower.includes('travel') || categoryLower.includes('tourism') || categoryLower === 'travel-tourism') {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Suitcase - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3304,7 +3304,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('renewable') || categoryLower.includes('energy') || categoryLower.includes('waste') ||
         categoryLower.includes('industrial') || categoryLower.includes('raw-material')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Wind turbine - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3446,7 +3446,7 @@ export default function EnquiryWall() {
     // Security, Safety
     if (categoryLower.includes('security') || categoryLower.includes('safety')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Lock - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3579,7 +3579,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('government') || categoryLower.includes('public') || categoryLower.includes('non-profit') ||
         categoryLower.includes('charity')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Flag - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3715,7 +3715,7 @@ export default function EnquiryWall() {
     if (categoryLower.includes('tool') || categoryLower.includes('equipment') || categoryLower.includes('appliance') ||
         categoryLower.includes('repair')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Screwdriver - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3846,7 +3846,7 @@ export default function EnquiryWall() {
     // Cleaning Services
     if (categoryLower.includes('cleaning')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Broom - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -3977,7 +3977,7 @@ export default function EnquiryWall() {
     // Thrift, Second-hand
     if (categoryLower.includes('thrift')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Tag - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -4099,7 +4099,7 @@ export default function EnquiryWall() {
     // Agriculture, Farming
     if (categoryLower.includes('agriculture') || categoryLower.includes('farming')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Plant - top center */}
           <g transform="translate(200, 80)" opacity="0.7">
             <path d="M0 -18 L0 8" stroke="white" strokeWidth="2" fill="none"/>
@@ -4187,7 +4187,7 @@ export default function EnquiryWall() {
     // Personal, Service (generic)
     if (categoryLower.includes('personal') || categoryLower.includes('service')) {
       return (
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Top section icons - distributed across top */}
           {/* Heart - top left */}
           <g transform="translate(60, 40)" opacity="0.6">
@@ -4887,14 +4887,14 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card data-view-mode={viewMode} className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border border-gray-300 bg-white rounded-none overflow-hidden relative' : 'border border-gray-300 bg-white rounded-none flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px] xl:min-h-[600px] relative'
+                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border-0 bg-white rounded-none overflow-hidden relative' : 'border-0 bg-white rounded-none flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px] xl:min-h-[600px] relative'
                     } transition-all duration-300 cursor-pointer ${
                       isEnquiryDisabled(enquiry) 
                         ? 'opacity-70 bg-gray-50 border-gray-300 grayscale cursor-not-allowed' 
                         : viewMode === 'list' 
-                          ? 'rounded-2xl border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
-                          : 'rounded-2xl border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-green-500 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
-                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d' } : {}}>
+                          ? 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
+                          : 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-green-500 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
+                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d', borderBottom: '1px solid #000000', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d', borderBottom: '1px solid #000000', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -5141,13 +5141,12 @@ export default function EnquiryWall() {
                                             <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                             
                                             <span className="text-[8px] sm:text-xs font-semibold text-black relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>At </span>
-                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-md ring-2 ring-gray-300/50"
+                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0 relative z-10"
                                               style={{
-                                                transform: 'translateZ(12px)',
-                                                boxShadow: '0 2px 4px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.6)'
+                                                transform: 'translateZ(12px)'
                                               }}
                                             >
-                                              <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                              <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
                                             <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-black relative z-10" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{enquiry.location}</span>
                                           </div>
@@ -5233,7 +5232,7 @@ export default function EnquiryWall() {
                             {/* Desktop Budget */}
                             <div className="hidden sm:flex pt-2 sm:pt-3">
                               {enquiry.budget && (
-                                <div className="relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-1 sm:px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
+                                <div className="relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
                                     boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
@@ -5242,27 +5241,27 @@ export default function EnquiryWall() {
                                   }}
                                 >
                                   {/* 3D Border Effect - Enhanced */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
+                                  <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
                                     style={{
                                       boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                     }}
                                   />
                                   
                                   {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
                                   {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
                                   {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
                                   {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                  <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
                                   {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                   
                                   <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
                                   <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
@@ -5275,7 +5274,7 @@ export default function EnquiryWall() {
                             <div className="block sm:hidden pt-2">
                               {enquiry.budget && (
                                 <div className="relative flex items-center justify-center">
-                                  <div className="relative flex items-center gap-0.5 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
+                                  <div className="relative flex items-center gap-0.5 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
                                     style={{
                                       boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                       transformStyle: 'preserve-3d',
@@ -5284,27 +5283,27 @@ export default function EnquiryWall() {
                                     }}
                                   >
                                     {/* 3D Border Effect - Enhanced */}
-                                    <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-gray-300/60" 
+                                    <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
                                       style={{
                                         boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                       }}
                                     />
                                     
                                     {/* Top highlight for 3D effect - Enhanced */}
-                                    <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                    <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                     
                                     {/* Side highlights for depth - Enhanced */}
-                                    <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                    <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                    <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                    <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                     
                                     {/* Bottom shadow for depth - Enhanced */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                     
                                     {/* Inner depth shadow - Enhanced */}
-                                    <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                    <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                     
                                     {/* Additional depth layer */}
-                                    <div className="absolute inset-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                    <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                     
                                     <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
                                     <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
@@ -5498,12 +5497,12 @@ export default function EnquiryWall() {
                                           <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                           
                                           <span className="text-[8px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>At </span>
-                                          <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 relative z-10 shadow-sm ring-2 ring-gray-300/50"
+                                          <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0 relative z-10"
                                             style={{
                                               transform: 'translateZ(10px)'
                                             }}
                                           >
-                                            <MapPin className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 text-gray-700" />
+                                            <MapPin className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                           </div>
                                           <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
                                         </div>
@@ -5590,7 +5589,7 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="relative flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                <div className="relative flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
                                     boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
@@ -5599,27 +5598,27 @@ export default function EnquiryWall() {
                                   }}
                                 >
                                   {/* 3D Border Effect - Enhanced */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
+                                  <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
                                     style={{
                                       boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
                                     }}
                                   />
                                   
                                   {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
                                   
                                   {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
+                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
                                   
                                   {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
+                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
                                   
                                   {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
+                                  <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
                                   
                                   {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
+                                  <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
                                   
                                   <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
                                   <span className="font-extrabold text-black text-xs sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
@@ -5641,7 +5640,7 @@ export default function EnquiryWall() {
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'px-2 pt-2 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 bg-white flex flex-col justify-start sm:justify-center mobile-white-section' : 'flex-1 flex flex-col px-1.5 pt-1.5 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 justify-between bg-white'} relative z-10`} style={viewMode === 'list' ? { flex: '1 1 25%', flexGrow: 1, flexShrink: 1, flexBasis: '25%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'px-2 pt-2 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 bg-white flex flex-col justify-start sm:justify-center mobile-white-section' : 'flex-1 flex flex-col px-1.5 pt-1.5 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 justify-between bg-white'} relative z-10 overflow-hidden`} style={viewMode === 'list' ? { flex: '1 1 25%', flexGrow: 1, flexShrink: 1, flexBasis: '25%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
                           {/* Desktop Layout */}
@@ -5740,7 +5739,7 @@ export default function EnquiryWall() {
                           {/* Mobile Layout - Location, Category and Button at Bottom */}
                           <div className="block sm:hidden w-full mt-auto space-y-3 pt-0 -mt-6">
                             {/* Category - In a line above Sell Button (Mobile Only) */}
-                            <div className="w-full flex items-center justify-center sm:hidden mb-2 mt-4">
+                            <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
                               {/* Category */}
                               <Badge variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
                                 <span>{enquiry.category.replace('-', ' ')}</span>
