@@ -99,11 +99,23 @@ export default function EnquiryWall() {
   const [isAISearching, setIsAISearching] = useState(false);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [shuffledLiveEnquiries, setShuffledLiveEnquiries] = useState<Enquiry[]>([]);
   
   // Scroll indicator state
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const categoryBoxRef = useRef<HTMLDivElement>(null);
+  
+  // Helper function to shuffle array
+  const shuffleArray = (array: Enquiry[]): Enquiry[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   // Real-time expiry check - update every second to automatically disable expired cards
   useEffect(() => {
@@ -392,7 +404,6 @@ export default function EnquiryWall() {
     
     // 🚀 FIX: Try without orderBy first to get ALL documents (no 100 limit)
     const tryWithoutOrder = () => {
-      console.log('🔍 EnquiryWall: Attempting query without orderBy to get ALL documents...');
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
@@ -400,17 +411,9 @@ export default function EnquiryWall() {
       unsubscribe = onSnapshot(
         enquiriesQueryWithoutOrder,
         (snapshot) => {
-          console.log('✅ EnquiryWall: Query without orderBy succeeded, got', snapshot.docs.length, 'documents');
-          if (snapshot.docs.length === 100) {
-            console.error('❌ EnquiryWall: Query without orderBy returned exactly 100 documents - snapshot is LIMITED!');
-            console.error('❌ EnquiryWall: This means we are NOT getting all documents. Count will be incorrect.');
-          } else {
-            console.log('✅ EnquiryWall: Query without orderBy got', snapshot.docs.length, 'documents - should be all documents');
-          }
           processEnquiries(snapshot);
         },
         (error) => {
-          console.error("❌ EnquiryWall: Error loading enquiries (no orderBy):", error);
           // Try with orderBy as fallback
           tryWithOrder();
         }
@@ -419,7 +422,6 @@ export default function EnquiryWall() {
     
     // Fallback: Try with orderBy if query without orderBy fails
     const tryWithOrder = () => {
-      console.log('🔍 EnquiryWall: Attempting query with orderBy (may be limited to 100 docs)...');
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
@@ -427,14 +429,9 @@ export default function EnquiryWall() {
       unsubscribe = onSnapshot(
         enquiriesQueryWithOrder,
         (snapshot) => {
-          console.log('✅ EnquiryWall: Query with orderBy succeeded, got', snapshot.docs.length, 'documents');
-          if (snapshot.docs.length === 100) {
-            console.warn('⚠️ EnquiryWall: Snapshot returned exactly 100 documents - may be limited!');
-          }
           processEnquiries(snapshot);
         },
         (error: any) => {
-          console.error("❌ EnquiryWall: Error loading enquiries (orderBy):", error);
           setLoading(false);
         }
       );
@@ -450,14 +447,11 @@ export default function EnquiryWall() {
         
         const allEnquiriesData = snapshot.docs.map((doc: any) => {
           const data = doc.data();
-          console.log('📄 EnquiryWall: Processing enquiry', doc.id, 'status:', data.status);
           return {
             id: doc.id,
             ...data
           };
         }) as Enquiry[];
-        
-        console.log('📊 EnquiryWall: Total enquiries from query:', allEnquiriesData.length);
         
         // Filter to show enquiries with status='live' OR status='deal_closed' (admin accepted)
         // Use case-insensitive check to catch any variations
@@ -465,8 +459,6 @@ export default function EnquiryWall() {
           const status = (enquiry.status || '').toLowerCase().trim();
           return status === 'live' || status === 'deal_closed';
         });
-        
-        console.log('📊 EnquiryWall: Enquiries with status=live or deal_closed:', liveStatusEnquiries.length);
         
         // Separate live, expired, and deal closed enquiries
         const now = new Date();
@@ -547,9 +539,6 @@ export default function EnquiryWall() {
           }
         });
         
-        console.log('📊 EnquiryWall: Live enquiries (not expired):', liveEnquiries.length, 'Expired:', expiredEnquiries.length, 'Deal Closed:', dealClosedEnquiries.length);
-        console.log('📊 EnquiryWall: Snapshot docs count:', snapshot.docs.length, '- If this is 100, snapshot might be limited');
-        
         // 🛡️ PROTECTED: DO NOT set count here - it will be calculated from displayEnquiries
         // 🚀 FIX: Don't set count here - it will be calculated from displayEnquiries
         // The count will be set in the useEffect that watches displayEnquiries
@@ -597,9 +586,6 @@ export default function EnquiryWall() {
         const uniqueEnquiries = Array.from(
           new Map(combinedEnquiries.map(enquiry => [enquiry.id, enquiry])).values()
         );
-        
-        console.log('📊 EnquiryWall: Final unique enquiries to display:', uniqueEnquiries.length);
-        console.log('📊 EnquiryWall: Sample enquiry IDs:', uniqueEnquiries.slice(0, 5).map(e => e.id));
         
         setEnquiries(uniqueEnquiries);
         setLoading(false);
@@ -1079,6 +1065,137 @@ export default function EnquiryWall() {
     }).length;
   }, [enquiries, userProfiles]);
   
+  // Shuffle live enquiries every 10 seconds
+  useEffect(() => {
+    if (enquiries.length === 0) return;
+    
+    // Separate live and expired enquiries
+    const now = new Date();
+    const liveEnquiries: Enquiry[] = [];
+    const expiredEnquiries: Enquiry[] = [];
+    const dealClosedEnquiries: Enquiry[] = [];
+    
+    enquiries.forEach(enquiry => {
+      const status = (enquiry.status || '').toLowerCase().trim();
+      if (status === 'deal_closed' || enquiry.dealClosed === true) {
+        dealClosedEnquiries.push(enquiry);
+        return;
+      }
+      
+      if (!enquiry.deadline) {
+        liveEnquiries.push(enquiry);
+        return;
+      }
+      
+      try {
+        let deadlineDate: Date;
+        if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+          deadlineDate = enquiry.deadline.toDate();
+        } else if (enquiry.deadline?.seconds !== undefined) {
+          deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+        } else if (enquiry.deadline instanceof Date) {
+          deadlineDate = enquiry.deadline;
+        } else {
+          deadlineDate = new Date(enquiry.deadline);
+        }
+        
+        if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+          liveEnquiries.push(enquiry);
+        } else if (deadlineDate.getTime() >= now.getTime()) {
+          liveEnquiries.push(enquiry);
+        } else {
+          expiredEnquiries.push(enquiry);
+        }
+      } catch {
+        liveEnquiries.push(enquiry);
+      }
+    });
+    
+    // Sort expired and deal closed by createdAt (newest first)
+    expiredEnquiries.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+      }
+    });
+    
+    dealClosedEnquiries.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+      }
+    });
+    
+    // Set initial shuffled live enquiries
+    if (liveEnquiries.length > 0) {
+      setShuffledLiveEnquiries(shuffleArray(liveEnquiries));
+    } else {
+      setShuffledLiveEnquiries([]);
+    }
+    
+    // Only set up interval if there are 2+ live enquiries to shuffle
+    if (liveEnquiries.length <= 1) {
+      return;
+    }
+    
+    const interval = setInterval(() => {
+      // Re-check live/expired status
+      const currentNow = new Date();
+      const currentLiveEnquiries: Enquiry[] = [];
+      
+      enquiries.forEach(enquiry => {
+        const status = (enquiry.status || '').toLowerCase().trim();
+        if (status === 'deal_closed' || enquiry.dealClosed === true) {
+          return;
+        }
+        
+        if (!enquiry.deadline) {
+          currentLiveEnquiries.push(enquiry);
+          return;
+        }
+        
+        try {
+          let deadlineDate: Date;
+          if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+            deadlineDate = enquiry.deadline.toDate();
+          } else if (enquiry.deadline?.seconds !== undefined) {
+            deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+          } else if (enquiry.deadline instanceof Date) {
+            deadlineDate = enquiry.deadline;
+          } else {
+            deadlineDate = new Date(enquiry.deadline);
+          }
+          
+          if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+            currentLiveEnquiries.push(enquiry);
+          } else if (deadlineDate.getTime() >= currentNow.getTime()) {
+            currentLiveEnquiries.push(enquiry);
+          }
+        } catch {
+          currentLiveEnquiries.push(enquiry);
+        }
+      });
+      
+      if (currentLiveEnquiries.length > 1) {
+        setIsShuffling(true);
+        setTimeout(() => {
+          setShuffledLiveEnquiries(shuffleArray(currentLiveEnquiries));
+          setTimeout(() => {
+            setIsShuffling(false);
+          }, 100);
+        }, 500);
+      }
+    }, 10000); // 10 seconds
+    
+    return () => clearInterval(interval);
+  }, [enquiries]);
+  
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
     let results = showCategoryFallback ? enquiries : filteredEnquiries;
@@ -1102,8 +1219,82 @@ export default function EnquiryWall() {
       });
     }
     
-    return results;
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles]);
+    // Separate live and expired from results
+    const now = new Date();
+    const liveResults: Enquiry[] = [];
+    const expiredResults: Enquiry[] = [];
+    const dealClosedResults: Enquiry[] = [];
+    
+    results.forEach(enquiry => {
+      const status = (enquiry.status || '').toLowerCase().trim();
+      if (status === 'deal_closed' || enquiry.dealClosed === true) {
+        dealClosedResults.push(enquiry);
+        return;
+      }
+      
+      if (!enquiry.deadline) {
+        liveResults.push(enquiry);
+        return;
+      }
+      
+      try {
+        let deadlineDate: Date;
+        if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+          deadlineDate = enquiry.deadline.toDate();
+        } else if (enquiry.deadline?.seconds !== undefined) {
+          deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+        } else if (enquiry.deadline instanceof Date) {
+          deadlineDate = enquiry.deadline;
+        } else {
+          deadlineDate = new Date(enquiry.deadline);
+        }
+        
+        if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+          liveResults.push(enquiry);
+        } else if (deadlineDate.getTime() >= now.getTime()) {
+          liveResults.push(enquiry);
+        } else {
+          expiredResults.push(enquiry);
+        }
+      } catch {
+        liveResults.push(enquiry);
+      }
+    });
+    
+    // Sort expired and deal closed by createdAt (newest first)
+    expiredResults.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+      }
+    });
+    
+    dealClosedResults.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+      }
+    });
+    
+    // Use shuffled live enquiries, but filter to only include those in liveResults
+    const shuffledLive = shuffledLiveEnquiries.filter(e => 
+      liveResults.some(lr => lr.id === e.id)
+    );
+    
+    // If shuffled live is empty or doesn't match, use liveResults directly
+    const finalLive = shuffledLive.length > 0 && shuffledLive.length === liveResults.length 
+      ? shuffledLive 
+      : liveResults;
+    
+    // Combine: shuffled live first, then expired, then deal closed
+    return [...finalLive, ...expiredResults, ...dealClosedResults];
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries]);
 
   // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
   useEffect(() => {
@@ -1240,6 +1431,115 @@ export default function EnquiryWall() {
   const isEnquiryDisabled = useCallback((enquiry: Enquiry) => {
     return isEnquiryOutdated(enquiry) || isDealClosed(enquiry);
   }, [isEnquiryOutdated, isDealClosed]);
+
+  // Helper function to format time ago (e.g., "2 hours ago", "3 days ago")
+  const formatTimeAgo = (dateString: string | Date | any): string => {
+    try {
+      let date: Date;
+      
+      // Handle Firestore Timestamp (has toDate method)
+      if (dateString?.toDate && typeof dateString.toDate === 'function') {
+        date = dateString.toDate();
+      }
+      // Handle Firestore Timestamp object (has seconds and nanoseconds)
+      else if (dateString?.seconds !== undefined) {
+        date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
+      }
+      // Handle Date object
+      else if (dateString instanceof Date) {
+        date = dateString;
+      }
+      // Handle string
+      else if (typeof dateString === 'string') {
+        date = new Date(dateString);
+      }
+      // Handle number (timestamp)
+      else if (typeof dateString === 'number') {
+        date = new Date(dateString);
+      }
+      else {
+        return '';
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        return '';
+      }
+      
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSeconds = Math.floor(diffMs / 1000);
+      const diffMinutes = Math.floor(diffSeconds / 60);
+      const diffHours = Math.floor(diffMinutes / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      const diffWeeks = Math.floor(diffDays / 7);
+      const diffMonths = Math.floor(diffDays / 30);
+      const diffYears = Math.floor(diffDays / 365);
+      
+      if (diffSeconds < 60) {
+        return 'Just now';
+      } else if (diffMinutes < 60) {
+        return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`;
+      } else if (diffHours < 24) {
+        return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+      } else if (diffDays < 7) {
+        return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+      } else if (diffWeeks < 4) {
+        return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
+      } else if (diffMonths < 12) {
+        return `${diffMonths} ${diffMonths === 1 ? 'month' : 'months'} ago`;
+      } else {
+        return `${diffYears} ${diffYears === 1 ? 'year' : 'years'} ago`;
+      }
+    } catch (error) {
+      return '';
+    }
+  };
+
+  // Helper function to format date and time (e.g., "Dec 20, 2024 3:45 PM")
+  const formatDateTime = (dateString: string | Date | any): string => {
+    try {
+      let date: Date;
+      
+      // Handle Firestore Timestamp (has toDate method)
+      if (dateString?.toDate && typeof dateString.toDate === 'function') {
+        date = dateString.toDate();
+      }
+      // Handle Firestore Timestamp object (has seconds and nanoseconds)
+      else if (dateString?.seconds !== undefined) {
+        date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
+      }
+      // Handle Date object
+      else if (dateString instanceof Date) {
+        date = dateString;
+      }
+      // Handle string
+      else if (typeof dateString === 'string') {
+        date = new Date(dateString);
+      }
+      // Handle number (timestamp)
+      else if (typeof dateString === 'number') {
+        date = new Date(dateString);
+      }
+      else {
+        return '';
+      }
+      
+      if (!date || isNaN(date.getTime())) {
+        return '';
+      }
+      
+      return date.toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (error) {
+      return '';
+    }
+  };
 
   const formatDate = (dateString: string | Date | any) => {
     try {
@@ -4999,6 +5299,14 @@ export default function EnquiryWall() {
                               {getCategorySketch(enquiry.category)}
                             </div>
                             <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0 relative z-10">
+                              {/* Posted Time - Date and Time */}
+                              {enquiry.createdAt && (
+                                <div className="text-center mb-1 sm:mb-2">
+                                  <span className="text-[7px] sm:text-[9px] text-white/70 font-medium">
+                                    Posted: {formatDateTime(enquiry.createdAt)}
+                                  </span>
+                                </div>
+                              )}
                               {/* Need Label - Above Title */}
                               <div className="text-left -mb-1 sm:-mb-2 ml-1 sm:ml-0">
                                 <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
@@ -5365,6 +5673,14 @@ export default function EnquiryWall() {
                             </svg>
                           </div>
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4 relative z-10">
+                            {/* Posted Time - Date and Time */}
+                            {enquiry.createdAt && (
+                              <div className="text-center mb-1 sm:mb-2">
+                                <span className="text-[7px] sm:text-[9px] text-white/70 font-medium">
+                                  Posted: {formatDateTime(enquiry.createdAt)}
+                                </span>
+                              </div>
+                            )}
                             {/* Need Label - Above Title */}
                             <div className="text-left">
                               <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"

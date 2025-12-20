@@ -926,11 +926,17 @@ const Landing = () => {
             return !(status === 'deal_closed' || enquiry.dealClosed === true);
           });
       
-          // Filter out expired enquiries - only show live (not expired) enquiries
+          // Separate live and expired enquiries
           // Use same deadline handling logic as EnquiryWall.tsx
           const now = new Date();
-          const liveEnquiries = activeEnquiries.filter(enquiry => {
-            if (!enquiry.deadline) return true; // No deadline = live
+          const liveEnquiries: any[] = [];
+          const expiredEnquiries: any[] = [];
+          
+          activeEnquiries.forEach(enquiry => {
+            if (!enquiry.deadline) {
+              liveEnquiries.push(enquiry); // No deadline = live
+              return;
+            }
             try {
               let deadlineDate: Date;
               
@@ -952,19 +958,35 @@ const Landing = () => {
               }
               
               if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                return true; // If invalid, assume live
+                liveEnquiries.push(enquiry); // If invalid, assume live
+                return;
               }
               
-              return deadlineDate.getTime() >= now.getTime();
+              if (deadlineDate.getTime() >= now.getTime()) {
+                liveEnquiries.push(enquiry);
+              } else {
+                expiredEnquiries.push(enquiry);
+              }
             } catch {
-              return true; // If error, assume live
+              liveEnquiries.push(enquiry); // If error, assume live
             }
           });
       
-      console.log('📊 Landing: Live enquiries (not expired):', liveEnquiries.length);
+      console.log('📊 Landing: Live enquiries:', liveEnquiries.length, 'Expired enquiries:', expiredEnquiries.length);
       
         // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
       liveEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      // Sort expired enquiries by createdAt (newest first)
+      expiredEnquiries.sort((a, b) => {
         try {
           const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
           const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
@@ -981,13 +1003,13 @@ const Landing = () => {
       // DO NOT MODIFY - This count must match EnquiryWall.tsx
       setLiveEnquiriesCount(liveEnquiries.length);
       
-      // Set display enquiries - only live (not expired) enquiries for the 3 cards
-      // Store all live enquiries for shuffling (not just first 3)
-      setPublicRecentEnquiries(liveEnquiries);
+      // Set display enquiries - store live and expired separately
+      // Store all live and expired enquiries for shuffling
+      setPublicRecentEnquiries([...liveEnquiries, ...expiredEnquiries]);
       
-          // Set initial shuffled display (3 random from all live enquiries)
-          const initialShuffled = getRandomThree(liveEnquiries);
-          setShuffledEnquiries(initialShuffled);
+          // Set initial shuffled display (3 random from live enquiries, then expired)
+          const initialShuffled = liveEnquiries.length > 0 ? getRandomThree(liveEnquiries) : [];
+          setShuffledEnquiries([...initialShuffled, ...expiredEnquiries]);
       } catch (error) {
         console.error('Error processing enquiries:', error);
         // Set empty arrays on error
@@ -1043,50 +1065,99 @@ const Landing = () => {
     fetchUserProfiles();
   }, [publicRecentEnquiries]);
 
-  // Shuffle every 5 seconds - only shuffle live (not expired) enquiries
+  // Shuffle live enquiries every 10 seconds, show expired after live
   useEffect(() => {
     // Deduplicate before processing
     const uniqueEnquiries = Array.from(
       new Map(publicRecentEnquiries.map(e => [e.id, e])).values()
     );
     
-    // Filter out expired enquiries (in case any slipped through)
+    // Separate live and expired enquiries
     const now = new Date();
-    const liveOnlyEnquiries = uniqueEnquiries.filter(enquiry => {
-      if (!enquiry.deadline) return true; // No deadline = live
+    const liveOnlyEnquiries: any[] = [];
+    const expiredOnlyEnquiries: any[] = [];
+    
+    uniqueEnquiries.forEach(enquiry => {
+      if (!enquiry.deadline) {
+        liveOnlyEnquiries.push(enquiry); // No deadline = live
+        return;
+      }
       try {
         const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-        return deadlineDate.getTime() >= now.getTime();
+        if (deadlineDate.getTime() >= now.getTime()) {
+          liveOnlyEnquiries.push(enquiry);
+        } else {
+          expiredOnlyEnquiries.push(enquiry);
+        }
       } catch {
-        return true; // If error, assume live
+        liveOnlyEnquiries.push(enquiry); // If error, assume live
       }
     });
     
-    if (liveOnlyEnquiries.length <= 1) {
-      setShuffledEnquiries(liveOnlyEnquiries);
-      return;
+    // Sort expired by createdAt (newest first)
+    expiredOnlyEnquiries.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+      }
+    });
+    
+    // Set initial display: shuffled live enquiries first, then expired
+    if (liveOnlyEnquiries.length > 0) {
+      const initialShuffled = getRandomThree(liveOnlyEnquiries);
+      const uniqueInitial = Array.from(
+        new Map(initialShuffled.map(e => [e.id, e])).values()
+      );
+      // Combine: live (shuffled) first, then expired
+      setShuffledEnquiries([...uniqueInitial, ...expiredOnlyEnquiries]);
+    } else {
+      // No live enquiries, just show expired
+      setShuffledEnquiries(expiredOnlyEnquiries);
     }
     
-    // Set initial shuffled (deduplicated, live only)
-    const initialShuffled = getRandomThree(liveOnlyEnquiries);
-    const uniqueInitial = Array.from(
-      new Map(initialShuffled.map(e => [e.id, e])).values()
-    );
-    setShuffledEnquiries(uniqueInitial);
+    // Only set up interval if there are live enquiries to shuffle
+    if (liveOnlyEnquiries.length <= 1) {
+      return; // No need to shuffle if 1 or fewer live enquiries
+    }
     
     const interval = setInterval(() => {
       // Re-filter to ensure we only shuffle live enquiries
-      const currentLiveEnquiries = liveOnlyEnquiries.filter(enquiry => {
-        if (!enquiry.deadline) return true;
+      const currentNow = new Date();
+      const currentLiveEnquiries: any[] = [];
+      const currentExpiredEnquiries: any[] = [];
+      
+      uniqueEnquiries.forEach(enquiry => {
+        if (!enquiry.deadline) {
+          currentLiveEnquiries.push(enquiry);
+          return;
+        }
         try {
           const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-          return deadlineDate.getTime() >= now.getTime();
+          if (deadlineDate.getTime() >= currentNow.getTime()) {
+            currentLiveEnquiries.push(enquiry);
+          } else {
+            currentExpiredEnquiries.push(enquiry);
+          }
         } catch {
-          return true;
+          currentLiveEnquiries.push(enquiry);
         }
       });
       
-      if (currentLiveEnquiries.length > 0) {
+      // Sort expired by createdAt (newest first)
+      currentExpiredEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      if (currentLiveEnquiries.length > 1) {
         // Trigger shuffle animation - smooth fade out
         setIsShuffling(true);
         
@@ -1096,13 +1167,20 @@ const Landing = () => {
           const uniqueShuffled = Array.from(
             new Map(shuffled.map(e => [e.id, e])).values()
           );
-          setShuffledEnquiries(uniqueShuffled);
+          // Combine: live (shuffled) first, then expired
+          setShuffledEnquiries([...uniqueShuffled, ...currentExpiredEnquiries]);
           
           // Smooth fade in new cards (small delay for seamless transition)
           setTimeout(() => {
             setIsShuffling(false);
           }, 100);
         }, 500);
+      } else if (currentLiveEnquiries.length === 1) {
+        // Only one live enquiry, just combine with expired
+        setShuffledEnquiries([...currentLiveEnquiries, ...currentExpiredEnquiries]);
+      } else {
+        // No live enquiries, just show expired
+        setShuffledEnquiries(currentExpiredEnquiries);
       }
     }, 10000); // 10 seconds
     return () => clearInterval(interval);
@@ -3102,25 +3180,25 @@ const Landing = () => {
               {/* Mobile: Bottom left, bigger - PROTECTED: w-24 h-24, bottom-6 left-6 */}
               <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-6 z-50 group">
                 <button
-                  className="w-24 h-24 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                  className="w-16 h-16 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                  <Plus className="h-10 w-10 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                  <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
                 </button>
               </Link>
               {/* Desktop: Centered */}
               <Link to="/help-guide" className="hidden sm:inline-flex items-center justify-center group">
                 <button
-                  className="w-14 h-14 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                  className="w-10 h-10 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                  <Plus className="h-3 w-3 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
                 </button>
               </Link>
             </div>
