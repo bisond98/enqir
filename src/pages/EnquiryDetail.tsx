@@ -147,7 +147,7 @@ const EnquiryDetail = () => {
 
     const url = `${window.location.origin}/enquiry/${enquiry.id}`;
     const title = `${enquiry.title} | Enqir.in`;
-    const description = enquiry.description || 'View this enquiry on Enqir.in - Trust-Based Marketplace';
+    const description = enquiry.description || 'View this enquiry on Enqir.in - AI-powered demand-driven marketplace';
     
     // Use enquiry's first reference image if available, otherwise use enqir.in default og-image
     // ALWAYS use enqir.in domain for og-image to ensure correct branding (never lovable)
@@ -191,7 +191,7 @@ const EnquiryDetail = () => {
     updateMetaTag('og:image', image);
     updateMetaTag('og:image:width', '1200');
     updateMetaTag('og:image:height', '630');
-    updateMetaTag('og:image:alt', enquiry.referenceImages && enquiry.referenceImages.length > 0 ? enquiry.title : 'Enqir.in - Trust-Based Marketplace');
+    updateMetaTag('og:image:alt', enquiry.referenceImages && enquiry.referenceImages.length > 0 ? enquiry.title : 'Enqir.in - AI-powered demand-driven marketplace');
 
     // Update Twitter tags
     updateMetaTag('twitter:card', 'summary_large_image', false);
@@ -204,8 +204,8 @@ const EnquiryDetail = () => {
 
     // Cleanup function to restore default meta tags
     return () => {
-      updateMetaTag('og:title', 'Enqir.in - Trust-Based Marketplace');
-      updateMetaTag('og:description', 'A trust-based platform connecting verified buyers and sellers for rare items, antiques, services, and more.');
+      updateMetaTag('og:title', 'Enqir.in - AI-powered demand-driven marketplace');
+      updateMetaTag('og:description', 'Connecting verified buyers and sellers through trusted, curated demand and supply.');
       updateMetaTag('og:url', window.location.origin);
       // Always use enqir.in domain for default og-image (never lovable)
       updateMetaTag('og:image', 'https://enqir.in/og-image.png');
