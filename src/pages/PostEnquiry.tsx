@@ -1867,39 +1867,43 @@ export default function PostEnquiry() {
                     <div className="space-y-2.5">
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
                       <div className="block sm:hidden">
-                        <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen}>
-                          <SheetTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
-                                selectedCategories.length === 0 
-                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
-                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
-                            >
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
-                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
-                                {selectedCategories.length === 0 ? (
-                                  <span className="text-[10px] text-slate-500">Select categories...</span>
-                                ) : (
-                                  selectedCategories.map((catValue) => {
-                                    const cat = categories.find(c => c.value === catValue);
-                                    return (
-                                      <Badge 
-                                        key={catValue} 
-                                        variant="secondary" 
-                                        className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
-                                      >
-                                        {cat?.label}
-                                      </Badge>
-                                    );
-                                  })
-                                )}
-                              </div>
-                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
-                            </Button>
-                          </SheetTrigger>
+                        <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen} modal={true}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setCategoriesSheetOpen(true);
+                            }}
+                            className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
+                              selectedCategories.length === 0 
+                                ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                            } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                          >
+                            {/* Physical button depth effect */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                            <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
+                              {selectedCategories.length === 0 ? (
+                                <span className="text-[10px] text-slate-500">Select categories...</span>
+                              ) : (
+                                selectedCategories.map((catValue) => {
+                                  const cat = categories.find(c => c.value === catValue);
+                                  return (
+                                    <Badge 
+                                      key={catValue} 
+                                      variant="secondary" 
+                                      className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
+                                    >
+                                      {cat?.label}
+                                    </Badge>
+                                  );
+                                })
+                              )}
+                            </div>
+                            <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
+                          </Button>
                           <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
                             <SheetHeader className="px-4 pt-4 pb-3 flex-shrink-0">
                               <SheetTitle className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Categories</SheetTitle>
@@ -1933,27 +1937,25 @@ export default function PostEnquiry() {
                                         isDisabled ? 'opacity-50' : ''
                                       }`}
                                       >
-                                        <Checkbox
-                                          id={`mobile-${cat.value}`}
-                                          checked={isSelected}
-                                          disabled={isDisabled}
-                                          onCheckedChange={() => !isDisabled && handleCategoryToggle(cat.value)}
-                                        className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
-                                        />
-                                      <Label
-                                        htmlFor={`mobile-${cat.value}`}
-                                          onClick={(e) => {
-                                            if (!isDisabled) {
-                                              e.preventDefault();
-                                              handleCategoryToggle(cat.value);
-                                            }
-                                          }}
-                                        className={`text-base flex-1 cursor-pointer ${
-                                            isDisabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700'
-                                        }`}
-                                      >
-                                        {cat.label}
-                                      </Label>
+                                      <Checkbox
+                                        id={`mobile-${cat.value}`}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={(checked) => {
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-auto"
+                                      />
+                                    <Label
+                                      htmlFor={`mobile-${cat.value}`}
+                                      className={`text-base flex-1 cursor-pointer ${
+                                          isDisabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700'
+                                      }`}
+                                    >
+                                      {cat.label}
+                                    </Label>
                                       </div>
                                       {isService && (
                                         <div className="px-4 py-2">
@@ -1981,6 +1983,7 @@ export default function PostEnquiry() {
                         <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
                           <PopoverTrigger asChild>
                               <Button
+                                type="button"
                                 variant="outline"
                               className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative ${
                                   selectedCategories.length === 0 
@@ -2017,6 +2020,13 @@ export default function PostEnquiry() {
                             alignOffset={0}
                             avoidCollisions={true}
                             collisionPadding={8}
+                            onInteractOutside={(e) => {
+                              // Prevent closing when clicking inside the popover
+                              const target = e.target as HTMLElement;
+                              if (target.closest('[role="dialog"]')) {
+                                e.preventDefault();
+                              }
+                            }}
                           >
                             {selectedCategories.length > 0 && (
                               <div className="p-3 border-b border-black bg-white">
@@ -2044,19 +2054,30 @@ export default function PostEnquiry() {
                                     className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
                                       isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
+                                    onClick={(e) => {
+                                      if (!isDisabled) {
+                                        e.stopPropagation();
+                                        handleCategoryToggle(cat.value);
+                                      }
+                                    }}
                                     >
                                       <Checkbox
                                         id={cat.value}
                                         checked={isSelected}
                                         disabled={isDisabled}
-                                        onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5"
+                                        onCheckedChange={(checked) => {
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
                                       />
                                     <Label
                                       htmlFor={cat.value}
                                       className={`text-sm sm:text-sm flex-1 cursor-pointer ${
                                         isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
                                       }`}
+                                      onClick={(e) => e.stopPropagation()}
                                     >
                                       {cat.label}
                                     </Label>
