@@ -2130,7 +2130,7 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border border-black hover:border-gray-700 flex flex-col h-full overflow-visible group relative ${
+              className={`bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black hover:border-gray-700 flex flex-col h-full overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               }`}
               animate={{
