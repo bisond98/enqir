@@ -713,51 +713,15 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-black via-gray-900 to-black hover:from-gray-900 hover:via-black hover:to-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-2 border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20 transform-gpu"
-                      style={{
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5)',
-                        transformStyle: 'preserve-3d',
-                        perspective: '1200px',
-                        transform: 'translateZ(20px)'
-                      }}
+                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-black text-base sm:text-lg rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
                     >
-                      {/* 3D Border Effect */}
-                      <div className="absolute inset-0 rounded-2xl border-2 border-gray-800 pointer-events-none"
-                        style={{
-                          boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
-                          zIndex: 1
-                        }}
-                      />
-
-                      {/* Top highlight for 3D effect */}
-                      <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-2xl bg-gradient-to-b from-white/20 via-white/8 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Side highlights for depth */}
-                      <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-2xl bg-gradient-to-r from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                      <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-2xl bg-gradient-to-l from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Bottom shadow for depth */}
-                      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-2xl bg-gradient-to-t from-black/80 via-black/50 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Inner depth shadow */}
-                      <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/60 pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Additional depth layer */}
-                      <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/8 via-transparent to-black/40 pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent rounded-2xl pointer-events-none" style={{ zIndex: 2 }} />
-                      
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" style={{ zIndex: 2 }} />
-                          
                           {loading ? (
-                        <div className="flex items-center justify-center space-x-3 relative z-10" style={{ transform: 'translateZ(10px)' }}>
+                        <div className="flex items-center justify-center space-x-3">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Logging in...</span>
                         </div>
                           ) : (
-                        <span className="relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Log In</span>
+                        <span className="text-white">Log In</span>
                           )}
                     </Button>
                   </form>
@@ -825,51 +789,15 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-black via-gray-900 to-black hover:from-gray-900 hover:via-black hover:to-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border-2 border-black transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group z-20 transform-gpu"
-                      style={{
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5)',
-                        transformStyle: 'preserve-3d',
-                        perspective: '1200px',
-                        transform: 'translateZ(20px)'
-                      }}
+                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-black text-base sm:text-lg rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
                     >
-                      {/* 3D Border Effect */}
-                      <div className="absolute inset-0 rounded-2xl border-2 border-gray-800 pointer-events-none"
-                        style={{
-                          boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.3)',
-                          zIndex: 1
-                        }}
-                      />
-
-                      {/* Top highlight for 3D effect */}
-                      <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-2xl bg-gradient-to-b from-white/20 via-white/8 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Side highlights for depth */}
-                      <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-2xl bg-gradient-to-r from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-                      <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-2xl bg-gradient-to-l from-white/12 via-white/6 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Bottom shadow for depth */}
-                      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-2xl bg-gradient-to-t from-black/80 via-black/50 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Inner depth shadow */}
-                      <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/60 pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Additional depth layer */}
-                      <div className="absolute inset-0.5 rounded-2xl bg-gradient-to-br from-white/8 via-transparent to-black/40 pointer-events-none" style={{ zIndex: 1 }} />
-
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent rounded-2xl pointer-events-none" style={{ zIndex: 2 }} />
-                      
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" style={{ zIndex: 2 }} />
-                          
                           {loading ? (
-                        <div className="flex items-center justify-center space-x-3 relative z-10" style={{ transform: 'translateZ(10px)' }}>
+                        <div className="flex items-center justify-center space-x-3">
                           <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white">Creating account...</span>
                         </div>
                           ) : (
-                        <span className="relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Create Account</span>
+                        <span className="text-white">Create Account</span>
                           )}
                     </Button>
                   </form>
