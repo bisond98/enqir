@@ -14,7 +14,7 @@ import { HeaderSnow } from "@/components/HeaderSnow";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +69,7 @@ export default function EnquiryWall() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'default'>('default');
   // 🚀 PAGINATION: State for paginated display (10 per page)
   const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1282,19 +1283,91 @@ export default function EnquiryWall() {
       }
     });
     
-    // Use shuffled live enquiries, but filter to only include those in liveResults
-    const shuffledLive = shuffledLiveEnquiries.filter(e => 
-      liveResults.some(lr => lr.id === e.id)
-    );
+    // If sortBy is 'default', use shuffled live enquiries (original shuffle behavior)
+    if (sortBy === 'default') {
+      // Use shuffled live enquiries, but filter to only include those in liveResults
+      const shuffledLive = shuffledLiveEnquiries.filter(e => 
+        liveResults.some(lr => lr.id === e.id)
+      );
+      
+      // If shuffled live is empty or doesn't match, use liveResults directly
+      const finalLive = shuffledLive.length > 0 && shuffledLive.length === liveResults.length 
+        ? shuffledLive 
+        : liveResults;
+      
+      // Sort expired and deal closed by createdAt (newest first) - original behavior
+      expiredResults.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      dealClosedResults.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      // Combine: shuffled live first, then expired, then deal closed
+      return [...finalLive, ...expiredResults, ...dealClosedResults];
+    }
     
-    // If shuffled live is empty or doesn't match, use liveResults directly
-    const finalLive = shuffledLive.length > 0 && shuffledLive.length === liveResults.length 
-      ? shuffledLive 
-      : liveResults;
+    // Sort live results by date based on sortBy state
+    const sortedLiveResults = [...liveResults].sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        if (sortBy === 'newest') {
+          return dateB.getTime() - dateA.getTime();
+        } else {
+          return dateA.getTime() - dateB.getTime();
+        }
+      } catch {
+        return 0;
+      }
+    });
     
-    // Combine: shuffled live first, then expired, then deal closed
-    return [...finalLive, ...expiredResults, ...dealClosedResults];
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries]);
+    // Sort expired results by date based on sortBy state
+    const sortedExpiredResults = [...expiredResults].sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        if (sortBy === 'newest') {
+          return dateB.getTime() - dateA.getTime();
+        } else {
+          return dateA.getTime() - dateB.getTime();
+        }
+      } catch {
+        return 0;
+      }
+    });
+    
+    // Sort deal closed results by date based on sortBy state
+    const sortedDealClosedResults = [...dealClosedResults].sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        if (sortBy === 'newest') {
+          return dateB.getTime() - dateA.getTime();
+        } else {
+          return dateA.getTime() - dateB.getTime();
+        }
+      } catch {
+        return 0;
+      }
+    });
+    
+    // Combine: live first, then expired, then deal closed (all sorted by date)
+    return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy]);
 
   // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
   useEffect(() => {
@@ -5079,6 +5152,62 @@ export default function EnquiryWall() {
                 </DropdownMenuContent>
               </DropdownMenu>
               
+              {/* Sort Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`p-2 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 flex items-center justify-center min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] ${
+                      sortBy !== 'default' ? "border-2 border-blue-600" : ""
+                    }`}
+                    title="Sort enquiries by date"
+                  >
+                    <ArrowUpDown className={`h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0 ${
+                      sortBy !== 'default' ? 'text-blue-600' : 'text-gray-700'
+                    }`} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={`w-[140px] sm:w-48 border-2 rounded-xl shadow-xl p-2 sm:p-2.5 transition-all duration-200 ${
+                  sortBy !== 'default'
+                    ? "bg-blue-600 border-blue-700"
+                    : "bg-gray-600 border-gray-700"
+                }`}>
+                  <DropdownMenuCheckboxItem
+                    checked={sortBy === 'newest'}
+                    onCheckedChange={() => setSortBy('newest')}
+                    className={`cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden min-h-[44px] sm:min-h-[auto] ${
+                      sortBy === 'newest'
+                        ? "bg-blue-700 text-white shadow-md active:bg-blue-800"
+                        : "hover:bg-blue-700/80 hover:text-white focus:bg-blue-700 focus:text-white active:bg-blue-800"
+                    }`}
+                  >
+                    Newest first
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={sortBy === 'oldest'}
+                    onCheckedChange={() => setSortBy('oldest')}
+                    className={`cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden min-h-[44px] sm:min-h-[auto] ${
+                      sortBy === 'oldest'
+                        ? "bg-blue-700 text-white shadow-md active:bg-blue-800"
+                        : "hover:bg-blue-700/80 hover:text-white focus:bg-blue-700 focus:text-white active:bg-blue-800"
+                    }`}
+                  >
+                    Oldest first
+                  </DropdownMenuCheckboxItem>
+                  {sortBy !== 'default' && (
+                    <>
+                      <div className="h-px bg-gray-500/50 my-1.5 mx-2" />
+                      <DropdownMenuCheckboxItem
+                        checked={sortBy === 'default'}
+                        onCheckedChange={() => setSortBy('default')}
+                        className="cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden hover:bg-red-600/80 hover:text-white focus:bg-red-600 focus:text-white active:bg-red-700 min-h-[44px] sm:min-h-[auto] bg-red-500"
+                      >
+                        Cancel
+                      </DropdownMenuCheckboxItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               {/* Grid/List Toggle */}
               <div 
                 className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
@@ -5293,51 +5422,31 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-2 sm:p-5 flex flex-col justify-center relative z-10 overflow-hidden mobile-black-section" style={{ flex: '1 1 75%', flexGrow: 3, flexShrink: 1, flexBasis: '75%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
+                          <CardHeader className="p-2 sm:p-5 flex flex-col relative z-10 overflow-hidden mobile-black-section" style={{ flex: '1 1 75%', flexGrow: 3, flexShrink: 1, flexBasis: '75%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                             {/* Category-specific 2D Sketches - List View Only */}
                             <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.2]">
                               {getCategorySketch(enquiry.category)}
                             </div>
-                            <div className="space-y-1.5 sm:space-y-3 py-2 sm:py-0 pt-12 sm:pt-0 relative z-10">
-                              {/* Posted Time - Date and Time */}
+                            {/* Content wrapper - centers title vertically while keeping all spacing */}
+                            <div className="relative z-10 flex flex-col h-full justify-center">
+                              <div className="space-y-1.5 sm:space-y-3 mt-4 sm:mt-1">
+                              {/* Posted Time - Hidden spacer for mobile to maintain original spacing */}
                               {enquiry.createdAt && (
-                                <div className="text-center mb-1 sm:mb-2">
-                                  <span className="text-[7px] sm:text-[9px] text-white/70 font-medium">
-                                    Posted: {formatDateTime(enquiry.createdAt)}
+                                <div className="block sm:hidden mb-1" style={{ height: '1em', visibility: 'hidden' }}>
+                                  <span className="text-[7px] text-white/70 font-medium">
+                                    Posted on: {formatDateTime(enquiry.createdAt)}
                                   </span>
                                 </div>
                               )}
                               {/* Need Label - Above Title */}
-                              <div className="text-left -mb-1 sm:-mb-2 ml-1 sm:ml-0">
-                                <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1000px'
-                                  }}
-                                >
-                                  {/* 3D Border Effect */}
-                                  <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
-                                    style={{
-                                      boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect */}
-                                  <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow */}
-                                  <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                  
-                                  <span className="relative z-10 text-[8px] sm:text-xs text-black font-bold tracking-wide" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Need</span>
-                                </div>
+                              <div className="flex items-baseline justify-between -mb-1 sm:-mb-2 ml-1 sm:ml-0">
+                                <span className="text-[9px] sm:text-sm text-white font-bold">Need</span>
+                                {/* Posted Time - Positioned to the right, aligned with Need on same line */}
+                                {enquiry.createdAt && (
+                                  <span className="text-[8px] sm:text-[10px] text-white font-bold mr-3 sm:mr-0">
+                                    Posted on: {formatDateTime(enquiry.createdAt)}
+                                  </span>
+                                )}
                               </div>
                               
                               {/* Title - 3D White Tile Style */}
@@ -5416,93 +5525,34 @@ export default function EnquiryWall() {
                                   
                                   return (
                                     <div className="flex flex-col mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
-                                      <div className="flex items-start gap-1 sm:gap-1.5 ml-1 sm:ml-0">
+                                      <div className="flex items-start gap-2 sm:gap-3 ml-1 sm:ml-0">
                                         {/* Location - Left aligned */}
                                         {enquiry.location && (
-                                          <div className="relative inline-flex items-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                            style={{
-                                              boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
-                                              transformStyle: 'preserve-3d',
-                                              perspective: '1200px',
-                                              transform: 'translateZ(8px)'
-                                            }}
-                                          >
-                                            {/* 3D Border Effect - Enhanced */}
-                                            <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
-                                              style={{
-                                                boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
-                                              }}
-                                            />
-                                            
-                                            {/* Top highlight for 3D effect - Enhanced */}
-                                            <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
-                                            
-                                            {/* Side highlights for depth - Enhanced */}
-                                            <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                            <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                            
-                                            {/* Bottom shadow for depth - Enhanced */}
-                                            <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
-                                            
-                                            {/* Inner depth shadow - Enhanced */}
-                                            <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                            
-                                            {/* Additional depth layer */}
-                                            <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                            
-                                            <span className="text-[8px] sm:text-xs font-semibold text-black relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>At </span>
-                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0 relative z-10"
-                                              style={{
-                                                transform: 'translateZ(12px)'
-                                              }}
-                                            >
+                                          <div className="inline-flex items-center gap-1">
+                                            <span className="text-[9px] sm:text-sm text-white font-bold">At </span>
+                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0">
                                               <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
-                                            <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-black relative z-10" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{enquiry.location}</span>
+                                            <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold">{enquiry.location}</span>
                                           </div>
                                         )}
+                                        {enquiry.location && (
+                                          <span className="text-[8px] sm:text-xs text-white/70 font-medium">/</span>
+                                        )}
                                         {/* Before Date - Left aligned, close to location */}
-                                        <div className="relative inline-flex items-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                          style={{
-                                            boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
-                                            transformStyle: 'preserve-3d',
-                                            perspective: '1200px',
-                                            transform: 'translateZ(8px)'
-                                          }}
-                                        >
-                                          {/* 3D Border Effect - Enhanced */}
-                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border-2 border-gray-300/60" 
-                                            style={{
-                                              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
-                                            }}
-                                          />
-                                          
-                                          {/* Top highlight for 3D effect - Enhanced */}
-                                          <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
-                                          
-                                          {/* Side highlights for depth - Enhanced */}
-                                          <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                          <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                          
-                                          {/* Bottom shadow for depth - Enhanced */}
-                                          <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
-                                          
-                                          {/* Inner depth shadow - Enhanced */}
-                                          <div className="absolute inset-1 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                          
-                                          {/* Additional depth layer */}
-                                          <div className="absolute inset-0.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                          
-                                          <span className="relative z-10 text-[8px] sm:text-xs font-semibold text-black whitespace-nowrap" style={{ transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>
-                                        before {formatDate(deadlineDate.toISOString())}
-                                      </span>
+                                        <div className="inline-flex items-center gap-1">
+                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0">
+                                            <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                          </div>
+                                          <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap">
+                                            before {formatDate(deadlineDate.toISOString())}
+                                          </span>
                                         </div>
+                                        <span className="text-[8px] sm:text-xs text-white/70 font-medium">/</span>
                                         {/* Countdown Timer - Close to before */}
-                                        <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
-                                          <span className="text-[8px] sm:text-xs font-semibold text-white whitespace-nowrap">
-                                        {formatDeadlineText(enquiry.deadline)}
-                                      </span>
-                                        </div>
+                                        <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap">
+                                          {formatDeadlineText(enquiry.deadline)}
+                                        </span>
                                       </div>
                                     </div>
                                   );
@@ -5529,98 +5579,37 @@ export default function EnquiryWall() {
                                 </div>
                               </div>
                               
-                            {/* Description - Hidden on mobile, shown on desktop */}
-                            {enquiry.description && (
-                              <div className="hidden sm:flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
-                                <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-5 text-center max-w-xs sm:max-w-sm">
-                                {enquiry.description}
-                              </p>
-                            </div>
-                            )}
-                            
-                            {/* Budget - Moved to CardHeader to extend black background */}
-                            {/* Desktop Budget */}
-                            <div className="hidden sm:flex pt-2 sm:pt-3">
-                              {enquiry.budget && (
-                                <div className="relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1200px',
-                                    transform: 'translateZ(8px)'
-                                  }}
-                                >
-                                  {/* 3D Border Effect - Enhanced */}
-                                  <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
-                                    style={{
-                                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                  
-                                  {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                  
-                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
-                                  <span className="font-extrabold text-gray-900 text-xs sm:text-sm whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                              {/* Description - Hidden on mobile, shown on desktop */}
+                              {enquiry.description && (
+                                <div className="hidden sm:flex justify-center pt-8 pb-2 sm:pt-0 sm:pb-0 sm:my-3">
+                                  <p className="text-[7px] sm:text-[8px] text-gray-900 font-semibold leading-tight line-clamp-5 text-center max-w-xs sm:max-w-sm">
+                                    {enquiry.description}
+                                  </p>
                                 </div>
                               )}
-                            </div>
-                            
-                            {/* Mobile Budget */}
-                            <div className="block sm:hidden pt-2">
-                              {enquiry.budget && (
-                                <div className="relative flex items-center justify-center">
-                                  <div className="relative flex items-center gap-0.5 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1.5 py-0.5 transform-gpu transition-all duration-500 ease-out"
-                                    style={{
-                                      boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
-                                      transformStyle: 'preserve-3d',
-                                      perspective: '1200px',
-                                      transform: 'translateZ(8px)'
-                                    }}
-                                  >
-                                    {/* 3D Border Effect - Enhanced */}
-                                    <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
-                                      style={{
-                                        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
-                                      }}
-                                    />
-                                    
-                                    {/* Top highlight for 3D effect - Enhanced */}
-                                    <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
-                                    
-                                    {/* Side highlights for depth - Enhanced */}
-                                    <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                    <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                    
-                                    {/* Bottom shadow for depth - Enhanced */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
-                                    
-                                    {/* Inner depth shadow - Enhanced */}
-                                    <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                    
-                                    {/* Additional depth layer */}
-                                    <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                    
-                                    <span className="font-bold text-gray-900 text-[7px] sm:text-[8px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
-                                    <span className="font-extrabold text-black text-xs sm:text-sm relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
-                                    <span className="font-extrabold text-gray-900 text-xs sm:text-sm whitespace-nowrap tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                              
+                              {/* Budget - Moved to CardHeader to extend black background */}
+                              {/* Desktop Budget */}
+                              <div className="hidden sm:flex pt-6 sm:pt-8">
+                                {enquiry.budget && (
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[8px] sm:text-[10px] text-white font-normal">Budget -</span>
+                                    <span className="text-lg sm:text-xl text-white font-normal">₹</span>
+                                    <span className="text-lg sm:text-xl text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}-/-</span>
                                   </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
+                              
+                              {/* Mobile Budget */}
+                              <div className="block sm:hidden pt-12">
+                                {enquiry.budget && (
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <span className="text-[8px] text-white font-normal">Budget -</span>
+                                    <span className="text-lg text-white font-normal">₹</span>
+                                    <span className="text-lg text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}-/-</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </CardHeader>
                         </>
@@ -5673,45 +5662,17 @@ export default function EnquiryWall() {
                             </svg>
                           </div>
                           <div className="space-y-1.5 sm:space-y-3 lg:space-y-4 relative z-10">
-                            {/* Posted Time - Date and Time */}
-                            {enquiry.createdAt && (
-                              <div className="text-center mb-1 sm:mb-2">
-                                <span className="text-[7px] sm:text-[9px] text-white/70 font-medium">
-                                  Posted: {formatDateTime(enquiry.createdAt)}
-                                </span>
-                              </div>
-                            )}
+                            {/* Spacer to maintain original Posted Time spacing */}
+                            <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
                             {/* Need Label - Above Title */}
-                            <div className="text-left">
-                              <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                style={{
-                                  boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                  transformStyle: 'preserve-3d',
-                                  perspective: '1000px'
-                                }}
-                              >
-                                {/* 3D Border Effect */}
-                                <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
-                                  style={{
-                                    boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                  }}
-                                />
-                                
-                                {/* Top highlight for 3D effect */}
-                                <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                
-                                {/* Side highlights for depth */}
-                                <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                
-                                {/* Bottom shadow for depth */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                
-                                {/* Inner depth shadow */}
-                                <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                
-                                <span className="relative z-10 text-[8px] sm:text-sm md:text-base text-black font-bold tracking-wide" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>Need</span>
-                              </div>
+                            <div className="relative text-left">
+                              <span className="text-[8px] sm:text-xs text-white/70 font-medium">Need</span>
+                              {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
+                              {enquiry.createdAt && (
+                                <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-white/70 font-medium">
+                                  Posted on: {formatDateTime(enquiry.createdAt)}
+                                </span>
+                              )}
                             </div>
                             
                             {/* Title - 3D White Tile Style */}

@@ -2653,19 +2653,6 @@ const Landing = () => {
                 )}
               </div>
                 
-            {/* Load More Button */}
-            {filteredEnquiries.length > 3 && (
-              <div className="text-center mt-6">
-                <Button
-                  onClick={() => setShowAllEnquiries(!showAllEnquiries)}
-                  variant="outline"
-                  className="mobile-button-outline"
-                >
-                  {showAllEnquiries ? 'Show Less' : `Load More Enquiries (${filteredEnquiries.length - 3} more)`}
-                </Button>
-              </div>
-            )}
-
               </>
             ) : (
               <div className="text-center py-16">
