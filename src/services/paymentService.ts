@@ -260,7 +260,15 @@ export const processPayment = async (
       throw new Error(errorMessage);
     }
     
-    console.log('✅ Razorpay Key ID loaded:', razorpayKeyId.substring(0, 10) + '...');
+    // Check if using test key (test keys start with "rzp_test_")
+    const isTestKey = razorpayKeyId.startsWith('rzp_test_');
+    if (isTestKey) {
+      console.warn('⚠️ Using Razorpay TEST key. For production, use a LIVE key (starts with "rzp_live_")');
+    } else {
+      console.log('✅ Using Razorpay LIVE key');
+    }
+    
+    console.log('✅ Razorpay Key ID loaded:', razorpayKeyId.substring(0, 10) + '...', isTestKey ? '(TEST MODE)' : '(LIVE MODE)');
 
     // Initialize Razorpay checkout
     return new Promise((resolve) => {
@@ -408,6 +416,11 @@ export const processPayment = async (
         theme: {
           color: '#2563eb', // Blue color matching your app
         },
+        notes: {
+          enquiryId,
+          userId,
+          planId: plan.id,
+        },
         modal: {
           ondismiss: function() {
             console.log('⚠️ Payment cancelled by user (close button or ESC)');
@@ -437,6 +450,34 @@ export const processPayment = async (
       console.log('🔧 Creating Razorpay instance...');
       razorpayInstance = new window.Razorpay(options);
       console.log('✅ Razorpay instance created');
+      
+      // Add error handler for Razorpay payment failures
+      razorpayInstance.on('payment.failed', function (response: any) {
+        console.error('❌ Razorpay payment failed:', response);
+        restoreAppOverlays();
+        window.removeEventListener('popstate', handlePopState);
+        
+        // Get error description from Razorpay response
+        const errorDescription = response.error?.description || response.error?.reason || 'Payment failed. Please try again.';
+        const errorCode = response.error?.code || '';
+        const errorSource = response.error?.source || '';
+        const errorStep = response.error?.step || '';
+        const errorReason = response.error?.reason || '';
+        
+        console.error('❌ Payment failure details:', {
+          errorDescription,
+          errorCode,
+          errorSource,
+          errorStep,
+          errorReason,
+          metadata: response.error?.metadata
+        });
+        
+        resolve({
+          success: false,
+          error: errorDescription || 'Payment failed. Please check your card details and try again.',
+        });
+      });
       
       // CRITICAL: Wait a moment for Razorpay to initialize, then ensure it's on top and interactive
       setTimeout(() => {

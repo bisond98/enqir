@@ -1845,6 +1845,7 @@ export default function PostEnquiry() {
                         placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        maxLength={60}
                             className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
@@ -1904,13 +1905,13 @@ export default function PostEnquiry() {
                             </div>
                             <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
                           </Button>
-                          <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black">
-                            <SheetHeader className="px-4 pt-4 pb-3 flex-shrink-0">
-                              <SheetTitle className="text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left w-full">Categories</SheetTitle>
-                              <p className="text-xs text-slate-500 text-left mt-1 sm:ml-0 ml-[0.15em]">upto 3.</p>
+                          <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black bg-white">
+                            <SheetHeader className="px-5 pt-6 pb-4 flex-shrink-0 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/30">
+                              <SheetTitle className="text-5xl sm:text-6xl font-black tracking-tighter leading-none font-heading text-black text-left w-full mb-1">Categories</SheetTitle>
+                              <p className="text-xs text-slate-500 text-left font-medium">upto 3.</p>
                             </SheetHeader>
                             {selectedCategories.length > 0 && (
-                              <div className="px-4 pb-3 border-b border-black flex-shrink-0">
+                              <div className="px-5 py-4 border-b border-gray-200 bg-white flex-shrink-0">
                                 <div className="relative">
                                   <Button
                                     type="button"
@@ -1923,8 +1924,8 @@ export default function PostEnquiry() {
                                 </div>
                               </div>
                             )}
-                            <div className="flex-1 overflow-y-auto overscroll-contain">
-                              <div className="px-2 py-2 pb-20">
+                            <div className="flex-1 overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-gray-50/20 to-white">
+                              <div className="px-3 py-3 pb-24">
                                 {categories.map((cat, index) => {
                                   const isSelected = selectedCategories.includes(cat.value);
                                   const isDisabled = !isSelected && selectedCategories.length >= 3;
@@ -1933,33 +1934,47 @@ export default function PostEnquiry() {
                                   return (
                                     <div key={cat.value}>
                                     <div 
-                                      className={`flex items-center space-x-3 p-4 min-h-[56px] active:bg-slate-100 rounded-lg transition-colors ${
-                                        isDisabled ? 'opacity-50' : ''
+                                      className={`flex items-center space-x-4 p-4 min-h-[64px] rounded-xl transition-all duration-200 ${
+                                        isSelected 
+                                          ? 'bg-gradient-to-r from-black/5 to-black/10 border-2 border-black/20 shadow-sm' 
+                                          : isDisabled 
+                                            ? 'opacity-40' 
+                                            : 'hover:bg-gray-50 active:bg-gray-100 border-2 border-transparent'
                                       }`}
                                       >
-                                      <Checkbox
-                                        id={`mobile-${cat.value}`}
-                                        checked={isSelected}
-                                        disabled={isDisabled}
-                                        onCheckedChange={(checked) => {
-                                          if (!isDisabled) {
-                                            handleCategoryToggle(cat.value);
-                                          }
-                                        }}
-                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-auto"
-                                      />
+                                      <div className="flex-shrink-0">
+                                        <Checkbox
+                                          id={`mobile-${cat.value}`}
+                                          checked={isSelected}
+                                          disabled={isDisabled}
+                                          onCheckedChange={(checked) => {
+                                            if (!isDisabled) {
+                                              handleCategoryToggle(cat.value);
+                                            }
+                                          }}
+                                          className={`h-5 w-5 border-2 rounded-md transition-all duration-200 [&>span>svg]:h-3.5 [&>span>svg]:w-3.5 pointer-events-auto ${
+                                            isSelected
+                                              ? 'border-black bg-black data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                              : 'border-gray-400 data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                          }`}
+                                        />
+                                      </div>
                                     <Label
                                       htmlFor={`mobile-${cat.value}`}
-                                      className={`text-base flex-1 cursor-pointer ${
-                                          isDisabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700'
+                                      className={`text-base font-medium flex-1 cursor-pointer select-none ${
+                                          isDisabled 
+                                            ? 'text-slate-400 cursor-not-allowed' 
+                                            : isSelected
+                                              ? 'text-black font-semibold'
+                                              : 'text-slate-700'
                                       }`}
                                     >
                                       {cat.label}
                                     </Label>
                                       </div>
                                       {isService && (
-                                        <div className="px-4 py-2">
-                                          <div className="border-t border-black border-[0.5px]"></div>
+                                        <div className="px-4 py-3">
+                                          <div className="border-t border-gray-200"></div>
                                         </div>
                                       )}
                                     </div>
@@ -1968,7 +1983,7 @@ export default function PostEnquiry() {
                               </div>
                             </div>
                             {selectedCategories.length >= 3 && (
-                              <div className="px-4 py-3 bg-black border-t border-black flex-shrink-0">
+                              <div className="px-5 py-4 bg-black border-t-2 border-black flex-shrink-0">
                                 <p className="text-xs text-white font-semibold text-center">
                                   Nothing can be more categorised.
                                 </p>
