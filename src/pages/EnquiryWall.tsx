@@ -756,9 +756,12 @@ export default function EnquiryWall() {
         // Generate suggestions from actual enquiry data
         const suggestions = generateSuggestions(value);
         setSearchSuggestions(suggestions);
-        // Only show suggestions if we're not preventing them (e.g., after selecting a suggestion)
+        // Only show suggestions if we're not preventing them (e.g., after selecting a suggestion or clicking search button)
         if (!preventSuggestionsRef.current) {
           setShowSuggestions(suggestions.length > 0);
+        } else {
+          // If preventing, ensure dropdown is closed
+          setShowSuggestions(false);
         }
         
         // Perform AI search - call directly to avoid dependency issues
@@ -941,9 +944,14 @@ export default function EnquiryWall() {
     let results = enquiries.filter(enquiry => {
       // Enhanced search matching - check multiple fields
       const matchesSearch = !searchLower || (() => {
-        // Check title/heading - prioritize exact title matches
+        // Check title/heading - prioritize exact title matches first
         if (enquiry.title) {
           const titleLower = enquiry.title.toLowerCase().trim();
+          // Exact match check first
+          if (titleLower === searchLower) return true;
+          // Then check if title starts with search term (for better matching)
+          if (titleLower.startsWith(searchLower)) return true;
+          // Then check if title includes search term
           if (titleLower.includes(searchLower)) return true;
           // Also check if search term matches any word in title
           const titleWords = titleLower.split(/\s+/);
@@ -4839,7 +4847,18 @@ export default function EnquiryWall() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleSearchChange(searchTerm);
+                      // Prevent suggestions from showing when search button is clicked
+                      preventSuggestionsRef.current = true;
+                      setShowSuggestions(false);
+                      setSearchSuggestions([]);
+                      // Perform search without triggering suggestions
+                      if (searchTerm.trim()) {
+                        handleSearchChange(searchTerm);
+                      }
+                      // Keep preventSuggestions active longer to prevent dropdown from reopening
+                      setTimeout(() => {
+                        preventSuggestionsRef.current = false;
+                      }, 500);
                     }}
                     className="absolute right-2 sm:right-3 top-1/2 z-50 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation cursor-pointer"
                     aria-label="Search"
