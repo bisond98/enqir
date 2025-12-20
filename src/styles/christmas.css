@@ -202,3 +202,98 @@
   animation: none !important;
 }
 
+/* Santa Skating Animation - Above Post Your Need Button */
+.santa-skating-container {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 60px;
+  z-index: 100 !important;
+  pointer-events: none;
+  overflow: visible !important;
+}
+
+.santa-skating-image {
+  height: 60px !important;
+  width: auto !important;
+  max-width: 300px !important;
+  min-width: 200px !important;
+  object-fit: contain !important;
+  will-change: transform;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  image-rendering: auto !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 20px !important;
+  z-index: 101 !important;
+}
+
+/* Skating animation - smooth horizontal glide with subtle bounce */
+@keyframes santaSkating {
+  0% {
+    transform: translateX(400px) translateY(0px) rotate(0deg);
+  }
+  20% {
+    transform: translateX(100px) translateY(-1px) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateX(-60px) translateY(-2px) rotate(-1deg);
+  }
+  80% {
+    transform: translateX(-140px) translateY(-1px) rotate(-0.5deg);
+  }
+  100% {
+    transform: translateX(-400px) translateY(0px) rotate(0deg);
+  }
+}
+
+/* Apply animation with premium easing - slow and smooth */
+.santa-skating-image {
+  animation: santaSkating 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite !important;
+  animation-fill-mode: both !important;
+  animation-delay: 0s !important;
+}
+
+.santa-skating-image.paused {
+  animation-play-state: paused !important;
+}
+
+/* Respect prefers-reduced-motion - only disable if user explicitly prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .santa-skating-image:not(.force-animation) {
+    animation: none !important;
+    transform: translateX(-50%) translateY(0) rotate(0deg) !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .santa-skating-container {
+    top: -30px;
+    height: 30px;
+  }
+  
+  .santa-skating-image {
+    height: 30px;
+    max-width: 150px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .santa-skating-container {
+    top: -40px;
+    height: 40px;
+  }
+  
+  .santa-skating-image {
+    height: 40px;
+    max-width: 220px;
+  }
+}
+
