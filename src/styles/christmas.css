@@ -29,12 +29,13 @@
 .header-snowflake {
   position: absolute;
   top: 0;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.9) !important; /* Force white color */
   font-size: 1em;
   animation: headerFall linear infinite;
   user-select: none;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important; /* Ensure white shadow */
   will-change: transform;
+  filter: brightness(1) !important; /* Prevent color shifts */
 }
 
 @keyframes headerFall {
@@ -57,11 +58,12 @@
 .snowflake {
   position: absolute;
   top: -10px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8) !important; /* Force white color */
   font-size: 1em;
   animation: fall linear infinite;
   user-select: none;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5) !important; /* Ensure white shadow */
+  filter: brightness(1) !important; /* Prevent color shifts */
 }
 
 @keyframes fall {

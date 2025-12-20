@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
   const [isActive, setIsActive] = useState(false);
@@ -58,6 +58,17 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  // Memoize snowflake data to ensure consistency across environments
+  const landingSnowflakes = useMemo(() => {
+    return [...Array(50)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      animationDelay: Math.random() * 5,
+      animationDuration: 3 + Math.random() * 5,
+      fontSize: 8 + Math.random() * 8
+    }));
+  }, []); // Empty dependency array - only generate once
+
   if (!isActive) return <>{children}</>;
 
   return (
@@ -65,15 +76,15 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
       {/* Full screen snowflakes - only on landing page */}
       {isLandingPage && (
         <div className="snowflakes" aria-hidden="true">
-          {[...Array(50)].map((_, i) => (
+          {landingSnowflakes.map((snowflake) => (
             <div 
-              key={i} 
+              key={snowflake.id} 
               className="snowflake" 
               style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${3 + Math.random() * 5}s`,
-                fontSize: `${8 + Math.random() * 8}px`
+                left: `${snowflake.left}%`,
+                animationDelay: `${snowflake.animationDelay}s`,
+                animationDuration: `${snowflake.animationDuration}s`,
+                fontSize: `${snowflake.fontSize}px`
               }}
             >
               ❄
