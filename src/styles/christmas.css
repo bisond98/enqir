@@ -30,7 +30,7 @@
   position: absolute;
   top: 0;
   color: #ffffff !important; /* Force pure white color */
-  font-size: 1em !important;
+  /* DO NOT set font-size here - let inline styles control it */
   animation: headerFall linear infinite;
   user-select: none;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important; /* Ensure white shadow */
@@ -51,6 +51,7 @@
     text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important;
     filter: brightness(1) saturate(1) !important;
     opacity: 0.9 !important;
+    /* DO NOT set font-size - let inline styles control it */
   }
 }
 
@@ -75,7 +76,7 @@
   position: absolute;
   top: -10px;
   color: #ffffff !important; /* Force pure white color */
-  font-size: 1em !important;
+  /* DO NOT set font-size here - let inline styles control it */
   animation: fall linear infinite;
   user-select: none;
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.5) !important; /* Ensure white shadow */
@@ -95,6 +96,7 @@
     text-shadow: 0 0 2px rgba(255, 255, 255, 0.5) !important;
     filter: brightness(1) saturate(1) !important;
     opacity: 0.8 !important;
+    /* DO NOT set font-size - let inline styles control it */
   }
 }
 

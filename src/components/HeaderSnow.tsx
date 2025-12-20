@@ -18,7 +18,7 @@ export const HeaderSnow = () => {
       left: random() * 100,
       animationDelay: random() * 6,
       animationDuration: 3 + random() * 5,
-      fontSize: 8 + random() * 10
+      fontSize: 2 + random() * 2 // Reduced to 2-4px
     }));
   }, []); // Empty dependency array - only generate once
 

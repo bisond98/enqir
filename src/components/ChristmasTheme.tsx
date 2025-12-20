@@ -75,7 +75,7 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
       left: random() * 100,
       animationDelay: random() * 5,
       animationDuration: 3 + random() * 5,
-      fontSize: 8 + random() * 8
+      fontSize: 2 + random() * 2 // Reduced to 2-4px
     }));
   }, []); // Empty dependency array - only generate once
 
