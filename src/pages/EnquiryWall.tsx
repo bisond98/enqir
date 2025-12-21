@@ -5496,7 +5496,7 @@ export default function EnquiryWall() {
                         : viewMode === 'list' 
                           ? 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
                           : 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-green-500 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
-                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d', borderBottom: '1px solid #000000', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d', borderBottom: '1px solid #000000', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : {}}>
+                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -5847,7 +5847,7 @@ export default function EnquiryWall() {
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-[8px] sm:text-[10px] text-white font-normal">Budget -</span>
                                     <span className="text-lg sm:text-xl text-white font-normal">₹</span>
-                                    <span className="text-lg sm:text-xl text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}-/-</span>
+                                    <span className="text-lg sm:text-xl text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
                                 )}
                               </div>
@@ -6289,7 +6289,7 @@ export default function EnquiryWall() {
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
                                   <span className="relative z-10 text-[11px] text-gray-700 font-bold">Budget:</span>
                                   <span className="relative z-10 text-[12px] font-black text-black">₹</span>
-                                  <span className="relative z-10 text-[12px] font-black text-gray-900">{formatIndianCurrency(enquiry.budget)}-/-</span>
+                                  <span className="relative z-10 text-[12px] font-black text-gray-900">{formatIndianCurrency(enquiry.budget)}/-</span>
                                 </div>
                               </div>
                             )}
