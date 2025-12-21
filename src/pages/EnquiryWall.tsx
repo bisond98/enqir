@@ -5844,7 +5844,7 @@ export default function EnquiryWall() {
                               {/* Mobile Budget - Bottom left of black section */}
                               {enquiry.budget && (
                                 <div className="block sm:hidden absolute bottom-2 left-2">
-                                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md enhanced-border">
+                                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-500 border border-red-600">
                                     <span className="text-[11px] text-white font-bold">Budget:</span>
                                     <span className="text-[12px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
