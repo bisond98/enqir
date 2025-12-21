@@ -134,30 +134,30 @@ const App = () => {
                          <Route path="/enquiry/:enquiryId/responses-page" element={<ErrorBoundary><AuthGuard><EnquiryResponsesPage /></AuthGuard></ErrorBoundary>} />
                          <Route path="/enquiry/:enquiryId/detailed-responses" element={<ErrorBoundary><AuthGuard><DetailedResponses /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiry/:id" element={<ErrorBoundary><EnquiryDetail /></ErrorBoundary>} />
-                  <Route path="/data-clear" element={<DataClear />} />
-                  <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
-                  <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-                  <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/admin/access/:secretToken" element={<AdminAccess />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
-                  <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/refund-policy" element={<RefundPolicy />} />
-                  <Route path="/shipping" element={<ShippingPolicy />} />
-                  <Route path="/shipping-policy" element={<ShippingPolicy />} />
-                  <Route path="/contact-us" element={<ContactUs />} />
+                  <Route path="/data-clear" element={<ErrorBoundary><DataClear /></ErrorBoundary>} />
+                  <Route path="/profile" element={<ErrorBoundary><AuthGuard><Profile /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/settings" element={<ErrorBoundary><AuthGuard><Settings /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/notifications" element={<ErrorBoundary><AuthGuard><Notifications /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/signin" element={<ErrorBoundary><SignIn /></ErrorBoundary>} />
+                  <Route path="/forgot-password" element={<ErrorBoundary><ForgotPassword /></ErrorBoundary>} />
+                  <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
+                  <Route path="/auth/callback" element={<ErrorBoundary><AuthCallback /></ErrorBoundary>} />
+                  <Route path="/admin/access/:secretToken" element={<ErrorBoundary><AdminAccess /></ErrorBoundary>} />
+                  <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
+                  <Route path="/test-premium" element={<ErrorBoundary><PremiumTestDataGenerator /></ErrorBoundary>} />
+                  <Route path="/terms-and-conditions" element={<ErrorBoundary><TermsAndConditions /></ErrorBoundary>} />
+                  <Route path="/privacy-policy" element={<ErrorBoundary><PrivacyPolicy /></ErrorBoundary>} />
+                  <Route path="/refund-policy" element={<ErrorBoundary><RefundPolicy /></ErrorBoundary>} />
+                  <Route path="/shipping" element={<ErrorBoundary><ShippingPolicy /></ErrorBoundary>} />
+                  <Route path="/shipping-policy" element={<ErrorBoundary><ShippingPolicy /></ErrorBoundary>} />
+                  <Route path="/contact-us" element={<ErrorBoundary><ContactUs /></ErrorBoundary>} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
                   {/* 🛡️ PROTECTED: My Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
                   {/* 🛡️ PROTECTED: All Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
+                  <Route path="*" element={<ErrorBoundary><NotFound /></ErrorBoundary>} />
                   </Routes>
                 </BrowserRouter>
                   </ChristmasTheme>

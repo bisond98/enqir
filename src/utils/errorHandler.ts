@@ -256,12 +256,14 @@ export const retryOperation = async <T>(
     maxRetries?: number;
     initialDelay?: number;
     context?: string;
+    onRetry?: (attempt: number, error: unknown) => void;
   }
 ): Promise<T> => {
   const {
     maxRetries = 3,
     initialDelay = 1000,
-    context = 'Operation'
+    context = 'Operation',
+    onRetry
   } = options || {};
   
   let lastError: unknown;
@@ -275,6 +277,11 @@ export const retryOperation = async <T>(
       if (attempt < maxRetries && isRetryableError(error)) {
         const delay = initialDelay * Math.pow(2, attempt);
         console.warn(`[Retry] ${context} failed (attempt ${attempt + 1}/${maxRetries + 1}), retrying in ${delay}ms...`);
+        
+        if (onRetry) {
+          onRetry(attempt + 1, error);
+        }
+        
         await new Promise(resolve => setTimeout(resolve, delay));
       } else {
         break;
@@ -283,6 +290,60 @@ export const retryOperation = async <T>(
   }
   
   throw lastError;
+};
+
+/**
+ * Safe operation with automatic retry and error handling
+ * Non-intrusive by default - only shows toasts if explicitly requested
+ */
+export const safeOperationWithRetry = async <T>(
+  operation: () => Promise<T>,
+  options?: {
+    context?: string;
+    maxRetries?: number;
+    fallback?: T;
+    showToast?: boolean;
+    silent?: boolean; // If true, no logs or toasts
+  }
+): Promise<T | null> => {
+  const {
+    context = 'Operation',
+    maxRetries = 2,
+    fallback,
+    showToast = false, // Default to false to avoid interrupting user
+    silent = false
+  } = options || {};
+
+  try {
+    return await retryOperation(operation, {
+      maxRetries,
+      context,
+      onRetry: (attempt, error) => {
+        // Only log retries if not silent
+        if (!silent) {
+          console.warn(`[Retry] ${context} failed (attempt ${attempt + 1}/${maxRetries + 1})`);
+        }
+        // Only show toast if explicitly requested and on first retry
+        if (showToast && attempt === 1 && !silent) {
+          toast({
+            title: "Retrying...",
+            description: `Connection issue detected. Retrying ${context.toLowerCase()}...`,
+            duration: 2000
+          });
+        }
+      }
+    });
+  } catch (error) {
+    // Only handle error if not silent
+    if (!silent) {
+      handleError(error, {
+        context,
+        showToast,
+        fallbackMessage: `Failed to ${context.toLowerCase()}. Please try again.`
+      });
+    }
+    return fallback ?? null;
+  }
 };
 
 
