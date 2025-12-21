@@ -107,7 +107,7 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn("text-xs sm:text-sm font-bold leading-tight text-center sm:text-left", className)}
+    className={cn("text-xs sm:text-sm font-bold leading-tight text-left break-words", className)}
     {...props}
   />
 ))
@@ -119,7 +119,7 @@ const ToastDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
-    className={cn("text-[10px] font-normal leading-relaxed mt-1", className)}
+    className={cn("text-[10px] sm:text-xs font-normal leading-relaxed mt-0.5 sm:mt-1 text-left break-words", className)}
     {...props}
   />
 ))

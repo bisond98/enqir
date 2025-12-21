@@ -487,7 +487,7 @@ const MyEnquiries = () => {
       case 'completed':
         return 'Your enquiry has been completed';
       default:
-        return 'Status unknown';
+        return '';
     }
   };
 

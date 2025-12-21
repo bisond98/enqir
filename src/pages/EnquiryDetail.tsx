@@ -1083,12 +1083,12 @@ const EnquiryDetail = () => {
                         onClick={handleSave}
                         className={`flex-1 h-12 sm:h-11 text-sm sm:text-sm border-[0.5px] border-black min-h-[44px] rounded-xl font-black transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/save ${
                           savedEnquiries.includes(enquiry.id) 
-                            ? 'bg-gradient-to-b from-black to-gray-900 text-white hover:from-gray-900 hover:to-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]' 
+                            ? 'bg-black text-white hover:bg-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]' 
                             : 'bg-gradient-to-b from-white to-gray-50 text-black hover:from-gray-50 hover:to-gray-100 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]'
                         }`}
                       >
                         {/* Physical button depth effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-b ${savedEnquiries.includes(enquiry.id) ? 'from-white/30' : 'from-white/20'} to-transparent rounded-xl pointer-events-none`} />
+                        <div className={`absolute inset-0 bg-gradient-to-b ${savedEnquiries.includes(enquiry.id) ? 'from-white/10' : 'from-white/20'} to-transparent rounded-xl pointer-events-none`} />
                         {/* Shimmer effect */}
                         <div className={`absolute inset-0 bg-gradient-to-r from-transparent ${savedEnquiries.includes(enquiry.id) ? 'via-white/30' : 'via-white/20'} to-transparent -translate-x-full group-hover/save:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl`} />
                         <Bookmark className={`h-4 w-4 mr-1.5 relative z-10 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />

@@ -99,9 +99,9 @@ export function Toaster() {
               </>
             )}
             
-            <div className={`flex items-center justify-center sm:items-start sm:justify-start gap-2 sm:gap-2.5 flex-1 relative z-20 animate-[dynamicIslandContentFadeIn_0.6s_ease-out_0.3s_both] ${isPaymentCancelled ? 'animate-[cloudFloat_0.8s_ease-out_forwards]' : ''}`}>
+            <div className={`flex items-start justify-start gap-2 sm:gap-2.5 flex-1 relative z-20 animate-[dynamicIslandContentFadeIn_0.6s_ease-out_0.3s_both] ${isPaymentCancelled ? 'animate-[cloudFloat_0.8s_ease-out_forwards]' : ''}`}>
               {icon && (
-                <div className="flex-shrink-0 mt-0 sm:mt-0.5 relative z-20">
+                <div className="flex-shrink-0 mt-0.5 sm:mt-0.5 relative z-20">
                   {isPaymentCancelled ? (
                     <div className="relative">
                       <Ban className="h-4 w-4 sm:h-5 sm:w-5 text-white flex-shrink-0 animate-in fade-in zoom-in duration-300" />
@@ -112,14 +112,14 @@ export function Toaster() {
                   )}
                 </div>
               )}
-              <div className="grid gap-0.5 flex-1 min-w-0 relative z-20">
+              <div className="flex flex-col gap-0.5 sm:gap-0.5 flex-1 min-w-0 relative z-20">
                 {title && (
                   <ToastTitle className={isPaymentCancelled ? 'text-white font-bold text-xs sm:text-sm leading-tight' : ''}>
                     {title}
                   </ToastTitle>
                 )}
                 {description && (
-                  <ToastDescription className={isPaymentCancelled ? 'text-white/90 font-medium text-[10px] sm:text-xs leading-tight whitespace-nowrap overflow-hidden text-ellipsis' : ''}>
+                  <ToastDescription className={isPaymentCancelled ? 'text-white/90 font-medium text-[10px] sm:text-xs leading-tight break-words' : ''}>
                     {description}
                   </ToastDescription>
                 )}
