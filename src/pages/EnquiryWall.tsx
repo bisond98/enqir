@@ -5260,20 +5260,28 @@ export default function EnquiryWall() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 flex items-center justify-center ${
-                      showTrustBadgeOnly ? "border border-blue-800" : ""
+                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex items-center justify-center gap-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
+                      showTrustBadgeOnly
+                        ? 'bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
+                        : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
                     }`}
-                    style={{
-                      borderWidth: showTrustBadgeOnly ? '1px' : '0px'
-                    }}
                     title="Filter enquiries"
                   >
+                    {/* Physical button depth effect */}
+                    <div className={`absolute inset-0 bg-gradient-to-b ${
+                      showTrustBadgeOnly
+                        ? 'from-white/5 to-transparent'
+                        : 'from-white/20 to-transparent'
+                      } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
                     <Filter 
-                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0"
+                      className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0 relative z-10 ${
+                        showTrustBadgeOnly ? 'text-white' : 'text-black'
+                      }`}
                       style={{
-                        fill: showTrustBadgeOnly ? '#3b82f6' : '#ffffff'
+                        fill: showTrustBadgeOnly ? 'currentColor' : 'none'
                       }}
                     />
+                    <span className="relative z-10 hidden sm:inline">Filter</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
@@ -5299,50 +5307,70 @@ export default function EnquiryWall() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`p-2 sm:p-2 rounded-full transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 flex items-center justify-center min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] ${
-                      sortBy !== 'default' ? "border-2 border-blue-600" : ""
+                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex items-center justify-center gap-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
+                      sortBy !== 'default'
+                        ? 'bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
+                        : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
                     }`}
                     title="Sort enquiries by date"
                   >
-                    <ArrowUpDown className={`h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0 ${
-                      sortBy !== 'default' ? 'text-blue-600' : 'text-gray-700'
+                    {/* Physical button depth effect */}
+                    <div className={`absolute inset-0 bg-gradient-to-b ${
+                      sortBy !== 'default'
+                        ? 'from-white/5 to-transparent'
+                        : 'from-white/20 to-transparent'
+                      } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
+                    <ArrowUpDown className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0 relative z-10 ${
+                      sortBy !== 'default' ? 'text-white' : 'text-black'
                     }`} />
+                    <span className="relative z-10 hidden sm:inline">Sort</span>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-[140px] sm:w-48 border-2 rounded-xl shadow-xl p-2 sm:p-2.5 transition-all duration-200 ${
-                  sortBy !== 'default'
-                    ? "bg-blue-600 border-blue-700"
-                    : "bg-gray-600 border-gray-700"
-                }`}>
+                <DropdownMenuContent align="end" className="w-[140px] sm:w-48 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
                   <DropdownMenuCheckboxItem
                     checked={sortBy === 'newest'}
                     onCheckedChange={() => setSortBy('newest')}
-                    className={`cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden min-h-[44px] sm:min-h-[auto] ${
+                    className={`cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden flex items-center justify-center text-center pl-3 pr-3 ${
                       sortBy === 'newest'
-                        ? "bg-blue-700 text-white shadow-md active:bg-blue-800"
-                        : "hover:bg-blue-700/80 hover:text-white focus:bg-blue-700 focus:text-white active:bg-blue-800"
+                        ? 'bg-blue-600 border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95'
+                        : 'bg-white hover:bg-gray-50 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95'
                     }`}
+                    style={{ 
+                      color: sortBy === 'newest' ? '#ffffff' : '#000000',
+                      paddingLeft: '12px',
+                      paddingRight: '12px'
+                    }}
                   >
                     Newest first
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={sortBy === 'oldest'}
                     onCheckedChange={() => setSortBy('oldest')}
-                    className={`cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden min-h-[44px] sm:min-h-[auto] ${
+                    className={`cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden flex items-center justify-center text-center pl-3 pr-3 ${
                       sortBy === 'oldest'
-                        ? "bg-blue-700 text-white shadow-md active:bg-blue-800"
-                        : "hover:bg-blue-700/80 hover:text-white focus:bg-blue-700 focus:text-white active:bg-blue-800"
+                        ? 'bg-blue-600 border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95'
+                        : 'bg-white hover:bg-gray-50 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95'
                     }`}
+                    style={{ 
+                      color: sortBy === 'oldest' ? '#ffffff' : '#000000',
+                      paddingLeft: '12px',
+                      paddingRight: '12px'
+                    }}
                   >
                     Oldest first
                   </DropdownMenuCheckboxItem>
                   {sortBy !== 'default' && (
                     <>
-                      <div className="h-px bg-gray-500/50 my-1.5 mx-2" />
+                      <div className="h-px bg-gray-300 my-1.5 mx-2" />
                       <DropdownMenuCheckboxItem
                         checked={sortBy === 'default'}
                         onCheckedChange={() => setSortBy('default')}
-                        className="cursor-pointer rounded-lg px-3 py-2.5 sm:px-3 sm:py-2 font-semibold text-sm sm:text-base text-white flex items-center justify-center text-center transition-all duration-200 [&>span]:hidden hover:bg-red-600/80 hover:text-white focus:bg-red-600 focus:text-white active:bg-red-700 min-h-[44px] sm:min-h-[auto] bg-red-500"
+                        className="cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden bg-red-500 border-[0.5px] border-red-600 shadow-[0_4px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 hover:bg-red-600 flex items-center justify-center text-center pl-3 pr-3"
+                        style={{ 
+                          color: '#ffffff',
+                          paddingLeft: '12px',
+                          paddingRight: '12px'
+                        }}
                       >
                         Cancel
                       </DropdownMenuCheckboxItem>
@@ -5549,7 +5577,7 @@ export default function EnquiryWall() {
                           </div>
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             {!isEnquiryDisabled(enquiry) && (
-                              <Badge className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 bg-green-500 text-white border-0 shadow-sm font-semibold">Live</Badge>
+                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500 flex-shrink-0"></div>
                             )}
                             {isDealClosed(enquiry) && (
                               <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
@@ -5565,14 +5593,14 @@ export default function EnquiryWall() {
                       {viewMode === 'list' ? (
                         <>
                           {/* First Half - Top: Title and Description */}
-                          <CardHeader className="p-2 sm:p-5 flex flex-col relative z-10 overflow-hidden mobile-black-section" style={{ flex: '1 1 75%', flexGrow: 3, flexShrink: 1, flexBasis: '75%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
+                          <CardHeader className="pt-0.5 pb-2 px-2 sm:p-5 flex flex-col relative z-10 overflow-hidden mobile-black-section" style={{ flex: '1 1 75%', flexGrow: 3, flexShrink: 1, flexBasis: '75%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                             {/* Category-specific 2D Sketches - List View Only */}
                             <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.2]">
                               {getCategorySketch(enquiry.category)}
                             </div>
                             {/* Content wrapper - centers title vertically while keeping all spacing */}
-                            <div className="relative z-10 flex flex-col h-full justify-center">
-                              <div className="space-y-1.5 sm:space-y-3 mt-4 sm:mt-1">
+                            <div className="relative z-10 flex flex-col h-full justify-start sm:justify-center">
+                              <div className="space-y-1.5 sm:space-y-3 mt-0.5 sm:mt-1">
                               {/* Posted Time - Hidden spacer for mobile to maintain original spacing */}
                               {enquiry.createdAt && (
                                 <div className="block sm:hidden mb-1" style={{ height: '1em', visibility: 'hidden' }}>
@@ -5608,7 +5636,7 @@ export default function EnquiryWall() {
                                 <div className="block sm:hidden mb-1">
                                   <div className="flex items-center gap-1.5 ml-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
-                                    <span className="text-[7px] text-white/70 font-medium">
+                                    <span className="text-[7px] text-white font-bold">
                                       Posted on: {formatDateTime(enquiry.createdAt)}
                                     </span>
                                   </div>
@@ -5741,8 +5769,8 @@ export default function EnquiryWall() {
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                               </div>
-                                              <span className="text-[9px] sm:text-sm text-white font-bold">At </span>
-                                              <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold">{enquiry.location}</span>
+                                              <span className="text-[9px] sm:text-sm text-white font-bold" style={{ letterSpacing: '0.05em' }}>At </span>
+                                              <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold" style={{ letterSpacing: '0.05em' }}>{enquiry.location}</span>
                                             </div>
                                           )}
                                           {enquiry.location && (
@@ -5753,20 +5781,30 @@ export default function EnquiryWall() {
                                             <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
-                                            <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap">
+                                            <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
                                               Before {formatDate(deadlineDate.toISOString())}
                                             </span>
                                           </div>
                                           {/* Countdown Timer - Mobile: Under before, Desktop: after separator */}
-                                          <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap block sm:hidden">
-                                            {formatDeadlineText(enquiry.deadline)}
-                                          </span>
+                                          <div className="inline-flex items-center gap-1 block sm:hidden">
+                                            <div className="flex items-center justify-center w-2.5 h-2.5 flex-shrink-0">
+                                              <Clock className="h-2.5 w-2.5" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                            </div>
+                                            <span className="text-[9px] text-red-500 font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
+                                              {formatDeadlineText(enquiry.deadline)}
+                                            </span>
+                                          </div>
                                         </div>
                                         <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
                                         {/* Countdown Timer - Desktop position (after before date) */}
-                                        <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap hidden sm:inline">
-                                          {formatDeadlineText(enquiry.deadline)}
-                                        </span>
+                                        <div className="inline-flex items-center gap-1 hidden sm:inline-flex">
+                                          <div className="flex items-center justify-center w-3 h-3 flex-shrink-0">
+                                            <Clock className="h-3 w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                          </div>
+                                          <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap">
+                                            {formatDeadlineText(enquiry.deadline)}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   );
@@ -6245,11 +6283,13 @@ export default function EnquiryWall() {
                             
                             {/* Budget - Mobile list view only, above respond/sell/provide button - moved from black section */}
                             {enquiry.budget && (
-                              <div className="block sm:hidden mb-2">
-                                <div className="inline-flex items-center gap-1.5 px-2 py-1 border-2 border-black rounded-md">
-                                  <span className="text-[9px] text-gray-600 font-bold">Budget:</span>
-                                  <span className="text-[11px] font-bold text-black">₹</span>
-                                  <span className="text-[11px] font-bold text-gray-900">{formatIndianCurrency(enquiry.budget)}-/-</span>
+                              <div className="block sm:hidden mb-2 flex justify-center">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-black rounded-lg border-[0.5px] border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
+                                  <span className="relative z-10 text-[11px] text-gray-700 font-bold">Budget:</span>
+                                  <span className="relative z-10 text-[12px] font-black text-black">₹</span>
+                                  <span className="relative z-10 text-[12px] font-black text-gray-900">{formatIndianCurrency(enquiry.budget)}-/-</span>
                                 </div>
                               </div>
                             )}
@@ -6260,23 +6300,23 @@ export default function EnquiryWall() {
                               <button 
                                 type="button"
                                 disabled
-                                className="w-full h-6 text-[8px] font-bold border-2 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
+                                className="w-full h-9 text-[9px] font-bold border-2 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
                                 style={{ backgroundColor: '#000000' }}
                               >
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
                               isDealClosed(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-9 text-[9px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                   Deal Closed
                                 </Button>
                               ) : isEnquiryOutdated(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-6 text-[8px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-9 text-[9px] font-semibold border-2 border-gray-300 bg-white text-gray-500" disabled>
                                   Expired
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-6 text-[8px] font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
+                                className="w-full h-9 text-[9px] font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                 style={{
                                   background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
@@ -6307,13 +6347,13 @@ export default function EnquiryWall() {
                                 
                                 <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                                   respond / sell / provide
-                                  <ArrowRight className="h-2 w-2 ml-0.5" />
+                                  <ArrowRight className="h-2.5 w-2.5 ml-0.5" />
                                 </span>
                               </Button>
                               )
                             ) : (
                               <Link to="/signin" className="w-full block">
-                                <Button className="w-full h-6 text-[8px] font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden">
+                                <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden">
                                   {/* Physical button depth effect */}
                                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
                                   <span className="relative z-10">Sign In to Respond</span>
