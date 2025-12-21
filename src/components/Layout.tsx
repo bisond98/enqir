@@ -962,11 +962,11 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
                   {/* Hide Sign In button on sign in/sign up page */}
                   {location.pathname !== '/signin' && location.pathname !== '/signup' && (
-                    <Link to="/signin">
-                      <Button variant="outline" size="sm" className="hidden sm:flex">
-                        Sign In
-                      </Button>
-                    </Link>
+                      <Link to="/signin">
+                        <Button variant="outline" size="sm" className="hidden sm:flex">
+                          Sign In
+                        </Button>
+                      </Link>
                   )}
                 </div>
               )}

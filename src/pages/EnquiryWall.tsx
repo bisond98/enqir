@@ -4855,19 +4855,6 @@ export default function EnquiryWall() {
   return (
     <Layout>
       <style>{`
-        .title-3d {
-          text-shadow: 
-            2px 2px 0px rgba(0,0,0,0.9),
-            4px 4px 0px rgba(0,0,0,0.7),
-            6px 6px 0px rgba(0,0,0,0.5),
-            8px 8px 0px rgba(0,0,0,0.3),
-            0 0 10px rgba(220,38,38,0.4),
-            0 0 20px rgba(220,38,38,0.3),
-            1px 1px 2px rgba(0,0,0,0.8),
-            -1px -1px 2px rgba(255,255,255,0.2);
-          transform: perspective(500px) rotateX(5deg);
-          -webkit-text-stroke: 0.5px rgba(0,0,0,0.4);
-        }
         .title-3d-padding {
           padding: 12px 16px;
           border: 2px solid rgba(0,0,0,0.3);
@@ -4882,6 +4869,16 @@ export default function EnquiryWall() {
             inset 0 -2px 4px rgba(0,0,0,0.3),
             0 4px 8px rgba(0,0,0,0.2),
             0 2px 4px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 639px) {
+          .enhanced-border {
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            box-shadow: 
+              0 0 4px rgba(255,255,255,0.15),
+              inset 0 1px 2px rgba(255,255,255,0.1),
+              inset 0 -1px 2px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.1) 100%);
+          }
         }
       `}</style>
       <div 
@@ -5649,7 +5646,7 @@ export default function EnquiryWall() {
                                     <div key={index} className="flex items-center gap-1.5">
                                       <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
                                       <span 
-                                        className="text-[8px] text-white/90 font-semibold pl-0 pr-2 py-0.5 rounded-md bg-white/5 backdrop-blur-sm"
+                                        className="text-[8px] text-white/90 font-semibold pl-2 pr-2 py-0.5 rounded-md bg-white/5 backdrop-blur-sm enhanced-border"
                                         style={{
                                           textTransform: 'capitalize',
                                           letterSpacing: '0.025em'
@@ -5666,7 +5663,7 @@ export default function EnquiryWall() {
                                 <div className="block sm:hidden mb-1">
                                   <div className="flex items-center gap-1.5 ml-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
-                                    <span className="text-[7px] text-white font-bold">
+                                    <span className="text-[7px] text-white font-bold px-2 py-0.5 rounded-md enhanced-border">
                                       Posted on: {formatDateTime(enquiry.createdAt)}
                                     </span>
                                   </div>
@@ -5676,7 +5673,7 @@ export default function EnquiryWall() {
                               <div className="flex items-baseline justify-between -mb-3 sm:-mb-2 ml-1 sm:ml-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                  <span className="text-[9px] sm:text-sm text-white font-bold">Need</span>
+                                  <span className="text-[9px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-md enhanced-border block sm:inline">Need</span>
                                 </div>
                                 {/* Category Badge - Desktop view only, in the middle space between Need and Posted on */}
                                 <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2 flex-1 justify-center items-center">
@@ -5716,8 +5713,8 @@ export default function EnquiryWall() {
                               
                               {/* Title */}
                               <div className="mb-3 sm:mb-3 title-3d-padding">
-                                <h3 className={`text-xl sm:text-lg lg:text-xl line-clamp-3 sm:line-clamp-1 sm:truncate text-center sm:text-left title-3d ${
-                                      isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : 'text-red-500 sm:text-white'
+                                <h3 className={`text-xl sm:text-lg lg:text-xl line-clamp-3 sm:line-clamp-1 sm:truncate text-center sm:text-left ${
+                                      isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : 'text-white'
                                   }`}>
                                     {enquiry.title}
                                 </h3>
@@ -5757,7 +5754,7 @@ export default function EnquiryWall() {
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
                                           {/* Location - Desktop first position, Mobile right-aligned */}
                                           {enquiry.location && (
-                                            <div className="inline-flex items-center gap-1">
+                                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex">
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                               </div>
@@ -5769,7 +5766,7 @@ export default function EnquiryWall() {
                                             <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
                                           )}
                                           {/* Before Date - Under At on mobile (right-aligned), inline on desktop */}
-                                          <div className="inline-flex items-center gap-1">
+                                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex">
                                             <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
@@ -5778,7 +5775,7 @@ export default function EnquiryWall() {
                                             </span>
                                           </div>
                                           {/* Countdown Timer - Mobile: Under before, Desktop: after separator */}
-                                          <div className="inline-flex items-center gap-1 block sm:hidden">
+                                          <div className="inline-flex items-center gap-1 block sm:hidden px-2 py-0.5 rounded-md enhanced-border">
                                             <div className="flex items-center justify-center w-2.5 h-2.5 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
@@ -5844,7 +5841,15 @@ export default function EnquiryWall() {
                                 )}
                               </div>
                               
-                              {/* Mobile Budget - Hidden in black section, moved to white section above button */}
+                              {/* Mobile Budget - Bottom left of black section */}
+                              {enquiry.budget && (
+                                <div className="block sm:hidden absolute bottom-2 left-2">
+                                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md enhanced-border">
+                                    <span className="text-[11px] text-white font-bold">Budget:</span>
+                                    <span className="text-[12px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </CardHeader>
                         </>
@@ -6269,19 +6274,6 @@ export default function EnquiryWall() {
                                       </Badge>
                                     ));
                                   })()}
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Budget - Mobile list view only, above respond/sell/provide button - moved from black section */}
-                            {enquiry.budget && (
-                              <div className="block sm:hidden mb-2 flex justify-center">
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-black rounded-lg border-[0.5px] border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg pointer-events-none" />
-                                  <span className="relative z-10 text-[11px] text-gray-700 font-bold">Budget:</span>
-                                  <span className="relative z-10 text-[12px] font-black text-black">₹</span>
-                                  <span className="relative z-10 text-[12px] font-black text-gray-900">{formatIndianCurrency(enquiry.budget)}/-</span>
                                 </div>
                               </div>
                             )}
