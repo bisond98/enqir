@@ -503,8 +503,8 @@ const SignIn = () => {
                   <div className="flex items-center justify-center sm:justify-start gap-2">
                     <AlertTriangle className="h-4 w-4 text-white flex-shrink-0" />
                     <AlertDescription className="text-[10px] sm:text-xs text-white whitespace-nowrap text-center sm:text-left">
-                      {error}
-                    </AlertDescription>
+                    {error}
+                  </AlertDescription>
                   </div>
                 </Alert>
               )}

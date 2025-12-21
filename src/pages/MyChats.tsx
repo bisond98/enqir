@@ -106,18 +106,18 @@ export default function MyChats() {
   const allFilteredChats = useMemo(() => {
     return allChats
       .filter(chat => {
-        // Filter by view mode (don't exclude disabled chats - show them as disabled)
-        if (viewMode === 'buyer') {
-          return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
-        } else {
-          return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
-        }
+    // Filter by view mode (don't exclude disabled chats - show them as disabled)
+    if (viewMode === 'buyer') {
+      return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
+    } else {
+      return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
+    }
       })
       .sort((a, b) => {
         // Check if chats are expired
         const aExpired = isChatExpired(a);
         const bExpired = isChatExpired(b);
-        
+
         // Live chats (not expired) come first
         if (aExpired && !bExpired) return 1; // a is expired, b is live - b comes first
         if (!aExpired && bExpired) return -1; // a is live, b is expired - a comes first
@@ -884,8 +884,8 @@ export default function MyChats() {
                           className={`flex items-center justify-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4 ${
                             isAdminWarning ? 'text-white/80' : isDisabled ? 'text-gray-400' : 'text-gray-500'
                           }`}
-                        >
-                          <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          >
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           <span className="truncate">
                             {formatTime(chat.updatedAt)}
                           </span>
@@ -894,7 +894,7 @@ export default function MyChats() {
                         {/* Open Chat button - Hidden for admin warnings */}
                         {!isAdminWarning && (
                           <div>
-                            <Button
+                          <Button
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
@@ -921,9 +921,9 @@ export default function MyChats() {
                             
                             <span className="flex items-center justify-center relative z-10">
                               <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 relative z-10" />
-                              <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
+                            <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
                             </span>
-                            </Button>
+                          </Button>
                           </div>
                         )}
                       </div>
@@ -949,7 +949,7 @@ export default function MyChats() {
                     <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
                   </span>
                 </Button>
-              </div>
+            </div>
             )}
             </>
           )}

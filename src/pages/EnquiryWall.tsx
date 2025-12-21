@@ -59,7 +59,7 @@ interface Enquiry {
 
 export default function EnquiryWall() {
   const { user: authUser } = useAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   // 🛡️ PROTECTED: Live enquiries count - REQUIRED for matching Landing.tsx count
   // DO NOT MODIFY - This count must match Landing.tsx exactly
@@ -794,7 +794,14 @@ export default function EnquiryWall() {
   const handleSearchChange = useCallback(async (value: string) => {
     setSearchTerm(value);
     debouncedSearch(value);
-  }, [debouncedSearch]);
+    
+    // Update URL when search term changes - remove search param if cleared
+    if (!value.trim()) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('search');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [debouncedSearch, searchParams, setSearchParams]);
 
   // Find matching category for a suggestion
   const findMatchingCategory = (suggestion: string): string | null => {
@@ -932,11 +939,19 @@ export default function EnquiryWall() {
       setSearchTerm("");
       setAiSearchResults(null);
       setSearchSuggestions([]);
+      // Remove search param from URL when clearing search
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('search');
+      setSearchParams(newParams, { replace: true });
       setShowSuggestions(false);
     }
   };
 
   // Get final results - Regular search always works, AI search enhances results (memoized for performance)
+  // 🛡️ PROTECTED: FINALIZED SEARCH PRIORITIZATION LOGIC - DO NOT MODIFY
+  // This search system ensures: Title matches → Description matches → AI results
+  // With category-aware sorting: Selected category matches appear before other categories
+  // ⚠️ CRITICAL: Any changes to this logic will break search prioritization
   const finalResults = useMemo(() => {
     const searchLower = searchTerm?.toLowerCase().trim() || '';
     
@@ -1217,7 +1232,8 @@ export default function EnquiryWall() {
     }
     
     const interval = setInterval(() => {
-      // PAUSE: Don't shuffle if search is active
+      // 🛡️ PROTECTED: Pause shuffling when search is active to preserve priority order
+      // ⚠️ DO NOT REMOVE: This ensures search results maintain their priority order
       if (searchTerm && searchTerm.trim()) {
         return; // Skip shuffling when search is active
       }
@@ -1359,7 +1375,9 @@ export default function EnquiryWall() {
       }
     });
     
-    // FIX: When search is active, preserve the priority order from finalResults
+    // 🛡️ PROTECTED: Preserve search priority order when search is active
+    // This ensures title matches appear before description matches, which appear before AI results
+    // ⚠️ DO NOT MODIFY: Changing this will break search result prioritization
     const isSearchActive = searchTerm && searchTerm.trim();
     
     if (isSearchActive) {
@@ -5159,6 +5177,10 @@ export default function EnquiryWall() {
                             setSearchTerm("");
                             setAiSearchResults(null);
                             setSearchSuggestions([]);
+                            // Remove search param from URL when clearing search
+                            const newParams = new URLSearchParams(searchParams);
+                            newParams.delete('search');
+                            setSearchParams(newParams, { replace: true });
                             setShowSuggestions(false);
                           }
                         }}
@@ -5559,14 +5581,78 @@ export default function EnquiryWall() {
                                   </span>
                                 </div>
                               )}
+                              {/* Category - Mobile view only, above Posted on */}
+                              <div className="block sm:hidden mb-1">
+                                <div className="flex flex-wrap gap-1.5 items-center ml-1">
+                                  {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                    ? enquiry.categories
+                                    : enquiry.category ? [enquiry.category] : []
+                                  ).map((cat, index) => (
+                                    <div key={index} className="flex items-center gap-1.5">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
+                                      <span 
+                                        className="text-[8px] text-white/90 font-semibold pl-0 pr-2 py-0.5 rounded-md bg-white/5 backdrop-blur-sm"
+                                        style={{
+                                          textTransform: 'capitalize',
+                                          letterSpacing: '0.025em'
+                                        }}
+                                      >
+                                        {cat.replace('-', ' ')}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              {/* Posted Time - Mobile view, below category */}
+                              {enquiry.createdAt && (
+                                <div className="block sm:hidden mb-1">
+                                  <div className="flex items-center gap-1.5 ml-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
+                                    <span className="text-[7px] text-white/70 font-medium">
+                                      Posted on: {formatDateTime(enquiry.createdAt)}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                               {/* Need Label - Above Title */}
                               <div className="flex items-baseline justify-between -mb-1 sm:-mb-2 ml-1 sm:ml-0">
-                                <span className="text-[9px] sm:text-sm text-white font-bold">Need</span>
-                                {/* Posted Time - Positioned to the right, aligned with Need on same line */}
+                                <div className="flex items-center gap-1.5">
+                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+                                  <span className="text-[9px] sm:text-sm text-white font-bold">Need</span>
+                                </div>
+                                {/* Category Badge - Desktop view only, in the middle space between Need and Posted on */}
+                                <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2 flex-1 justify-center items-center">
+                                  {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                    ? enquiry.categories
+                                    : enquiry.category ? [enquiry.category] : []
+                                  ).map((cat, index) => (
+                                    <div key={index} className="flex items-center gap-1.5">
+                                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+                                      <span 
+                                        className="text-[8px] sm:text-[10px] text-white/90 font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
+                                        style={{
+                                          textTransform: 'capitalize',
+                                          letterSpacing: '0.025em'
+                                        }}
+                                      >
+                                        {cat.replace('-', ' ')}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                                {/* Posted Time - Desktop view, positioned to the right, aligned with Need on same line (original position) */}
                                 {enquiry.createdAt && (
-                                  <span className="text-[8px] sm:text-[10px] text-white font-bold mr-3 sm:mr-0">
-                                    Posted on: {formatDateTime(enquiry.createdAt)}
-                                  </span>
+                                  <div className="hidden sm:flex items-center gap-1.5 mr-3 sm:mr-0">
+                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+                                    <span 
+                                      className="text-[8px] sm:text-[10px] text-white font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
+                                      style={{
+                                        letterSpacing: '0.025em'
+                                      }}
+                                    >
+                                      Posted on: {formatDateTime(enquiry.createdAt)}
+                                    </span>
+                                  </div>
                                 )}
                               </div>
                               
@@ -5647,31 +5733,38 @@ export default function EnquiryWall() {
                                   return (
                                     <div className="flex flex-col mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
                                       <div className="flex items-start gap-2 sm:gap-3 ml-1 sm:ml-0">
-                                        {/* Location - Left aligned */}
-                                        {enquiry.location && (
-                                          <div className="inline-flex items-center gap-1">
-                                            <span className="text-[9px] sm:text-sm text-white font-bold">At </span>
-                                            <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0">
-                                              <MapPin className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                        {/* Mobile: Location and Before stacked vertically and right-aligned, Desktop: horizontal */}
+                                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
+                                          {/* Location - Desktop first position, Mobile right-aligned */}
+                                          {enquiry.location && (
+                                            <div className="inline-flex items-center gap-1">
+                                              <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
+                                                <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                              </div>
+                                              <span className="text-[9px] sm:text-sm text-white font-bold">At </span>
+                                              <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold">{enquiry.location}</span>
                                             </div>
-                                            <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold">{enquiry.location}</span>
+                                          )}
+                                          {enquiry.location && (
+                                            <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
+                                          )}
+                                          {/* Before Date - Under At on mobile (right-aligned), inline on desktop */}
+                                          <div className="inline-flex items-center gap-1">
+                                            <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
+                                              <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
+                                            </div>
+                                            <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap">
+                                              Before {formatDate(deadlineDate.toISOString())}
+                                            </span>
                                           </div>
-                                        )}
-                                        {enquiry.location && (
-                                          <span className="text-[8px] sm:text-xs text-white/70 font-medium">/</span>
-                                        )}
-                                        {/* Before Date - Left aligned, close to location */}
-                                        <div className="inline-flex items-center gap-1">
-                                          <div className="flex items-center justify-center w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0">
-                                            <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
-                                          </div>
-                                          <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap">
-                                            before {formatDate(deadlineDate.toISOString())}
+                                          {/* Countdown Timer - Mobile: Under before, Desktop: after separator */}
+                                          <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap block sm:hidden">
+                                            {formatDeadlineText(enquiry.deadline)}
                                           </span>
                                         </div>
-                                        <span className="text-[8px] sm:text-xs text-white/70 font-medium">/</span>
-                                        {/* Countdown Timer - Close to before */}
-                                        <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap">
+                                        <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
+                                        {/* Countdown Timer - Desktop position (after before date) */}
+                                        <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap hidden sm:inline">
                                           {formatDeadlineText(enquiry.deadline)}
                                         </span>
                                       </div>
@@ -5721,16 +5814,7 @@ export default function EnquiryWall() {
                                 )}
                               </div>
                               
-                              {/* Mobile Budget */}
-                              <div className="block sm:hidden pt-12">
-                                {enquiry.budget && (
-                                  <div className="flex items-center justify-center gap-1.5">
-                                    <span className="text-[8px] text-white font-normal">Budget -</span>
-                                    <span className="text-lg text-white font-normal">₹</span>
-                                    <span className="text-lg text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}-/-</span>
-                                  </div>
-                                )}
-                              </div>
+                              {/* Mobile Budget - Hidden in black section, moved to white section above button */}
                             </div>
                           </CardHeader>
                         </>
@@ -5989,7 +6073,7 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="relative flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                <div className="hidden sm:flex relative items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
                                   style={{
                                     boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
                                     transformStyle: 'preserve-3d',
@@ -6026,21 +6110,6 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                             </div>
-                            
-                            {/* Category */}
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-1.5 sm:gap-3 pt-1 sm:pt-2 border-t border-gray-100">
-                              <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3">
-                                {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
-                                  ? enquiry.categories
-                                  : enquiry.category ? [enquiry.category] : []
-                                ).map((cat, index) => (
-                                  <Badge key={index} variant="secondary" className="text-[7px] sm:text-[10px] md:text-xs px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                                    <span className="relative z-10">{cat.replace('-', ' ')}</span>
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
                           </div>
                         </CardHeader>
                       )}
@@ -6052,8 +6121,8 @@ export default function EnquiryWall() {
                           <div className="hidden sm:flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-center w-full relative">
                             {/* All Content Elements in Order */}
                             <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3 justify-center w-full mt-4 sm:mt-6 lg:mt-8">
-                              {/* Category */}
-                              {(() => {
+                              {/* Category - Hidden in list view (moved to black section) */}
+                              {viewMode !== 'list' && (() => {
                                 const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
                                   ? enquiry.categories
                                   : enquiry.category ? [enquiry.category] : []
@@ -6153,23 +6222,37 @@ export default function EnquiryWall() {
                           {/* Mobile Layout - Location, Category and Button at Bottom */}
                           <div className="block sm:hidden w-full mt-auto space-y-3 pt-0 -mt-6">
                             {/* Category - In a line above Sell Button (Mobile Only) */}
-                            <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
-                              {/* Category */}
-                              <div className="flex flex-wrap gap-1 justify-center">
-                                {(() => {
-                                  const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
-                                    ? enquiry.categories
-                                    : enquiry.category ? [enquiry.category] : []
-                                  ).filter(cat => cat && typeof cat === 'string');
-                                  
-                                  return categoriesToShow.map((cat, index) => (
-                                    <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
-                                      <span>{String(cat).replace('-', ' ')}</span>
-                                    </Badge>
-                                  ));
-                                })()}
+                            {/* Category - Hidden in list view (moved to black section) */}
+                            {viewMode !== 'list' && (
+                              <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
+                                {/* Category */}
+                                <div className="flex flex-wrap gap-1 justify-center">
+                                  {(() => {
+                                    const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                      ? enquiry.categories
+                                      : enquiry.category ? [enquiry.category] : []
+                                    ).filter(cat => cat && typeof cat === 'string');
+                                    
+                                    return categoriesToShow.map((cat, index) => (
+                                      <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
+                                        <span>{String(cat).replace('-', ' ')}</span>
+                                      </Badge>
+                                    ));
+                                  })()}
+                                </div>
                               </div>
-                            </div>
+                            )}
+                            
+                            {/* Budget - Mobile list view only, above respond/sell/provide button - moved from black section */}
+                            {enquiry.budget && (
+                              <div className="block sm:hidden mb-2">
+                                <div className="inline-flex items-center gap-1.5 px-2 py-1 border-2 border-black rounded-md">
+                                  <span className="text-[9px] text-gray-600 font-bold">Budget:</span>
+                                  <span className="text-[11px] font-bold text-black">₹</span>
+                                  <span className="text-[11px] font-bold text-gray-900">{formatIndianCurrency(enquiry.budget)}-/-</span>
+                                </div>
+                              </div>
+                            )}
                             
                             {/* Action Button - Mobile Only - At Bottom */}
                             <div className="w-full">
@@ -6344,6 +6427,10 @@ export default function EnquiryWall() {
                   onClick={() => {
                     setSearchTerm("");
                     setSelectedCategory("all");
+                    // Remove search param from URL when clearing search
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('search');
+                    setSearchParams(newParams, { replace: true });
                   }}
                 >
                   Clear All

@@ -116,11 +116,11 @@ const App = () => {
                 {/* 🛡️ PROTECTED: ChatProvider wrapper - DO NOT REMOVE - Required for useChats hook */}
               <ChatProvider>
                   <ChristmasTheme>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                    <ScrollToTop />
-                    <Routes>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                  <ScrollToTop />
+                  <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiries" element={<ErrorBoundary><EnquiryWall /></ErrorBoundary>} />
@@ -158,8 +158,8 @@ const App = () => {
                   <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    </BrowserRouter>
+                  </Routes>
+                </BrowserRouter>
                   </ChristmasTheme>
                 </ChatProvider>
               </UsageProvider>

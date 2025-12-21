@@ -1432,14 +1432,14 @@ const Dashboard = () => {
             
             {/* Content Card - Black Background */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                     <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3 dashboard-header-no-emoji">
-                      <VerifiedUser 
-                        name={userProfile?.fullName || ''}
-                        isVerified={userProfile?.isProfileVerified || false}
-                        className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
-                      />
+                    <VerifiedUser 
+                      name={userProfile?.fullName || ''}
+                      isVerified={userProfile?.isProfileVerified || false}
+                      className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
+                    />
                     </h2>
                   </div>
                   {/* Toggle - Creative Rotating Dial Design */}

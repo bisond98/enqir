@@ -290,6 +290,9 @@ const Landing = () => {
   // User profiles for trust badge verification
   const [userProfiles, setUserProfiles] = useState<Record<string, any>>({});
 
+  // 🛡️ PROTECTED: FINALIZED KEYWORD-TO-CATEGORY MAPPING - DO NOT MODIFY WITHOUT UPDATING BOTH PAGES
+  // This mapping connects homescreen search keywords to Live Enquiries categories
+  // ⚠️ CRITICAL: Any changes must be coordinated with EnquiryWall.tsx search logic
   // Keyword to category mapping for smart search
   const keywordToCategory = {
     'car': 'automobile',
@@ -366,6 +369,9 @@ const Landing = () => {
     'shipping': 'transportation-logistics'
   };
 
+  // 🛡️ PROTECTED: FINALIZED HOMESCREEN SEARCH LOGIC - DO NOT MODIFY
+  // This function handles keyword-to-category mapping and redirects to Live Enquiries
+  // ⚠️ CRITICAL: Changes here will break the search flow between homescreen and Live Enquiries
   // Search function - redirects to Live Enquiries page with category filter
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -1102,15 +1108,15 @@ const Landing = () => {
         return dateB.getTime() - dateA.getTime();
       } catch {
         return 0;
-      }
+    }
     });
     
     // Set initial display: shuffled live enquiries first, then expired
     if (liveOnlyEnquiries.length > 0) {
-      const initialShuffled = getRandomThree(liveOnlyEnquiries);
-      const uniqueInitial = Array.from(
-        new Map(initialShuffled.map(e => [e.id, e])).values()
-      );
+    const initialShuffled = getRandomThree(liveOnlyEnquiries);
+    const uniqueInitial = Array.from(
+      new Map(initialShuffled.map(e => [e.id, e])).values()
+    );
       // Combine: live (shuffled) first, then expired
       setShuffledEnquiries([...uniqueInitial, ...expiredOnlyEnquiries]);
     } else {
@@ -1967,32 +1973,32 @@ const Landing = () => {
 
           {/* Mobile: All cards in one container for equal spacing and centering */}
           <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
-            {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
+          {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
             <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
-              <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
+            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
+              <div className="relative">
+                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
+              </div>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
+              <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
+                We don't need your data; we already have a revenue model
+              </p>
+            </Card>
+          </div>
+
+          {/* Features */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
+            {features.map((feature, index) => (
+              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
                 <div className="relative">
-                  <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
-                <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
-                <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
-                  We don't need your data; we already have a revenue model
-                </p>
+                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
               </Card>
-            </div>
-
-            {/* Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
-              {features.map((feature, index) => (
-                <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
-                  <div className="relative">
-                    <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
-                    <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
-                  </div>
-                  <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
-                  <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
-                </Card>
-              ))}
+            ))}
             </div>
           </div>
 
@@ -2652,7 +2658,7 @@ const Landing = () => {
                   />
                 )}
               </div>
-                
+
               </>
             ) : (
               <div className="text-center py-16">
