@@ -4854,6 +4854,36 @@ export default function EnquiryWall() {
 
   return (
     <Layout>
+      <style>{`
+        .title-3d {
+          text-shadow: 
+            2px 2px 0px rgba(0,0,0,0.9),
+            4px 4px 0px rgba(0,0,0,0.7),
+            6px 6px 0px rgba(0,0,0,0.5),
+            8px 8px 0px rgba(0,0,0,0.3),
+            0 0 10px rgba(220,38,38,0.4),
+            0 0 20px rgba(220,38,38,0.3),
+            1px 1px 2px rgba(0,0,0,0.8),
+            -1px -1px 2px rgba(255,255,255,0.2);
+          transform: perspective(500px) rotateX(5deg);
+          -webkit-text-stroke: 0.5px rgba(0,0,0,0.4);
+        }
+        .title-3d-padding {
+          padding: 12px 16px;
+          border: 2px solid rgba(0,0,0,0.3);
+          border-top: 2px solid rgba(255,255,255,0.2);
+          border-left: 2px solid rgba(255,255,255,0.2);
+          border-bottom: 2px solid rgba(0,0,0,0.5);
+          border-right: 2px solid rgba(0,0,0,0.5);
+          border-radius: 8px;
+          background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+          box-shadow: 
+            inset 0 2px 4px rgba(255,255,255,0.1),
+            inset 0 -2px 4px rgba(0,0,0,0.3),
+            0 4px 8px rgba(0,0,0,0.2),
+            0 2px 4px rgba(0,0,0,0.1);
+        }
+      `}</style>
       <div 
         className="flex flex-col flex-grow bg-white"
         style={{
@@ -5643,7 +5673,7 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                               {/* Need Label - Above Title */}
-                              <div className="flex items-baseline justify-between -mb-1 sm:-mb-2 ml-1 sm:ml-0">
+                              <div className="flex items-baseline justify-between -mb-3 sm:-mb-2 ml-1 sm:ml-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                   <span className="text-[9px] sm:text-sm text-white font-bold">Need</span>
@@ -5684,51 +5714,13 @@ export default function EnquiryWall() {
                                 )}
                               </div>
                               
-                              {/* Title - 3D White Tile Style */}
-                              <div className="mb-1.5 sm:mb-3">
-                                <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 20px 40px rgba(0,0,0,0.18), 0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.12)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1200px',
-                                    transform: 'translateZ(10px)'
-                                  }}
-                                >
-                                  {/* 3D Border Effect - Enhanced */}
-                                  <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-gray-300/60" 
-                                    style={{
-                                      boxShadow: 'inset 0 3px 6px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/80 via-white/40 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/20 via-black/10 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                  
-                                  {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                  
-                                  <h3 className={`relative z-10 text-base sm:text-lg lg:text-xl font-black tracking-tight leading-relaxed sm:leading-tight line-clamp-3 sm:line-clamp-1 sm:truncate text-black text-center antialiased ${
-                                      isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
-                                  }`} style={{
-                                    WebkitFontSmoothing: 'antialiased',
-                                    MozOsxFontSmoothing: 'grayscale',
-                                      textRendering: 'optimizeLegibility',
-                                      transform: 'translateZ(20px)',
-                                      textShadow: '0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.5)'
-                                  }}>
+                              {/* Title */}
+                              <div className="mb-3 sm:mb-3 title-3d-padding">
+                                <h3 className={`text-xl sm:text-lg lg:text-xl line-clamp-3 sm:line-clamp-1 sm:truncate text-center sm:text-left title-3d ${
+                                      isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : 'text-red-500 sm:text-white'
+                                  }`}>
                                     {enquiry.title}
-                                  </h3>
-                                </div>
+                                </h3>
                               </div>
                               
                               {/* "before [date]" below title, centered on mobile */}
@@ -5759,7 +5751,7 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col mt-0.5 sm:mt-1 gap-1 sm:gap-1.5">
+                                    <div className="flex flex-col mt-3 sm:mt-1 gap-1 sm:gap-1.5">
                                       <div className="flex items-start gap-2 sm:gap-3 ml-1 sm:ml-0">
                                         {/* Mobile: Location and Before stacked vertically and right-aligned, Desktop: horizontal */}
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
