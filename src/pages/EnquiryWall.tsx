@@ -940,84 +940,147 @@ export default function EnquiryWall() {
   const finalResults = useMemo(() => {
     const searchLower = searchTerm?.toLowerCase().trim() || '';
     
-    // Always apply regular search filtering first
-    let results = enquiries.filter(enquiry => {
-      // Enhanced search matching - check multiple fields
-      const matchesSearch = !searchLower || (() => {
-        // Check title/heading - prioritize exact title matches first
-        if (enquiry.title) {
-          const titleLower = enquiry.title.toLowerCase().trim();
-          // Exact match check first
-          if (titleLower === searchLower) return true;
-          // Then check if title starts with search term (for better matching)
-          if (titleLower.startsWith(searchLower)) return true;
-          // Then check if title includes search term
-          if (titleLower.includes(searchLower)) return true;
-          // Also check if search term matches any word in title
-          const titleWords = titleLower.split(/\s+/);
-          if (titleWords.some(word => word.includes(searchLower) || searchLower.includes(word))) return true;
+    // Case 1 & 2: No search - just filter by category or show all
+    if (!searchLower) {
+      let results = enquiries.filter(enquiry => {
+        if (selectedCategory === "all") {
+          return true; // Show all enquiries
         }
-        // Check description
-        if (enquiry.description && enquiry.description.toLowerCase().includes(searchLower)) return true;
-        // Check category
-        if (enquiry.category && enquiry.category.toLowerCase().includes(searchLower)) return true;
-        // Check categories array
-        if (enquiry.categories && Array.isArray(enquiry.categories)) {
-          if (enquiry.categories.some(cat => cat && cat.toLowerCase().includes(searchLower))) return true;
-        }
-        // Check location
-        if (enquiry.location && enquiry.location.toLowerCase().includes(searchLower)) return true;
-        // Check budget (if search term matches budget string)
-        if (enquiry.budget) {
-          const budgetStr = typeof enquiry.budget === 'string' ? enquiry.budget : String(enquiry.budget);
-          if (budgetStr.includes(searchTerm)) return true;
-        }
-        return false;
-      })();
+        // Filter by selected category
+        return enquiry.category === selectedCategory || 
+          (enquiry.categories && enquiry.categories.includes(selectedCategory));
+      });
       
-      const matchesCategory = selectedCategory === "all" || 
-        enquiry.category === selectedCategory || 
-        (enquiry.categories && enquiry.categories.includes(selectedCategory));
-      return matchesSearch && matchesCategory;
-    });
-    
-    // If AI search is active, combine AI results with regular search results
-    // Both work together - regular search for exact matches, AI search for semantic matches
-    if (aiSearchResults && aiSearchResults.results && aiSearchResults.results.length > 0) {
-      // Combine both results - regular search results first (exact matches), then AI results
-      const regularResultIds = new Set(results.map(e => e.id));
-      const aiResults = aiSearchResults.results.filter(e => !regularResultIds.has(e.id));
-      // Merge: regular search results first (exact matches), then AI results (semantic matches)
-      results = [...results, ...aiResults];
+      // Sort: User's enquiries in selected category first (if category selected)
+      if (selectedCategory !== "all") {
+        results = [...results].sort((a, b) => {
+          const aMatchesCategory = a.category === selectedCategory || 
+            (a.categories && a.categories.includes(selectedCategory));
+          const bMatchesCategory = b.category === selectedCategory || 
+            (b.categories && b.categories.includes(selectedCategory));
+          
+          const aIsUserEnquiry = authUser && a.userId === authUser.uid;
+          const bIsUserEnquiry = authUser && b.userId === authUser.uid;
+          
+          const aIsUserInCategory = aIsUserEnquiry && aMatchesCategory;
+          const bIsUserInCategory = bIsUserEnquiry && bMatchesCategory;
+          
+          if (aIsUserInCategory && !bIsUserInCategory) return -1;
+          if (!aIsUserInCategory && bIsUserInCategory) return 1;
+          
+          if (aMatchesCategory && !bMatchesCategory) return -1;
+          if (!aMatchesCategory && bMatchesCategory) return 1;
+          
+          return 0;
+        });
+      }
+      
+      return results;
     }
     
-    // Sort: User's enquiries in selected category first, then others
-    if (selectedCategory !== "all") {
-      results = [...results].sort((a, b) => {
-        // Check if enquiry matches the selected category
-        const aMatchesCategory = a.category === selectedCategory || 
-          (a.categories && a.categories.includes(selectedCategory));
-        const bMatchesCategory = b.category === selectedCategory || 
-          (b.categories && b.categories.includes(selectedCategory));
+    // Case 3 & 4: Search active - implement sophisticated scoring system
+    const regularResultIds = new Set<string>();
+    const scoredResults: Array<{enquiry: Enquiry, score: number, matchType: 'title' | 'description' | 'ai', isInSelectedCategory: boolean}> = [];
+    
+    // Helper to check if enquiry is in selected category
+    const isInSelectedCategory = (enquiry: Enquiry): boolean => {
+      if (selectedCategory === "all") return false; // No category selected
+      return enquiry.category === selectedCategory || 
+        (enquiry.categories && enquiry.categories.includes(selectedCategory));
+    };
+    
+    // Check each enquiry for matches
+    enquiries.forEach(enquiry => {
+      let titleMatch = false;
+      let descriptionMatch = false;
+      
+      // Check title match
+      if (enquiry.title && enquiry.title.trim()) {
+        const titleLower = enquiry.title.toLowerCase().trim();
+        if (titleLower === searchLower || 
+            titleLower.startsWith(searchLower) || 
+            titleLower.includes(searchLower)) {
+          titleMatch = true;
+        } else {
+          // Check word matches
+          const titleWords = titleLower.split(/\s+/);
+          if (titleWords.some(word => word.includes(searchLower) || searchLower.includes(word))) {
+            titleMatch = true;
+          }
+        }
+      }
+      
+      // Check description match (only if no title match)
+      if (!titleMatch && enquiry.description) {
+        if (enquiry.description.toLowerCase().includes(searchLower)) {
+          descriptionMatch = true;
+        }
+      }
+      
+      // Calculate score based on match type and category
+      if (titleMatch || descriptionMatch) {
+        const inSelectedCategory = isInSelectedCategory(enquiry);
+        let score = 0;
         
-        // Check if enquiry belongs to current user
-        const aIsUserEnquiry = authUser && a.userId === authUser.uid;
-        const bIsUserEnquiry = authUser && b.userId === authUser.uid;
+        if (titleMatch) {
+          // Title matches get highest priority
+          score = inSelectedCategory ? 10000 : 5000;
+        } else if (descriptionMatch) {
+          // Description matches get lower priority
+          score = inSelectedCategory ? 1000 : 500;
+        }
         
-        // Priority: User's enquiries in selected category first
-        const aIsUserInCategory = aIsUserEnquiry && aMatchesCategory;
-        const bIsUserInCategory = bIsUserEnquiry && bMatchesCategory;
+        scoredResults.push({
+          enquiry,
+          score,
+          matchType: titleMatch ? 'title' : 'description',
+          isInSelectedCategory: inSelectedCategory
+        });
+        
+        regularResultIds.add(enquiry.id);
+      }
+    });
+    
+    // Add AI results (if any)
+    if (aiSearchResults && aiSearchResults.results && aiSearchResults.results.length > 0) {
+      aiSearchResults.results.forEach(enquiry => {
+        // Skip if already in regular results (avoid duplicates)
+        if (!regularResultIds.has(enquiry.id)) {
+          const inSelectedCategory = isInSelectedCategory(enquiry);
+          const score = inSelectedCategory ? 100 : 50; // AI results get lowest priority
+          
+          scoredResults.push({
+            enquiry,
+            score,
+            matchType: 'ai',
+            isInSelectedCategory: inSelectedCategory
+          });
+          
+          regularResultIds.add(enquiry.id);
+        }
+      });
+    }
+    
+    // Sort by score (highest first) - this gives us the right priority order
+    scoredResults.sort((a, b) => {
+      // First: User's enquiries in selected category (if category selected)
+      if (selectedCategory !== "all") {
+        const aIsUserEnquiry = authUser && a.enquiry.userId === authUser.uid;
+        const bIsUserEnquiry = authUser && b.enquiry.userId === authUser.uid;
+        
+        const aIsUserInCategory = aIsUserEnquiry && a.isInSelectedCategory;
+        const bIsUserInCategory = bIsUserEnquiry && b.isInSelectedCategory;
         
         if (aIsUserInCategory && !bIsUserInCategory) return -1;
         if (!aIsUserInCategory && bIsUserInCategory) return 1;
-        
-        // Then: Other enquiries in selected category
-        if (aMatchesCategory && !bMatchesCategory) return -1;
-        if (!aMatchesCategory && bMatchesCategory) return 1;
-        
-        return 0;
-      });
-    }
+      }
+      
+      // Then: Sort by score (highest first)
+      return b.score - a.score;
+    });
+    
+    // Extract enquiries from scored results
+    let results = scoredResults.map(item => item.enquiry);
     
     return results;
   }, [aiSearchResults, enquiries, searchTerm, selectedCategory, authUser]);
@@ -1154,6 +1217,11 @@ export default function EnquiryWall() {
     }
     
     const interval = setInterval(() => {
+      // PAUSE: Don't shuffle if search is active
+      if (searchTerm && searchTerm.trim()) {
+        return; // Skip shuffling when search is active
+      }
+      
       // Re-check live/expired status
       const currentNow = new Date();
       const currentLiveEnquiries: Enquiry[] = [];
@@ -1203,7 +1271,7 @@ export default function EnquiryWall() {
     }, 10000); // 10 seconds
     
     return () => clearInterval(interval);
-  }, [enquiries]);
+  }, [enquiries, searchTerm]);
   
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
@@ -1291,7 +1359,41 @@ export default function EnquiryWall() {
       }
     });
     
+    // FIX: When search is active, preserve the priority order from finalResults
+    const isSearchActive = searchTerm && searchTerm.trim();
+    
+    if (isSearchActive) {
+      // Create a map to preserve the original order from filteredEnquiries
+      const orderMap = new Map<string, number>();
+      filteredEnquiries.forEach((enquiry, index) => {
+        orderMap.set(enquiry.id, index);
+      });
+      
+      // Sort each group by the original order (preserving search priority)
+      const sortedLiveResults = [...liveResults].sort((a, b) => {
+        const orderA = orderMap.get(a.id) ?? Infinity;
+        const orderB = orderMap.get(b.id) ?? Infinity;
+        return orderA - orderB;
+      });
+      
+      const sortedExpiredResults = [...expiredResults].sort((a, b) => {
+        const orderA = orderMap.get(a.id) ?? Infinity;
+        const orderB = orderMap.get(b.id) ?? Infinity;
+        return orderA - orderB;
+      });
+      
+      const sortedDealClosedResults = [...dealClosedResults].sort((a, b) => {
+        const orderA = orderMap.get(a.id) ?? Infinity;
+        const orderB = orderMap.get(b.id) ?? Infinity;
+        return orderA - orderB;
+      });
+      
+      // Combine: live first, then expired, then deal closed (preserving search priority order)
+      return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
+    }
+    
     // If sortBy is 'default', use shuffled live enquiries (original shuffle behavior)
+    // BUT: Don't use shuffling when search is active - show search results in order
     if (sortBy === 'default') {
       // Use shuffled live enquiries, but filter to only include those in liveResults
       const shuffledLive = shuffledLiveEnquiries.filter(e => 
@@ -1375,7 +1477,7 @@ export default function EnquiryWall() {
     
     // Combine: live first, then expired, then deal closed (all sorted by date)
     return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy]);
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm]);
 
   // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
   useEffect(() => {

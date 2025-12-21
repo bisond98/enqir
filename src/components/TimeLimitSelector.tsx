@@ -490,7 +490,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className={`p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black ${timeType === 'custom' ? 'w-[420px]' : 'w-[700px]'} data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[transform,opacity]`} 
+            className={`p-0 max-h-[85vh] overflow-y-auto border-2 lg:border border-black ${timeType === 'custom' ? 'w-[420px]' : 'w-[700px]'} data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-smooth will-change-[transform,opacity]`} 
             align="start"
             sideOffset={8}
           >

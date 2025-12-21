@@ -1871,42 +1871,42 @@ export default function PostEnquiry() {
                       {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
                       <div className="block sm:hidden">
                         <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen} modal={true}>
-                          <Button
+                            <Button
                             type="button"
-                            variant="outline"
+                              variant="outline"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               setCategoriesSheetOpen(true);
                             }}
-                            className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
-                              selectedCategories.length === 0 
-                                ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
-                                : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
-                            } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
-                          >
-                            {/* Physical button depth effect */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
-                            <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
-                              {selectedCategories.length === 0 ? (
-                                <span className="text-[10px] text-slate-500">Select categories...</span>
-                              ) : (
-                                selectedCategories.map((catValue) => {
-                                  const cat = categories.find(c => c.value === catValue);
-                                  return (
-                                    <Badge 
-                                      key={catValue} 
-                                      variant="secondary" 
-                                      className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
-                                    >
-                                      {cat?.label}
-                                    </Badge>
-                                  );
-                                })
-                              )}
-                            </div>
-                            <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
-                          </Button>
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
+                                selectedCategories.length === 0 
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                            >
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
+                            </Button>
                           <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black bg-white">
                             <SheetHeader className="px-5 pt-6 pb-4 flex-shrink-0 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/30">
                               <SheetTitle className="text-5xl sm:text-6xl font-black tracking-tighter leading-none font-heading text-black text-left w-full mb-1">Categories</SheetTitle>
@@ -1969,10 +1969,10 @@ export default function PostEnquiry() {
                                             : isSelected
                                               ? 'text-black font-semibold'
                                               : 'text-slate-700'
-                                      }`}
-                                    >
-                                      {cat.label}
-                                    </Label>
+                                        }`}
+                                      >
+                                        {cat.label}
+                                      </Label>
                                       </div>
                                       {isService && (
                                         <div className="px-4 py-3">
@@ -2030,7 +2030,7 @@ export default function PostEnquiry() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent 
-                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[transform,opacity]" 
+                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-smooth will-change-[transform,opacity]" 
                             align="start"
                             side="bottom"
                             sideOffset={8}
