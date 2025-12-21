@@ -21,19 +21,16 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    // Only log errors, don't interrupt normal flow
     // eslint-disable-next-line no-console
     console.error("ErrorBoundary caught:", error, errorInfo);
     
-    // Log error details for debugging (non-intrusive)
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-        componentStack: errorInfo.componentStack
-      });
-    }
+    // Log error details for debugging
+    console.error("Error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    });
     
     this.setState({ errorInfo });
     
@@ -45,7 +42,6 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   }
 
   handleReset = () => {
-    // Smooth reset - clear error state without delay to avoid issues
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
   };
 
