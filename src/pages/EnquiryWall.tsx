@@ -4869,6 +4869,14 @@ export default function EnquiryWall() {
             inset 0 -2px 4px rgba(0,0,0,0.3),
             0 4px 8px rgba(0,0,0,0.2),
             0 2px 4px rgba(0,0,0,0.1);
+          position: relative;
+          z-index: 20;
+        }
+        @media (max-width: 639px) {
+          .title-3d-padding {
+            background: rgba(0,0,0,0.6);
+            margin-top: 1.5rem !important;
+          }
         }
         @media (max-width: 639px) {
           .enhanced-border {
@@ -5637,7 +5645,7 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                               {/* Category - Mobile view only, above Posted on */}
-                              <div className="block sm:hidden mb-1">
+                              <div className="block sm:hidden mb-1 -mt-6">
                                 <div className="flex flex-wrap gap-1.5 items-center ml-1">
                                   {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
                                     ? enquiry.categories
@@ -5660,7 +5668,7 @@ export default function EnquiryWall() {
                               </div>
                               {/* Posted Time - Mobile view, below category */}
                               {enquiry.createdAt && (
-                                <div className="block sm:hidden mb-1">
+                                <div className="block sm:hidden mb-1 -mt-4">
                                   <div className="flex items-center gap-1.5 ml-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
                                     <span className="text-[7px] text-white font-bold px-2 py-0.5 rounded-md enhanced-border">
@@ -5670,7 +5678,7 @@ export default function EnquiryWall() {
                                 </div>
                               )}
                               {/* Need Label - Above Title */}
-                              <div className="flex items-baseline justify-between -mb-3 sm:-mb-2 ml-1 sm:ml-0">
+                              <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                   <span className="text-[9px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-md enhanced-border block sm:inline">Need</span>
@@ -5712,7 +5720,7 @@ export default function EnquiryWall() {
                               </div>
                               
                               {/* Title */}
-                              <div className="mb-3 sm:mb-3 title-3d-padding">
+                              <div className="mb-8 sm:mb-3 title-3d-padding">
                                 <h3 className={`text-xl sm:text-lg lg:text-xl line-clamp-3 sm:line-clamp-1 sm:truncate text-center sm:text-left ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : 'text-white'
                                   }`}>
@@ -5748,7 +5756,7 @@ export default function EnquiryWall() {
                                   }
                                   
                                   return (
-                                    <div className="flex flex-col mt-3 sm:mt-1 gap-1 sm:gap-1.5">
+                                    <div className="flex flex-col mt-4 sm:mt-1 gap-1 sm:gap-1.5 pt-12 sm:pt-0">
                                       <div className="flex items-start gap-2 sm:gap-3 ml-1 sm:ml-0">
                                         {/* Mobile: Location and Before stacked vertically and right-aligned, Desktop: horizontal */}
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
@@ -5758,8 +5766,8 @@ export default function EnquiryWall() {
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                               </div>
-                                              <span className="text-[9px] sm:text-sm text-white font-bold" style={{ letterSpacing: '0.05em' }}>At </span>
-                                              <span className="truncate text-[9px] sm:text-sm md:text-base text-white font-bold" style={{ letterSpacing: '0.05em' }}>{enquiry.location}</span>
+                                              <span className="text-[7px] sm:text-sm text-white font-bold" style={{ letterSpacing: '0.05em' }}>At </span>
+                                              <span className="truncate text-[7px] sm:text-sm md:text-base text-white font-bold" style={{ letterSpacing: '0.05em' }}>{enquiry.location}</span>
                                             </div>
                                           )}
                                           {enquiry.location && (
@@ -5770,7 +5778,7 @@ export default function EnquiryWall() {
                                             <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
-                                            <span className="text-[9px] sm:text-sm text-white font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
+                                            <span className="text-[7px] sm:text-sm text-white font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
                                               Before {formatDate(deadlineDate.toISOString())}
                                             </span>
                                           </div>
@@ -5779,7 +5787,7 @@ export default function EnquiryWall() {
                                             <div className="flex items-center justify-center w-2.5 h-2.5 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
-                                            <span className="text-[9px] text-red-500 font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
+                                            <span className="text-[7px] text-red-500 font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
                                               {formatDeadlineText(enquiry.deadline)}
                                             </span>
                                           </div>
@@ -5844,9 +5852,24 @@ export default function EnquiryWall() {
                               {/* Mobile Budget - Bottom left of black section */}
                               {enquiry.budget && (
                                 <div className="block sm:hidden absolute bottom-2 left-2">
-                                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-500 border border-red-600">
-                                    <span className="text-[11px] text-white font-bold">Budget:</span>
-                                    <span className="text-[12px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
+                                  <div 
+                                    className="flex items-center gap-1 px-2 py-1 rounded-md"
+                                    style={{
+                                      padding: '6px 10px',
+                                      border: '2px solid rgba(139,0,0,0.3)',
+                                      borderTop: '2px solid rgba(255,255,255,0.2)',
+                                      borderLeft: '2px solid rgba(255,255,255,0.2)',
+                                      borderBottom: '2px solid rgba(92,0,0,0.5)',
+                                      borderRight: '2px solid rgba(92,0,0,0.5)',
+                                      borderRadius: '8px',
+                                      background: 'linear-gradient(135deg, #8B0000 0%, #5C0000 100%)',
+                                      boxShadow: 
+                                        'inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)'
+                                    }}
+                                  >
+                                    <span className="text-[9px] text-white font-bold">Budget:</span>
+                                    <span className="text-[10px] text-white font-black">₹</span>
+                                    <span className="text-[10px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
                                 </div>
                               )}
@@ -6300,7 +6323,7 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-9 text-[9px] font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
+                                className="w-full h-9 text-[11px] font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                 style={{
                                   background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
