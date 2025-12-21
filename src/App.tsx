@@ -51,6 +51,7 @@ import ContactUs from "./pages/ContactUs";
 import AllChats from "./pages/AllChats";
 import HelpGuide from "./pages/HelpGuide";
 import MyChats from "./pages/MyChats";
+import ReportUser from "./pages/ReportUser";
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
@@ -156,6 +157,8 @@ const App = () => {
                   <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
                   {/* 🛡️ PROTECTED: All Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/all-chats" element={<ErrorBoundary><AuthGuard><AllChats /></AuthGuard></ErrorBoundary>} />
+                  {/* Report User route */}
+                  <Route path="/report-user/:userId" element={<ErrorBoundary><AuthGuard><ReportUser /></AuthGuard></ErrorBoundary>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<ErrorBoundary><NotFound /></ErrorBoundary>} />
                   </Routes>

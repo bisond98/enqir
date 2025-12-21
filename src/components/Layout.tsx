@@ -99,6 +99,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
             if (!enquiryId || !sellerId || !senderId) return;
             if (messageData.isSystemMessage) return;
             if (senderId === user.uid) return; // Skip own messages
+            if (messageData.dismissed === true) return; // Skip dismissed warnings
             
             const threadKey = `${enquiryId}_${sellerId}`;
             
@@ -150,6 +151,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           if (!enquiryId || !sellerId || !senderId) return;
           if (messageData.isSystemMessage) return;
           if (senderId === user.uid) return; // Skip own messages
+          if (messageData.dismissed === true) return; // Skip dismissed warnings
           
           const threadKey = `${enquiryId}_${sellerId}`;
           const messageTime = messageData.timestamp?.toDate 

@@ -5,10 +5,10 @@ import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
-import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2 } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -101,7 +101,7 @@ export default function MyChats() {
   }, []);
 
   // Filter chats based on view mode (show all chats including disabled ones)
-  // Then sort: live chats first, then expired chats
+  // Then sort: warning messages pinned first, then live chats, then expired chats
   // Memoize to prevent unnecessary recalculations
   const allFilteredChats = useMemo(() => {
     return allChats
@@ -114,6 +114,14 @@ export default function MyChats() {
     }
       })
       .sort((a, b) => {
+        // Pin warning messages at the top
+        const aIsWarning = a.isAdminChat && a.enquiryTitle?.includes('Warning');
+        const bIsWarning = b.isAdminChat && b.enquiryTitle?.includes('Warning');
+        
+        if (aIsWarning && !bIsWarning) return -1; // a is warning, b is not - a comes first
+        if (!aIsWarning && bIsWarning) return 1; // a is not warning, b is - b comes first
+        
+        // If both are warnings or both are not warnings, continue with normal sorting
         // Check if chats are expired
         const aExpired = isChatExpired(a);
         const bExpired = isChatExpired(b);
@@ -146,7 +154,31 @@ export default function MyChats() {
   useEffect(() => {
     // Always update chats immediately when they change - don't wait for loading
     if (preloadedChats !== undefined) {
-      setAllChats(preloadedChats);
+      // Preserve warnings that haven't been dismissed when updating from context
+      setAllChats(prevChats => {
+        // Keep any warnings that are in prevChats but might be missing from preloadedChats
+        // This prevents warnings from disappearing unexpectedly
+        const existingWarnings = prevChats.filter(chat => 
+          chat.isAdminChat && chat.enquiryTitle?.includes('Warning')
+        );
+        
+        // Merge: use preloadedChats as base, but preserve existing warnings that aren't in preloadedChats
+        const preloadedWarningIds = new Set(
+          preloadedChats
+            .filter(chat => chat.isAdminChat && chat.enquiryTitle?.includes('Warning'))
+            .map(chat => chat.id)
+        );
+        
+        const warningsToKeep = existingWarnings.filter(warning => 
+          !preloadedWarningIds.has(warning.id)
+        );
+        
+        // Combine preloaded chats with preserved warnings
+        const mergedChats = [...preloadedChats, ...warningsToKeep];
+        
+        return mergedChats;
+      });
+      
       // Cache chats to localStorage for instant display on next visit
       if (preloadedChats.length > 0 && typeof window !== 'undefined') {
         try {
@@ -344,6 +376,44 @@ export default function MyChats() {
       navigate(`/enquiry/${chat.enquiryId}/responses?sellerId=${chat.sellerId}`);
     } else {
       navigate(`/enquiry/${chat.enquiryId}/responses-page`);
+    }
+  };
+
+  // Dismiss warning message
+  const dismissWarning = async (chat: ChatThread) => {
+    if (!user?.uid || !chat.isAdminChat) return;
+    
+    try {
+      // Find the warning message in Firestore and mark it as dismissed
+      const warningMessagesQuery = query(
+        collection(db, 'chatMessages'),
+        where('enquiryId', '==', 'admin_warning'),
+        where('recipientId', '==', user.uid),
+        where('isAdminMessage', '==', true),
+        where('adminMessageType', '==', 'warning')
+      );
+      
+      const snapshot = await getDocs(warningMessagesQuery);
+      
+      // Update all warning messages for this user to mark as dismissed
+      const updatePromises = snapshot.docs.map(docSnap => 
+        updateDoc(docSnap.ref, {
+          dismissed: true,
+          dismissedAt: new Date()
+        })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      // Remove from local state immediately
+      setAllChats(prevChats => prevChats.filter(c => c.id !== chat.id));
+      
+      // Refresh chats from context
+      if (refreshChats) {
+        refreshChats();
+      }
+    } catch (error) {
+      console.error('Error dismissing warning:', error);
     }
   };
 
@@ -728,6 +798,19 @@ export default function MyChats() {
                       }`}
                       onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
+                      {/* Close button for warning messages */}
+                      {isAdminWarning && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dismissWarning(chat);
+                          }}
+                          className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 p-1 sm:p-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+                          aria-label="Dismiss warning"
+                        >
+                          <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                        </button>
+                      )}
                       {/* Physical button depth effect */}
                       {!isDisabled && (
                         <>
@@ -744,9 +827,13 @@ export default function MyChats() {
                       )}
                       
                       {/* Clickable tile with enquiry heading */}
-                      <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col h-full relative z-10">
+                      <div className={`flex flex-col h-full relative z-10 ${
+                        isAdminWarning ? 'p-1.5 sm:p-2 lg:p-2.5' : 'p-2.5 sm:p-4 lg:p-5'
+                      }`}>
                         {/* Chat avatar – rounded, WhatsApp-style green bubble with creative animation */}
-                        <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 relative">
+                        <div className={`flex items-center justify-center relative ${
+                          isAdminWarning ? 'mb-1 sm:mb-1.5' : 'mb-2 sm:mb-3 lg:mb-4'
+                        }`}>
                           {/* Glowing ring effect */}
                           {!isDisabled && (
                             <motion.div
@@ -764,7 +851,11 @@ export default function MyChats() {
                           )}
                           
                           <motion.div 
-                            className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full ${
+                            className={`rounded-full ${
+                              isAdminWarning 
+                                ? 'w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8' 
+                                : 'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14'
+                            } ${
                               isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
                             } flex items-center justify-center border-[0.5px] border-black shadow-lg relative overflow-hidden`}
                             animate={!isDisabled ? {
@@ -821,13 +912,21 @@ export default function MyChats() {
                                 transition: { duration: 0.5 }
                               } : {}}
                             >
-                              <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white relative z-10" />
+                              <MessageSquare className={`text-white relative z-10 ${
+                                isAdminWarning 
+                                  ? 'h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5' 
+                                  : 'h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6'
+                              }`} />
                             </motion.div>
                           </motion.div>
                           
                           {!isDisabled && (chat.unreadCount || 0) > 0 && (
                             <motion.span 
-                              className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] sm:text-[11px] font-bold rounded-full min-w-[20px] h-5 sm:min-w-[24px] sm:h-6 flex items-center justify-center border-2 border-white shadow-xl z-20"
+                              className={`absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white font-bold rounded-full flex items-center justify-center border-2 border-white shadow-xl z-20 ${
+                                isAdminWarning
+                                  ? 'text-[7px] sm:text-[8px] min-w-[14px] h-3.5 sm:min-w-[16px] sm:h-4'
+                                  : 'text-[10px] sm:text-[11px] min-w-[20px] h-5 sm:min-w-[24px] sm:h-6'
+                              }`}
                               animate={{
                                 scale: [1, 1.3, 1],
                                 rotate: [0, 10, -10, 0],
@@ -850,7 +949,11 @@ export default function MyChats() {
                       
                         {/* Enquiry heading as tile title */}
                         <h3 
-                          className={`text-xs sm:text-sm lg:text-base font-black mb-1.5 sm:mb-2 lg:mb-3 text-center line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem] ${
+                          className={`font-black text-center line-clamp-2 ${
+                            isAdminWarning 
+                              ? 'text-[8px] sm:text-[9px] lg:text-[10px] mb-0.5 sm:mb-1 min-h-[1rem] sm:min-h-[1.25rem]' 
+                              : 'text-xs sm:text-sm lg:text-base mb-1.5 sm:mb-2 lg:mb-3 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem]'
+                          } ${
                             isAdminWarning ? 'text-white' : isDisabled ? 'text-gray-500' : 'text-black'
                           }`}
                         >
@@ -870,7 +973,11 @@ export default function MyChats() {
                         
                         {/* Last message preview with typing effect */}
                         <p 
-                          className={`text-[9px] sm:text-[10px] lg:text-xs text-center mb-2 sm:mb-3 lg:mb-4 line-clamp-2 flex-1 ${
+                          className={`text-center line-clamp-2 flex-1 ${
+                            isAdminWarning 
+                              ? 'text-[7px] sm:text-[8px] lg:text-[9px] mb-0.5 sm:mb-1' 
+                              : 'text-[9px] sm:text-[10px] lg:text-xs mb-2 sm:mb-3 lg:mb-4'
+                          } ${
                             isAdminWarning ? 'text-white/90' : isDisabled ? 'text-gray-400' : 'text-gray-600'
                           }`}
                         >
@@ -881,11 +988,17 @@ export default function MyChats() {
                         
                         {/* Timestamp */}
                         <div 
-                          className={`flex items-center justify-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4 ${
+                          className={`flex items-center justify-center gap-1 ${
+                            isAdminWarning 
+                              ? 'text-[6px] sm:text-[7px] lg:text-[8px] mb-0.5 sm:mb-1' 
+                              : 'text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4'
+                          } ${
                             isAdminWarning ? 'text-white/80' : isDisabled ? 'text-gray-400' : 'text-gray-500'
                           }`}
                           >
-                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <Clock className={`${
+                              isAdminWarning ? 'h-2 w-2 sm:h-2.5 sm:w-2.5' : 'h-2.5 w-2.5 sm:h-3 sm:w-3'
+                            }`} />
                           <span className="truncate">
                             {formatTime(chat.updatedAt)}
                           </span>

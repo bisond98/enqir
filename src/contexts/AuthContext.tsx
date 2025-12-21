@@ -126,8 +126,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       
       if (isEmail(identifier)) {
+        // Check if email is blocked (restricted or frozen)
+        try {
+          const emailLower = identifier.toLowerCase();
+          const blockedEmailDoc = await getDoc(doc(db, 'blockedEmails', emailLower));
+          
+          if (blockedEmailDoc.exists()) {
+            const blockData = blockedEmailDoc.data();
+            const expiresAt = blockData.expiresAt?.toDate ? blockData.expiresAt.toDate() : (blockData.expiresAt ? new Date(blockData.expiresAt) : null);
+            
+            // Check if block is still active
+            if (expiresAt && expiresAt > new Date()) {
+              const blockType = blockData.blockType || 'blocked';
+              const daysRemaining = Math.ceil((expiresAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              
+              toast({
+                title: 'Email Blocked',
+                description: `This email has been ${blockType === 'restricted' ? 'restricted' : 'frozen'}. ${blockType === 'restricted' ? `You cannot sign up with this email for ${daysRemaining} day(s).` : `You cannot sign up with this email for ${daysRemaining} day(s).`}`,
+                variant: 'destructive',
+              });
+              setLoading(false);
+              return { error: new Error('Email is blocked') };
+            } else if (expiresAt) {
+              // Block has expired, remove it
+              await deleteDoc(doc(db, 'blockedEmails', emailLower));
+            }
+          }
+        } catch (blockCheckError) {
+          console.error('Error checking blocked emails:', blockCheckError);
+          // Continue with sign-up if check fails
+        }
+        
         // Email signup
         const result = await createUserWithEmailAndPassword(auth, identifier, password);
+        
+        // Check if user is blocked by userId (after successful sign-up)
+        try {
+          const userBlockedDoc = await getDoc(doc(db, 'blockedUsers', result.user.uid));
+          if (userBlockedDoc.exists()) {
+            const blockData = userBlockedDoc.data();
+            const expiresAt = blockData.expiresAt?.toDate ? blockData.expiresAt.toDate() : (blockData.expiresAt ? new Date(blockData.expiresAt) : null);
+            
+            if (expiresAt && expiresAt > new Date()) {
+              // Delete the user account immediately
+              await firebaseDeleteUser(result.user);
+              const blockType = blockData.blockType || 'blocked';
+              const daysRemaining = Math.ceil((expiresAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              
+              toast({
+                title: 'Email Blocked',
+                description: `This email has been ${blockType === 'restricted' ? 'restricted' : 'frozen'}. ${blockType === 'restricted' ? `You cannot sign up with this email for ${daysRemaining} day(s).` : `You cannot sign up with this email for ${daysRemaining} day(s).`}`,
+                variant: 'destructive',
+              });
+              setLoading(false);
+              return { error: new Error('Email is blocked') };
+            } else if (expiresAt) {
+              // Block has expired, remove it
+              await deleteDoc(doc(db, 'blockedUsers', result.user.uid));
+              await deleteDoc(doc(db, 'blockedEmails', identifier.toLowerCase()));
+            }
+          }
+        } catch (blockCheckError) {
+          console.error('Error checking blocked users:', blockCheckError);
+          // Continue with sign-up if check fails
+        }
 
         if (userData?.full_name) {
           await updateProfile(result.user, { displayName: userData.full_name });
@@ -244,8 +306,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isEmail(identifier)) {
         console.log('🔐 Attempting email sign-in');
         
+        // Check if email is blocked (restricted or frozen)
+        try {
+          const emailLower = identifier.toLowerCase();
+          const blockedEmailDoc = await getDoc(doc(db, 'blockedEmails', emailLower));
+          
+          if (blockedEmailDoc.exists()) {
+            const blockData = blockedEmailDoc.data();
+            const expiresAt = blockData.expiresAt?.toDate ? blockData.expiresAt.toDate() : (blockData.expiresAt ? new Date(blockData.expiresAt) : null);
+            
+            // Check if block is still active
+            if (expiresAt && expiresAt > new Date()) {
+              const blockType = blockData.blockType || 'blocked';
+              const daysRemaining = Math.ceil((expiresAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              
+              toast({
+                title: 'Account Blocked',
+                description: `This account has been ${blockType === 'restricted' ? 'restricted' : 'frozen'}. ${blockType === 'restricted' ? `Access will be restored in ${daysRemaining} day(s).` : `Access will be restored in ${daysRemaining} day(s).`}`,
+                variant: 'destructive',
+              });
+              setLoading(false);
+              return { error: new Error('Account is blocked') };
+            } else if (expiresAt) {
+              // Block has expired, remove it
+              await deleteDoc(doc(db, 'blockedEmails', emailLower));
+            }
+          }
+        } catch (blockCheckError) {
+          console.error('Error checking blocked emails:', blockCheckError);
+          // Continue with sign-in if check fails
+        }
+        
         const result = await signInWithEmailAndPassword(auth, identifier, password);
         console.log('🔐 Sign-in result:', { uid: result.user.uid, emailVerified: result.user.emailVerified });
+        
+        // Check if user is blocked by userId (after successful sign-in)
+        try {
+          const userBlockedDoc = await getDoc(doc(db, 'blockedUsers', result.user.uid));
+          if (userBlockedDoc.exists()) {
+            const blockData = userBlockedDoc.data();
+            const expiresAt = blockData.expiresAt?.toDate ? blockData.expiresAt.toDate() : (blockData.expiresAt ? new Date(blockData.expiresAt) : null);
+            
+            if (expiresAt && expiresAt > new Date()) {
+              // Sign out the user immediately
+              await firebaseSignOut(auth);
+              const blockType = blockData.blockType || 'blocked';
+              const daysRemaining = Math.ceil((expiresAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              
+              toast({
+                title: 'Account Blocked',
+                description: `This account has been ${blockType === 'restricted' ? 'restricted' : 'frozen'}. ${blockType === 'restricted' ? `Access will be restored in ${daysRemaining} day(s).` : `Access will be restored in ${daysRemaining} day(s).`}`,
+                variant: 'destructive',
+              });
+              setLoading(false);
+              return { error: new Error('Account is blocked') };
+            } else if (expiresAt) {
+              // Block has expired, remove it
+              await deleteDoc(doc(db, 'blockedUsers', result.user.uid));
+              if (result.user.email) {
+                await deleteDoc(doc(db, 'blockedEmails', result.user.email.toLowerCase()));
+              }
+            }
+          }
+        } catch (blockCheckError) {
+          console.error('Error checking blocked users:', blockCheckError);
+          // Continue with sign-in if check fails
+        }
         
         // Skip email verification check for testing
         console.log('🔐 Sign-in successful, showing welcome popup');

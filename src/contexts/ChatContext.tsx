@@ -405,6 +405,14 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         adminMessagesSnapshot.forEach((messageDoc) => {
           const messageData = messageDoc.data();
+          
+          // Only skip if explicitly dismissed (check for true boolean or 'true' string)
+          // Don't skip if dismissed is undefined, false, or null
+          const isDismissed = messageData.dismissed === true || messageData.dismissed === 'true';
+          if (isDismissed) {
+            return;
+          }
+          
           const adminChatId = `admin_${messageData.adminMessageType}_${messageDoc.id}`;
           
           // Determine title based on message type

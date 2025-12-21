@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
-import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment } from 'firebase/firestore';
+import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment, setDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -20,6 +20,7 @@ import AIApprovalDashboard from '@/components/AIApprovalDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PremiumPlanTester from '@/components/PremiumPlanTester';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 type Enquiry = {
   id: string;
@@ -102,13 +103,20 @@ const Admin = () => {
   const [liveEnquiries, setLiveEnquiries] = useState<Enquiry[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
+  const [visibleLiveEnquiriesCount, setVisibleLiveEnquiriesCount] = useState(10);
   const [profileVerifications, setProfileVerifications] = useState<any[]>([]);
+  const [userReports, setUserReports] = useState<any[]>([]);
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
   const [selectedSellerSubmission, setSelectedSellerSubmission] = useState<SellerSubmission | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [loading, setLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [processingVerification, setProcessingVerification] = useState<string | null>(null);
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [selectedReportForWarning, setSelectedReportForWarning] = useState<any>(null);
+  const [warningMessage, setWarningMessage] = useState('');
+  const [restrictingUser, setRestrictingUser] = useState<string | null>(null);
+  const [freezingUser, setFreezingUser] = useState<string | null>(null);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
     confidenceThreshold: 80,
@@ -322,6 +330,7 @@ const Admin = () => {
     let unsubscribeLive: (() => void) | null = null;
     let unsubscribeSubmissions: (() => void) | null = null;
     let unsubscribeSellerSubmissions: (() => void) | null = null;
+    let unsubscribeUserReports: (() => void) | null = null;
 
     // Real-time listener for pending enquiries
     const pendingQueryWithoutOrder = query(
@@ -470,16 +479,45 @@ const Admin = () => {
             });
           }
         });
-        liveItems.sort((a, b) => {
+        // Separate live and expired enquiries
+        const now = new Date();
+        const liveEnquiriesList: Enquiry[] = [];
+        const expiredEnquiriesList: Enquiry[] = [];
+        
+        liveItems.forEach((enquiry) => {
+          const isExpired = enquiry.deadline && (() => {
+            const deadline = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+            return deadline < now;
+          })();
+          
+          if (isExpired) {
+            expiredEnquiriesList.push(enquiry);
+          } else {
+            liveEnquiriesList.push(enquiry);
+          }
+        });
+        
+        // Sort each group by creation date (newest first)
+        const sortByDate = (a: Enquiry, b: Enquiry) => {
           if (a.createdAt && b.createdAt) {
             const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
             const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
             return dateB.getTime() - dateA.getTime();
           }
           return 0;
-        });
-        console.log('✅ Admin: Setting live enquiries:', liveItems.length, 'out of', snapshot.docs.length, 'total');
-        setLiveEnquiries(liveItems);
+        };
+        
+        liveEnquiriesList.sort(sortByDate);
+        expiredEnquiriesList.sort(sortByDate);
+        
+        // Combine: live first, then expired
+        const sortedEnquiries = [...liveEnquiriesList, ...expiredEnquiriesList];
+        
+        console.log('✅ Admin: Setting live enquiries:', sortedEnquiries.length, 'out of', snapshot.docs.length, 'total');
+        console.log('   - Live:', liveEnquiriesList.length, 'Expired:', expiredEnquiriesList.length);
+        setLiveEnquiries(sortedEnquiries);
+        // Reset visible count if it exceeds the new list length
+        setVisibleLiveEnquiriesCount(prev => Math.min(prev, sortedEnquiries.length || 10));
       },
       (error) => {
         console.error('❌ Admin: Error in live enquiries listener:', error);
@@ -697,6 +735,99 @@ const Admin = () => {
       }
     );
 
+    // Real-time listener for user reports
+    const userReportsQuery = query(
+      collection(db, 'userReports'),
+      orderBy('timestamp', 'desc')
+    );
+    
+    unsubscribeUserReports = onSnapshot(
+      userReportsQuery,
+      (snapshot) => {
+        console.log('📊 Admin: User reports updated, got', snapshot.docs.length, 'documents');
+        const reportItems: any[] = [];
+        snapshot.forEach((d) => {
+          const data: any = d.data();
+          reportItems.push({
+            id: d.id,
+            reportedUserId: data.reportedUserId || '',
+            reportedUserName: data.reportedUserName || 'Unknown',
+            reportedBy: data.reportedBy || '',
+            reporterName: data.reporterName || 'Unknown',
+            reason: data.reason || '',
+            reportDetails: data.reportDetails || '',
+            enquiryId: data.enquiryId || null,
+            enquiryTitle: data.enquiryTitle || null,
+            sellerId: data.sellerId || null,
+            timestamp: data.timestamp,
+            status: data.status || 'pending',
+            reviewed: data.reviewed || false,
+            reviewedAt: data.reviewedAt || null,
+            reviewedBy: data.reviewedBy || null,
+            adminNotes: data.adminNotes || null,
+            warningSent: data.warningSent || false,
+            warningSentAt: data.warningSentAt || null,
+            warningSentBy: data.warningSentBy || null,
+            warningMessage: data.warningMessage || null,
+            accountAction: data.accountAction || null,
+            accountActionAt: data.accountActionAt || null,
+            accountActionBy: data.accountActionBy || null
+          });
+        });
+        console.log('✅ Admin: Setting user reports:', reportItems.length);
+        setUserReports(reportItems);
+      },
+      (error) => {
+        console.error('❌ Admin: Error in user reports listener:', error);
+        // Fallback: try to load all reports
+        getDocs(collection(db, 'userReports')).then((snap) => {
+          const allItems: any[] = [];
+          snap.forEach((d) => {
+            const data: any = d.data();
+            allItems.push({
+              id: d.id,
+              reportedUserId: data.reportedUserId || '',
+              reportedUserName: data.reportedUserName || 'Unknown',
+              reportedBy: data.reportedBy || '',
+              reporterName: data.reporterName || 'Unknown',
+              reason: data.reason || '',
+              reportDetails: data.reportDetails || '',
+              enquiryId: data.enquiryId || null,
+              enquiryTitle: data.enquiryTitle || null,
+              sellerId: data.sellerId || null,
+              timestamp: data.timestamp,
+              status: data.status || 'pending',
+              reviewed: data.reviewed || false,
+              reviewedAt: data.reviewedAt || null,
+              reviewedBy: data.reviewedBy || null,
+              adminNotes: data.adminNotes || null,
+              warningSent: data.warningSent || false,
+              warningSentAt: data.warningSentAt || null,
+              warningSentBy: data.warningSentBy || null,
+              warningMessage: data.warningMessage || null,
+              accountAction: data.accountAction || null,
+              accountActionAt: data.accountActionAt || null,
+              accountActionBy: data.accountActionBy || null
+            });
+          });
+          // Sort by timestamp descending
+          allItems.sort((a, b) => {
+            if (a.timestamp && b.timestamp) {
+              const dateA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+              const dateB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+              return dateB.getTime() - dateA.getTime();
+            }
+            return 0;
+          });
+          console.log('✅ Admin: Fallback loaded user reports:', allItems.length);
+          setUserReports(allItems);
+        }).catch((fallbackError) => {
+          console.error('❌ Admin: Fallback also failed:', fallbackError);
+          setUserReports([]);
+        });
+      }
+    );
+
     console.log('✅ Admin: All real-time listeners set up successfully');
 
     // Cleanup function
@@ -706,6 +837,7 @@ const Admin = () => {
       if (unsubscribeLive) unsubscribeLive();
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeSellerSubmissions) unsubscribeSellerSubmissions();
+      if (unsubscribeUserReports) unsubscribeUserReports();
     };
   }, [authUser]); 
       // Fetch profile verification requests - SIMPLE & REALTIME
@@ -1761,8 +1893,9 @@ const Admin = () => {
                       <p className="text-xs sm:text-sm text-gray-500 mt-1">All enquiries have been processed</p>
                     </div>
                   ) : (
+                    <>
                     <div className="space-y-3 sm:space-y-4">
-              {liveEnquiries.map((enquiry) => (
+              {liveEnquiries.slice(0, visibleLiveEnquiriesCount).map((enquiry) => (
                         <Card key={enquiry.id} className="border border-gray-900 bg-black hover:shadow-lg transition-all duration-200">
                           <CardContent className="p-5 sm:p-6">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -1806,6 +1939,17 @@ const Admin = () => {
                         </Card>
               ))}
             </div>
+            {liveEnquiries.length > visibleLiveEnquiriesCount && (
+              <div className="flex justify-center mt-4 sm:mt-6">
+                <Button
+                  onClick={() => setVisibleLiveEnquiriesCount(prev => prev + 10)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Load More ({liveEnquiries.length - visibleLiveEnquiriesCount} remaining)
+                </Button>
+              </div>
+            )}
+          </>
           )}
                 </CardContent>
               </Card>
@@ -2066,6 +2210,393 @@ const Admin = () => {
           )}
                 </CardContent>
         </Card>
+        {/* User Reports */}
+              <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-red-50 to-pink-50 border-b border-gray-200 px-5 sm:px-6 py-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">User Reports</h2>
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                          {userReports.filter(r => r.status === 'pending').length} pending report{userReports.filter(r => r.status === 'pending').length !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-red-100 text-red-800 border border-red-200">
+                      {userReports.length} total
+                    </Badge>
+                  </div>
+                </div>
+                
+                <CardContent className="p-4 sm:p-6">
+          {userReports.length === 0 ? (
+                    <div className="text-center py-12 sm:py-16">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                      </div>
+                      <p className="text-sm sm:text-base text-gray-600 font-medium">No reports</p>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">All clear! No user reports to review</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 sm:space-y-6">
+              {userReports.map((report) => (
+                        <Card key={report.id} className={`border ${report.status === 'pending' ? 'border-red-300 bg-red-50/30' : 'border-gray-200 bg-white'} hover:shadow-md transition-all duration-200`}>
+                          <CardContent className="p-5 sm:p-6">
+                            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                  <h3 className="text-base sm:text-lg font-bold text-gray-900">Report #{report.id.slice(0, 8)}</h3>
+                                  <Badge variant={report.status === 'pending' ? 'destructive' : 'secondary'} className="text-[10px] sm:text-xs">
+                                    {report.status}
+                                  </Badge>
+                                  {report.reviewed && (
+                                    <Badge variant="outline" className="text-[10px] sm:text-xs">
+                                      Reviewed
+                                    </Badge>
+                                  )}
+                                </div>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1">Reported User</p>
+                                    <p className="text-gray-900 font-semibold">{report.reportedUserName}</p>
+                                    <p className="text-gray-600 text-[10px] sm:text-xs">ID: {report.reportedUserId}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1">Reported By</p>
+                                    <p className="text-gray-900 font-semibold">{report.reporterName}</p>
+                                    <p className="text-gray-600 text-[10px] sm:text-xs">ID: {report.reportedBy}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1">Reason</p>
+                                    <p className="text-gray-900 font-semibold">{report.reason}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1">Reported On</p>
+                                    <p className="text-gray-900">
+                                      {report.timestamp?.toDate ? report.timestamp.toDate().toLocaleString() : (report.timestamp ? new Date(report.timestamp).toLocaleString() : 'Unknown')}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                {report.reportDetails && (
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1 text-xs sm:text-sm">Details</p>
+                                    <p className="text-gray-900 text-xs sm:text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                      {report.reportDetails}
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {report.enquiryId && (
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1 text-xs sm:text-sm">Related Enquiry</p>
+                                    <p className="text-gray-900 text-xs sm:text-sm">
+                                      {report.enquiryTitle || 'Enquiry'} (ID: {report.enquiryId})
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {report.adminNotes && (
+                                  <div>
+                                    <p className="text-gray-500 font-medium mb-1 text-xs sm:text-sm">Admin Notes</p>
+                                    <p className="text-gray-900 text-xs sm:text-sm bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                      {report.adminNotes}
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {report.reviewed && report.reviewedBy && (
+                                  <div className="text-xs sm:text-sm text-gray-600">
+                                    Reviewed by: {report.reviewedBy} on {report.reviewedAt?.toDate ? report.reviewedAt.toDate().toLocaleString() : (report.reviewedAt ? new Date(report.reviewedAt).toLocaleString() : 'Unknown')}
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  onClick={async () => {
+                                    try {
+                                      await updateDoc(doc(db, 'userReports', report.id), {
+                                        status: report.status === 'pending' ? 'reviewed' : 'pending',
+                                        reviewed: !report.reviewed,
+                                        reviewedAt: serverTimestamp(),
+                                        reviewedBy: authUser?.uid || 'admin'
+                                      });
+                                      toast({
+                                        title: 'Report Updated',
+                                        description: `Report marked as ${report.status === 'pending' ? 'reviewed' : 'pending'}`,
+                                      });
+                                    } catch (error) {
+                                      console.error('Error updating report:', error);
+                                      toast({
+                                        title: 'Error',
+                                        description: 'Failed to update report status',
+                                        variant: 'destructive'
+                                      });
+                                    }
+                                  }}
+                                  className={`${report.status === 'pending' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'} text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto`}
+                                >
+                                  {report.status === 'pending' ? 'Mark Reviewed' : 'Mark Pending'}
+                                </Button>
+                                
+                                <Button
+                                  onClick={() => {
+                                    setSelectedReportForWarning(report);
+                                    setWarningMessage(`You have been reported for: ${report.reason}. ${report.reportDetails ? `Details: ${report.reportDetails}` : ''}`);
+                                    setShowWarningDialog(true);
+                                  }}
+                                  disabled={report.warningSent}
+                                  className={`${report.warningSent ? 'bg-gray-400 hover:bg-gray-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto disabled:opacity-50`}
+                                >
+                                  <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                                  {report.warningSent ? 'Warning Sent' : 'Send Warning'}
+                                </Button>
+                                
+                                <Button
+                                  onClick={async () => {
+                                    if (report.accountAction === 'restricted') {
+                                      toast({
+                                        title: 'Already Restricted',
+                                        description: 'This account is already restricted.',
+                                        variant: 'default'
+                                      });
+                                      return;
+                                    }
+                                    if (!confirm(`Are you sure you want to RESTRICT this user's account? They will have limited access to the platform.`)) {
+                                      return;
+                                    }
+                                    setRestrictingUser(report.reportedUserId);
+                                    try {
+                                      // Get user email from profile
+                                      let userEmail = '';
+                                      try {
+                                        const userProfileDoc = await getDoc(doc(db, 'userProfiles', report.reportedUserId));
+                                        if (userProfileDoc.exists()) {
+                                          userEmail = userProfileDoc.data().email || '';
+                                        }
+                                      } catch (e) {
+                                        console.error('Error getting user email:', e);
+                                      }
+                                      
+                                      // Calculate 6 months from now
+                                      const restrictionExpiry = new Date();
+                                      restrictionExpiry.setMonth(restrictionExpiry.getMonth() + 6);
+                                      
+                                      // Update user profile to mark as restricted
+                                      const userProfileRef = doc(db, 'userProfiles', report.reportedUserId);
+                                      await setDoc(userProfileRef, {
+                                        userId: report.reportedUserId,
+                                        accountRestricted: true,
+                                        restrictedAt: serverTimestamp(),
+                                        restrictedBy: authUser?.uid || 'admin',
+                                        restrictionReason: `Reported: ${report.reason}`,
+                                        restrictionExpiresAt: restrictionExpiry,
+                                        email: userEmail
+                                      }, { merge: true });
+                                      
+                                      // Store email in blocked emails collection for login/signup checks
+                                      // Use email from report if available, otherwise try to get from Firebase Auth
+                                      let emailToBlock = userEmail || report.reportedUserName;
+                                      if (!emailToBlock || !emailToBlock.includes('@')) {
+                                        // Try to get email from Firebase Auth
+                                        try {
+                                          const { getAuth } = await import('firebase/auth');
+                                          const auth = getAuth();
+                                          // We can't directly get user by UID, so we'll use the email from report if available
+                                          // For now, we'll store with userId and check both email and userId
+                                        } catch (e) {
+                                          console.error('Error getting email from auth:', e);
+                                        }
+                                      }
+                                      
+                                      if (emailToBlock && emailToBlock.includes('@')) {
+                                        await setDoc(doc(db, 'blockedEmails', emailToBlock.toLowerCase()), {
+                                          email: emailToBlock.toLowerCase(),
+                                          blockedAt: serverTimestamp(),
+                                          blockedBy: authUser?.uid || 'admin',
+                                          blockType: 'restricted',
+                                          blockReason: `Reported: ${report.reason}`,
+                                          expiresAt: restrictionExpiry,
+                                          userId: report.reportedUserId
+                                        }, { merge: true });
+                                      }
+                                      
+                                      // Also store by userId for checking
+                                      await setDoc(doc(db, 'blockedUsers', report.reportedUserId), {
+                                        userId: report.reportedUserId,
+                                        email: emailToBlock,
+                                        blockedAt: serverTimestamp(),
+                                        blockedBy: authUser?.uid || 'admin',
+                                        blockType: 'restricted',
+                                        blockReason: `Reported: ${report.reason}`,
+                                        expiresAt: restrictionExpiry
+                                      }, { merge: true });
+                                      
+                                      // Sign out the user if they're currently logged in
+                                      try {
+                                        const auth = getAuth();
+                                        // Check if this user is currently signed in
+                                        if (auth.currentUser && auth.currentUser.uid === report.reportedUserId) {
+                                          await signOut(auth);
+                                        }
+                                      } catch (signOutError) {
+                                        console.error('Error signing out user:', signOutError);
+                                        // Continue even if sign out fails
+                                      }
+                                      
+                                      // Update report
+                                      await updateDoc(doc(db, 'userReports', report.id), {
+                                        accountAction: 'restricted',
+                                        accountActionAt: serverTimestamp(),
+                                        accountActionBy: authUser?.uid || 'admin',
+                                        restrictionExpiresAt: restrictionExpiry
+                                      });
+                                      
+                                      toast({
+                                        title: 'Account Restricted',
+                                        description: `${report.reportedUserName}'s account has been restricted for 6 months. They cannot sign in or sign up with this email.`,
+                                      });
+                                    } catch (error) {
+                                      console.error('Error restricting account:', error);
+                                      toast({
+                                        title: 'Error',
+                                        description: 'Failed to restrict account',
+                                        variant: 'destructive'
+                                      });
+                                    } finally {
+                                      setRestrictingUser(null);
+                                    }
+                                  }}
+                                  disabled={restrictingUser === report.reportedUserId || report.accountAction === 'restricted'}
+                                  className={`${report.accountAction === 'restricted' ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-600 hover:bg-orange-700'} text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto disabled:opacity-50`}
+                                >
+                                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                                  {restrictingUser === report.reportedUserId ? 'Restricting...' : (report.accountAction === 'restricted' ? 'Restricted' : 'Restrict Account')}
+                                </Button>
+                                
+                                <Button
+                                  onClick={async () => {
+                                    if (report.accountAction === 'frozen') {
+                                      toast({
+                                        title: 'Already Frozen',
+                                        description: 'This account is already frozen.',
+                                        variant: 'default'
+                                      });
+                                      return;
+                                    }
+                                    if (!confirm(`Are you sure you want to FREEZE this user's account? They will not be able to access the platform.`)) {
+                                      return;
+                                    }
+                                    setFreezingUser(report.reportedUserId);
+                                    try {
+                                      // Get user email from profile
+                                      let userEmail = '';
+                                      try {
+                                        const userProfileDoc = await getDoc(doc(db, 'userProfiles', report.reportedUserId));
+                                        if (userProfileDoc.exists()) {
+                                          userEmail = userProfileDoc.data().email || '';
+                                        }
+                                      } catch (e) {
+                                        console.error('Error getting user email:', e);
+                                      }
+                                      
+                                      // Calculate 1 day from now
+                                      const freezeExpiry = new Date();
+                                      freezeExpiry.setDate(freezeExpiry.getDate() + 1);
+                                      
+                                      // Update user profile to mark as frozen
+                                      const userProfileRef = doc(db, 'userProfiles', report.reportedUserId);
+                                      await setDoc(userProfileRef, {
+                                        userId: report.reportedUserId,
+                                        accountFrozen: true,
+                                        frozenAt: serverTimestamp(),
+                                        frozenBy: authUser?.uid || 'admin',
+                                        freezeReason: `Reported: ${report.reason}`,
+                                        freezeExpiresAt: freezeExpiry,
+                                        email: userEmail
+                                      }, { merge: true });
+                                      
+                                      // Store email in blocked emails collection for login/signup checks
+                                      let emailToBlock = userEmail || report.reportedUserName;
+                                      if (emailToBlock && emailToBlock.includes('@')) {
+                                        await setDoc(doc(db, 'blockedEmails', emailToBlock.toLowerCase()), {
+                                          email: emailToBlock.toLowerCase(),
+                                          blockedAt: serverTimestamp(),
+                                          blockedBy: authUser?.uid || 'admin',
+                                          blockType: 'frozen',
+                                          blockReason: `Reported: ${report.reason}`,
+                                          expiresAt: freezeExpiry,
+                                          userId: report.reportedUserId
+                                        }, { merge: true });
+                                      }
+                                      
+                                      // Also store by userId for checking
+                                      await setDoc(doc(db, 'blockedUsers', report.reportedUserId), {
+                                        userId: report.reportedUserId,
+                                        email: emailToBlock,
+                                        blockedAt: serverTimestamp(),
+                                        blockedBy: authUser?.uid || 'admin',
+                                        blockType: 'frozen',
+                                        blockReason: `Reported: ${report.reason}`,
+                                        expiresAt: freezeExpiry
+                                      }, { merge: true });
+                                      
+                                      // Sign out the user immediately if they're currently logged in
+                                      try {
+                                        const auth = getAuth();
+                                        // Check if this user is currently signed in
+                                        if (auth.currentUser && auth.currentUser.uid === report.reportedUserId) {
+                                          await signOut(auth);
+                                        }
+                                      } catch (signOutError) {
+                                        console.error('Error signing out user:', signOutError);
+                                        // Continue even if sign out fails
+                                      }
+                                      
+                                      // Update report
+                                      await updateDoc(doc(db, 'userReports', report.id), {
+                                        accountAction: 'frozen',
+                                        accountActionAt: serverTimestamp(),
+                                        accountActionBy: authUser?.uid || 'admin',
+                                        freezeExpiresAt: freezeExpiry
+                                      });
+                                      
+                                      toast({
+                                        title: 'Account Frozen',
+                                        description: `${report.reportedUserName}'s account has been frozen for 1 day. They have been signed out and cannot sign in or sign up with this email.`,
+                                      });
+                                    } catch (error) {
+                                      console.error('Error freezing account:', error);
+                                      toast({
+                                        title: 'Error',
+                                        description: 'Failed to freeze account',
+                                        variant: 'destructive'
+                                      });
+                                    } finally {
+                                      setFreezingUser(null);
+                                    }
+                                  }}
+                                  disabled={freezingUser === report.reportedUserId || report.accountAction === 'frozen'}
+                                  className={`${report.accountAction === 'frozen' ? 'bg-gray-400 hover:bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto disabled:opacity-50`}
+                                >
+                                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                                  {freezingUser === report.reportedUserId ? 'Freezing...' : (report.accountAction === 'frozen' ? 'Frozen' : 'Freeze Account')}
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+              ))}
+            </div>
+          )}
+                </CardContent>
+              </Card>
+
         {/* Profile Verifications */}
               <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200 px-5 sm:px-6 py-4">
@@ -2328,6 +2859,98 @@ const Admin = () => {
         </Tabs>
         </div>
       </div>
+
+      {/* Warning Message Dialog */}
+      <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Send Warning Message</DialogTitle>
+            <DialogDescription>
+              This warning message will appear in the user's "My Chats" page as a pinned warning.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="warning-message" className="text-sm font-medium">Warning Message</label>
+              <Textarea
+                id="warning-message"
+                placeholder="Enter warning message..."
+                value={warningMessage}
+                onChange={(e) => setWarningMessage(e.target.value)}
+                className="min-h-[120px]"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowWarningDialog(false);
+                  setWarningMessage('');
+                  setSelectedReportForWarning(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  if (!selectedReportForWarning || !warningMessage.trim()) {
+                    toast({
+                      title: 'Error',
+                      description: 'Please enter a warning message',
+                      variant: 'destructive'
+                    });
+                    return;
+                  }
+
+                  try {
+                    // Send warning message to user
+                    await addDoc(collection(db, 'chatMessages'), {
+                      enquiryId: 'admin_warning',
+                      recipientId: selectedReportForWarning.reportedUserId,
+                      senderId: 'admin',
+                      senderName: 'Admin',
+                      senderType: 'admin',
+                      message: warningMessage.trim(),
+                      isAdminMessage: true,
+                      adminMessageType: 'warning',
+                      timestamp: serverTimestamp(),
+                      relatedReportId: selectedReportForWarning.id,
+                      relatedReportReason: selectedReportForWarning.reason
+                    });
+
+                    // Update report to mark that warning was sent
+                    await updateDoc(doc(db, 'userReports', selectedReportForWarning.id), {
+                      warningSent: true,
+                      warningSentAt: serverTimestamp(),
+                      warningSentBy: authUser?.uid || 'admin',
+                      warningMessage: warningMessage.trim()
+                    });
+
+                    toast({
+                      title: 'Warning Sent',
+                      description: `Warning message has been sent to ${selectedReportForWarning.reportedUserName}.`,
+                    });
+
+                    setShowWarningDialog(false);
+                    setWarningMessage('');
+                    setSelectedReportForWarning(null);
+                  } catch (error) {
+                    console.error('Error sending warning:', error);
+                    toast({
+                      title: 'Error',
+                      description: 'Failed to send warning message',
+                      variant: 'destructive'
+                    });
+                  }
+                }}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              >
+                Send Warning
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
