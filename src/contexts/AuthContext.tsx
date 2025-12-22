@@ -286,6 +286,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.code === 'auth/weak-password') {
         errorTitle = 'Password should be at least 6 characters';
         errorDescription = '';
+      } else if (error.code === 'auth/email-already-in-use') {
+        errorTitle = 'Email already in use';
+        errorDescription = '';
       }
       
       toast({
