@@ -287,7 +287,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         errorTitle = 'Password should be at least 6 characters';
         errorDescription = '';
       } else if (error.code === 'auth/email-already-in-use') {
-        errorTitle = 'This email is already in use';
+        errorTitle = 'This email is already in use.';
         errorDescription = '';
       }
       

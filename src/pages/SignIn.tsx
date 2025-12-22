@@ -120,7 +120,7 @@ const SignIn = () => {
         case 'auth/weak-password':
           return "Password is too weak. Please use a stronger password.";
         case 'auth/email-already-in-use':
-          return "This email is already in use";
+          return "This email is already in use.";
         default:
           break;
       }
@@ -129,7 +129,7 @@ const SignIn = () => {
     // If no code match, check error message for Firebase error patterns
     const errorMessage = error.message || '';
     if (errorMessage.includes('email-already-in-use') || errorMessage.includes('email already in use')) {
-      return "This email is already in use";
+      return "This email is already in use.";
     }
 
     // Return generic message if no match found
