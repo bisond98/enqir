@@ -117,6 +117,8 @@ const SignIn = () => {
         return "Please enter a valid email address.";
       case 'auth/weak-password':
         return "Password is too weak. Please use a stronger password.";
+      case 'auth/email-already-in-use':
+        return "This email is already in use";
       default:
         return error.message || "Sign in failed. Please try again.";
     }
