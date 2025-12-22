@@ -60,6 +60,8 @@ const SignIn = () => {
   // Robot animation state
   const robotRef = useRef<HTMLDivElement>(null);
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
+  // Ref for verification email sent card
+  const verificationCardRef = useRef<HTMLDivElement>(null);
   const [robotAngle, setRobotAngle] = useState(0);
   const [isRobotPaused, setIsRobotPaused] = useState(false);
   const [robotAction, setRobotAction] = useState<'idle' | 'wave' | 'jump' | 'spin' | 'celebrate' | 'lookAround' | 'dance'>('idle');
@@ -197,6 +199,23 @@ const SignIn = () => {
         setShowVerificationSent(true);
         setSuccess("Account created successfully!");
         setError("");
+        
+        // Scroll to verification card on mobile after a short delay
+        setTimeout(() => {
+          if (verificationCardRef.current && window.innerWidth < 640) {
+            const card = verificationCardRef.current;
+            const cardRect = card.getBoundingClientRect();
+            const cardTop = cardRect.top + window.scrollY;
+            const cardHeight = cardRect.height;
+            const windowHeight = window.innerHeight;
+            const scrollPosition = cardTop - (windowHeight / 2) + (cardHeight / 2);
+            
+            window.scrollTo({
+              top: Math.max(0, scrollPosition),
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
       } else if (result.error) {
         // Use friendly error message instead of raw Firebase error
         const friendlyMessage = getFriendlyErrorMessage(result.error);
@@ -535,7 +554,7 @@ const SignIn = () => {
 
               {/* Verification Email Sent Section */}
               {showVerificationSent && (
-                <div className="mb-4 sm:mb-6 p-4 sm:p-6 bg-green-50 rounded-lg border border-green-200">
+                <div ref={verificationCardRef} className="mb-4 sm:mb-6 p-4 sm:p-6 bg-green-50 rounded-lg border border-green-200">
                   <div className="text-center space-y-3 sm:space-y-4">
                     {/* Icon */}
                     <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-100 rounded-full mb-2">
