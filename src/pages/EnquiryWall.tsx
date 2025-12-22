@@ -957,38 +957,38 @@ export default function EnquiryWall() {
     
     // Case 1 & 2: No search - just filter by category or show all
     if (!searchLower) {
-      let results = enquiries.filter(enquiry => {
+    let results = enquiries.filter(enquiry => {
         if (selectedCategory === "all") {
           return true; // Show all enquiries
         }
         // Filter by selected category
         return enquiry.category === selectedCategory || 
-          (enquiry.categories && enquiry.categories.includes(selectedCategory));
-      });
-      
+        (enquiry.categories && enquiry.categories.includes(selectedCategory));
+    });
+    
       // Sort: User's enquiries in selected category first (if category selected)
-      if (selectedCategory !== "all") {
-        results = [...results].sort((a, b) => {
-          const aMatchesCategory = a.category === selectedCategory || 
-            (a.categories && a.categories.includes(selectedCategory));
-          const bMatchesCategory = b.category === selectedCategory || 
-            (b.categories && b.categories.includes(selectedCategory));
-          
-          const aIsUserEnquiry = authUser && a.userId === authUser.uid;
-          const bIsUserEnquiry = authUser && b.userId === authUser.uid;
-          
-          const aIsUserInCategory = aIsUserEnquiry && aMatchesCategory;
-          const bIsUserInCategory = bIsUserEnquiry && bMatchesCategory;
-          
-          if (aIsUserInCategory && !bIsUserInCategory) return -1;
-          if (!aIsUserInCategory && bIsUserInCategory) return 1;
-          
-          if (aMatchesCategory && !bMatchesCategory) return -1;
-          if (!aMatchesCategory && bMatchesCategory) return 1;
-          
-          return 0;
-        });
-      }
+    if (selectedCategory !== "all") {
+      results = [...results].sort((a, b) => {
+        const aMatchesCategory = a.category === selectedCategory || 
+          (a.categories && a.categories.includes(selectedCategory));
+        const bMatchesCategory = b.category === selectedCategory || 
+          (b.categories && b.categories.includes(selectedCategory));
+        
+        const aIsUserEnquiry = authUser && a.userId === authUser.uid;
+        const bIsUserEnquiry = authUser && b.userId === authUser.uid;
+        
+        const aIsUserInCategory = aIsUserEnquiry && aMatchesCategory;
+        const bIsUserInCategory = bIsUserEnquiry && bMatchesCategory;
+        
+        if (aIsUserInCategory && !bIsUserInCategory) return -1;
+        if (!aIsUserInCategory && bIsUserInCategory) return 1;
+        
+        if (aMatchesCategory && !bMatchesCategory) return -1;
+        if (!aMatchesCategory && bMatchesCategory) return 1;
+        
+        return 0;
+      });
+    }
       
       return results;
     }
@@ -4888,6 +4888,52 @@ export default function EnquiryWall() {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.1) 100%);
           }
         }
+        .load-more-3d-button {
+          padding: 14px 28px;
+          border: 3px solid rgba(30, 58, 138, 0.8);
+          border-top: 3px solid rgba(147, 197, 253, 0.5);
+          border-left: 3px solid rgba(147, 197, 253, 0.5);
+          border-bottom: 3px solid rgba(30, 58, 138, 1);
+          border-right: 3px solid rgba(30, 58, 138, 1);
+          border-radius: 10px;
+          background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e40af 100%);
+          box-shadow: 
+            inset 0 3px 6px rgba(147, 197, 253, 0.4),
+            inset 0 -3px 6px rgba(30, 58, 138, 0.8),
+            inset 1px 1px 2px rgba(191, 219, 254, 0.3),
+            inset -1px -1px 2px rgba(30, 58, 138, 0.9),
+            0 8px 20px rgba(30, 58, 138, 0.5),
+            0 4px 10px rgba(30, 58, 138, 0.4),
+            0 2px 4px rgba(30, 58, 138, 0.3);
+          color: white;
+          font-weight: 700;
+          transition: all 0.2s ease;
+          cursor: pointer;
+          min-width: 160px;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .load-more-3d-button:hover {
+          background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%);
+          box-shadow: 
+            inset 0 3px 6px rgba(147, 197, 253, 0.45),
+            inset 0 -3px 6px rgba(30, 58, 138, 0.9),
+            inset 1px 1px 2px rgba(191, 219, 254, 0.35),
+            inset -1px -1px 2px rgba(30, 58, 138, 1),
+            0 12px 24px rgba(30, 58, 138, 0.6),
+            0 6px 12px rgba(30, 58, 138, 0.5),
+            0 3px 6px rgba(30, 58, 138, 0.4);
+          transform: translateY(-2px);
+        }
+        .load-more-3d-button:active {
+          transform: translateY(2px);
+          box-shadow: 
+            inset 0 3px 6px rgba(30, 58, 138, 0.8),
+            inset 0 -3px 6px rgba(147, 197, 253, 0.2),
+            inset 1px 1px 2px rgba(30, 58, 138, 0.9),
+            inset -1px -1px 2px rgba(191, 219, 254, 0.2),
+            0 4px 8px rgba(30, 58, 138, 0.4),
+            0 2px 4px rgba(30, 58, 138, 0.3);
+        }
       `}</style>
       <div 
         className="flex flex-col flex-grow bg-white"
@@ -5252,7 +5298,7 @@ export default function EnquiryWall() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.5 }}
-                className="flex flex-col items-center"
+                className="relative flex flex-col items-center"
               >
               <motion.div 
                   animate={{ y: [0, 10, 0] }}
@@ -5261,6 +5307,7 @@ export default function EnquiryWall() {
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
+                  className="relative z-10"
                 >
                   <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
               </motion.div>
@@ -5271,7 +5318,7 @@ export default function EnquiryWall() {
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
-                  className="text-[10px] text-gray-600 font-medium mt-1"
+                  className="text-[10px] text-gray-600 font-medium absolute top-3 whitespace-nowrap z-0"
                 >
                   Scroll down
                 </motion.div>
@@ -5667,22 +5714,22 @@ export default function EnquiryWall() {
                                 </div>
                               </div>
                               {/* Posted Time - Mobile view, below category */}
-                              {enquiry.createdAt && (
+                                {enquiry.createdAt && (
                                 <div className="block sm:hidden mb-1 -mt-4">
                                   <div className="flex items-center gap-1.5 ml-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></div>
                                     <span className="text-[7px] text-white font-bold px-2 py-0.5 rounded-md enhanced-border">
-                                      Posted on: {formatDateTime(enquiry.createdAt)}
-                                    </span>
+                                    Posted on: {formatDateTime(enquiry.createdAt)}
+                                  </span>
                                   </div>
                                 </div>
-                              )}
+                                )}
                               {/* Need Label - Above Title */}
                               <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                   <span className="text-[9px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-md enhanced-border block sm:inline">Need</span>
-                                </div>
+                              </div>
                                 {/* Category Badge - Desktop view only, in the middle space between Need and Posted on */}
                                 <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2 flex-1 justify-center items-center">
                                   {(enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
@@ -5693,7 +5740,7 @@ export default function EnquiryWall() {
                                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                       <span 
                                         className="text-[8px] sm:text-[10px] text-white/90 font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
-                                        style={{
+                                  style={{
                                           textTransform: 'capitalize',
                                           letterSpacing: '0.025em'
                                         }}
@@ -5709,23 +5756,23 @@ export default function EnquiryWall() {
                                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                     <span 
                                       className="text-[8px] sm:text-[10px] text-white font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
-                                      style={{
+                                    style={{
                                         letterSpacing: '0.025em'
-                                      }}
+                                    }}
                                     >
                                       Posted on: {formatDateTime(enquiry.createdAt)}
                                     </span>
                                   </div>
                                 )}
                               </div>
-                              
+                                  
                               {/* Title */}
                               <div className="mb-8 sm:mb-3 title-3d-padding">
                                 <h3 className={`text-xl sm:text-lg lg:text-xl line-clamp-3 sm:line-clamp-1 sm:truncate text-center sm:text-left ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : 'text-white'
                                   }`}>
                                     {enquiry.title}
-                                </h3>
+                                  </h3>
                               </div>
                               
                               {/* "before [date]" below title, centered on mobile */}
@@ -5761,27 +5808,27 @@ export default function EnquiryWall() {
                                         {/* Mobile: Location and Before stacked vertically and right-aligned, Desktop: horizontal */}
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
                                           {/* Location - Desktop first position, Mobile right-aligned */}
-                                          {enquiry.location && (
+                                        {enquiry.location && (
                                             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex">
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
-                                              </div>
+                                            </div>
                                               <span className="text-[7px] sm:text-sm text-white font-bold" style={{ letterSpacing: '0.05em' }}>At </span>
                                               <span className="truncate text-[7px] sm:text-sm md:text-base text-white font-bold" style={{ letterSpacing: '0.05em' }}>{enquiry.location}</span>
-                                            </div>
-                                          )}
-                                          {enquiry.location && (
+                                          </div>
+                                        )}
+                                        {enquiry.location && (
                                             <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
-                                          )}
+                                        )}
                                           {/* Before Date - Under At on mobile (right-aligned), inline on desktop */}
                                           <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex">
                                             <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                               <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
-                                            </div>
+                                          </div>
                                             <span className="text-[7px] sm:text-sm text-white font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
                                               Before {formatDate(deadlineDate.toISOString())}
-                                            </span>
-                                          </div>
+                                          </span>
+                                        </div>
                                           {/* Countdown Timer - Mobile: Under before, Desktop: after separator */}
                                           <div className="inline-flex items-center gap-1 block sm:hidden px-2 py-0.5 rounded-md enhanced-border">
                                             <div className="flex items-center justify-center w-2.5 h-2.5 flex-shrink-0">
@@ -5798,9 +5845,9 @@ export default function EnquiryWall() {
                                           <div className="flex items-center justify-center w-3 h-3 flex-shrink-0">
                                             <Clock className="h-3 w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                           </div>
-                                          <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap">
-                                            {formatDeadlineText(enquiry.deadline)}
-                                          </span>
+                                        <span className="text-[9px] sm:text-sm text-red-500 font-bold whitespace-nowrap">
+                                          {formatDeadlineText(enquiry.deadline)}
+                                        </span>
                                         </div>
                                       </div>
                                     </div>
@@ -5850,7 +5897,7 @@ export default function EnquiryWall() {
                               </div>
                               
                               {/* Mobile Budget - Bottom left of black section */}
-                              {enquiry.budget && (
+                                {enquiry.budget && (
                                 <div className="block sm:hidden absolute bottom-2 left-2">
                                   <div 
                                     className="flex items-center gap-1 px-2 py-1 rounded-md"
@@ -5871,8 +5918,8 @@ export default function EnquiryWall() {
                                     <span className="text-[10px] text-white font-black">₹</span>
                                     <span className="text-[10px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
-                                </div>
-                              )}
+                                  </div>
+                                )}
                             </div>
                           </CardHeader>
                         </>
@@ -6282,23 +6329,23 @@ export default function EnquiryWall() {
                             {/* Category - In a line above Sell Button (Mobile Only) */}
                             {/* Category - Hidden in list view (moved to black section) */}
                             {viewMode !== 'list' && (
-                              <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
-                                {/* Category */}
-                                <div className="flex flex-wrap gap-1 justify-center">
-                                  {(() => {
-                                    const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
-                                      ? enquiry.categories
-                                      : enquiry.category ? [enquiry.category] : []
-                                    ).filter(cat => cat && typeof cat === 'string');
-                                    
-                                    return categoriesToShow.map((cat, index) => (
-                                      <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
-                                        <span>{String(cat).replace('-', ' ')}</span>
-                                      </Badge>
-                                    ));
-                                  })()}
-                                </div>
+                            <div className="w-full flex items-center justify-center sm:hidden mb-2 -mt-2">
+                              {/* Category */}
+                              <div className="flex flex-wrap gap-1 justify-center">
+                                {(() => {
+                                  const categoriesToShow = (enquiry.categories && Array.isArray(enquiry.categories) && enquiry.categories.length > 0
+                                    ? enquiry.categories
+                                    : enquiry.category ? [enquiry.category] : []
+                                  ).filter(cat => cat && typeof cat === 'string');
+                                  
+                                  return categoriesToShow.map((cat, index) => (
+                                    <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
+                                      <span>{String(cat).replace('-', ' ')}</span>
+                                    </Badge>
+                                  ));
+                                })()}
                               </div>
+                            </div>
                             )}
                             
                             {/* Action Button - Mobile Only - At Bottom */}
@@ -6447,12 +6494,17 @@ export default function EnquiryWall() {
 
             {/* 🚀 PAGINATION: Load More Button */}
             {hasMore && displayEnquiries.length > displayedEnquiries.length && (
-              <div className="flex justify-center mt-8 mb-4">
+              <div className="flex justify-center items-center mt-8 mb-4">
                 <Button
                   onClick={loadMore}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg hover:shadow-xl"
+                  className="load-more-3d-button"
                 >
-                  Load More ({displayEnquiries.length - displayedEnquiries.length} remaining)
+                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <ChevronDown className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
+                    <span className="text-[10px] sm:text-sm font-semibold leading-tight">
+                      Load More
+                    </span>
+                  </span>
                 </Button>
               </div>
             )}

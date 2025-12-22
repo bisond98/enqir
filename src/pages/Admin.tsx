@@ -1940,14 +1940,19 @@ const Admin = () => {
               ))}
             </div>
             {liveEnquiries.length > visibleLiveEnquiriesCount && (
-              <div className="flex justify-center mt-4 sm:mt-6">
+              <div className="flex justify-center mt-6 sm:mt-8 mb-4">
                 <Button
                   onClick={() => setVisibleLiveEnquiriesCount(prev => prev + 10)}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 min-w-[200px] sm:min-w-[240px]"
                 >
-                  Load More ({liveEnquiries.length - visibleLiveEnquiriesCount} remaining)
+                  <span className="flex items-center justify-center gap-2">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">
+                      Load More ({liveEnquiries.length - visibleLiveEnquiriesCount} remaining)
+                    </span>
+                  </span>
                 </Button>
-              </div>
+            </div>
             )}
           </>
           )}
