@@ -112,7 +112,7 @@ export function Toaster() {
                   )}
                 </div>
               )}
-              <div className="flex flex-col gap-0.5 sm:gap-0.5 flex-1 min-w-0 relative z-20">
+              <div className="flex flex-col gap-0.5 sm:gap-0.5 flex-1 min-w-0 relative z-20 overflow-hidden">
                 {title && (
                   <ToastTitle className={isPaymentCancelled ? 'text-white font-bold text-xs sm:text-sm leading-tight' : ''}>
                     {title}
