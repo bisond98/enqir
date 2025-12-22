@@ -94,34 +94,46 @@ const SignIn = () => {
   };
 
   const getFriendlyErrorMessage = (error: any): string => {
-    if (!error || !error.code) {
+    if (!error) {
       return "An unexpected error occurred. Please try again.";
     }
 
-    switch (error.code) {
-      case 'auth/invalid-credential':
-        return "Username and password do not match.";
-      case 'auth/user-not-found':
-        return "No account found with this email. Please sign up to create an account.";
-      case 'auth/wrong-password':
-        return "Incorrect password. Please try again or reset your password.";
-      case 'auth/too-many-requests':
-        return "Too many failed attempts. Please wait a few minutes and try again.";
-      case 'auth/network-request-failed':
-        return "Network error. Please check your internet connection and try again.";
-      case 'auth/user-disabled':
-        return "This account has been disabled. Please contact support.";
-      case 'auth/operation-not-allowed':
-        return "Sign-in method is not available. Please contact support.";
-      case 'auth/invalid-email':
-        return "Please enter a valid email address.";
-      case 'auth/weak-password':
-        return "Password is too weak. Please use a stronger password.";
-      case 'auth/email-already-in-use':
-        return "This email is already in use";
-      default:
-        return error.message || "Sign in failed. Please try again.";
+    // Check error code first
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          return "Username and password do not match.";
+        case 'auth/user-not-found':
+          return "No account found with this email. Please sign up to create an account.";
+        case 'auth/wrong-password':
+          return "Incorrect password. Please try again or reset your password.";
+        case 'auth/too-many-requests':
+          return "Too many failed attempts. Please wait a few minutes and try again.";
+        case 'auth/network-request-failed':
+          return "Network error. Please check your internet connection and try again.";
+        case 'auth/user-disabled':
+          return "This account has been disabled. Please contact support.";
+        case 'auth/operation-not-allowed':
+          return "Sign-in method is not available. Please contact support.";
+        case 'auth/invalid-email':
+          return "Please enter a valid email address.";
+        case 'auth/weak-password':
+          return "Password is too weak. Please use a stronger password.";
+        case 'auth/email-already-in-use':
+          return "This email is already in use";
+        default:
+          break;
+      }
     }
+
+    // If no code match, check error message for Firebase error patterns
+    const errorMessage = error.message || '';
+    if (errorMessage.includes('email-already-in-use') || errorMessage.includes('email already in use')) {
+      return "This email is already in use";
+    }
+
+    // Return generic message if no match found
+    return errorMessage || "Sign in failed. Please try again.";
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
