@@ -5318,7 +5318,7 @@ export default function EnquiryWall() {
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
-                  className="text-[10px] text-gray-600 font-medium absolute top-3 whitespace-nowrap z-0"
+                  className="text-[10px] text-gray-600 font-medium absolute top-0 whitespace-nowrap z-0"
                 >
                   Scroll down
                 </motion.div>
