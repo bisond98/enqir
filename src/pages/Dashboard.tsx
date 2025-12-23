@@ -1722,8 +1722,8 @@ const Dashboard = () => {
                         <Plus className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
                   </div>
                       <h5 className="text-lg sm:text-2xl lg:text-3xl font-bold text-black mb-2.5 sm:mb-3 lg:mb-4 tracking-tight text-center">No Enquiries Yet</h5>
-                      <p className="text-sm sm:text-base lg:text-lg text-black text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
-                        Start by posting your first enquiry to connect with sellers and get quality responses
+                      <p className="text-xs sm:text-sm lg:text-base text-black text-center max-w-md lg:max-w-lg mb-8 sm:mb-10 lg:mb-12 leading-relaxed px-4">
+                        Start by posting your first enquiry.
                       </p>
                       <Button
                         onClick={() => navigate('/post-enquiry')}
