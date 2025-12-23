@@ -241,18 +241,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }),
             });
 
-            const result = await response.json();
-            
-            if (response.ok && result.success) {
-              customEmailSent = true;
-              console.log('✅ Custom email sent successfully via:', result.sentVia || 'sendgrid');
-              toast({
-                title: 'Verification Email Sent!',
-                description: `Check your inbox at ${identifier} and click the link to sign in.`,
-              });
+            // Handle response - check if it's ok first
+            if (!response.ok) {
+              // Response is not ok, try to parse error message but don't fail if parsing fails
+              try {
+                const errorResult = await response.json();
+                console.log('⚠️ Custom email failed, falling back to Firebase default:', errorResult.error || errorResult.note || `HTTP ${response.status}`);
+              } catch (parseError) {
+                console.log('⚠️ Custom email failed, falling back to Firebase default:', `HTTP ${response.status}`);
+              }
+              // Don't set customEmailSent to true, so fallback will run
             } else {
-              console.log('⚠️ Custom email failed, falling back to Firebase default:', result.error || result.note);
-              throw new Error(result.error || 'Custom email failed');
+              // Response is ok, try to parse JSON
+              try {
+                const result = await response.json();
+                if (result.success) {
+                  customEmailSent = true;
+                  console.log('✅ Custom email sent successfully via:', result.sentVia || 'sendgrid');
+                  toast({
+                    title: 'Verification Email Sent!',
+                    description: `Check your inbox at ${identifier} and click the link to sign in.`,
+                  });
+                } else {
+                  console.log('⚠️ Custom email failed, falling back to Firebase default:', result.error || result.note);
+                }
+              } catch (parseError) {
+                console.log('⚠️ Failed to parse response, falling back to Firebase default');
+              }
             }
           } catch (customEmailError: any) {
             console.log('⚠️ Custom email error, falling back to Firebase default:', customEmailError.message);
@@ -262,16 +277,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fallback to Firebase default email sending if custom email failed
           if (!customEmailSent) {
             console.log('📧 Using Firebase default email template (fallback)');
-            await sendSignInLinkToEmail(auth, identifier, {
-              url: `${window.location.origin}/auth/callback`,
-              handleCodeInApp: true,
-            });
+          await sendSignInLinkToEmail(auth, identifier, {
+            url: `${window.location.origin}/auth/callback`,
+            handleCodeInApp: true,
+          });
             console.log('✅ Email link sent successfully via Firebase default:', identifier);
 
-            toast({
-              title: 'Verification Email Sent!',
-              description: `Check your inbox at ${identifier} and click the link to sign in.`,
-            });
+          toast({
+            title: 'Verification Email Sent!',
+            description: `Check your inbox at ${identifier} and click the link to sign in.`,
+          });
           }
         } catch (emailError: any) {
           console.error('Email link error:', emailError);
@@ -441,32 +456,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Always clear loading state on error
       setLoading(false);
-      
-      // If authentication error occurred, check if current user matches the identifier
-      // and sign them out to prevent staying logged in with invalid credentials
-      if (error.code && (
-        error.code === 'auth/invalid-credential' ||
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password' ||
-        error.code === 'auth/invalid-email'
-      )) {
-        try {
-          const currentUser = auth.currentUser;
-          const identifierLower = identifier.toLowerCase();
-          
-          // If current user's email matches the identifier that failed, sign them out
-          if (currentUser && currentUser.email && currentUser.email.toLowerCase() === identifierLower) {
-            console.log('🔐 Signing out user with invalid credentials');
-            await firebaseSignOut(auth);
-            // Also clear local state
-            setUser(null);
-            setIsEmailVerified(false);
-            setShowWelcomePopup(false);
-          }
-        } catch (signOutError) {
-          console.error('Error signing out after auth failure:', signOutError);
-        }
-      }
       
       // Better error messages based on error codes
       let errorTitle = 'Sign in failed';
