@@ -1727,10 +1727,14 @@ const Dashboard = () => {
                       </p>
                       <Button
                         onClick={() => navigate('/post-enquiry')}
-                        className="bg-black hover:bg-gray-900 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center border-2 border-black"
+                        className="relative overflow-hidden group border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white font-black text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-700 hover:to-blue-800"
                       >
-                        <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
-                        Post Your First Enquiry
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl lg:rounded-2xl pointer-events-none" />
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                        <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10" />
+                        <span className="relative z-10">Post Your First Enquiry</span>
                       </Button>
                   </div>
                   ) : (
