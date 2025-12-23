@@ -132,28 +132,28 @@ const SignIn = () => {
 
     // Check error code first
     if (error.code) {
-      switch (error.code) {
-        case 'auth/invalid-credential':
-          return "Username and password do not match.";
-        case 'auth/user-not-found':
-          return "No account found with this email. Please sign up to create an account.";
-        case 'auth/wrong-password':
-          return "Incorrect password. Please try again or reset your password.";
-        case 'auth/too-many-requests':
-          return "Too many failed attempts. Please wait a few minutes and try again.";
-        case 'auth/network-request-failed':
-          return "Network error. Please check your internet connection and try again.";
-        case 'auth/user-disabled':
-          return "This account has been disabled. Please contact support.";
-        case 'auth/operation-not-allowed':
-          return "Sign-in method is not available. Please contact support.";
-        case 'auth/invalid-email':
-          return "Please enter a valid email address.";
-        case 'auth/weak-password':
-          return "Password is too weak. Please use a stronger password.";
+    switch (error.code) {
+      case 'auth/invalid-credential':
+        return "Username and password do not match.";
+      case 'auth/user-not-found':
+        return "No account found with this email. Please sign up to create an account.";
+      case 'auth/wrong-password':
+        return "Incorrect password. Please try again or reset your password.";
+      case 'auth/too-many-requests':
+        return "Too many failed attempts. Please wait a few minutes and try again.";
+      case 'auth/network-request-failed':
+        return "Network error. Please check your internet connection and try again.";
+      case 'auth/user-disabled':
+        return "This account has been disabled. Please contact support.";
+      case 'auth/operation-not-allowed':
+        return "Sign-in method is not available. Please contact support.";
+      case 'auth/invalid-email':
+        return "Please enter a valid email address.";
+      case 'auth/weak-password':
+        return "Password is too weak. Please use a stronger password.";
         case 'auth/email-already-in-use':
           return "This email is already in use.";
-        default:
+      default:
           break;
       }
     }
@@ -885,7 +885,7 @@ const SignIn = () => {
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
@@ -910,7 +910,7 @@ const SignIn = () => {
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -961,7 +961,7 @@ const SignIn = () => {
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
@@ -986,7 +986,7 @@ const SignIn = () => {
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
