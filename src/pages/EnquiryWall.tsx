@@ -5900,23 +5900,15 @@ export default function EnquiryWall() {
                                 {enquiry.budget && (
                                 <div className="block sm:hidden absolute bottom-2 left-2">
                                   <div 
-                                    className="flex items-center gap-1 px-2 py-1 rounded-md"
+                                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-white"
                                     style={{
                                       padding: '6px 10px',
-                                      border: '2px solid rgba(139,0,0,0.3)',
-                                      borderTop: '2px solid rgba(255,255,255,0.2)',
-                                      borderLeft: '2px solid rgba(255,255,255,0.2)',
-                                      borderBottom: '2px solid rgba(92,0,0,0.5)',
-                                      borderRight: '2px solid rgba(92,0,0,0.5)',
-                                      borderRadius: '8px',
-                                      background: 'linear-gradient(135deg, #8B0000 0%, #5C0000 100%)',
-                                      boxShadow: 
-                                        'inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)'
+                                      borderRadius: '8px'
                                     }}
                                   >
-                                    <span className="text-[9px] text-white font-bold">Budget:</span>
-                                    <span className="text-[10px] text-white font-black">₹</span>
-                                    <span className="text-[10px] text-white font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
+                                    <span className="text-[9px] text-gray-900 font-bold">Budget:</span>
+                                    <span className="text-[10px] text-gray-900 font-black">₹</span>
+                                    <span className="text-[10px] text-gray-900 font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
                                   </div>
                                 )}
@@ -6178,40 +6170,10 @@ export default function EnquiryWall() {
                             {/* Budget and Location - Grouped together */}
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
-                                <div className="hidden sm:flex relative items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                  style={{
-                                    boxShadow: '0 12px 24px rgba(0,0,0,0.15), 0 6px 12px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.06), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -2px 0 rgba(0,0,0,0.1)',
-                                    transformStyle: 'preserve-3d',
-                                    perspective: '1200px',
-                                    transform: 'translateZ(8px)'
-                                  }}
-                                >
-                                  {/* 3D Border Effect - Enhanced */}
-                                  <div className="absolute inset-0 rounded-sm border-2 border-gray-300/60" 
-                                    style={{
-                                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)'
-                                    }}
-                                  />
-                                  
-                                  {/* Top highlight for 3D effect - Enhanced */}
-                                  <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-sm bg-gradient-to-b from-white/75 via-white/35 to-transparent pointer-events-none" />
-                                  
-                                  {/* Side highlights for depth - Enhanced */}
-                                  <div className="absolute top-0 left-0 bottom-0 w-1/3 rounded-l-sm bg-gradient-to-r from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  <div className="absolute top-0 right-0 bottom-0 w-1/3 rounded-r-sm bg-gradient-to-l from-white/50 via-white/20 to-transparent pointer-events-none" />
-                                  
-                                  {/* Bottom shadow for depth - Enhanced */}
-                                  <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-sm bg-gradient-to-t from-black/15 via-black/8 to-transparent pointer-events-none" />
-                                  
-                                  {/* Inner depth shadow - Enhanced */}
-                                  <div className="absolute inset-1 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/8 pointer-events-none" />
-                                  
-                                  {/* Additional depth layer */}
-                                  <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-white/30 via-transparent to-gray-200/20 pointer-events-none" />
-                                  
-                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide relative z-10" style={{ letterSpacing: '0.08em', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textTransform: 'uppercase', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>Budget -</span>
-                                  <span className="font-extrabold text-black text-xs sm:text-base md:text-lg relative z-10" style={{ fontFeatureSettings: '"tnum"', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>₹</span>
-                                  <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight relative z-10" style={{ fontFeatureSettings: '"tnum"', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', transform: 'translateZ(12px)', textShadow: '0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08), 0 0 1px rgba(255,255,255,0.4)' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                <div className="hidden sm:flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5">
+                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-extrabold text-black text-xs sm:text-base md:text-lg" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
+                                  <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
                               )}
                             </div>
