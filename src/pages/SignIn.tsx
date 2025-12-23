@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react";
 import { auth } from "@/firebase";
-import { signInWithEmailLink, isSignInWithEmailLink, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailLink, isSignInWithEmailLink, onAuthStateChanged, sendSignInLinkToEmail } from "firebase/auth";
 import { toast } from "@/hooks/use-toast";
 
 const SignIn = () => {
@@ -57,6 +57,11 @@ const SignIn = () => {
   const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   
+  // Resend email state
+  const [emailSentTime, setEmailSentTime] = useState<number | null>(null);
+  const [resendCountdown, setResendCountdown] = useState<number>(0);
+  const [isResending, setIsResending] = useState(false);
+  
   // Robot animation state
   const robotRef = useRef<HTMLDivElement>(null);
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
@@ -89,6 +94,31 @@ const SignIn = () => {
       }
     }
   }, [searchParams]);
+  
+  // Countdown timer for resend email button
+  useEffect(() => {
+    if (emailSentTime === null) return;
+    
+    const updateCountdown = () => {
+      const elapsed = Math.floor((Date.now() - emailSentTime) / 1000);
+      const remaining = Math.max(0, 50 - elapsed);
+      setResendCountdown(remaining);
+      
+      if (remaining > 0) {
+        setTimeout(updateCountdown, 1000);
+      }
+    };
+    
+    updateCountdown();
+  }, [emailSentTime]);
+  
+  // Set email sent time when verification email is shown
+  useEffect(() => {
+    if (showVerificationSent && emailSentTime === null) {
+      setEmailSentTime(Date.now());
+      setResendCountdown(50);
+    }
+  }, [showVerificationSent, emailSentTime]);
   
   // Helper function to validate email format
   const isValidEmail = (email: string): boolean => {
@@ -170,6 +200,68 @@ const SignIn = () => {
     }
   };
 
+  const handleResendEmail = async () => {
+    if (!signUpIdentifier || isResending || resendCountdown > 0) return;
+    
+    setIsResending(true);
+    try {
+      // Store email for sign-in link
+      window.localStorage.setItem('emailForSignIn', signUpIdentifier);
+      
+      // Try custom email via Cloud Function first
+      let customEmailSent = false;
+      try {
+        const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
+        const customEmailUrl = `${functionsUrl}/sendCustomSignInLink`;
+        
+        const response = await fetch(customEmailUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: signUpIdentifier,
+            continueUrl: `${window.location.origin}/auth/callback`,
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            customEmailSent = true;
+          }
+        }
+      } catch (customEmailError) {
+        // Fall through to Firebase default
+      }
+
+      // Fallback to Firebase default email sending if custom email failed
+      if (!customEmailSent) {
+        await sendSignInLinkToEmail(auth, signUpIdentifier, {
+          url: `${window.location.origin}/auth/callback`,
+          handleCodeInApp: true,
+        });
+      }
+
+      // Reset the timer
+      setEmailSentTime(Date.now());
+      setResendCountdown(50);
+      
+      toast({
+        title: 'Email Resent!',
+        description: `Check your inbox at ${signUpIdentifier} and click the link to sign in.`,
+      });
+    } catch (error: any) {
+      console.error('Resend email error:', error);
+      toast({
+        title: 'Failed to resend email',
+        description: error.message || 'Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -554,37 +646,127 @@ const SignIn = () => {
 
               {/* Verification Email Sent Section */}
               {showVerificationSent && (
-                <div ref={verificationCardRef} className="mb-4 sm:mb-6 p-4 sm:p-6 bg-green-50 rounded-lg border border-green-200">
+                <div ref={verificationCardRef} className="mb-4 sm:mb-6 p-4 sm:p-6 bg-green-950 rounded-lg border border-black" style={{ borderWidth: '0.5px' }}>
                   <div className="text-center space-y-3 sm:space-y-4">
                     {/* Icon */}
-                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-100 rounded-full mb-2">
-                      <Mail className="h-6 w-6 sm:h-7 sm:w-7 text-green-600" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full mb-2">
+                      <Mail className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                     </div>
                     
                     {/* Title */}
-                    <h3 className="text-lg sm:text-xl font-bold text-green-900">
+                    <h3 className="text-lg sm:text-xl font-bold text-white">
                       Verification Email Sent!
                     </h3>
                     
                     {/* Email Address */}
-                    <p className="text-xs sm:text-sm text-green-800 leading-relaxed px-2 max-w-md mx-auto">
+                    <p className="text-[10px] sm:text-xs text-white leading-relaxed px-2 max-w-md mx-auto">
                       Check your inbox at{" "}
-                      <span className="font-semibold text-green-900 break-all">{signUpIdentifier}</span>
+                      <span className="font-semibold text-white break-all">{signUpIdentifier}</span>
                       {" "}and click the link to log in.
                     </p>
 
                     {/* Action Button */}
                     <div className="pt-2">
-                      <Button
+                      <button
                         onClick={() => {
                           setShowVerificationSent(false);
                           setSuccess("");
                           setError("");
                         }}
-                        className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                        className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold text-black rounded-lg transition-all duration-200"
+                        style={{
+                          backgroundColor: '#ffffff',
+                          color: '#000000',
+                          border: '3px solid rgba(0, 0, 0, 0.2)',
+                          borderTop: '3px solid rgba(255, 255, 255, 0.8)',
+                          borderLeft: '3px solid rgba(255, 255, 255, 0.8)',
+                          borderBottom: '3px solid rgba(0, 0, 0, 0.4)',
+                          borderRight: '3px solid rgba(0, 0, 0, 0.4)',
+                          borderRadius: '8px',
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                          boxShadow: `
+                            inset 0 3px 6px rgba(255, 255, 255, 0.8),
+                            inset 0 -3px 6px rgba(0, 0, 0, 0.1),
+                            inset 1px 1px 2px rgba(255, 255, 255, 0.9),
+                            inset -1px -1px 2px rgba(0, 0, 0, 0.1),
+                            0 6px 12px rgba(0, 0, 0, 0.15),
+                            0 3px 6px rgba(0, 0, 0, 0.1),
+                            0 1px 2px rgba(0, 0, 0, 0.05)
+                          `,
+                          textShadow: '0 1px 1px rgba(0, 0, 0, 0.1)',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = `
+                            inset 0 3px 6px rgba(255, 255, 255, 0.9),
+                            inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+                            inset 1px 1px 2px rgba(255, 255, 255, 1),
+                            inset -1px -1px 2px rgba(0, 0, 0, 0.15),
+                            0 8px 16px rgba(0, 0, 0, 0.2),
+                            0 4px 8px rgba(0, 0, 0, 0.15),
+                            0 2px 4px rgba(0, 0, 0, 0.1)
+                          `;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = `
+                            inset 0 3px 6px rgba(255, 255, 255, 0.8),
+                            inset 0 -3px 6px rgba(0, 0, 0, 0.1),
+                            inset 1px 1px 2px rgba(255, 255, 255, 0.9),
+                            inset -1px -1px 2px rgba(0, 0, 0, 0.1),
+                            0 6px 12px rgba(0, 0, 0, 0.15),
+                            0 3px 6px rgba(0, 0, 0, 0.1),
+                            0 1px 2px rgba(0, 0, 0, 0.05)
+                          `;
+                        }}
+                        onMouseDown={(e) => {
+                          e.currentTarget.style.transform = 'translateY(1px)';
+                          e.currentTarget.style.boxShadow = `
+                            inset 0 3px 6px rgba(0, 0, 0, 0.2),
+                            inset 0 -3px 6px rgba(255, 255, 255, 0.5),
+                            inset 1px 1px 2px rgba(0, 0, 0, 0.2),
+                            inset -1px -1px 2px rgba(255, 255, 255, 0.3),
+                            0 2px 4px rgba(0, 0, 0, 0.1),
+                            0 1px 2px rgba(0, 0, 0, 0.05)
+                          `;
+                        }}
+                        onMouseUp={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = `
+                            inset 0 3px 6px rgba(255, 255, 255, 0.9),
+                            inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+                            inset 1px 1px 2px rgba(255, 255, 255, 1),
+                            inset -1px -1px 2px rgba(0, 0, 0, 0.15),
+                            0 8px 16px rgba(0, 0, 0, 0.2),
+                            0 4px 8px rgba(0, 0, 0, 0.15),
+                            0 2px 4px rgba(0, 0, 0, 0.1)
+                          `;
+                        }}
                       >
                         Got it, let me log in
-                      </Button>
+                      </button>
+                    </div>
+
+                    {/* Resend Email Link */}
+                    <div className="pt-2">
+                      <p className="text-xs sm:text-sm text-white text-center">
+                        Didn't get the email?{" "}
+                        {isResending ? (
+                          <span className="text-blue-300">Sending...</span>
+                        ) : resendCountdown > 0 ? (
+                          <span className="text-gray-400 cursor-not-allowed">
+                            <span className="text-gray-400 underline opacity-60">Click here</span> ({resendCountdown}s)
+                          </span>
+                        ) : (
+                          <button
+                            onClick={handleResendEmail}
+                            className="text-blue-300 hover:text-blue-200 underline cursor-pointer font-medium"
+                          >
+                            Click here
+                          </button>
+                        )}
+                      </p>
                     </div>
                   </div>
                 </div>
