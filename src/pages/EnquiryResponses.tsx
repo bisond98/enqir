@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -130,6 +130,10 @@ const EnquiryResponses = () => {
   const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
   const [uploadingFiles, setUploadingFiles] = useState<{[key: string]: boolean}>({});
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const audioElementsRef = useRef<{[key: string]: HTMLAudioElement}>({});
+  const [audioProgress, setAudioProgress] = useState<{[key: string]: number}>({});
+  const [audioCurrentTime, setAudioCurrentTime] = useState<{[key: string]: number}>({});
+  const [audioDurations, setAudioDurations] = useState<{[key: string]: number}>({});
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -2942,12 +2946,12 @@ const EnquiryResponses = () => {
                     {/* Minimal Header - Mobile Responsive */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
-                      <div className="flex items-center space-x-2 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
+                      <div className="flex items-center space-x-1 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
                         <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black">
                           <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                          <div className="flex items-center gap-0 sm:gap-2 flex-nowrap">
                             <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat</h2>
                             {/* Selected Response Count with Navigation Arrows - Only show for buyers */}
                             {selectedResponse && user && user.uid === enquiry?.userId && (() => {
@@ -2959,7 +2963,7 @@ const EnquiryResponses = () => {
                               const showNavigation = visibleResponses.length > 1;
                               
                               return responseNumber ? (
-                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                <div className="flex items-center gap-0.5 sm:gap-1.5">
                                   {showNavigation && (
                                     <Button
                                       variant="ghost"
@@ -2988,7 +2992,7 @@ const EnquiryResponses = () => {
                                 </div>
                               ) : null;
                             })()}
-                            <span className="text-xs sm:text-sm text-white font-medium">with</span>
+                            <span className="text-xs sm:text-sm text-white font-medium whitespace-nowrap ml-0.5 sm:ml-0">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
@@ -2998,7 +3002,7 @@ const EnquiryResponses = () => {
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
                                 (userProfiles[enquiry?.userId]?.isProfileVerified || false)
                               }
-                              className="text-xs sm:text-sm text-white"
+                              className="text-xs sm:text-sm text-white whitespace-nowrap"
                             />
                           </div>
                         </div>
@@ -3243,7 +3247,7 @@ const EnquiryResponses = () => {
                           <div className="text-center flex-shrink-0">
                             <div className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
                               {user && user.uid === enquiry?.userId 
-                                ? `Their offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
+                                ? `Offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
                                 : `Your offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
                               }
                             </div>
@@ -3300,7 +3304,7 @@ const EnquiryResponses = () => {
                                 }`}
                               >
                                 {/* Message Content */}
-                                {message.message && (
+                                {message.message && !message.message.includes('🎤 Voice message') && (
                                   <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-black font-medium">
                                     {message.message.split(/(₹?\d+(?:,\d+)*(?:\.\d+)?)/g).map((part, i) => {
                                       // Check if part is a number (with or without ₹)
@@ -3410,33 +3414,190 @@ const EnquiryResponses = () => {
                                       
 
                                       
-                                      {attachment.type.startsWith('audio/') && (
-                                        <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 sm:py-1.5 bg-white/10 backdrop-blur-sm rounded-full border-2 border-white/20 max-w-[200px] sm:max-w-[240px]">
-                                          <button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              const audio = new Audio((attachment as any).base64);
-                                              audio.play().catch(err => console.error('Audio play error:', err));
-                                            }}
-                                            className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 flex items-center justify-center transition-colors min-touch"
-                                          >
-                                            <Mic className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
-                                          </button>
-                                          <div className="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="flex-1 h-0.5 sm:h-1 bg-white/20 rounded-full overflow-hidden">
-                                              <div className="h-full bg-white/70 rounded-full" style={{ width: '60%' }}></div>
+                                      {attachment.type.startsWith('audio/') && (() => {
+                                        const audioId = `audio-${message.id}-${attIndex}`;
+                                        const isPlaying = playingAudio === audioId;
+                                        const progress = audioProgress[audioId] || 0;
+                                        
+                                        // Extract duration from message text if available (format: "🎤 Voice message (M:SS)")
+                                        let durationFromMessage = 0;
+                                        if (message.message) {
+                                          const durationMatch = message.message.match(/\((\d+):(\d+)\)/);
+                                          if (durationMatch) {
+                                            const minutes = parseInt(durationMatch[1], 10);
+                                            const seconds = parseInt(durationMatch[2], 10);
+                                            durationFromMessage = minutes * 60 + seconds;
+                                          }
+                                        }
+                                        
+                                        // Preload audio to get duration even when not playing
+                                        if (!audioElementsRef.current[audioId] && !audioDurations[audioId]) {
+                                          const audio = new Audio((attachment as any).base64);
+                                          audioElementsRef.current[audioId] = audio;
+                                          
+                                          audio.addEventListener('loadedmetadata', () => {
+                                            if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+                                              setAudioDurations(prev => ({ ...prev, [audioId]: audio.duration }));
+                                            } else if (durationFromMessage > 0) {
+                                              // Use duration from message if audio metadata not available
+                                              setAudioDurations(prev => ({ ...prev, [audioId]: durationFromMessage }));
+                                            }
+                                          });
+                                          
+                                          // If we have duration from message, use it immediately
+                                          if (durationFromMessage > 0 && !audioDurations[audioId]) {
+                                            setAudioDurations(prev => ({ ...prev, [audioId]: durationFromMessage }));
+                                          }
+                                          
+                                          // Trigger metadata load
+                                          audio.load();
+                                        }
+                                        
+                                        return (
+                                          <div key={attIndex} className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 bg-gray-100 rounded-xl border-2 border-black max-w-[250px] sm:max-w-[280px]">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                
+                                                if (isPlaying && audioElementsRef.current[audioId]) {
+                                                  audioElementsRef.current[audioId].pause();
+                                                  setPlayingAudio(null);
+                                                } else {
+                                                  if (playingAudio && audioElementsRef.current[playingAudio]) {
+                                                    audioElementsRef.current[playingAudio].pause();
+                                                    audioElementsRef.current[playingAudio].currentTime = 0;
+                                                    setAudioProgress(prev => ({ ...prev, [playingAudio]: 0 }));
+                                                    setAudioCurrentTime(prev => ({ ...prev, [playingAudio]: 0 }));
+                                                  }
+                                                  
+                                                  let audio = audioElementsRef.current[audioId];
+                                                  
+                                                  if (!audio) {
+                                                    audio = new Audio((attachment as any).base64);
+                                                    audioElementsRef.current[audioId] = audio;
+                                                    
+                                                    // Extract duration from message text if available
+                                                    let durationFromMessage = 0;
+                                                    if (message.message) {
+                                                      const durationMatch = message.message.match(/\((\d+):(\d+)\)/);
+                                                      if (durationMatch) {
+                                                        const minutes = parseInt(durationMatch[1], 10);
+                                                        const seconds = parseInt(durationMatch[2], 10);
+                                                        durationFromMessage = minutes * 60 + seconds;
+                                                      }
+                                                    }
+                                                    
+                                                    // Add loadedmetadata listener to save duration
+                                                    audio.addEventListener('loadedmetadata', () => {
+                                                      if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+                                                        setAudioDurations(prev => ({ ...prev, [audioId]: audio.duration }));
+                                                        setAudioProgress(prev => ({ ...prev, [audioId]: 0 }));
+                                                        setAudioCurrentTime(prev => ({ ...prev, [audioId]: 0 }));
+                                                      } else if (durationFromMessage > 0) {
+                                                        // Use duration from message if audio metadata not available
+                                                        setAudioDurations(prev => ({ ...prev, [audioId]: durationFromMessage }));
+                                                        setAudioProgress(prev => ({ ...prev, [audioId]: 0 }));
+                                                        setAudioCurrentTime(prev => ({ ...prev, [audioId]: 0 }));
+                                                      }
+                                                    });
+                                                    
+                                                    // If we have duration from message, use it immediately
+                                                    if (durationFromMessage > 0 && !audioDurations[audioId]) {
+                                                      setAudioDurations(prev => ({ ...prev, [audioId]: durationFromMessage }));
+                                                    }
+                                                    
+                                                    // Trigger metadata load
+                                                    audio.load();
+                                                  }
+                                                  
+                                                  // Always ensure playback listeners are set up (needed for playback tracking)
+                                                  const timeupdateHandler = () => {
+                                                    if (audio.duration) {
+                                                      const currentProgress = (audio.currentTime / audio.duration) * 100;
+                                                      setAudioProgress(prev => ({ ...prev, [audioId]: currentProgress }));
+                                                      setAudioCurrentTime(prev => ({ ...prev, [audioId]: audio.currentTime }));
+                                                    }
+                                                  };
+                                                  
+                                                  const endedHandler = () => {
+                                                    setPlayingAudio(null);
+                                                    setAudioProgress(prev => ({ ...prev, [audioId]: 0 }));
+                                                    setAudioCurrentTime(prev => ({ ...prev, [audioId]: 0 }));
+                                                  };
+                                                  
+                                                  // Add listeners (may create duplicates on repeated clicks but won't break functionality)
+                                                  audio.addEventListener('timeupdate', timeupdateHandler);
+                                                  audio.addEventListener('ended', endedHandler);
+                                                  
+                                                  audioElementsRef.current[audioId].play().catch(err => {
+                                                    console.error('Audio play error:', err);
+                                                    setPlayingAudio(null);
+                                                    setAudioProgress(prev => ({ ...prev, [audioId]: 0 }));
+                                                    setAudioCurrentTime(prev => ({ ...prev, [audioId]: 0 }));
+                                                  });
+                                                  setPlayingAudio(audioId);
+                                                }
+                                              }}
+                                              className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 flex items-center justify-center transition-colors min-touch shadow-md hover:shadow-lg"
+                                            >
+                                              {isPlaying ? (
+                                                <Pause className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-white fill-white" />
+                                              ) : (
+                                                <Play className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-white fill-white ml-0.5" />
+                                              )}
+                                            </button>
+                                            <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-2.5">
+                                              <div className="flex-1 h-1.5 sm:h-2 bg-gray-300 rounded-full overflow-hidden">
+                                                <div 
+                                                  className={`h-full ${progress > 0 ? 'bg-blue-600' : 'bg-gray-400'} rounded-full transition-all duration-100`} 
+                                                  style={{ width: `${progress}%` }}
+                                                ></div>
+                                              </div>
+                                              <span className="text-[10px] sm:text-xs text-gray-700 font-medium whitespace-nowrap tabular-nums">
+                                                {(() => {
+                                                  const audio = audioElementsRef.current[audioId];
+                                                  
+                                                  // Extract duration from message text if available
+                                                  let durationFromMessage = 0;
+                                                  if (message.message) {
+                                                    const durationMatch = message.message.match(/\((\d+):(\d+)\)/);
+                                                    if (durationMatch) {
+                                                      const minutes = parseInt(durationMatch[1], 10);
+                                                      const seconds = parseInt(durationMatch[2], 10);
+                                                      durationFromMessage = minutes * 60 + seconds;
+                                                    }
+                                                  }
+                                                  
+                                                  // Prefer: stored duration > message duration > audio element duration
+                                                  const storedDuration = audioDurations[audioId];
+                                                  const audioDuration = audio?.duration;
+                                                  const duration = storedDuration || durationFromMessage || (audioDuration && isFinite(audioDuration) ? audioDuration : 0);
+                                                  
+                                                  if (isPlaying && audio && (audio.duration || duration > 0)) {
+                                                    // Show current time / total duration when playing
+                                                    const currentTime = Math.round(audioCurrentTime[audioId] || 0);
+                                                    const totalTime = Math.round(audio.duration || duration);
+                                                    const currentMins = Math.floor(currentTime / 60);
+                                                    const currentSecs = currentTime % 60;
+                                                    const totalMins = Math.floor(totalTime / 60);
+                                                    const totalSecs = totalTime % 60;
+                                                    return `${currentMins}:${currentSecs.toString().padStart(2, '0')} / ${totalMins}:${totalSecs.toString().padStart(2, '0')}`;
+                                                  } else if (duration > 0 && isFinite(duration)) {
+                                                    // Show actual duration when not playing
+                                                    const totalSeconds = Math.round(duration);
+                                                    const mins = Math.floor(totalSeconds / 60);
+                                                    const secs = totalSeconds % 60;
+                                                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                                                  } else {
+                                                    // Fallback: show nothing if duration not available yet
+                                                    return '';
+                                                  }
+                                                })()}
+                                              </span>
                                             </div>
-                                            <span className="text-[8px] sm:text-[9px] text-white/80 font-medium whitespace-nowrap tabular-nums">
-                                              {(() => {
-                                                const estimatedSeconds = Math.round((attachment.size || 0) / 1000);
-                                                const minutes = Math.floor(estimatedSeconds / 60);
-                                                const secs = estimatedSeconds % 60;
-                                                return `${minutes}:${secs.toString().padStart(2, '0')}`;
-                                              })()}
-                                            </span>
                                           </div>
-                                        </div>
-                                      )}
+                                        );
+                                      })()}
                                       
                                       {!attachment.type.startsWith('image/') && !attachment.type.startsWith('audio/') && (
                                         <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg border-2 border-slate-200">
@@ -3536,8 +3697,8 @@ const EnquiryResponses = () => {
                     <div className="p-2.5 sm:p-2 lg:p-2.5">
                       {/* Microphone Permission Prompt - Creative Modal - Only show when user tries to use voice/call features */}
                       <Dialog open={showMicrophonePrompt && microphonePermission !== 'granted'} onOpenChange={setShowMicrophonePrompt}>
-                        <DialogContent className="sm:max-w-lg max-w-[95vw] p-0 gap-0 border-0 bg-transparent shadow-2xl">
-                          <div className="p-4 sm:p-6">
+                        <DialogContent className="sm:max-w-lg max-w-[90vw] w-full p-0 gap-0 border-0 bg-transparent shadow-2xl !top-[50%] !left-[50%] !translate-x-[-50%] !translate-y-[-50%] mx-auto">
+                          <div className="p-3 sm:p-6">
                             <MicrophonePermissionPrompt
                               permissionStatus={microphonePermission}
                               onPermissionGranted={handlePermissionGranted}

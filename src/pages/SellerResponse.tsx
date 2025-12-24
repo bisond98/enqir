@@ -899,7 +899,7 @@ const SellerResponse = () => {
       const responseData: SellerSubmission = {
         enquiryId: enquiryId!,
         sellerId: authUser?.uid || "",
-        sellerName: authUser?.displayName || authUser?.email || "Anonymous Seller",
+        sellerName: authUser?.displayName || "A user",
         sellerEmail: authUser?.email || "",
         title: title.trim(),
         message: description.trim(),
@@ -996,13 +996,13 @@ const SellerResponse = () => {
             'new_response',
             {
               title: '🎯 New Response to Your Enquiry!',
-              message: `${authUser?.displayName || 'A seller'} responded to "${enquiry.title}"`,
+              message: `${authUser?.displayName || 'A user'} responded to "${enquiry.title}"`,
               priority: 'high',
               actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${authUser?.uid}`,
               actionText: 'View Response',
               enquiryId: enquiryId,
               sellerId: authUser?.uid,
-              sellerName: authUser?.displayName || authUser?.email || 'Anonymous Seller'
+              sellerName: authUser?.displayName || 'A user'
             }
           );
           console.log('✅ Buyer notification created successfully');

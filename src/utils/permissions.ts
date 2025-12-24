@@ -98,14 +98,46 @@ export const requestMicrophonePermission = async (): Promise<MicrophonePermissio
 };
 
 /**
+ * Detect if user is on Android device
+ */
+export const isAndroid = (): boolean => {
+  return /android/i.test(navigator.userAgent);
+};
+
+/**
  * Get browser-specific instructions for enabling microphone permission
  */
 export const getBrowserInstructions = (browser: BrowserType): string => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const android = /android/i.test(userAgent);
+  
+  // Android-specific instructions (check Android first) - formatted like Safari
+  if (android) {
+    if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+      return 'Chrome → Settings → Site settings → Microphone → Find "enqir.in" → Allow';
+    }
+    if (userAgent.includes('firefox')) {
+      return 'Firefox → Menu (☰) → Settings → Privacy → Permissions → Microphone → Find "enqir.in" → Allow';
+    }
+    if (userAgent.includes('edg')) {
+      return 'Edge → Settings → Site permissions → Microphone → Find "enqir.in" → Allow';
+    }
+    if (userAgent.includes('samsung')) {
+      return 'Samsung Internet → Menu → Settings → Site permissions → Microphone → Find "enqir.in" → Allow';
+    }
+    // Default Android browser - Chrome is most common
+    return 'Chrome → Settings → Site settings → Microphone → Find "enqir.in" → Allow';
+  }
+  
+  // iOS Safari
+  if (browser === 'safari') {
+    return 'Safari → Settings → Websites → Microphone → Find "enqir.in" → Allow';
+  }
+  
+  // Desktop instructions
   switch (browser) {
     case 'chrome':
       return 'Click the lock icon (🔒) in the address bar → Site settings → Microphone → Allow';
-    case 'safari':
-      return 'Safari → Settings → Websites → Microphone → Find "enqir.in" → Allow';
     case 'firefox':
       return 'Click the lock icon (🔒) in the address bar → Permissions → Microphone → Allow';
     case 'edge':
