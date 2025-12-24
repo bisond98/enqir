@@ -25,7 +25,6 @@ import {
   ImageIcon
 } from 'lucide-react';
 import Layout from '@/components/Layout';
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';

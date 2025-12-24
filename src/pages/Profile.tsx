@@ -695,7 +695,6 @@ const Profile = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Seller Form Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
@@ -714,7 +713,7 @@ const Profile = () => {
             
             {/* Profile Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
                     Profile.
               </h1>
             </div>

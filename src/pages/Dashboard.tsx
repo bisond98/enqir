@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { HeaderSnow } from "@/components/HeaderSnow";
@@ -1424,7 +1424,7 @@ const Dashboard = () => {
               
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white" />
                       Dashboard.
               </h1>
@@ -1449,9 +1449,10 @@ const Dashboard = () => {
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: 0.1 }}
-                      className="mb-2 sm:mb-3"
+                      className="mb-2 sm:mb-3 flex items-center gap-1 sm:gap-1.5"
                     >
-                      <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
                     </motion.div>
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
@@ -1557,6 +1558,12 @@ const Dashboard = () => {
                             <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
                               {/* Center Dot */}
                               <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 shadow-inner"></div>
+                              
+                              {/* Arrow Icons - Left and Right */}
+                              <div className="absolute inset-0 flex items-center justify-between px-1.5 sm:px-2 lg:px-2.5">
+                                <ChevronLeft className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
+                                <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
+                              </div>
                               
                               {/* Text Label - Rotating */}
                               <motion.div
@@ -1791,52 +1798,47 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                               expiredFlag
-                                ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
+                                ? 'opacity-50 grayscale bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm cursor-not-allowed'
                                 : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
                             }`}
-                            onClick={(e) => {
+                            onClick={expiredFlag ? (e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              if (!expiredFlag) {
-                                navigate('/my-enquiries', {
-                                  state: { highlightId: enquiry.id },
-                                });
-                              }
+                              return false;
+                            } : (e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              navigate('/my-enquiries', {
+                                state: { highlightId: enquiry.id },
+                              });
                             }}
                           >
-                            {/* EXPIRED Stamp Badge */}
+                            {/* Overlay to block all interactions when expired */}
                             {expiredFlag && (
-                              <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                  <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                    {/* Distressed border effect */}
-                                    <div className="absolute inset-0 border-4 rounded-sm" style={{
-                                      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-                                      filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                                      WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
-                                      borderColor: '#ef4444',
-                                      borderWidth: '4px',
-                                      borderStyle: 'solid'
-                                    }}></div>
-                                    {/* Text with distressed effect */}
-                                    <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                      <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
-                                        color: '#ef4444',
-                                        textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
-                                        letterSpacing: '0.15em',
-                                        filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
-                                        WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
-                                      }}>EXPIRED</span>
-                                    </div>
-                                    {/* Additional distressed texture overlay */}
-                                    <div className="absolute inset-0 opacity-20" style={{
-                                      background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
-                                      backgroundSize: '8px 8px'
-                                    }}></div>
-                                  </div>
-                                </div>
-                              </div>
+                              <div 
+                                className="absolute inset-0 z-[9999] cursor-not-allowed bg-transparent" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                onTouchStart={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                onMouseUp={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                style={{ pointerEvents: 'auto', touchAction: 'none' }}
+                              />
                             )}
                             {/* Premium Header with Sophisticated Design */}
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
@@ -2328,40 +2330,6 @@ const Dashboard = () => {
                             }
                           }}
                         >
-                          {/* EXPIRED Stamp Badge */}
-                          {isEnquiryExpired && (
-                            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                              <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                  {/* Distressed border effect */}
-                                  <div className="absolute inset-0 border-4 rounded-sm" style={{
-                                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-                                    filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                                    WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
-                                    borderColor: '#ef4444',
-                                    borderWidth: '4px',
-                                    borderStyle: 'solid'
-                                  }}></div>
-                                  {/* Text with distressed effect */}
-                                  <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                                    <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
-                                      color: '#ef4444',
-                                      textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
-                                      letterSpacing: '0.15em',
-                                      filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
-                                      WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
-                                    }}>EXPIRED</span>
-                                  </div>
-                                  {/* Additional distressed texture overlay */}
-                                  <div className="absolute inset-0 opacity-20" style={{
-                                    background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
-                                    backgroundSize: '8px 8px'
-                                  }}></div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
@@ -2669,7 +2637,7 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
                             isExpired 
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm cursor-not-allowed'
                               : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                         >

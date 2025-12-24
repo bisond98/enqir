@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -2448,6 +2448,25 @@ const EnquiryResponses = () => {
     console.log('EnquiryResponses: Response clicked:', response.id, 'Seller:', response.sellerId);
   };
 
+  // Navigation functions for previous/next response
+  const navigateToPreviousResponse = () => {
+    if (!selectedResponse || !user || user.uid !== enquiry?.userId) return;
+    const visibleResponses = getVisibleResponses();
+    const currentIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
+    if (currentIndex > 0) {
+      handleResponseClick(visibleResponses[currentIndex - 1]);
+    }
+  };
+
+  const navigateToNextResponse = () => {
+    if (!selectedResponse || !user || user.uid !== enquiry?.userId) return;
+    const visibleResponses = getVisibleResponses();
+    const currentIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
+    if (currentIndex < visibleResponses.length - 1) {
+      handleResponseClick(visibleResponses[currentIndex + 1]);
+    }
+  };
+
   const handlePremiumUpgrade = () => {
     if (!enquiryId || !enquiry) return;
     // Always use selectedPlanId if available, otherwise default to 'free'
@@ -2744,7 +2763,7 @@ const EnquiryResponses = () => {
               
               {/* Chat Heading in Black Header */}
               <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 gap-2 sm:gap-2.5">
-                <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                   <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                   Chat.
                 </h1>
@@ -2930,13 +2949,43 @@ const EnquiryResponses = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                             <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat</h2>
-                            {/* Selected Response Count - Only show for buyers */}
+                            {/* Selected Response Count with Navigation Arrows - Only show for buyers */}
                             {selectedResponse && user && user.uid === enquiry?.userId && (() => {
                               const visibleResponses = getVisibleResponses();
                               const responseIndex = visibleResponses.findIndex(r => r.id === selectedResponse.id);
                               const responseNumber = responseIndex >= 0 ? responseIndex + 1 : null;
+                              const hasPrevious = responseIndex > 0;
+                              const hasNext = responseIndex < visibleResponses.length - 1;
+                              const showNavigation = visibleResponses.length > 1;
+                              
                               return responseNumber ? (
-                                <span className="text-xs sm:text-sm text-white font-medium">#Response {responseNumber}</span>
+                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                  {showNavigation && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={navigateToPreviousResponse}
+                                      disabled={!hasPrevious}
+                                      className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 p-0 rounded-md transition-colors duration-200 flex-shrink-0 text-white hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed min-touch"
+                                      title="Previous response"
+                                    >
+                                      <ChevronLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                                    </Button>
+                                  )}
+                                  <span className="text-xs sm:text-sm text-white font-medium">#Response {responseNumber}</span>
+                                  {showNavigation && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={navigateToNextResponse}
+                                      disabled={!hasNext}
+                                      className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 p-0 rounded-md transition-colors duration-200 flex-shrink-0 text-white hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed min-touch"
+                                      title="Next response"
+                                    >
+                                      <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
+                                    </Button>
+                                  )}
+                                </div>
                               ) : null;
                             })()}
                             <span className="text-xs sm:text-sm text-white font-medium">with</span>

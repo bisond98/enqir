@@ -494,7 +494,6 @@ const EnquiryResponsesPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Profile Page Style - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Profile */}
             <div className="mb-4 sm:mb-6">
@@ -513,7 +512,7 @@ const EnquiryResponsesPage = () => {
 
             {/* Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl">
+              <h1 className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
                 Responses to "{enquiry.title}".
               </h1>
             </div>

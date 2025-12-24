@@ -11,11 +11,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check } from "lucide-react";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { HeaderSnow } from "@/components/HeaderSnow";
 import { useUsage } from "@/contexts/UsageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
@@ -1779,7 +1779,7 @@ export default function PostEnquiry() {
               
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
                       Post Your Enquiry.
               </h1>

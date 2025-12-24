@@ -553,7 +553,7 @@ const MyEnquiries = () => {
               
             {/* My Enquiries Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
                 My Enquiries.
               </h1>
                   </div>
@@ -706,40 +706,6 @@ const MyEnquiries = () => {
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                       </>
-                    )}
-                    {/* EXPIRED Stamp Badge */}
-                    {isExpired && (
-                      <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                        <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                          <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                            {/* Distressed border effect */}
-                            <div className="absolute inset-0 border-4 rounded-sm" style={{
-                              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-                              filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                              WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
-                              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
-                              borderColor: '#ef4444',
-                              borderWidth: '4px',
-                              borderStyle: 'solid'
-                            }}></div>
-                            {/* Text with distressed effect */}
-                            <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
-                              <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
-                                color: '#ef4444',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
-                                letterSpacing: '0.15em',
-                                filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
-                                WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
-                              }}>EXPIRED</span>
-                            </div>
-                            {/* Additional distressed texture overlay */}
-                            <div className="absolute inset-0 opacity-20" style={{
-                              background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
-                              backgroundSize: '8px 8px'
-                            }}></div>
-                          </div>
-                        </div>
-                      </div>
                     )}
                     {/* Premium Header with Sophisticated Design */}
                     <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${

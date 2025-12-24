@@ -8,7 +8,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -509,13 +509,21 @@ export default function MyChats() {
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/dashboard'); }}
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                </Button>
                 <div className="w-10 h-10"></div>
               </div>
             </div>
             
             {/* Your Chats Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                       Your Chats.
                     </h1>
@@ -531,7 +539,17 @@ export default function MyChats() {
                 </div>
             
                   {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex justify-center items-center mt-4 sm:mt-5 relative">
+                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
+                    {/* Arrow Indicator */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="mb-2 sm:mb-3 flex items-center gap-1 sm:gap-1.5"
+                    >
+                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
+                    </motion.div>
                     {/* Labels and Toggle Container */}
                     <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
                       {/* Buy Label with Animation */}
@@ -636,6 +654,12 @@ export default function MyChats() {
                             <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
                               {/* Center Dot */}
                               <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 shadow-inner"></div>
+                              
+                              {/* Arrow Icons - Left and Right */}
+                              <div className="absolute inset-0 flex items-center justify-between px-1.5 sm:px-2 lg:px-2.5">
+                                <ChevronLeft className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
+                                <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
+                              </div>
                               
                               {/* Text Label - Rotating */}
                               <motion.div

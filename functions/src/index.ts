@@ -1,9 +1,32 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as crypto from "crypto";
+import * as sgMail from "@sendgrid/mail";
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// Initialize SendGrid (will be set if API key is configured)
+let sendGridInitialized = false;
+const initializeSendGrid = (): boolean => {
+  if (sendGridInitialized) return true;
+  
+  try {
+    const sendGridApiKey = functions.config().sendgrid?.api_key;
+    if (sendGridApiKey) {
+      sgMail.setApiKey(sendGridApiKey);
+      sendGridInitialized = true;
+      console.log("✅ SendGrid initialized successfully");
+      return true;
+    } else {
+      console.log("⚠️ SendGrid API key not configured - will use Firebase default emails");
+      return false;
+    }
+  } catch (error: any) {
+    console.error("❌ Failed to initialize SendGrid:", error.message);
+    return false;
+  }
+};
 
 // Import Razorpay using require (CommonJS)
 const Razorpay = require("razorpay");
@@ -134,7 +157,7 @@ export const createRazorpayOrder = functions.https.onRequest(async (req, res): P
   }
 });
 
-// Send custom sign-in email link with "Enqir" branding
+// Send custom sign-in email link with "enqir.in" branding
 export const sendCustomSignInLink = functions.https.onRequest(async (req, res): Promise<void> => {
   // Set CORS headers
   res.set("Access-Control-Allow-Origin", "*");
@@ -161,24 +184,123 @@ export const sendCustomSignInLink = functions.https.onRequest(async (req, res): 
       return;
     }
 
+    const callbackUrl = continueUrl || "https://enqir.in/auth/callback";
+    
     // Generate sign-in link using Firebase Admin SDK
+    // Note: generateSignInWithEmailLink returns the link string (doesn't send email automatically)
     const actionCodeSettings = {
-      url: continueUrl || "https://enqir.in/auth/callback",
+      url: callbackUrl,
       handleCodeInApp: true,
     };
 
-    await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+    let signInLink: string;
+    try {
+      // Firebase Admin SDK method to generate sign-in link
+      signInLink = await admin.auth().generateSignInWithEmailLink(email, actionCodeSettings);
+      console.log("✅ Sign-in link generated for:", email);
+    } catch (linkError: any) {
+      console.error("❌ Error generating sign-in link:", linkError);
+      // If link generation fails, fall back to Firebase default email sending
+      throw new Error(`Failed to generate sign-in link: ${linkError.message}`);
+    }
 
-    // Note: The email is still sent by Firebase with default template
-    // But we return the link so frontend can send custom email if needed
-    // For now, Firebase will send the email automatically with the generated link
+    // Try to send custom email via SendGrid
+    const sendGridAvailable = initializeSendGrid();
     
-    console.log("✅ Sign-in link generated for:", email);
+    if (sendGridAvailable) {
+      try {
+        // Format current date/time
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        const timeStr = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          timeZone: 'UTC',
+          timeZoneName: 'short'
+        });
 
-    res.json({
-      success: true,
-      message: "Sign-in email sent",
-      // Link is returned but email is already sent by Firebase
+        const emailHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sign in to enqir.in</title>
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h1 style="color: #1a1a1a; margin-top: 0;">Hello,</h1>
+              <p>We received a request to sign in to <strong>enqir.in</strong> using this email address, at ${dateStr} ${timeStr}.</p>
+              <p>If you want to sign in with your <strong>${email}</strong> account, click this link:</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${signInLink}" style="display: inline-block; background-color: #007bff; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: 600;">Sign in to enqir.in</a>
+              </div>
+              <p style="color: #666; font-size: 14px;">If you did not request this link, you can safely ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+              <p style="color: #999; font-size: 12px; margin-bottom: 0;">Thanks,<br>Your enqir.in team</p>
+            </div>
+          </body>
+          </html>
+        `;
+
+        const emailText = `
+Hello,
+
+We received a request to sign in to enqir.in using this email address, at ${dateStr} ${timeStr}.
+
+If you want to sign in with your ${email} account, click this link:
+${signInLink}
+
+If you did not request this link, you can safely ignore this email.
+
+Thanks,
+Your enqir.in team
+        `;
+
+        const msg = {
+          to: email,
+          from: {
+            email: 'noreply@enqir.in',
+            name: 'enqir.in'
+          },
+          subject: `Sign in to enqir.in requested at ${dateStr} ${timeStr}`,
+          text: emailText,
+          html: emailHtml,
+        };
+
+        await sgMail.send(msg);
+        console.log("✅ Custom email sent via SendGrid to:", email);
+
+        res.json({
+          success: true,
+          message: "Sign-in email sent",
+          sentVia: "sendgrid"
+        });
+        return;
+      } catch (sendGridError: any) {
+        console.error("❌ SendGrid error:", sendGridError);
+        // Return error so frontend can fall back to Firebase default
+        console.log("⚠️ SendGrid failed, returning error for frontend fallback...");
+        res.status(500).json({
+          success: false,
+          error: "SendGrid email failed",
+          details: sendGridError.message || "Failed to send email via SendGrid",
+          note: "Frontend should fall back to Firebase default email"
+        });
+        return;
+      }
+    }
+
+    // If SendGrid is not available, return error so frontend uses Firebase default
+    console.log("⚠️ SendGrid not available, returning error for frontend fallback...");
+    res.status(500).json({
+      success: false,
+      error: "SendGrid not configured",
+      note: "Frontend should fall back to Firebase default email"
     });
   } catch (error: any) {
     console.error("❌ Error generating sign-in link:", error);
