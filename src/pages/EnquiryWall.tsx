@@ -29,6 +29,7 @@ import { AISearchService } from "@/services/ai/aiSearchService";
 import { formatIndianCurrency } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { debounce } from "@/utils/performance";
+import { HeaderSnow } from "@/components/HeaderSnow";
 
 interface Enquiry {
   id: string;
