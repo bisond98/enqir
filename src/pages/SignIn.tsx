@@ -249,7 +249,7 @@ const SignIn = () => {
       
       toast({
         title: 'Email Resent!',
-        description: `Check your inbox at ${signUpIdentifier} and click the link to sign in.`,
+        description: `Check your inbox at ${signUpIdentifier} and click the Sign in to pal-519d0 link to log in.`,
       });
     } catch (error: any) {
       console.error('Resend email error:', error);
@@ -662,7 +662,7 @@ const SignIn = () => {
                     <p className="text-[10px] sm:text-xs text-white leading-relaxed px-2 max-w-md mx-auto">
                       Check your inbox at{" "}
                       <span className="font-semibold text-white break-all">{signUpIdentifier}</span>
-                      {" "}and click the link to log in.
+                      {" "}and click the <span className="text-blue-400 font-semibold">Sign in to pal-519d0</span> link to log in.
                     </p>
 
                     {/* Action Button */}
