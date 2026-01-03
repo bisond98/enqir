@@ -2617,7 +2617,7 @@ const EnquiryResponses = () => {
                 {/* Header Section with Title */}
                 <div className="text-center mb-4 sm:mb-6">
                   <div className="flex flex-col items-center gap-2 sm:gap-2.5 lg:gap-3">
-                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter drop-shadow-2xl inline-flex items-center gap-2">
+                    <h1 className="mb-2 sm:mb-3 lg:mb-4 text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
                       Chat.
                     </h1>
