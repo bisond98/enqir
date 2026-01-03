@@ -2589,22 +2589,6 @@ const Dashboard = () => {
                     <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
                   </div>
                 </motion.div>
-                
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                  className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                    <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
-                      {savedEnquiries.filter(e => e.status === 'completed').length}
-                    </h3>
-                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Saved</p>
-                  </div>
-                </motion.div>
               </div>
 
               {/* Professional Saved Enquiries List */}
