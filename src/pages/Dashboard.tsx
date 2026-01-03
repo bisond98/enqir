@@ -2602,10 +2602,157 @@ const Dashboard = () => {
                     <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
                       {savedEnquiries.filter(e => e.status === 'completed').length}
                     </h3>
-                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Count</p>
+                    <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Saved</p>
                   </div>
                 </motion.div>
               </div>
+
+              {/* Professional Saved Enquiries List */}
+              <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
+                {/* Section Header */}
+                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3 mb-3 sm:mb-4 lg:mb-3 xl:mb-4">
+                </div>
+                
+                {savedEnquiries.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 sm:py-12 lg:py-8 xl:py-10 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-dashed border-black">
+                    <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-gray-100 rounded-full mb-3 sm:mb-4 lg:mb-3 xl:mb-4 shadow-md">
+                      <Bookmark className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-gray-400" />
+                    </div>
+                    <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">No saved enquiries yet</p>
+                  </div>
+              ) : (
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
+                    {savedEnquiries.slice(0, 3).map((enquiry) => {
+                      const now = new Date();
+                      const isExpired = enquiry.deadline && (() => {
+                        const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+                        return deadlineDate < now;
+                      })();
+                      
+                      return (
+                        <motion.div
+                          key={enquiry.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 ${
+                            isExpired 
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm cursor-not-allowed'
+                              : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                          }`}
+                        >
+                          {/* EXPIRED Stamp Badge */}
+                          {isExpired && (
+                            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                              <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                <div className="relative px-8 sm:px-12 lg:px-10 xl:px-12 py-3 sm:py-4 lg:py-3 xl:py-4 bg-transparent" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                  {/* Distressed border effect */}
+                                  <div className="absolute inset-0 border-4 rounded-sm" style={{
+                                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                                    filter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    WebkitFilter: 'none drop-shadow(2px 2px 4px rgba(0,0,0,0.3))',
+                                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(239,68,68,0.4)',
+                                    borderColor: '#ef4444',
+                                    borderWidth: '4px',
+                                    borderStyle: 'solid'
+                                  }}></div>
+                                  {/* Text with distressed effect */}
+                                  <div className="relative" style={{ filter: 'none', WebkitFilter: 'none' }}>
+                                    <span className="text-4xl sm:text-5xl lg:text-4xl xl:text-5xl font-black tracking-wider" style={{
+                                      color: '#ef4444',
+                                      textShadow: '2px 2px 4px rgba(0,0,0,0.3), -1px -1px 2px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2)',
+                                      letterSpacing: '0.15em',
+                                      filter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))',
+                                      WebkitFilter: 'none drop-shadow(1px 1px 2px rgba(0,0,0,0.4))'
+                                    }}>EXPIRED</span>
+                                  </div>
+                                  {/* Additional distressed texture overlay */}
+                                  <div className="absolute inset-0 opacity-20" style={{
+                                    background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 21%, transparent 21%)',
+                                    backgroundSize: '8px 8px'
+                                  }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {/* Premium Header */}
+                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
+                            isExpired ? 'opacity-70' : ''
+                          }`}>
+                            <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                            <div className="relative flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                              <h4 className={`text-xs sm:text-base lg:text-xs xl:text-sm font-bold text-white truncate leading-snug tracking-tight flex-1 min-w-0 pr-2 ${
+                                isExpired ? 'text-gray-400' : 'text-white drop-shadow-sm'
+                              }`}>
+                                {enquiry.title}
+                              </h4>
+                              {isExpired && (
+                                <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                  Expired
+                                </Badge>
+                              )}
+                          </div>
+                        </div>
+                          
+                          {/* Premium Content Area */}
+                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-3 sm:p-4 lg:p-3.5 xl:p-4">
+                            <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
+                            
+                            <div className="relative space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3">
+                              <p className={`text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] mb-2 line-clamp-2 leading-snug font-medium ${
+                                isExpired ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                {enquiry.description}
+                              </p>
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-wrap">
+                                <Badge variant="secondary" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
+                                <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-gray-900 font-black">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                                {enquiry.location && <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-black font-bold">• {enquiry.location}</span>}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isExpired) {
+                            navigate('/my-enquiries', {
+                              state: { highlightId: enquiry.id },
+                            });
+                          }
+                        }}
+                        disabled={isExpired}
+                        className="w-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] sm:text-sm lg:text-[10px] xl:text-xs px-3 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center relative overflow-hidden group"
+                      >
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 mr-1.5 sm:mr-2 lg:mr-1.5 xl:mr-2 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
+                        <span className="relative z-10">View Details</span>
+                      </Button>
+                    </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                </div>
+              )}
+              </div>
+              
+              {savedEnquiries.length > 3 && (
+                <div className="flex justify-center pt-3 sm:pt-4 lg:pt-3 xl:pt-4 mt-3 sm:mt-4 lg:mt-3 xl:mt-4" onClick={(e) => e.stopPropagation()}>
+                  <Button 
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate('/saved-enquiries');
+                    }}
+                    className="group/btn border border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-xs sm:text-sm lg:text-xs xl:text-sm px-6 sm:px-8 lg:px-6 xl:px-7 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 h-auto sm:h-10 lg:h-9 xl:h-10 rounded-xl lg:rounded-lg xl:rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                  >
+                    <span className="mr-2 tracking-tight">Show More</span>
+                    <ArrowRight className="h-4 w-4 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
+                    </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
           )}
