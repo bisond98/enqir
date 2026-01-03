@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 

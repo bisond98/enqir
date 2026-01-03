@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, MessageCircle, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, query, where, orderBy, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
@@ -534,7 +533,6 @@ const MyEnquiries = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         {/* Header - Matching Profile Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
               <div className="mb-4 sm:mb-6">

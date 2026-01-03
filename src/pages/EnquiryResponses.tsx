@@ -8,7 +8,6 @@ import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Cl
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { useUsage } from "@/contexts/UsageContext";
@@ -2740,7 +2739,6 @@ const EnquiryResponses = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Settings Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
               <div className="mb-4 sm:mb-6">

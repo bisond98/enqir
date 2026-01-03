@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check } from "lucide-react";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";

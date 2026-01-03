@@ -6,7 +6,6 @@ import { Button } from "../components/ui/button";
 import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "../contexts/AuthContext";
 import { NotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
@@ -1396,7 +1395,6 @@ const Dashboard = () => {
 
         {/* Header - Matching Profile/Seller Form Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">

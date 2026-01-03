@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, query, where, orderBy, getDocs, doc, getDoc, onSnapshot, updateDoc, getDoc as firestoreGetDoc } from "firebase/firestore";

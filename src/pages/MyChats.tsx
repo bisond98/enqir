@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
@@ -504,7 +503,6 @@ export default function MyChats() {
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
         {/* Header - Matching Seller Form Background - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">

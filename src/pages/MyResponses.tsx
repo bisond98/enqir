@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Rocket, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Eye, Shield, ImageIcon, Trash2, Search } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, query, where, getDocs, orderBy, limit, getDoc, doc, onSnapshot, deleteDoc } from "firebase/firestore";

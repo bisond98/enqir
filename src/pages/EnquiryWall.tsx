@@ -29,7 +29,6 @@ import { AISearchService } from "@/services/ai/aiSearchService";
 import { formatIndianCurrency } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { debounce } from "@/utils/performance";
-import { HeaderSnow } from "@/components/HeaderSnow";
 
 interface Enquiry {
   id: string;
@@ -4945,7 +4944,6 @@ export default function EnquiryWall() {
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">

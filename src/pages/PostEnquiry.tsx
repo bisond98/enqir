@@ -15,7 +15,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useUsage } from "@/contexts/UsageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
@@ -1760,7 +1759,6 @@ export default function PostEnquiry() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         {/* Header - Matching Live Enquiries - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <HeaderSnow />
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 // Trigger Vercel deployment
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";

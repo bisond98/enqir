@@ -14,7 +14,6 @@ import {
   Settings as SettingsIcon
 } from "lucide-react";
 import Layout from "@/components/Layout";
-import { HeaderSnow } from "@/components/HeaderSnow";
 import { useUsage } from "@/contexts/UsageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
