@@ -185,7 +185,7 @@ export const sendCustomSignInLink = functions.https.onRequest(async (req, res): 
     }
 
     const callbackUrl = continueUrl || "https://enqir.in/auth/callback";
-    
+
     // Generate sign-in link using Firebase Admin SDK
     // Note: generateSignInWithEmailLink returns the link string (doesn't send email automatically)
     const actionCodeSettings = {
@@ -275,9 +275,9 @@ Your enqir.in team
         await sgMail.send(msg);
         console.log("✅ Custom email sent via SendGrid to:", email);
 
-        res.json({
-          success: true,
-          message: "Sign-in email sent",
+    res.json({
+      success: true,
+      message: "Sign-in email sent",
           sentVia: "sendgrid"
         });
         return;
