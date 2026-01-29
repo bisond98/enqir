@@ -16,88 +16,6 @@ import { createPortal } from "react-dom";
 import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
-// Santa Skating Animation Component - Pure visual, no logic impact
-const SantaSkatingAnimation = () => {
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    // Ensure animation runs continuously
-    if (imgRef.current) {
-      imgRef.current.style.animation = 'santaSkating 8s linear infinite';
-      imgRef.current.style.animationPlayState = 'running';
-    }
-  }, []);
-
-  return (
-    <div 
-      className="santa-skating-container"
-      style={{
-        position: 'absolute',
-        bottom: '100%',
-        left: '0',
-        right: '0',
-        width: '100%',
-        height: '60px',
-        zIndex: 100,
-        pointerEvents: 'none',
-        overflow: 'visible',
-      }}
-    >
-      <img
-        ref={imgRef}
-        src="/santa-skating.png"
-        alt="Santa and animals skating"
-        className="santa-skating-image"
-        style={{
-          height: '60px',
-          width: 'auto',
-          maxWidth: '300px',
-          minWidth: '200px',
-          objectFit: 'contain',
-          willChange: 'transform',
-          backfaceVisibility: 'visible',
-          WebkitBackfaceVisibility: 'visible',
-          display: 'block',
-          opacity: 1,
-          visibility: 'visible',
-          position: 'absolute',
-          left: '50%',
-          bottom: '20px',
-          zIndex: 101,
-          transform: 'translateX(400px)',
-        }}
-        onError={(e) => {
-          console.error('Santa skating image failed to load');
-          const img = e.target as HTMLImageElement;
-          img.style.border = '3px solid red';
-          img.style.backgroundColor = 'rgba(255,0,0,0.3)';
-          img.style.width = '200px';
-          img.style.height = '60px';
-        }}
-        onLoad={() => {
-          console.log('✅ Santa skating image loaded successfully');
-          if (imgRef.current) {
-            console.log('Image dimensions:', imgRef.current.naturalWidth, 'x', imgRef.current.naturalHeight);
-            imgRef.current.style.opacity = '1';
-            imgRef.current.style.visibility = 'visible';
-            // Force animation to start
-            const img = imgRef.current;
-            // Remove inline transform to let animation handle it
-            img.style.transform = '';
-            // Force reflow and apply animation
-            void img.offsetWidth;
-            img.style.animation = 'santaSkating 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite';
-            console.log('Animation applied:', img.style.animation);
-            console.log('Computed animation:', window.getComputedStyle(img).animation);
-            console.log('Computed transform:', window.getComputedStyle(img).transform);
-            console.log('Computed animation:', window.getComputedStyle(img).animation);
-          }
-        }}
-      />
-    </div>
-  );
-};
-
 const Landing = () => {
   const features = [
     {
@@ -1891,8 +1809,6 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
             <Link to="/post-enquiry" className="w-full sm:w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
             <button className="w-full sm:w-auto sm:h-12 border border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
-              {/* Animated Santa and animals skating above button */}
-              <SantaSkatingAnimation />
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl pointer-events-none" />
               {/* Shimmer effect */}
