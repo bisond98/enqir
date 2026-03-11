@@ -52,6 +52,7 @@ import AllChats from "./pages/AllChats";
 import HelpGuide from "./pages/HelpGuide";
 import MyChats from "./pages/MyChats";
 import ReportUser from "./pages/ReportUser";
+import { SellHome, CreateListing, Marketplace, ListingDetail, SellerDashboard } from "./modules/sell";
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
@@ -153,6 +154,12 @@ const App = () => {
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
+                  {/* Sell Listing Engine (isolated module) */}
+                  <Route path="/sell" element={<ErrorBoundary><SellHome /></ErrorBoundary>} />
+                  <Route path="/sell/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
+                  <Route path="/sell/listing/:id" element={<ErrorBoundary><ListingDetail /></ErrorBoundary>} />
+                  <Route path="/sell/new" element={<ErrorBoundary><AuthGuard><CreateListing /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/sell/dashboard" element={<ErrorBoundary><AuthGuard><SellerDashboard /></AuthGuard></ErrorBoundary>} />
                   {/* 🛡️ PROTECTED: My Chats route - DO NOT REMOVE - Fixes 404 error */}
                   <Route path="/my-chats" element={<ErrorBoundary><AuthGuard><MyChats /></AuthGuard></ErrorBoundary>} />
                   {/* 🛡️ PROTECTED: All Chats route - DO NOT REMOVE - Fixes 404 error */}

@@ -1827,6 +1827,28 @@ const Landing = () => {
               <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
             </Link>
+            {/* Sell Button - Mobile Only */}
+            <Link to="/sell" className="w-full sm:hidden group relative mt-3" style={{ overflow: 'visible', zIndex: 10 }}>
+              <button className="w-full border border-black bg-black text-white font-black py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <span className="text-xs relative z-10">Sell</span>
+                <ShoppingBag className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+              </button>
+            </Link>
+            {/* For Sale Button - Mobile Only */}
+            <Link to="/sell/marketplace" className="w-full sm:hidden group relative">
+              <button className="w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <span className="text-xs relative z-10">For Sale</span>
+                <Package className="h-3 w-3 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              </button>
+            </Link>
             {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
                 - Text centered with slight right offset (paddingLeft: '2.75rem')
                 - Icon positioned at left-2.5 sm:left-5
