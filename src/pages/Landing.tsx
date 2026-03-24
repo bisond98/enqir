@@ -15,6 +15,7 @@ import { collection, query, where, orderBy, limit, doc, updateDoc, setDoc, array
 import { createPortal } from "react-dom";
 import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { listMarketplace } from "@/modules/sell/services/sellDb";
 
 const Landing = () => {
   const features = [
@@ -190,6 +191,10 @@ const Landing = () => {
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
+  const [sellListings, setSellListings] = useState<any[]>([]);
+  const [shuffledSellListings, setShuffledSellListings] = useState<any[]>([]);
+  const [isShufflingSell, setIsShufflingSell] = useState(false);
+  const [expandedSellCardId, setExpandedSellCardId] = useState<string | null>(null);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
   // State for expanded card (for hover/click interaction)
@@ -988,6 +993,43 @@ const Landing = () => {
 
     fetchUserProfiles();
   }, [publicRecentEnquiries]);
+
+  // Mobile home "For Sale" card deck with shuffle behavior similar to enquiry cards
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSellListings = async () => {
+      try {
+        const listings = await listMarketplace({ pageSize: 24 });
+        if (!isMounted) return;
+        setSellListings(listings);
+        setShuffledSellListings(getRandomThree(listings));
+      } catch (error) {
+        console.error("Failed to load sell listings for landing:", error);
+      }
+    };
+
+    loadSellListings();
+    const refreshTimer = setInterval(loadSellListings, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(refreshTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (sellListings.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setIsShufflingSell(true);
+      setTimeout(() => {
+        setShuffledSellListings(getRandomThree(sellListings));
+        setTimeout(() => setIsShufflingSell(false), 100);
+      }, 500);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [sellListings]);
 
   // Shuffle live enquiries every 10 seconds, show expired after live
   useEffect(() => {
@@ -2738,6 +2780,120 @@ const Landing = () => {
                 <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mt-3 sm:mt-4 leading-tight">
                   Stay Encrypted and Anonymous — let everyone be surprised!
                 </p>
+
+                {/* Mobile only: For Sale cards with enquiry-card style deck + shuffle */}
+                {windowWidth < 640 && shuffledSellListings.length > 0 && (
+                  <div className="mt-4 w-full flex flex-col items-center">
+                    <p className="text-[8px] font-black text-black mb-2">For Sale Right Now</p>
+                    <div
+                      className="relative bg-white rounded-2xl"
+                      style={{
+                        width: "180px",
+                        height: "320px",
+                        minHeight: "320px",
+                        overflow: "visible",
+                      }}
+                    >
+                      <AnimatePresence mode="wait">
+                        {shuffledSellListings.slice(0, 3).map((listing, index) => {
+                          const cardWidth = 180;
+                          const shiftAmount = cardWidth * 0.5;
+                          const cardCenterOffset = cardWidth / 2;
+                          const baseLeft = `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
+                          const isHovered = expandedSellCardId === listing.id;
+                          const isAnyCardHovered = expandedSellCardId !== null;
+                          const zIndex = isHovered ? 50 : (3 - index) * 10;
+                          const imageUrl = listing.images?.[0];
+                          const priceText =
+                            listing.priceType === "range"
+                              ? `₹${listing.priceMin ?? ""} - ₹${listing.priceMax ?? ""}`
+                              : listing.price
+                                ? `₹${listing.price}`
+                                : "₹—";
+
+                          return (
+                            <motion.div
+                              key={listing.id}
+                              initial={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              animate={
+                                isShufflingSell
+                                  ? { opacity: 0, scale: 0.92, y: 10 }
+                                  : isHovered && isAnyCardHovered
+                                    ? { opacity: 1, scale: 1.05, y: -5 }
+                                    : { opacity: 1, scale: 1, y: 0 }
+                              }
+                              exit={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              transition={{
+                                type: isShufflingSell ? "tween" : "spring",
+                                duration: isShufflingSell ? 0.4 : undefined,
+                                stiffness: 100,
+                                damping: 20,
+                                mass: 0.4,
+                                delay: isShufflingSell ? index * 0.06 : 0,
+                              }}
+                              className="absolute w-full"
+                              style={{
+                                left: baseLeft,
+                                width: "180px",
+                                height: "320px",
+                                zIndex,
+                              }}
+                              onTouchStart={() => {
+                                setExpandedSellCardId(expandedSellCardId === listing.id ? null : listing.id);
+                              }}
+                            >
+                              <Link to={`/sell/listing/${listing.id}`} className="block h-full">
+                                <div className="bg-gray-100 rounded-xl border-2 border-black flex flex-col h-full overflow-hidden">
+                                  <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 px-2 py-1.5 min-h-[36px] flex items-center justify-between">
+                                    <span className="text-[8px] text-white font-medium">For Sale</span>
+                                    <span className="text-[8px] text-white/90 font-semibold truncate max-w-[72px]">
+                                      {listing.category || "Other"}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 flex flex-col px-2.5 pt-2.5 pb-2">
+                                    <div className="w-full h-[108px] rounded-lg border border-black bg-white overflow-hidden mb-2">
+                                      {imageUrl ? (
+                                        <img src={imageUrl} alt={listing.title || "Listing"} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
+                                      )}
+                                    </div>
+                                    <h3 className="text-xs font-semibold leading-tight line-clamp-2 text-gray-900 mb-2">
+                                      {listing.title}
+                                    </h3>
+                                    <div className="w-full mb-2">
+                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 h-9 min-h-[36px]">
+                                        <span className="text-[7px] text-gray-500">Price -</span>
+                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{priceText}</span>
+                                      </div>
+                                    </div>
+                                    <div className="w-full mb-2">
+                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 min-h-[32px]">
+                                        <span className="text-[7px] text-gray-500">at</span>
+                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{listing.location || "N/A"}</span>
+                                      </div>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        navigate(`/sell/listing/${listing.id}`);
+                                      }}
+                                      className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black min-h-[36px]"
+                                    >
+                                      View Product
+                                    </button>
+                                  </div>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          );
+                        })}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
