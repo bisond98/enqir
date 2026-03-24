@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff } from 'lucide-react';
 
 function formatPrice(l: SellListing) {
   if (l.priceType === 'range') return `₹${l.priceMin ?? ''} - ₹${l.priceMax ?? ''}`;
@@ -91,27 +91,55 @@ export default function Marketplace() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {listings.map((l) => (
           <Link key={l.id} to={`/sell/listing/${l.id}`} className="block">
-            <Card className="border border-black rounded-2xl hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3)] transition-shadow">
-              <CardHeader className="font-black text-black">{l.title}</CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-gray-700">
-                  <IndianRupee className="h-3.5 w-3.5" />
-                  <span className="font-bold">{formatPrice(l)}</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-700">
-                  <MapPin className="h-3.5 w-3.5" />
-                  <span>{l.location}</span>
-                </div>
-                {l.tags?.length > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-gray-700">
-                    <Tag className="h-3.5 w-3.5" />
-                    <span className="truncate">{l.tags.slice(0, 5).join(', ')}</span>
+            <Card className="border border-black rounded-2xl overflow-hidden hover:shadow-[0_8px_0_0_rgba(0,0,0,0.25)] transition-shadow bg-white">
+              <div className="relative aspect-square sm:aspect-[4/3] bg-gray-100">
+                {l.images?.[0] ? (
+                  <img
+                    src={l.images[0]}
+                    alt={l.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                    <ImageOff className="h-5 w-5 mr-2" />
+                    <span className="text-xs font-medium">No image</span>
                   </div>
                 )}
-                <p className="text-xs text-gray-700 line-clamp-2">{l.description}</p>
+                <div className="absolute top-2 left-2 bg-black/85 text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                  {l.condition}
+                </div>
+                <div className="absolute top-2 right-2 bg-white/95 text-black text-[10px] px-2 py-1 rounded-full font-bold">
+                  {l.category}
+                </div>
+              </div>
+
+              <CardHeader className="pb-2 px-3 pt-3 sm:px-6 sm:pt-6">
+                <div className="flex items-center gap-1 text-sm sm:text-lg text-black font-black">
+                  <IndianRupee className="h-4 w-4" />
+                  <span>{formatPrice(l)}</span>
+                </div>
+                <h3 className="font-black text-black text-xs sm:text-base leading-snug line-clamp-2">{l.title}</h3>
+              </CardHeader>
+
+              <CardContent className="space-y-2 pt-0 px-3 pb-3 sm:px-6 sm:pb-6">
+                <div className="flex items-center gap-2 text-[11px] sm:text-xs text-gray-700">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{l.location}</span>
+                </div>
+
+                {l.tags?.length > 0 && (
+                  <div className="hidden sm:flex items-center gap-2 text-xs text-gray-700">
+                    <Tag className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{l.tags.slice(0, 3).join(' • ')}</span>
+                  </div>
+                )}
+
+                <p className="hidden sm:block text-xs text-gray-700 line-clamp-2">{l.description}</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-black pt-1">View details</p>
               </CardContent>
             </Card>
           </Link>

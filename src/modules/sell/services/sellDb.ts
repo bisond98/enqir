@@ -7,7 +7,6 @@ import {
   getDoc,
   getDocs,
   limit,
-  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -62,15 +61,24 @@ export async function listMarketplace(params: {
 }) {
   const pageSize = params.pageSize ?? 50;
 
-  // Keep this simple and safe: Firestore doesn't support "contains-any" full text;
-  // we'll do lightweight client-side filtering for search.
-  const constraints: any[] = [where('status', '==', 'live'), orderBy('createdAt', 'desc'), limit(pageSize)];
-  if (params.category) constraints.splice(1, 0, where('category', '==', params.category));
-  if (params.location) constraints.splice(1, 0, where('location', '==', params.location));
-
-  const q = query(collection(db, LISTINGS_COLLECTION), ...constraints);
+  // Query only by status to avoid requiring composite indexes; sort/filter client-side.
+  const q = query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(pageSize));
   const snap = await getDocs(q);
   let listings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+
+  // Keep latest listings first.
+  listings = listings.sort((a, b) => {
+    const aMs = a.createdAt?.toMillis?.() ?? 0;
+    const bMs = b.createdAt?.toMillis?.() ?? 0;
+    return bMs - aMs;
+  });
+
+  if (params.category) {
+    listings = listings.filter((l) => l.category === params.category);
+  }
+  if (params.location) {
+    listings = listings.filter((l) => l.location === params.location);
+  }
 
   const s = (params.search ?? '').trim().toLowerCase();
   if (s) {

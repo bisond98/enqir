@@ -12,9 +12,12 @@ import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function CreateListing() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
@@ -28,6 +31,7 @@ export default function CreateListing() {
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
 
   const parsedTags = useMemo(() => {
     return tags
@@ -39,14 +43,23 @@ export default function CreateListing() {
 
   const onAddImages = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    if (images.length >= 5) {
+      toast({ title: 'Image limit reached', description: 'You can upload up to 5 images only.', variant: 'destructive' });
+      return;
+    }
     setUploading(true);
     try {
       const urls: string[] = [];
-      for (const file of Array.from(files)) {
+      const remainingSlots = 5 - images.length;
+      const selectedFiles = Array.from(files).slice(0, remainingSlots);
+      for (const file of selectedFiles) {
         const url = await uploadToCloudinaryUnsigned(file);
         urls.push(url);
       }
-      setImages((prev) => [...prev, ...urls].slice(0, 8));
+      if (files.length > selectedFiles.length) {
+        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+      }
+      setImages((prev) => [...prev, ...urls].slice(0, 5));
     } catch (e) {
       toast({ title: 'Upload failed', description: 'Could not upload one or more images.', variant: 'destructive' });
     } finally {
@@ -68,6 +81,24 @@ export default function CreateListing() {
       toast({ title: 'Missing price range', description: 'Enter min and max price.', variant: 'destructive' });
       return;
     }
+
+    const fixedPrice = priceType === 'fixed' ? Number(price) : null;
+    const rangeMin = priceType === 'range' ? Number(priceMin) : null;
+    const rangeMax = priceType === 'range' ? Number(priceMax) : null;
+
+    if (priceType === 'fixed' && (!Number.isFinite(fixedPrice) || (fixedPrice ?? 0) <= 0)) {
+      toast({ title: 'Invalid price', description: 'Enter a valid numeric price.', variant: 'destructive' });
+      return;
+    }
+
+    if (
+      priceType === 'range' &&
+      (!Number.isFinite(rangeMin) || !Number.isFinite(rangeMax) || (rangeMin ?? 0) <= 0 || (rangeMax ?? 0) <= 0 || (rangeMin ?? 0) > (rangeMax ?? 0))
+    ) {
+      toast({ title: 'Invalid range', description: 'Use valid numbers and keep min <= max.', variant: 'destructive' });
+      return;
+    }
+
     setPublishing(true);
     try {
       await createListing(user.uid, {
@@ -77,9 +108,9 @@ export default function CreateListing() {
         location,
         condition,
         priceType,
-        price: priceType === 'fixed' ? Number(price) : null,
-        priceMin: priceType === 'range' ? Number(priceMin) : null,
-        priceMax: priceType === 'range' ? Number(priceMax) : null,
+        price: fixedPrice,
+        priceMin: rangeMin,
+        priceMax: rangeMax,
         tags: parsedTags,
         images,
       });
@@ -91,12 +122,34 @@ export default function CreateListing() {
       setPriceMax('');
       setTags('');
       setImages([]);
+      setIsPublished(true);
+      window.setTimeout(() => {
+        navigate('/sell/marketplace');
+      }, 5000);
     } catch (e) {
       toast({ title: 'Publish failed', description: 'Could not publish listing.', variant: 'destructive' });
     } finally {
       setPublishing(false);
     }
   };
+
+  if (isPublished) {
+    return (
+      <SellShell title="Create Listing">
+        <Card className="border-[0.5px] border-black rounded-2xl bg-white shadow-[0_8px_0_0_rgba(0,0,0,0.25)]">
+          <CardContent className="py-12 sm:py-16 flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 border border-green-600 flex items-center justify-center">
+              <CheckCircle2 className="h-9 w-9 text-green-700" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight">Successfully Listed</h2>
+            <p className="text-xs sm:text-sm text-gray-700 max-w-sm">
+              Your product is now live on the For Sale page. Redirecting in 5 seconds...
+            </p>
+          </CardContent>
+        </Card>
+      </SellShell>
+    );
+  }
 
   return (
     <SellShell title="Create Listing">
@@ -199,8 +252,9 @@ export default function CreateListing() {
 
           <div className="space-y-2">
             <Label>Images</Label>
-            <Input type="file" multiple accept="image/*" onChange={(e) => onAddImages(e.target.files)} disabled={uploading} />
-            {images.length > 0 && <p className="text-[11px] text-gray-600">{images.length} image(s) added</p>}
+            <Input type="file" multiple accept="image/*" onChange={(e) => onAddImages(e.target.files)} disabled={uploading || images.length >= 5} />
+            <p className="text-[11px] text-gray-600">Maximum 5 images.</p>
+            {images.length > 0 && <p className="text-[11px] text-gray-600">{images.length}/5 image(s) added</p>}
           </div>
 
           <Button
