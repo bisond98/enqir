@@ -1848,49 +1848,53 @@ const Landing = () => {
 
 
           {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
-            <Link to="/post-enquiry" className="w-full sm:w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
-            <button className="w-full sm:w-auto sm:h-12 border border-black bg-black text-white font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
+            <div className="flex items-center justify-center gap-3 sm:gap-4">
+            <Link to="/post-enquiry" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
+            <button className="w-32 h-32 sm:w-auto sm:h-12 border border-black bg-black text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
               {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-              <span className="text-xs sm:text-base relative z-10">Post Your Need</span>
-              <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+              <span className="text-[10px] leading-[1] sm:text-base relative z-10 text-center">Post Need</span>
+              <Plus className="h-4.5 w-4.5 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
           </Link>
-          <Link to="/enquiries" className="w-full sm:w-auto group">
-            <button className="w-full sm:w-auto sm:h-12 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 sm:py-0 px-4 sm:px-4 rounded-xl sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] lg:min-w-[220px] relative overflow-hidden">
+          <Link to="/enquiries" className="w-auto group">
+            <button className="w-32 h-32 sm:w-auto sm:h-12 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-              <span className="text-xs sm:text-base relative z-10">Show All Enquiries</span>
-              <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="text-[10px] leading-[1] sm:text-base relative z-10 text-center">Enquiries</span>
+              <Eye className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
             </Link>
-            {/* Sell Button - Mobile Only */}
-            <Link to="/sell" className="w-full sm:hidden group relative mt-3" style={{ overflow: 'visible', zIndex: 10 }}>
-              <button className="w-full border border-black bg-black text-white font-black py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
+            </div>
+            {/* Sell Row - Mobile Only */}
+            <div className="flex items-center justify-center gap-3 sm:hidden">
+              <Link to="/sell" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
+              <button className="w-32 h-32 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
                 {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                <span className="text-xs relative z-10">Sell</span>
-                <ShoppingBag className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-200 relative z-10" />
+                <span className="text-[10px] leading-[1] relative z-10">Sell</span>
+                <Plus className="h-4.5 w-4.5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             {/* For Sale Button - Mobile Only */}
-            <Link to="/sell/marketplace" className="w-full sm:hidden group relative">
-              <button className="w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+            <Link to="/sell/marketplace" className="w-auto group relative">
+              <button className="w-32 h-32 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
                 {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                <span className="text-xs relative z-10">For Sale</span>
-                <Package className="h-3 w-3 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <span className="text-[10px] leading-[1] relative z-10">For Sale</span>
+                <Package className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
+            </div>
             {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
                 - Text centered with slight right offset (paddingLeft: '2.75rem')
                 - Icon positioned at left-2.5 sm:left-5
