@@ -8,6 +8,20 @@ export default defineConfig(({ mode }) => ({
     host: "localhost",
     port: 8083,
     open: true,
+    proxy: {
+      // Nominatim reverse geocode (dev only): required User-Agent + avoids browser CORS quirks
+      "/api/nominatim": {
+        target: "https://nominatim.openstreetmap.org",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/nominatim/, ""),
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            proxyReq.setHeader("User-Agent", "Enqir/1.0 (https://www.enqir.in; contact@enqir.in)");
+            proxyReq.setHeader("Accept-Language", "en");
+          });
+        },
+      },
+    },
     hmr: {
       overlay: true,
     },

@@ -29,6 +29,14 @@ import { AISearchService } from "@/services/ai/aiSearchService";
 import { formatIndianCurrency } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { debounce } from "@/utils/performance";
+import { MapLocationPicker } from "@/components/MapLocationPicker";
+import { getEnquiryCoordinates } from "@/lib/enquiryCoordinates";
+import { sortByDistanceWithUnknownsAtBottom } from "@/lib/sortEnquiriesByDistance";
+import {
+  loadSortReferenceLocation,
+  saveSortReferenceLocation,
+} from "@/lib/sortReferenceStorage";
+import type { SortReferenceLocation } from "@/types/mapLocation";
 
 interface Enquiry {
   id: string;
@@ -54,6 +62,12 @@ interface Enquiry {
   dealClosed?: boolean;
   dealClosedAt?: any;
   dealClosedBy?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  formatted_address?: string | null;
 }
 
 export default function EnquiryWall() {
@@ -68,7 +82,19 @@ export default function EnquiryWall() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'default'>('default');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'default' | 'nearest' | 'farthest'>('default');
+  const [sortReferenceLocation, setSortReferenceLocation] = useState<SortReferenceLocation | null>(() =>
+    loadSortReferenceLocation()
+  );
+  const [refLocationPickerOpen, setRefLocationPickerOpen] = useState(false);
+  const [pendingDistanceSort, setPendingDistanceSort] = useState<'nearest' | 'farthest' | null>(null);
+
+  useEffect(() => {
+    if ((sortBy === "nearest" || sortBy === "farthest") && !sortReferenceLocation) {
+      setSortBy("default");
+    }
+  }, [sortBy, sortReferenceLocation]);
+
   // 🚀 PAGINATION: State for paginated display (10 per page)
   const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1153,6 +1179,9 @@ export default function EnquiryWall() {
   
   // Shuffle live enquiries every 10 seconds
   useEffect(() => {
+    if (sortBy === "nearest" || sortBy === "farthest") {
+      return;
+    }
     if (enquiries.length === 0) return;
     
     // Separate live and expired enquiries
@@ -1286,7 +1315,7 @@ export default function EnquiryWall() {
     }, 10000); // 10 seconds
     
     return () => clearInterval(interval);
-  }, [enquiries, searchTerm]);
+  }, [enquiries, searchTerm, sortBy]);
   
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
@@ -1387,11 +1416,21 @@ export default function EnquiryWall() {
       });
       
       // Sort each group by the original order (preserving search priority)
-      const sortedLiveResults = [...liveResults].sort((a, b) => {
-        const orderA = orderMap.get(a.id) ?? Infinity;
-        const orderB = orderMap.get(b.id) ?? Infinity;
-        return orderA - orderB;
-      });
+      const sortedLiveResults =
+        (sortBy === "nearest" || sortBy === "farthest") && sortReferenceLocation
+          ? sortByDistanceWithUnknownsAtBottom<Enquiry>(
+              liveResults,
+              sortReferenceLocation.lat,
+              sortReferenceLocation.lng,
+              sortBy,
+              (e) => getEnquiryCoordinates(e),
+              orderMap
+            )
+          : [...liveResults].sort((a, b) => {
+              const orderA = orderMap.get(a.id) ?? Infinity;
+              const orderB = orderMap.get(b.id) ?? Infinity;
+              return orderA - orderB;
+            });
       
       const sortedExpiredResults = [...expiredResults].sort((a, b) => {
         const orderA = orderMap.get(a.id) ?? Infinity;
@@ -1407,6 +1446,20 @@ export default function EnquiryWall() {
       
       // Combine: live first, then expired, then deal closed (preserving search priority order)
       return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
+    }
+
+    if (
+      (sortBy === "nearest" || sortBy === "farthest") &&
+      sortReferenceLocation
+    ) {
+      const sortedLive = sortByDistanceWithUnknownsAtBottom<Enquiry>(
+        liveResults,
+        sortReferenceLocation.lat,
+        sortReferenceLocation.lng,
+        sortBy,
+        (e) => getEnquiryCoordinates(e)
+      );
+      return [...sortedLive, ...expiredResults, ...dealClosedResults];
     }
     
     // If sortBy is 'default', use shuffled live enquiries (original shuffle behavior)
@@ -1494,7 +1547,7 @@ export default function EnquiryWall() {
     
     // Combine: live first, then expired, then deal closed (all sorted by date)
     return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm]);
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation]);
 
   // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
   useEffect(() => {
@@ -5392,7 +5445,7 @@ export default function EnquiryWall() {
                         ? 'bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
                         : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
                     }`}
-                    title="Sort enquiries by date"
+                    title="Sort enquiries"
                   >
                     {/* Physical button depth effect */}
                     <div className={`absolute inset-0 bg-gradient-to-b ${
@@ -5406,7 +5459,7 @@ export default function EnquiryWall() {
                     <span className="relative z-10 hidden sm:inline">Sort</span>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[140px] sm:w-48 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
+                <DropdownMenuContent align="end" className="min-w-[200px] sm:min-w-[228px] w-[min(92vw,260px)] sm:w-56 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
                   <DropdownMenuCheckboxItem
                     checked={sortBy === 'newest'}
                     onCheckedChange={() => setSortBy('newest')}
@@ -5439,11 +5492,82 @@ export default function EnquiryWall() {
                   >
                     Oldest first
                   </DropdownMenuCheckboxItem>
+                  <div className="h-px bg-gray-300 my-1.5 mx-2" />
+                  <div
+                    className="px-1.5 pt-2 pb-2 space-y-2.5"
+                    onPointerDown={(e) => e.preventDefault()}
+                  >
+                    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.28em] text-center text-slate-600">
+                      Sort by location
+                    </p>
+                    <button
+                      type="button"
+                      className="w-full overflow-hidden rounded-lg border border-black bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.2)] active:translate-y-px active:shadow-none transition-transform touch-manipulation min-h-[76px] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                      onClick={() => setRefLocationPickerOpen(true)}
+                    >
+                      {sortReferenceLocation ? (
+                        <img
+                          src={`https://staticmap.openstreetmap.de/staticmap.php?center=${sortReferenceLocation.lat},${sortReferenceLocation.lng}&zoom=13&size=280x152&maptype=mapnik`}
+                          alt=""
+                          className="h-[76px] w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-1 py-4 px-2 text-[10px] font-black text-slate-700">
+                          <MapPin className="h-5 w-5" />
+                          <span>Choose on map</span>
+                        </div>
+                      )}
+                    </button>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <DropdownMenuCheckboxItem
+                        checked={sortBy === "nearest"}
+                        onCheckedChange={() => {
+                          const ref = sortReferenceLocation ?? loadSortReferenceLocation();
+                          if (ref) {
+                            setSortReferenceLocation(ref);
+                            setSortBy("nearest");
+                            return;
+                          }
+                          setPendingDistanceSort("nearest");
+                          setRefLocationPickerOpen(true);
+                        }}
+                        className={`cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] relative overflow-hidden flex items-center justify-center text-center ${
+                          sortBy === "nearest"
+                            ? "bg-blue-600 border-[0.5px] border-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.35)]"
+                            : "bg-white border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]"
+                        }`}
+                      >
+                        Nearest
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={sortBy === "farthest"}
+                        onCheckedChange={() => {
+                          const ref = sortReferenceLocation ?? loadSortReferenceLocation();
+                          if (ref) {
+                            setSortReferenceLocation(ref);
+                            setSortBy("farthest");
+                            return;
+                          }
+                          setPendingDistanceSort("farthest");
+                          setRefLocationPickerOpen(true);
+                        }}
+                        className={`cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] relative overflow-hidden flex items-center justify-center text-center ${
+                          sortBy === "farthest"
+                            ? "bg-blue-600 border-[0.5px] border-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.35)]"
+                            : "bg-white border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]"
+                        }`}
+                      >
+                        Farthest
+                      </DropdownMenuCheckboxItem>
+                    </div>
+                  </div>
                   {sortBy !== 'default' && (
                     <>
                       <div className="h-px bg-gray-300 my-1.5 mx-2" />
                       <DropdownMenuCheckboxItem
-                        checked={sortBy === 'default'}
+                        checked={false}
                         onCheckedChange={() => setSortBy('default')}
                         className="cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden bg-red-500 border-[0.5px] border-red-600 shadow-[0_4px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 hover:bg-red-600 flex items-center justify-center text-center pl-3 pr-3"
                         style={{ 
@@ -6499,6 +6623,37 @@ export default function EnquiryWall() {
           )}
         </div>
       </div>
+      <MapLocationPicker
+        open={refLocationPickerOpen}
+        onOpenChange={(o) => {
+          setRefLocationPickerOpen(o);
+          if (!o) setPendingDistanceSort(null);
+        }}
+        title={
+          pendingDistanceSort
+            ? "Pick a reference point on the map"
+            : "Reference location"
+        }
+        defaultLocation={
+          sortReferenceLocation
+            ? { lat: sortReferenceLocation.lat, lng: sortReferenceLocation.lng }
+            : undefined
+        }
+        onSelect={(lat, lng, addr) => {
+          const loc: SortReferenceLocation = {
+            lat,
+            lng,
+            formatted_address: addr.formatted_address,
+          };
+          saveSortReferenceLocation(loc);
+          setSortReferenceLocation(loc);
+          if (pendingDistanceSort) {
+            setSortBy(pendingDistanceSort);
+          }
+          setPendingDistanceSort(null);
+          setRefLocationPickerOpen(false);
+        }}
+      />
     </Layout>
   );
 }

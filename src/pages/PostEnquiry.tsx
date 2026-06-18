@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,9 +28,13 @@ import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
+import { MapLocationPicker } from "@/components/MapLocationPicker";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
+import { assignOptionalMapLocationFields } from "@/lib/appendEnquiryMapFields";
+import { formatMapLocationForFirestore } from "@/lib/mapLocationFormat";
+import type { MapLocationAddress } from "@/types/mapLocation";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -112,7 +116,8 @@ export default function PostEnquiry() {
   const [categoriesPopoverOpen, setCategoriesPopoverOpen] = useState(false);
   const [categoriesSheetOpen, setCategoriesSheetOpen] = useState(false);
   const [budget, setBudget] = useState("");
-  const [location, setLocation] = useState("");
+  const [mapLocation, setMapLocation] = useState<MapLocationAddress | null>(null);
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(null);
   const [notes, setNotes] = useState("");
@@ -164,9 +169,6 @@ export default function PostEnquiry() {
   const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(4).fill(0));
   
   // AI Location suggestions
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-
   // Scroll to ID verification card when verification is successful
   useEffect(() => {
     if (idVerificationResult?.matches && idVerificationCardRef.current) {
@@ -225,13 +227,13 @@ export default function PostEnquiry() {
       description.trim(),
       (selectedCategories.length > 0 || category.trim()),
       budget.trim(),
-      location.trim(),
+      mapLocation !== null,
       deadline !== null
     ];
     const completed = requiredFields.filter(field => field).length;
     const progress = (completed / requiredFields.length) * 100;
     setFormProgress(progress);
-  }, [title, description, selectedCategories, category, budget, location, deadline]);
+  }, [title, description, selectedCategories, category, budget, mapLocation, deadline]);
 
   // Real-time ID number validation
   const validateIdNumber = (value: string, type: string) => {
@@ -334,7 +336,7 @@ export default function PostEnquiry() {
             category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
             categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
             budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-            location: location.trim(),
+            location: mapLocation ? formatMapLocationForFirestore(mapLocation) : "",
             deadline: deadline,
             isUrgent: deadline ? (() => {
               const now = new Date();
@@ -362,6 +364,8 @@ export default function PostEnquiry() {
           if (validReferenceImages1.length > 0) {
             enquiryData.referenceImages = validReferenceImages1;
           }
+
+          if (mapLocation) assignOptionalMapLocationFields(enquiryData, mapLocation);
 
           // Add enquiry to database
           const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
@@ -525,7 +529,7 @@ export default function PostEnquiry() {
           category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
           categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
           budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-          location: location.trim(),
+          location: mapLocation ? formatMapLocationForFirestore(mapLocation) : "",
           deadline: deadline,
           isUrgent: deadline ? (() => {
             const now = new Date();
@@ -553,6 +557,8 @@ export default function PostEnquiry() {
         if (validReferenceImages2.length > 0) {
           enquiryData.referenceImages = validReferenceImages2;
         }
+
+        if (mapLocation) assignOptionalMapLocationFields(enquiryData, mapLocation);
 
         // Add enquiry to database
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
@@ -644,7 +650,7 @@ export default function PostEnquiry() {
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-        location: location.trim(),
+        location: mapLocation ? formatMapLocationForFirestore(mapLocation) : "",
         deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
@@ -672,6 +678,8 @@ export default function PostEnquiry() {
       if (validReferenceImages3.length > 0) {
         enquiryData.referenceImages = validReferenceImages3;
       }
+
+      if (mapLocation) assignOptionalMapLocationFields(enquiryData, mapLocation);
 
       // Add enquiry to database
       const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
@@ -993,45 +1001,6 @@ export default function PostEnquiry() {
     });
   };
 
-  // AI Location suggestions function
-  const generateLocationSuggestions = (input: string) => {
-    const commonLocations = [
-      // --- States & Union Territories ---
-      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-      "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry",
-      // --- Major Cities ---
-      "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Surat", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal", "Visakhapatnam", "Pimpri-Chinchwad", "Patna", "Vadodara", "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivali", "Vasai-Virar", "Varanasi", "Srinagar", "Aurangabad", "Navi Mumbai", "Solapur", "Vijayawada", "Ranchi", "Chandigarh", "Mysore", "Jodhpur", "Guwahati", "Jabalpur", "Gwalior", "Noida", "Coimbatore", "Kochi", "Bhubaneswar", "Dehradun", "Amritsar", "Allahabad", "Howrah", "Rourkela", "Dhanbad", "Asansol", "Nanded", "Kolhapur", "Ajmer", "Guntur", "Salem", "Warangal", "Udaipur", "Tiruchirappalli", "Kozhikode", "Thrissur", "Alappuzha", "Vellore", "Tirunelveli", "Kollam", "Kottayam", "Palakkad", "Malappuram", "Kannur", "Pathanamthitta", "Ernakulam", "Wayanad", "Idukki",
-      // --- Sample Districts/Towns (add more as needed) ---
-      "Aligarh", "Ambala", "Bareilly", "Belgaum", "Bhavnagar", "Bilaspur", "Cuttack", "Durgapur", "Gaya", "Gorakhpur", "Hubli", "Jamnagar", "Jhansi", "Kakinada", "Kharagpur", "Kurnool", "Mathura", "Moradabad", "Muzaffarnagar", "Muzaffarpur", "Nellore", "Panipat", "Rohtak", "Saharanpur", "Sangli", "Shimla", "Siliguri", "Tirupati", "Ujjain", "Vellore", "Vijayanagaram", "Yamunanagar",
-      // --- Global/Remote/Anywhere ---
-      "Anywhere", "Everywhere", "Remote", "Work from Home", "Online", "Virtual", "Global", "International"
-    ];
-    
-    if (!input.trim()) {
-      setLocationSuggestions([]);
-      return;
-    }
-    
-    const filtered = commonLocations.filter(loc => 
-      loc.toLowerCase().includes(input.toLowerCase())
-    ).slice(0, 12); // Show up to 12 suggestions
-    
-    setLocationSuggestions(filtered);
-  };
-
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setLocation(value);
-    generateLocationSuggestions(value);
-    setShowLocationSuggestions(true);
-  };
-
-  const selectLocation = (selectedLocation: string) => {
-    setLocation(selectedLocation);
-    setShowLocationSuggestions(false);
-    setLocationSuggestions([]);
-  };
-
   // Compress image for faster upload
   const compressImage = (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
@@ -1204,7 +1173,7 @@ export default function PostEnquiry() {
     
     console.log('🚀 FORM SUBMITTED! 🚀');
     console.log('Form submission started');
-    console.log('Form data:', { title, description, category, budget, location, deadline, notes });
+    console.log('Form data:', { title, description, category, budget, mapLocation, deadline, notes });
     console.log('ID images:', { idFrontImage: !!idFrontImage, idBackImage: !!idBackImage });
     console.log('Current loading state:', loading);
     console.log('Current selectedPlan:', selectedPlan);
@@ -1221,8 +1190,8 @@ export default function PostEnquiry() {
     }
 
     // Validate required fields
-    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !location.trim()) {
-      alert('Please fill in all required fields (title, description, categories, budget, location).');
+    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !mapLocation) {
+      alert('Please fill in all required fields (title, description, categories, budget, location on map).');
       return;
     }
 
@@ -1377,7 +1346,7 @@ export default function PostEnquiry() {
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other', // Primary category (first selected)
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-        location: location.trim(),
+        location: mapLocation ? formatMapLocationForFirestore(mapLocation) : "",
         deadline: deadline,
         isUrgent: deadline ? (() => {
           const now = new Date();
@@ -1436,6 +1405,8 @@ export default function PostEnquiry() {
       if (validReferenceImages.length > 0) {
         enquiryData.referenceImages = validReferenceImages;
       }
+      
+      if (mapLocation) assignOptionalMapLocationFields(enquiryData, mapLocation);
       
       console.log('Saving enquiry data:', enquiryData);
       
@@ -2272,46 +2243,67 @@ export default function PostEnquiry() {
                     </div>
 
                     <div className="space-y-2.5 sm:space-y-3">
-                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
                         <span className="text-blue-600">*</span>
                         Location
                       </Label>
-                      <div className="relative">
-                        <Input
-                          id="location"
-                          placeholder="Anywhere"
-                          value={location}
-                          onChange={handleLocationChange}
-                          onFocus={() => setShowLocationSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
-                          style={{ fontSize: '16px' }}
-                          required
-                        />
-                        {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
-                        
-                        {/* AI Location Suggestions Dropdown - Enhanced */}
-                        {showLocationSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute z-50 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
-                            {locationSuggestions.map((suggestion, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => selectLocation(suggestion)}
-                                className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
-                              >
-                                <span className="text-slate-800">{suggestion}</span>
-                                {(suggestion === "Anywhere" || suggestion === "Everywhere") && (
-                                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-semibold">
-                                    Global
-                                  </span>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                      <p className="text-[9px] sm:text-[10px] text-slate-600 leading-snug">
+                        Open the map, use <span className="font-semibold text-slate-800">Use my location</span> or drop a pin, then confirm.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-stretch">
+                        <button
+                          type="button"
+                          onClick={() => setMapPickerOpen(true)}
+                          className={cn(
+                            "flex-1 text-left min-h-[48px] sm:min-h-[56px] px-4 py-3 border border-black rounded-none transition-all duration-300",
+                            "bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]",
+                            "focus:outline-none focus:border-2 focus:border-black focus:ring-0"
+                          )}
+                        >
+                          <span className="text-[10px] sm:text-xs font-bold text-gray-900 block">
+                            {mapLocation
+                              ? formatMapLocationForFirestore(mapLocation)
+                              : "Required — tap to choose on map"}
+                          </span>
+                        </button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setMapPickerOpen(true)}
+                          className="h-12 sm:h-14 shrink-0 rounded-none border-2 border-black font-black shadow-[0_4px_0_0_rgba(0,0,0,0.25)] bg-white hover:bg-slate-50 min-touch px-4"
+                        >
+                          <MapPin className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Open map</span>
+                          <span className="sm:hidden">Map</span>
+                        </Button>
                       </div>
+                      {mapLocation ? (
+                        <button
+                          type="button"
+                          onClick={() => setMapPickerOpen(true)}
+                          className={cn(
+                            "group flex w-full items-center justify-between gap-3 min-h-[52px] sm:min-h-[48px] px-4 py-3",
+                            "rounded-none border-2 border-black font-black",
+                            "bg-gradient-to-br from-white to-slate-50 hover:from-slate-50 hover:to-slate-100",
+                            "shadow-[0_5px_0_0_rgba(0,0,0,0.28)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.28)]",
+                            "active:translate-y-[1px] active:shadow-[0_3px_0_0_rgba(0,0,0,0.28)]",
+                            "transition-all duration-150 min-touch focus:outline-none focus:border-blue-600"
+                          )}
+                        >
+                          <span className="flex items-center gap-2.5 min-w-0 text-left">
+                            <span className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-none border border-green-600 bg-green-50 shadow-[0_2px_0_0_rgba(22,163,74,0.25)]">
+                              <CheckCircle className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-green-600" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-[11px] sm:text-xs text-gray-900">Change on map</span>
+                              <span className="block text-[9px] sm:text-[10px] font-normal text-slate-500 group-hover:text-slate-600 leading-snug">
+                                Move the pin or pick a new spot
+                              </span>
+                            </span>
+                          </span>
+                          <MapPin className="h-5 w-5 shrink-0 text-gray-900" aria-hidden />
+                        </button>
+                      ) : null}
                     </div>
                   </div>
 
@@ -3132,7 +3124,7 @@ export default function PostEnquiry() {
                       setDescription("");
                       setCategory("");
                       setBudget("");
-                      setLocation("");
+                      setMapLocation(null);
                       setDeadline(null);
                       setSelectedPlan(null);
                       setNotes("");
@@ -3283,6 +3275,18 @@ export default function PostEnquiry() {
           </div>
         </div>
       )}
+
+      <MapLocationPicker
+        open={mapPickerOpen}
+        onOpenChange={setMapPickerOpen}
+        title="Choose your location"
+        defaultLocation={
+          mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined
+        }
+        onSelect={(_lat, _lng, address) => {
+          setMapLocation(address);
+        }}
+      />
 
     </Layout>
   );
