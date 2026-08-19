@@ -32,8 +32,8 @@ interface AuthContextType {
   isProfileVerified: boolean;
   profileVerificationStatus: string | null;
   showWelcomePopup: boolean;
-  signUp: (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => Promise<{ error: any | null; requiresVerification?: boolean }>;
-  signIn: (identifier: string, password: string) => Promise<{ error: any | null; requiresVerification?: boolean }>;
+  signUp: (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => Promise<{ error: any | null; requiresVerification?: boolean; emailSent?: boolean }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: any | null; requiresVerification?: boolean; emailSent?: boolean }>;
   signOut: () => Promise<void>;
   resendConfirmation: () => Promise<{ error: any | null }>;
   sendPasswordResetEmail: (email: string) => Promise<{ error: any | null }>;
@@ -216,15 +216,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
-        // Send email link for automatic sign-in
+        // Send email verification
+        let emailSent = false;
         try {
-          // Store email for sign-in link
-          window.localStorage.setItem('emailForSignIn', identifier);
-          console.log('📧 Stored email in localStorage:', identifier);
+          console.log('📧 Sending email verification to:', identifier);
           console.log('🔗 Callback URL:', `${window.location.origin}/auth/callback`);
           
           // Try custom email via Cloud Function first (with enqir.in branding)
-          let customEmailSent = false;
           try {
             const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
             const customEmailUrl = `${functionsUrl}/sendCustomSignInLink`;
@@ -241,88 +239,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }),
             });
 
-            // Handle response - check if it's ok first
-            if (!response.ok) {
-              // Response is not ok, try to parse error message but don't fail if parsing fails
+            if (response.ok) {
               try {
-                const errorResult = await response.json();
-                console.log('⚠️ Custom email failed, falling back to Firebase default:', errorResult.error || errorResult.note || `HTTP ${response.status}`);
-              } catch (parseError) {
-                console.log('⚠️ Custom email failed, falling back to Firebase default:', `HTTP ${response.status}`);
-              }
-              // Don't set customEmailSent to true, so fallback will run
-            } else {
-              // Response is ok, try to parse JSON
-              try {
-                const result = await response.json();
-                if (result.success) {
-                  customEmailSent = true;
-                  console.log('✅ Custom email sent successfully via:', result.sentVia || 'sendgrid');
-                  toast({
-                    title: 'Verification Email Sent!',
-                    description: `Check your inbox at ${identifier} and click the link to sign in.`,
-                  });
+                const emailResult = await response.json();
+                if (emailResult.success) {
+                  emailSent = true;
+                  console.log('✅ Custom email sent successfully via:', emailResult.sentVia || 'sendgrid');
                 } else {
-                  console.log('⚠️ Custom email failed, falling back to Firebase default:', result.error || result.note);
+                  console.log('⚠️ Custom email returned failure:', emailResult.error || emailResult.note);
                 }
               } catch (parseError) {
-                console.log('⚠️ Failed to parse response, falling back to Firebase default');
+                console.log('⚠️ Failed to parse custom email response');
+              }
+            } else {
+              try {
+                const errorResult = await response.json();
+                console.log('⚠️ Custom email failed:', errorResult.error || errorResult.note || `HTTP ${response.status}`);
+              } catch (parseError) {
+                console.log('⚠️ Custom email failed with HTTP:', response.status);
               }
             }
           } catch (customEmailError: any) {
-            console.log('⚠️ Custom email error, falling back to Firebase default:', customEmailError.message);
-            // Fall through to Firebase default email sending
+            console.log('⚠️ Custom email error:', customEmailError.message);
           }
 
-          // Fallback to Firebase default email sending if custom email failed
-          if (!customEmailSent) {
-            console.log('📧 Using Firebase default email template (fallback)');
-          await sendSignInLinkToEmail(auth, identifier, {
-            url: `${window.location.origin}/auth/callback`,
-            handleCodeInApp: true,
-          });
-            console.log('✅ Email link sent successfully via Firebase default:', identifier);
-
-          toast({
-            title: 'Verification Email Sent!',
-            description: `Check your inbox at ${identifier} and click the link to sign in.`,
-          });
+          // Fallback to Firebase email verification if custom email didn't work
+          if (!emailSent) {
+            console.log('📧 Using Firebase sendEmailVerification (fallback)');
+            await sendEmailVerification(result.user, {
+              url: `${window.location.origin}/auth/callback`,
+              handleCodeInApp: true,
+            });
+            emailSent = true;
+            console.log('✅ Firebase email verification sent to:', identifier);
           }
         } catch (emailError: any) {
-          console.error('Email link error:', emailError);
-          
-          // If quota exceeded, fallback to regular email verification
-          if (emailError.code === 'auth/quota-exceeded' && result.user) {
-            console.log('⚠️ Email link quota exceeded, falling back to regular email verification');
-            try {
-        await sendEmailVerification(result.user, {
-          url: `${window.location.origin}/auth/callback`,
-          handleCodeInApp: true,
-        });
-        toast({
-          title: 'Verification Email Sent!',
-                description: `Check your inbox at ${identifier} and click the link to verify.`,
-              });
-            } catch (verifyError: any) {
-              console.error('Email verification error:', verifyError);
-              toast({
-                title: 'Account Created!',
-                description: `Account created successfully, but email verification failed. Please try signing in and resending verification from your profile.`,
-                variant: 'default',
-              });
-            }
-          } else {
-            // Other errors - user is still created, just email sending failed
-            toast({
-              title: 'Account Created!',
-              description: `Account created successfully, but email link failed. Error: ${emailError.message}. Please sign in manually.`,
-              variant: 'default',
-            });
-          }
+          console.error('❌ Email sending error:', emailError.code, emailError.message);
+          emailSent = false;
         }
 
         setLoading(false);
-        return { error: null, requiresVerification: true };
+        return { error: null, requiresVerification: true, emailSent };
       } else {
         // Phone signup - temporarily disabled
         toast({

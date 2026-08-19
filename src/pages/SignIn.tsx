@@ -287,27 +287,33 @@ const SignIn = () => {
       console.log("Sign up result:", result);
       
       if (!result.error && result.requiresVerification) {
-        // Email signup - show verification message
-        setShowVerificationSent(true);
-        setSuccess("Account created successfully!");
-        setError("");
-        
-        // Scroll to verification card on mobile after a short delay
-        setTimeout(() => {
-          if (verificationCardRef.current && window.innerWidth < 640) {
-            const card = verificationCardRef.current;
-            const cardRect = card.getBoundingClientRect();
-            const cardTop = cardRect.top + window.scrollY;
-            const cardHeight = cardRect.height;
-            const windowHeight = window.innerHeight;
-            const scrollPosition = cardTop - (windowHeight / 2) + (cardHeight / 2);
-            
-            window.scrollTo({
-              top: Math.max(0, scrollPosition),
-              behavior: 'smooth'
-            });
-          }
-        }, 100);
+        if (result.emailSent === false) {
+          // Account created but email failed to send
+          setError("Account created, but we couldn't send the verification email. Please check your email address or try signing in and resending from your profile.");
+          setSuccess("");
+        } else {
+          // Email sent successfully - show verification message
+          setShowVerificationSent(true);
+          setSuccess("Account created successfully!");
+          setError("");
+          
+          // Scroll to verification card on mobile after a short delay
+          setTimeout(() => {
+            if (verificationCardRef.current && window.innerWidth < 640) {
+              const card = verificationCardRef.current;
+              const cardRect = card.getBoundingClientRect();
+              const cardTop = cardRect.top + window.scrollY;
+              const cardHeight = cardRect.height;
+              const windowHeight = window.innerHeight;
+              const scrollPosition = cardTop - (windowHeight / 2) + (cardHeight / 2);
+              
+              window.scrollTo({
+                top: Math.max(0, scrollPosition),
+                behavior: 'smooth'
+              });
+            }
+          }, 100);
+        }
       } else if (result.error) {
         // Use friendly error message instead of raw Firebase error
         const friendlyMessage = getFriendlyErrorMessage(result.error);
