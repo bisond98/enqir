@@ -156,21 +156,33 @@ export default function CreateListing() {
       <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
         <CardHeader className="font-black text-black">Listing Details</CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Title</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g., iPhone 13 Pro 128GB" />
+          <div className="space-y-2.5">
+            <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Title</Label>
+            <div className="relative">
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g., iPhone 13 Pro 128GB"
+                className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write details…" />
+          <div className="space-y-2.5">
+            <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Description</Label>
+            <div className="relative">
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write details…"
+                className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                style={{ fontSize: '16px' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Category</Label>
+            <div className="space-y-2.5">
+              <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Category</Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="border border-black">
+                <SelectTrigger className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none h-12 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,10 +194,10 @@ export default function CreateListing() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Location</Label>
+            <div className="space-y-2.5">
+              <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Location</Label>
               <Select value={location} onValueChange={setLocation}>
-                <SelectTrigger className="border border-black">
+                <SelectTrigger className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none h-12 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent>
@@ -200,10 +212,10 @@ export default function CreateListing() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Condition</Label>
+            <div className="space-y-2.5">
+              <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Condition</Label>
               <Select value={condition} onValueChange={(v) => setCondition(v as ListingCondition)}>
-                <SelectTrigger className="border border-black">
+                <SelectTrigger className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none h-12 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
                 <SelectContent>
@@ -212,10 +224,10 @@ export default function CreateListing() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Price Type</Label>
+            <div className="space-y-2.5">
+              <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Price Type</Label>
               <Select value={priceType} onValueChange={(v) => setPriceType(v as ListingPriceType)}>
-                <SelectTrigger className="border border-black">
+                <SelectTrigger className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none h-12 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
                   <SelectValue placeholder="Select price type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -227,32 +239,62 @@ export default function CreateListing() {
           </div>
 
           {priceType === 'fixed' ? (
-            <div className="space-y-2">
-              <Label>Price</Label>
-              <Input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="e.g., 25000" inputMode="numeric" />
+            <div className="space-y-2.5">
+              <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Price</Label>
+              <div className="relative">
+                <Input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="e.g., 25000" inputMode="numeric"
+                  className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                  style={{ fontSize: '16px' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>Min</Label>
-                <Input value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="e.g., 20000" inputMode="numeric" />
+              <div className="space-y-2.5">
+                <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Min</Label>
+                <div className="relative">
+                  <Input value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="e.g., 20000" inputMode="numeric"
+                    className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    style={{ fontSize: '16px' }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Max</Label>
-                <Input value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="e.g., 30000" inputMode="numeric" />
+              <div className="space-y-2.5">
+                <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Max</Label>
+                <div className="relative">
+                  <Input value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="e.g., 30000" inputMode="numeric"
+                    className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    style={{ fontSize: '16px' }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                </div>
               </div>
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label>Tags / keywords (comma separated)</Label>
-            <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g., apple, warranty, charger" />
+          <div className="space-y-2.5">
+            <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Tags / keywords (comma separated)</Label>
+            <div className="relative">
+              <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g., apple, warranty, charger"
+                className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                style={{ fontSize: '16px' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+            </div>
             {parsedTags.length > 0 && <p className="text-[11px] text-gray-600">Tags: {parsedTags.join(', ')}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label>Images</Label>
-            <Input type="file" multiple accept="image/*" onChange={(e) => onAddImages(e.target.files)} disabled={uploading || images.length >= 5} />
+          <div className="space-y-2.5">
+            <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Images</Label>
+            <div className="relative">
+              <Input type="file" multiple accept="image/*" onChange={(e) => onAddImages(e.target.files)} disabled={uploading || images.length >= 5}
+                className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800"
+                style={{ fontSize: '16px' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+            </div>
             <p className="text-[11px] text-gray-600">Maximum 5 images.</p>
             {images.length > 0 && <p className="text-[11px] text-gray-600">{images.length}/5 image(s) added</p>}
           </div>
