@@ -16,7 +16,7 @@ export default function SellHome() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <Card className="border-[0.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-            <CardHeader className="font-black text-black text-sm sm:text-base tracking-tight pb-2">Create Listing</CardHeader>
+            <CardHeader className="font-black text-black text-sm sm:text-base tracking-tight pb-2">Sell</CardHeader>
           <CardContent>
               <p className="text-[10px] sm:text-xs text-black mb-3 leading-relaxed">
                 Post an item or service with images, tags, and pricing.

@@ -135,7 +135,7 @@ export default function CreateListing() {
 
   if (isPublished) {
     return (
-      <SellShell title="Create Listing">
+      <SellShell title="Sell">
         <Card className="border-[0.5px] border-black rounded-2xl bg-white shadow-[0_8px_0_0_rgba(0,0,0,0.25)]">
           <CardContent className="py-12 sm:py-16 flex flex-col items-center justify-center text-center gap-4">
             <div className="w-16 h-16 rounded-full bg-green-100 border border-green-600 flex items-center justify-center">
@@ -152,7 +152,7 @@ export default function CreateListing() {
   }
 
   return (
-    <SellShell title="Create Listing">
+    <SellShell title="Sell">
       <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
         <CardHeader className="font-black text-black">Listing Details</CardHeader>
         <CardContent className="space-y-4">
