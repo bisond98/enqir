@@ -32,9 +32,33 @@ app.get('/', (req, res) => {
     message: 'Razorpay payment backend for Enqir',
     endpoints: [
       'POST /createRazorpayOrder',
-      'POST /verifyRazorpayPayment'
+      'POST /verifyRazorpayPayment',
+      'GET /reverse-geocode'
     ]
   });
+});
+
+// Optional proxy for OpenStreetMap Nominatim (same-origin if frontend points here)
+app.get('/reverse-geocode', async (req, res) => {
+  try {
+    const lat = req.query.lat;
+    const lon = req.query.lon;
+    if (lat == null || lon == null) {
+      return res.status(400).json({ error: 'Missing lat or lon' });
+    }
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`;
+    const r = await fetch(url, {
+      headers: {
+        'User-Agent': 'Enqir/1.0 (https://www.enqir.in)',
+        'Accept-Language': 'en',
+      },
+    });
+    const text = await r.text();
+    res.status(r.status).type('application/json').send(text);
+  } catch (e) {
+    console.error('reverse-geocode proxy error:', e);
+    res.status(500).json({ error: 'Reverse geocode failed' });
+  }
 });
 
 // Create Razorpay order

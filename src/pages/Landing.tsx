@@ -1851,7 +1851,7 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
             <div className="flex items-center justify-center gap-3 sm:gap-4">
             <Link to="/post-enquiry" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
-            <button className="w-32 h-32 sm:w-auto sm:h-12 border border-black bg-black text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
+            <button className="w-40 h-40 sm:w-auto sm:h-12 border border-black bg-black text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
@@ -1861,7 +1861,7 @@ const Landing = () => {
             </button>
           </Link>
           <Link to="/enquiries" className="w-auto group">
-            <button className="w-32 h-32 sm:w-auto sm:h-12 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
+            <button className="w-40 h-40 sm:w-auto sm:h-12 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
               {/* Physical button depth effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
@@ -1874,7 +1874,7 @@ const Landing = () => {
             {/* Sell Row - Mobile Only */}
             <div className="flex items-center justify-center gap-3 sm:hidden">
               <Link to="/sell" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
-              <button className="w-32 h-32 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
+              <button className="w-40 h-40 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 {/* Shimmer effect */}
@@ -1885,7 +1885,7 @@ const Landing = () => {
             </Link>
             {/* For Sale Button - Mobile Only */}
             <Link to="/sell/marketplace" className="w-auto group relative">
-              <button className="w-32 h-32 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
+              <button className="w-40 h-40 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 {/* Shimmer effect */}
@@ -2788,7 +2788,7 @@ const Landing = () => {
                 {/* Mobile only: For Sale cards with enquiry-card style deck + shuffle */}
                 {windowWidth < 640 && shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="text-[8px] font-black text-black mb-2">For Sale Right Now</p>
+                    <p className="text-xs font-black text-black mb-3">For Sale</p>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
@@ -2896,6 +2896,14 @@ const Landing = () => {
                         })}
                       </AnimatePresence>
                     </div>
+                    <Link to="/sell/marketplace" className="group mt-3">
+                      <button className="h-8 px-4 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[10px] font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                        <span className="relative z-10">Show All</span>
+                        <ArrowRight className="h-3 w-3 relative z-10" />
+                      </button>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -2913,18 +2921,6 @@ const Landing = () => {
               </div>
 
               <div className="max-w-7xl mx-auto relative">
-              {/* Section Header */}
-                <div className="mb-8 sm:mb-14 lg:mb-16">
-                  <h2 className="text-center text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-2 sm:mb-4" style={{ color: '#000000' }}>
-                  Popular Categories
-                </h2>
-                  <div className="w-full flex justify-center">
-                    <p className="text-[10px] sm:text-xs lg:text-sm font-black text-black w-full sm:max-w-2xl leading-relaxed text-center px-4 sm:px-1 whitespace-nowrap sm:whitespace-normal">
-                      "They not like us"
-                </p>
-                  </div>
-              </div>
-
                 {/* Categories Single Row - Professional Circles */}
                 <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
                 <AnimatePresence mode="wait">
