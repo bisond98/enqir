@@ -93,33 +93,69 @@ export async function listMarketplace(params: {
 export async function listMyListings(sellerId: string) {
   const q = query(
     collection(db, LISTINGS_COLLECTION),
-    where('sellerId', '==', sellerId),
-    where('status', 'in', ['live', 'draft']),
-    orderBy('updatedAt', 'desc')
+    where('sellerId', '==', sellerId)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  const listings = snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .filter((l) => l.status === 'live' || l.status === 'draft');
+  // Sort client-side to avoid needing a composite index
+  return listings.sort((a, b) => {
+    const aMs = a.updatedAt?.toMillis?.() ?? a.createdAt?.toMillis?.() ?? 0;
+    const bMs = b.updatedAt?.toMillis?.() ?? b.createdAt?.toMillis?.() ?? 0;
+    return bMs - aMs;
+  }) as SellListing[];
 }
 
-export async function createListingResponse(input: Omit<SellListingResponse, 'id' | 'createdAt'>) {
+export async function createListingResponse(input: Omit<SellListingResponse, 'id' | 'createdAt'> & { buyerName?: string }) {
   const payload = {
     ...input,
     createdAt: serverTimestamp(),
   };
   const ref = await addDoc(collection(db, RESPONSES_COLLECTION), payload);
+
+  // Also create a chat message so it appears in user chats
+  try {
+    const chatEnquiryId = `sell_listing_${input.listingId}`;
+    await addDoc(collection(db, 'chatMessages'), {
+      enquiryId: chatEnquiryId,
+      sellerId: input.sellerId,
+      senderId: input.buyerId,
+      senderName: input.buyerName || 'Buyer',
+      senderType: 'buyer',
+      message: input.message,
+      timestamp: serverTimestamp(),
+      offeringPrice: input.offeredPrice || null,
+    });
+  } catch (chatErr) {
+    console.error('Failed to create chat message for listing response:', chatErr);
+  }
+
   return ref.id;
 }
 
 export async function listResponsesForListing(listingId: string) {
-  const q = query(collection(db, RESPONSES_COLLECTION), where('listingId', '==', listingId), orderBy('createdAt', 'desc'));
+  const q = query(collection(db, RESPONSES_COLLECTION), where('listingId', '==', listingId));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListingResponse[];
+  return snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const bTime = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return bTime - aTime;
+    }) as SellListingResponse[];
 }
 
 export async function listResponsesForSeller(sellerId: string) {
-  const q = query(collection(db, RESPONSES_COLLECTION), where('sellerId', '==', sellerId), orderBy('createdAt', 'desc'));
+  const q = query(collection(db, RESPONSES_COLLECTION), where('sellerId', '==', sellerId));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListingResponse[];
+  const responses = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListingResponse[];
+  // Sort client-side to avoid needing a composite index
+  return responses.sort((a, b) => {
+    const aMs = a.createdAt?.toMillis?.() ?? 0;
+    const bMs = b.createdAt?.toMillis?.() ?? 0;
+    return bMs - aMs;
+  });
 }
 
 

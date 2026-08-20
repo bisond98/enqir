@@ -129,18 +129,39 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       });
 
-      // Batch fetch all enquiries at once
-      const enquiryPromises = Array.from(enquiryIds).map(enquiryId => 
-        getDoc(doc(db, "enquiries", enquiryId)).catch(() => null)
-      );
-      const enquiryDocs = await Promise.all(enquiryPromises);
+      // Batch fetch all enquiries at once (handles both regular enquiries and sell listings)
+      const enquiryIdsList = Array.from(enquiryIds);
+      const enquiryPromises = enquiryIdsList.map(async (enquiryId) => {
+        // Try enquiries collection first
+        const enquiryDoc = await getDoc(doc(db, "enquiries", enquiryId)).catch(() => null);
+        if (enquiryDoc?.exists()) return { id: enquiryId, data: enquiryDoc.data() };
+        
+        // Handle sell listing chats (enquiryId starts with 'sell_listing_')
+        if (enquiryId.startsWith('sell_listing_')) {
+          const listingId = enquiryId.replace('sell_listing_', '');
+          const listingDoc = await getDoc(doc(db, "sell_listings", listingId)).catch(() => null);
+          if (listingDoc?.exists()) {
+            const listingData = listingDoc.data();
+            return {
+              id: enquiryId,
+              data: {
+                title: listingData.title || 'Sell Listing',
+                userId: listingData.sellerId,
+                isSellListing: true,
+                ...listingData,
+              }
+            };
+          }
+        }
+        return null;
+      });
+      const enquiryResults = await Promise.all(enquiryPromises);
       
       // Create enquiry data map
       const enquiryDataMap = new Map<string, any>();
-      enquiryDocs.forEach((enquiryDoc, index) => {
-        if (enquiryDoc?.exists()) {
-          const enquiryId = Array.from(enquiryIds)[index];
-          enquiryDataMap.set(enquiryId, enquiryDoc.data());
+      enquiryResults.forEach((result) => {
+        if (result) {
+          enquiryDataMap.set(result.id, result.data);
         }
       });
 
@@ -149,14 +170,16 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const enquiryData = enquiryDataMap.get(threadInfo.enquiryId);
         if (!enquiryData) return; // Enquiry deleted
         
-        const buyerId = enquiryData.userId;
+        const isSellListing = enquiryData.isSellListing;
+        // For sell listings, buyerId is the sender (buyer), not enquiryData.userId
+        const buyerId = isSellListing ? threadInfo.senderId : enquiryData.userId;
         const { sellerId, senderId, messageData } = threadInfo;
         
         // User is involved if they're the buyer OR the seller OR the sender
         const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid) || (senderId === user.uid);
         
         if (isUserInvolved) {
-          const isBuyerChat = buyerId === user.uid; // true if user is buyer (posted enquiry)
+          const isBuyerChat = isSellListing ? (senderId === user.uid) : (buyerId === user.uid);
           
           if (!chatThreadMap.has(threadKey)) {
             chatThreadMap.set(threadKey, {

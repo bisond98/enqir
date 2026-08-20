@@ -52,9 +52,9 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
 };
 
 const STEPS = [
+  { key: 'category', label: 'Category', description: 'Pick what fits best' },
   { key: 'title', label: 'Title', description: 'Name your listing' },
   { key: 'description', label: 'Description', description: 'Tell buyers more' },
-  { key: 'category', label: 'Category', description: 'Pick what fits best' },
   { key: 'location', label: 'Location', description: 'Where is the item?' },
   { key: 'details', label: 'Condition & pricing', description: 'How you want to sell' },
   { key: 'price', label: 'Price', description: 'Set your numbers' },
@@ -152,18 +152,19 @@ export default function CreateListing() {
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
       case 0:
+        return true;
+      case 1:
         if (!title.trim()) {
           toast({ title: 'Add a title', description: 'Buyers need a clear name for your item.', variant: 'destructive' });
           return false;
         }
         return true;
-      case 1:
+      case 2:
         if (!description.trim()) {
           toast({ title: 'Add a description', description: 'A few sentences help buyers decide.', variant: 'destructive' });
           return false;
         }
         return true;
-      case 2:
       case 3:
         return true;
       case 4:
@@ -280,37 +281,8 @@ export default function CreateListing() {
   return (
     <SellShell title="Sell">
       <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
-        <CardHeader className="space-y-3 border-b border-black/10 pb-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-500">
-              Step {step + 1} of {totalSteps}
-            </p>
-            <p className="text-xs sm:text-sm font-bold text-black">{STEPS[step].label}</p>
-          </div>
+        <CardHeader className="space-y-2 border-b border-black/10 pb-4">
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200" />
-          <div className="flex justify-between gap-1 overflow-x-auto pb-1">
-            {STEPS.map((s, i) => (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => {
-                  if (i < step) setStep(i);
-                }}
-                className={cn(
-                  'shrink-0 rounded-lg border px-2 py-1.5 text-[9px] sm:text-[10px] font-black transition-colors',
-                  i === step
-                    ? 'border-black bg-black text-white'
-                    : i < step
-                      ? 'border-black bg-slate-100 text-black hover:bg-slate-200'
-                      : 'border-slate-200 bg-white text-slate-400 cursor-default'
-                )}
-                disabled={i > step}
-                title={s.label}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
         </CardHeader>
 
         <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
@@ -323,40 +295,6 @@ export default function CreateListing() {
 
           <div className="flex-1 space-y-4">
             {step === 0 && (
-              <div className="space-y-2 max-w-lg mx-auto w-full">
-                <Label htmlFor="listing-title" className="text-xs font-bold">
-                  Listing title
-                </Label>
-                <Input
-                  id="listing-title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
-                  className="h-12 sm:h-14 border-2 border-black rounded-xl text-base font-medium"
-                  maxLength={120}
-                  autoFocus
-                />
-                <p className="text-[11px] text-slate-500">Keep it specific. Mention brand, model, or size if it helps.</p>
-              </div>
-            )}
-
-            {step === 1 && (
-              <div className="space-y-2 max-w-lg mx-auto w-full">
-                <Label htmlFor="listing-desc" className="text-xs font-bold">
-                  Description
-                </Label>
-                <Textarea
-                  id="listing-desc"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Condition, accessories, warranty, reason for selling…"
-                  className="min-h-[160px] sm:min-h-[180px] border-2 border-black rounded-xl text-base resize-y"
-                  autoFocus
-                />
-              </div>
-            )}
-
-            {step === 2 && (
               <div className="max-w-2xl mx-auto w-full">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                   {SELL_CATEGORIES.map((c) => {
@@ -388,6 +326,40 @@ export default function CreateListing() {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="space-y-2 max-w-lg mx-auto w-full">
+                <Label htmlFor="listing-title" className="text-[10px] sm:text-xs font-bold">
+                  Listing title
+                </Label>
+                <Input
+                  id="listing-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
+                  className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                  maxLength={120}
+                  autoFocus
+                />
+                <p className="text-[11px] text-slate-500">Keep it specific. Mention brand, model, or size if it helps.</p>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-2 max-w-lg mx-auto w-full">
+                <Label htmlFor="listing-desc" className="text-[10px] sm:text-xs font-bold">
+                  Description
+                </Label>
+                <Textarea
+                  id="listing-desc"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Condition, accessories, warranty, reason for selling…"
+                  className="min-h-[160px] sm:min-h-[180px] text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 resize-y"
+                  autoFocus
+                />
               </div>
             )}
 
@@ -482,7 +454,7 @@ export default function CreateListing() {
               <div className="max-w-md mx-auto w-full space-y-4">
                 {priceType === 'fixed' ? (
                   <div className="space-y-2">
-                    <Label htmlFor="price-fixed" className="text-xs font-bold flex items-center gap-2">
+                    <Label htmlFor="price-fixed" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                       <IndianRupee className="h-3.5 w-3.5" />
                       Your price (INR)
                     </Label>
@@ -492,31 +464,31 @@ export default function CreateListing() {
                       onChange={(e) => setPrice(e.target.value)}
                       placeholder="e.g., 25000"
                       inputMode="decimal"
-                      className="h-12 border-2 border-black rounded-xl text-lg font-bold"
+                      className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
                       autoFocus
                     />
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold">Min (INR)</Label>
+                      <Label className="text-[10px] sm:text-xs font-bold">Min (INR)</Label>
                       <Input
                         value={priceMin}
                         onChange={(e) => setPriceMin(e.target.value)}
                         placeholder="20000"
                         inputMode="decimal"
-                        className="h-12 border-2 border-black rounded-xl font-bold"
+                        className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
                         autoFocus
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold">Max (INR)</Label>
+                      <Label className="text-[10px] sm:text-xs font-bold">Max (INR)</Label>
                       <Input
                         value={priceMax}
                         onChange={(e) => setPriceMax(e.target.value)}
                         placeholder="30000"
                         inputMode="decimal"
-                        className="h-12 border-2 border-black rounded-xl font-bold"
+                        className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
                       />
                     </div>
                   </div>
@@ -527,7 +499,7 @@ export default function CreateListing() {
             {step === 6 && (
               <div className="max-w-lg mx-auto w-full space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="tags" className="text-xs font-bold flex items-center gap-2">
+                  <Label htmlFor="tags" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                     <Tag className="h-3.5 w-3.5" />
                     Tags (comma separated)
                   </Label>
@@ -536,7 +508,7 @@ export default function CreateListing() {
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                     placeholder="apple, warranty, charger…"
-                    className="h-11 border-2 border-black rounded-xl"
+                    className="h-11 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                   />
                   {parsedTags.length > 0 && (
                     <p className="text-[11px] text-slate-600">

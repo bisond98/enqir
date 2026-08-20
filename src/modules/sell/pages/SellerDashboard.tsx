@@ -136,13 +136,18 @@ export default function SellerDashboard() {
               {loading && <p className="text-sm text-gray-700">Loading…</p>}
               {!loading && responses.length === 0 && <p className="text-sm text-gray-700">No responses yet.</p>}
               {!loading &&
-                responses.slice(0, 30).map((r) => (
-                  <div key={r.id} className="border border-black/10 rounded-xl p-2">
-                    <p className="text-[11px] text-gray-600">Listing: {r.listingId}</p>
-                    <p className="text-xs text-gray-800 whitespace-pre-wrap">{r.message}</p>
-                    {r.offeredPrice != null && <p className="text-xs font-black mt-1">Offer: ₹{r.offeredPrice}</p>}
-                  </div>
-                ))}
+                responses.slice(0, 30).map((r) => {
+                  const listing = listings.find((l) => l.id === r.listingId);
+                  return (
+                    <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border border-black/10 rounded-xl p-3 hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[10px] font-black text-black truncate max-w-[70%]">{listing?.title ?? 'Listing'}</p>
+                        {r.offeredPrice != null && <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full">₹{r.offeredPrice}</span>}
+                      </div>
+                      <p className="text-xs text-gray-600 whitespace-pre-wrap line-clamp-2">{r.message}</p>
+                    </Link>
+                  );
+                })}
             </CardContent>
           </Card>
         </div>

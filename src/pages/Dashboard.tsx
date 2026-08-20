@@ -23,6 +23,8 @@ import { PAYMENT_PLANS, getUpgradeOptions } from "../config/paymentPlans";
 import { savePaymentRecord, updateUserPaymentPlan } from "../services/paymentService";
 import { X } from "lucide-react";
 import { LoadingAnimation } from "../components/LoadingAnimation";
+import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
+import type { SellListing, SellListingResponse } from "../modules/sell/types";
 
 interface Enquiry {
   id: string;
@@ -103,20 +105,19 @@ const Dashboard = () => {
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
   const [, forceUpdate] = useState({});
-  const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
+  const [sellListings, setSellListings] = useState<SellListing[]>([]);
+  const [sellResponses, setSellResponses] = useState<SellListingResponse[]>([]);
+  const [sellListingsReady, setSellListingsReady] = useState(false);
+  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
-      // Check URL search params first (for auto-navigation)
       const urlParams = new URLSearchParams(window.location.search);
       const urlMode = urlParams.get('mode');
-      if (urlMode === 'buyer' || urlMode === 'seller') {
-        console.log('Initial viewMode from URL:', urlMode);
+      if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings') {
         localStorage.setItem('dashboardViewMode', urlMode);
         return urlMode;
       }
-      // Fallback to localStorage
       const saved = localStorage.getItem('dashboardViewMode');
-      const mode = (saved === 'buyer' || saved === 'seller') ? saved : 'buyer';
-      console.log('Initial viewMode from localStorage:', mode);
+      const mode = (saved === 'buyer' || saved === 'seller' || saved === 'listings') ? saved : 'buyer';
       return mode;
     }
     return 'buyer';
@@ -153,33 +154,25 @@ const Dashboard = () => {
     };
   }, [hasScrolled]);
 
-  // Sync viewMode with URL params or localStorage on mount
   useEffect(() => {
-    // Check URL params on mount
     const urlParams = new URLSearchParams(window.location.search);
     const urlMode = urlParams.get('mode');
-    if (urlMode === 'buyer' || urlMode === 'seller') {
-      console.log('Setting viewMode from URL param:', urlMode);
+    if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings') {
       setViewMode(urlMode);
       localStorage.setItem('dashboardViewMode', urlMode);
-      // Clean up URL param after setting
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else {
-      // Sync with localStorage if no URL param
       const saved = localStorage.getItem('dashboardViewMode');
-      if (saved && (saved === 'buyer' || saved === 'seller') && saved !== viewMode) {
-        console.log('Syncing viewMode from localStorage:', saved);
+      if (saved && (saved === 'buyer' || saved === 'seller' || saved === 'listings') && saved !== viewMode) {
         setViewMode(saved);
       }
     }
   }, []);
 
-  const handleToggleView = (mode: 'buyer' | 'seller') => {
-    console.log('Toggle view to:', mode, 'Current viewMode:', viewMode);
+  const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
     setViewMode(mode);
     localStorage.setItem('dashboardViewMode', mode);
-    console.log('View mode updated to:', mode);
   };
 
   const deleteResponse = async (submissionId: string) => {
@@ -994,6 +987,27 @@ const Dashboard = () => {
     };
   }, [user, createNotification, isProfileVerified]);
 
+  // Load sell listings and buyer responses for the Listings tab
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [ls, rs] = await Promise.all([listMyListings(user.uid), listResponsesForSeller(user.uid)]);
+        if (!cancelled) {
+          setSellListings(ls);
+          setSellResponses(rs);
+          setSellListingsReady(true);
+        }
+      } catch (err) {
+        console.error('Failed to load sell listings:', err);
+        if (!cancelled) setSellListingsReady(true);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [user?.uid]);
+
   // Add visibility change listener to refresh data when user returns to tab
   useEffect(() => {
     let visibilityTimeout: number | undefined;
@@ -1440,196 +1454,32 @@ const Dashboard = () => {
                     />
                     </h2>
                   </div>
-                  {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
-                    {/* Arrow Indicator */}
-                    <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                      className="mb-2 sm:mb-3 flex items-center gap-1 sm:gap-1.5"
-                    >
-                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
-                    </motion.div>
-                    {/* Labels and Toggle Container */}
-                    <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
-                      {/* Buy Label with Animation */}
-                    <motion.div 
-                        animate={{
-                          scale: viewMode === 'buyer' ? 1.1 : 1,
-                          opacity: viewMode === 'buyer' ? 1 : 0.5,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
-                          viewMode === 'buyer' ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          Buy
-                        </span>
-                      </motion.div>
-                      
-                      {/* Creative Rotating Dial Toggle */}
-                      <div className="relative inline-flex items-center">
-                        {/* Track Background with Animated Gradient */}
-                        <motion.div 
-                          className="w-20 h-8 sm:w-28 sm:h-10 lg:w-32 lg:h-12 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full relative cursor-pointer overflow-hidden"
-                          animate={{
-                            background: viewMode === 'buyer' 
-                              ? 'linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd)' 
-                              : 'linear-gradient(to right, #10b981, #34d399, #6ee7b7)',
-                          }}
-                          transition={{ duration: 0.5 }}
-                        onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const trackWidth = rect.width;
-                            const isLeftSide = clickX < trackWidth / 2;
-                            
-                            if (isLeftSide && viewMode !== 'buyer') {
-                          handleToggleView('buyer');
-                            } else if (!isLeftSide && viewMode !== 'seller') {
-                              handleToggleView('seller');
-                            }
-                          }}
+                  {/* 3-Way Toggle: Buy | Sell | Listings */}
+                  <div className="flex justify-center mt-4 sm:mt-5">
+                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                      {([
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
+                        { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
+                      ]).map(({ key, label, icon: Icon, activeColor }) => (
+                        <motion.button
+                          key={key}
+                          type="button"
+                          onClick={() => handleToggleView(key)}
+                          className={cn(
+                            'relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 lg:px-6 py-2 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] lg:text-xs font-bold transition-all duration-200 whitespace-nowrap',
+                            viewMode === key
+                              ? activeColor
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          )}
+                          whileTap={{ scale: 0.95 }}
+                          animate={viewMode === key ? { scale: 1.05 } : { scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
-                          {/* Animated Background Overlay */}
-                        <motion.div 
-                            className="absolute inset-0 rounded-full"
-                            animate={{
-                              background: viewMode === 'buyer'
-                                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 197, 253, 0.2))'
-                                : 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(110, 231, 183, 0.2))',
-                            }}
-                          transition={{ duration: 0.5 }}
-                          />
-                          
-                          {/* Rotating Dial Knob */}
-                      <motion.button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                              handleToggleView(viewMode === 'buyer' ? 'seller' : 'buyer');
-                        }}
-                            className="absolute top-1/2 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full cursor-pointer z-10"
-                            animate={{
-                              left: viewMode === 'buyer' ? '-8px' : 'calc(100% - 32px)',
-                              rotate: viewMode === 'buyer' ? [0, -15, 15, 0] : [0, 15, -15, 0],
-                            }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 400,
-                              damping: 25,
-                              rotate: { duration: 0.6 }
-                            }}
-                            whileHover={{ scale: 1.15, rotate: viewMode === 'buyer' ? -10 : 10 }}
-                            whileTap={{ scale: 0.85 }}
-                            style={{
-                              transform: 'translateY(-50%)',
-                            }}
-                      >
-                            {/* Outer Ring - Rotating */}
-                        <motion.div 
-                              className="absolute inset-0 rounded-full border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                              animate={{
-                                rotate: viewMode === 'buyer' ? 0 : 360,
-                              }}
-                              transition={{
-                                duration: 0.8,
-                                ease: "easeInOut"
-                              }}
-                        >
-                              {/* Gear Notches */}
-                              {[...Array(12)].map((_, i) => (
-                                <div
-                                  key={i}
-                                  className="absolute top-0 left-1/2 w-0.5 h-2 sm:h-2.5 lg:h-3 bg-gray-400 rounded-full origin-bottom"
-                                  style={{
-                                    transform: `translateX(-50%) rotate(${i * 30}deg)`,
-                                  }}
-                                />
-                              ))}
-                        </motion.div>
-                            
-                            {/* Inner Circle with 3D Effect */}
-                            <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                              {/* Center Dot */}
-                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 shadow-inner"></div>
-                              
-                              {/* Arrow Icons - Left and Right */}
-                              <div className="absolute inset-0 flex items-center justify-between px-1.5 sm:px-2 lg:px-2.5">
-                                <ChevronLeft className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
-                                <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
-                              </div>
-                              
-                              {/* Text Label - Rotating */}
-                              <motion.div
-                                className="absolute inset-0 flex items-center justify-center"
-                                animate={{
-                                  rotate: viewMode === 'buyer' ? 0 : 180,
-                                }}
-                                transition={{ duration: 0.6 }}
-                              >
-                                <span className="text-[7px] sm:text-[9px] lg:text-[11px] font-black text-gray-800 absolute">
-                                  {viewMode === 'buyer' ? 'B' : 'S'}
-                                </span>
-                              </motion.div>
-                            </div>
-                            
-                            {/* Shine Effect */}
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent pointer-events-none"
-                              animate={{
-                                rotate: [0, 360],
-                              }}
-                              transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "linear"
-                              }}
-                            />
-                      </motion.button>
-                          
-                          {/* Animated Particles on Toggle */}
-                          {[...Array(3)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="absolute w-1 h-1 bg-white rounded-full opacity-60"
-                              animate={{
-                                x: viewMode === 'buyer' ? [0, 20, 0] : [0, -20, 0],
-                                y: [0, Math.sin(i) * 10, 0],
-                                opacity: [0.6, 0, 0.6],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 0.3,
-                                ease: "easeInOut"
-                              }}
-                              style={{
-                                left: '50%',
-                                top: '50%',
-                              }}
-                            />
-                          ))}
-                    </motion.div>
-                      </div>
-                      
-                      {/* Sell Label with Animation */}
-                      <motion.div
-                        animate={{
-                          scale: viewMode === 'seller' ? 1.1 : 1,
-                          opacity: viewMode === 'seller' ? 1 : 0.5,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
-                          viewMode === 'seller' ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          Sell
-                        </span>
-                      </motion.div>
+                          <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{label}</span>
+                        </motion.button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -2739,7 +2589,8 @@ const Dashboard = () => {
           </Card>
           )}
 
-          {/* Quick Actions Card - Always Visible */}
+          {/* Quick Actions Card - Hidden in Listings view */}
+          {viewMode !== 'listings' && (
           <Card className="border-[0.5px] border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
             {/* Header Section - Matching Dashboard Header */}
             <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
@@ -2789,7 +2640,94 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+          )}
         </div>
+
+        {/* Listings View - Seller Dashboard Data */}
+        {viewMode === 'listings' && (
+          <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-2 sm:pt-4 pb-8 sm:pb-12">
+            {/* Stats Row */}
+            <div className="flex items-center justify-center gap-3 sm:gap-5 mb-4 sm:mb-6">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                        {sellListingsReady ? sellListings.length : '—'}
+                      </h3>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Listings</p>
+                    </div>
+                  </div>
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                        {sellListingsReady ? sellResponses.length : '—'}
+                      </h3>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Responses</p>
+                    </div>
+                  </div>
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                        {sellListingsReady ? sellListings.filter(l => l.status === 'live').length : '—'}
+                      </h3>
+                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Listings List */}
+                {!sellListingsReady && (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-3"></div>
+                    <p className="text-sm text-gray-500">Loading listings…</p>
+                  </div>
+                )}
+                {sellListingsReady && sellListings.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed border-black/10 rounded-2xl">
+                    <LayoutDashboard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm font-bold text-gray-500 mb-3">No listings yet. Start selling!</p>
+                    <Link to="/sell/new" className="inline-flex items-center gap-1.5 text-xs font-black text-violet-700 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full hover:bg-violet-100 transition-colors">
+                      <Plus className="h-3.5 w-3.5" />
+                      Create your first listing
+                    </Link>
+                  </div>
+                )}
+                {sellListingsReady && sellListings.length > 0 && (
+                  <div className="space-y-2 sm:space-y-3">
+                    {sellListings.map((listing) => {
+                      const listingResponses = sellResponses.filter(r => r.listingId === listing.id);
+                      return (
+                        <Link to={`/sell/listing/${listing.id}`} key={listing.id} className="block border border-black/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-slate-50 hover:border-black/20 transition-all duration-200">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-black text-black text-xs sm:text-sm truncate">{listing.title}</p>
+                              <p className="text-[11px] sm:text-xs text-gray-600 line-clamp-1 mt-0.5">{listing.description}</p>
+                              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
+                                {listing.price != null && (
+                                  <span className="text-[9px] sm:text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full">₹{listing.price.toLocaleString()}</span>
+                                )}
+                                {listingResponses.length > 0 && (
+                                  <span className="text-[9px] sm:text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">{listingResponses.length} response{listingResponses.length !== 1 ? 's' : ''}</span>
+                                )}
+                                {listing.category && (
+                                  <span className="text-[9px] sm:text-[10px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200 capitalize">{listing.category}</span>
+                                )}
+                                <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                                  listing.status === 'live' ? 'text-green-700 bg-green-50 border border-green-200' : 'text-gray-500 bg-gray-50 border border-gray-200'
+                                }`}>{listing.status}</span>
+                              </div>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+          </div>
+        )}
 
         {/* Payment Plan Selector Modal for Upgrades */}
         {showPaymentSelector && selectedEnquiryForUpgrade && (
