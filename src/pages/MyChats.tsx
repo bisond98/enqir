@@ -23,6 +23,7 @@ interface ChatThread {
   isDisabled?: boolean; // Mark if chat should be disabled
   unreadCount?: number; // Count of unread messages in this thread
   isAdminChat?: boolean; // Mark if this is an admin chat (warning/suspension)
+  isSellListingChat?: boolean; // Mark if this is a sell listing chat
 }
 
 export default function MyChats() {
@@ -71,15 +72,15 @@ export default function MyChats() {
   
   // Calculate unread counts
   const buyerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === true && !chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === true && !chat.isSellListingChat && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
   
   const sellerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === false && !chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === false && !chat.isSellListingChat && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
 
   const listingsUnreadCount = allChats
-    .filter(chat => chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isSellListingChat === true && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
 
   const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
@@ -109,12 +110,14 @@ export default function MyChats() {
       .filter(chat => {
     // Filter by view mode
     if (viewMode === 'buyer') {
-      return chat.isBuyerChat === true && !chat.enquiryId?.startsWith('sell_listing_');
+      // Replies to user's enquiries (excluding sell listing chats)
+      return chat.isBuyerChat === true && !chat.isSellListingChat;
     } else if (viewMode === 'seller') {
-      return chat.isBuyerChat === false && !chat.enquiryId?.startsWith('sell_listing_');
+      // User's replies to other enquiries (excluding sell listing chats)
+      return chat.isBuyerChat === false && !chat.isSellListingChat;
     } else {
-      // listings mode: show chats where enquiryId starts with sell_listing_
-      return chat.enquiryId?.startsWith('sell_listing_') === true;
+      // Listings: chats for products listed for sale
+      return chat.isSellListingChat === true;
     }
       })
       .sort((a, b) => {

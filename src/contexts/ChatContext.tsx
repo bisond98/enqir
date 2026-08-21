@@ -195,7 +195,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 senderId: senderId,
                 timestamp: messageData.timestamp
               },
-              isBuyerChat: isBuyerChat
+              isBuyerChat: isBuyerChat,
+              isSellListingChat: isSellListing
             });
           } else {
             // Update with latest message if this one is newer
