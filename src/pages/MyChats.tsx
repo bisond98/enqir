@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, Reply, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, Reply, LayoutDashboard, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -61,26 +61,28 @@ export default function MyChats() {
     return !hasChats && chatsLoading;
   });
   const [visibleChatsCount, setVisibleChatsCount] = useState(4);
-  const [viewMode, setViewMode] = useState<'buyer' | 'seller'>(() => {
+  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
-      return (saved === 'buyer' || saved === 'seller') ? saved : 'buyer';
+      if (saved === 'buyer' || saved === 'seller' || saved === 'listings') return saved;
     }
     return 'buyer';
   });
   
-  
-  // Calculate unread counts for buyer and seller chats (count unique threads, not messages)
-  // Exclude disabled/expired chats from unread counts
+  // Calculate unread counts
   const buyerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === true && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === true && !chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
   
   const sellerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === false && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === false && !chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
     .length;
 
-  const handleToggleView = (mode: 'buyer' | 'seller') => {
+  const listingsUnreadCount = allChats
+    .filter(chat => chat.enquiryId?.startsWith('sell_listing_') && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .length;
+
+  const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
     setViewMode(mode);
     localStorage.setItem('chatsViewMode', mode);
   };
@@ -105,11 +107,14 @@ export default function MyChats() {
   const allFilteredChats = useMemo(() => {
     return allChats
       .filter(chat => {
-    // Filter by view mode (don't exclude disabled chats - show them as disabled)
+    // Filter by view mode
     if (viewMode === 'buyer') {
-      return chat.isBuyerChat === true; // User's own enquiries (buyer chats)
+      return chat.isBuyerChat === true && !chat.enquiryId?.startsWith('sell_listing_');
+    } else if (viewMode === 'seller') {
+      return chat.isBuyerChat === false && !chat.enquiryId?.startsWith('sell_listing_');
     } else {
-      return chat.isBuyerChat === false; // User's responses to other enquiries (seller chats)
+      // listings mode: show chats where enquiryId starts with sell_listing_
+      return chat.enquiryId?.startsWith('sell_listing_') === true;
     }
       })
       .sort((a, b) => {
@@ -552,6 +557,7 @@ export default function MyChats() {
                       {([
                         { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]', unread: buyerUnreadCount },
                         { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]', unread: sellerUnreadCount },
+                        { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]', unread: listingsUnreadCount },
                       ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
                         <motion.button
                           key={key}
