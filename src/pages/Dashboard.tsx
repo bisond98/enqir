@@ -2646,86 +2646,117 @@ const Dashboard = () => {
         {/* Listings View - Seller Dashboard Data */}
         {viewMode === 'listings' && (
           <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-2 sm:pt-4 pb-8 sm:pb-12">
-            {/* Stats Row */}
-            <div className="flex items-center justify-center gap-3 sm:gap-5 mb-4 sm:mb-6">
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+            <Card className="group border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+              {/* Professional Header - Matching Dashboard Style */}
+              <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl p-3 sm:p-6 lg:p-5 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] pb-6 sm:pb-16 lg:pb-14">
+                <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3">
+                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2">
+                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 flex-shrink-0" />
+                      My Listings
+                    </h2>
+                  </div>
+                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 w-full">
+                    <div className="text-center">
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-white leading-snug">
+                        Manage your sell listings and track responses.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <CardContent className="p-4 sm:p-6 lg:p-5 relative z-10">
+                {/* Stats Row - Matching Buyer View */}
+                <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-5 mb-4 sm:mb-6">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-black mb-0.5 sm:mb-1 leading-none">
                         {sellListingsReady ? sellListings.length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Listings</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-black font-black uppercase">Listings</p>
                     </div>
                   </div>
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-black mb-0.5 sm:mb-1 leading-none">
                         {sellListingsReady ? sellResponses.length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Responses</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-black font-black uppercase">Responses</p>
                     </div>
                   </div>
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-black mb-0.5 sm:mb-1 leading-none">
                         {sellListingsReady ? sellListings.filter(l => l.status === 'live').length : '—'}
                       </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-black font-black uppercase">Active</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Listings List */}
                 {!sellListingsReady && (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-3"></div>
-                    <p className="text-sm text-gray-500">Loading listings…</p>
+                  <div className="text-center py-10">
+                    <div className="w-10 h-10 border-3 border-black border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p className="text-sm font-bold text-gray-500">Loading your listings…</p>
                   </div>
                 )}
                 {sellListingsReady && sellListings.length === 0 && (
-                  <div className="text-center py-8 border-2 border-dashed border-black/10 rounded-2xl">
-                    <LayoutDashboard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-sm font-bold text-gray-500 mb-3">No listings yet. Start selling!</p>
-                    <Link to="/sell/new" className="inline-flex items-center gap-1.5 text-xs font-black text-violet-700 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full hover:bg-violet-100 transition-colors">
+                  <div className="text-center py-10 border-2 border-dashed border-black/10 rounded-2xl">
+                    <LayoutDashboard className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm font-bold text-gray-500 mb-1">No listings yet.</p>
+                    <p className="text-xs text-gray-400 mb-4">Start selling to see your listings here.</p>
+                    <Link to="/sell/new" className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-black border border-black px-5 py-2.5 rounded-full hover:bg-gray-800 transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5">
                       <Plus className="h-3.5 w-3.5" />
                       Create your first listing
                     </Link>
                   </div>
                 )}
                 {sellListingsReady && sellListings.length > 0 && (
-                  <div className="space-y-2 sm:space-y-3">
+                  <div className="space-y-3 sm:space-y-4">
                     {sellListings.map((listing) => {
                       const listingResponses = sellResponses.filter(r => r.listingId === listing.id);
                       return (
-                        <Link to={`/sell/listing/${listing.id}`} key={listing.id} className="block border border-black/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-slate-50 hover:border-black/20 transition-all duration-200">
-                          <div className="flex items-start justify-between gap-2">
+                        <Link to={`/sell/listing/${listing.id}`} key={listing.id} className="block border border-black rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:bg-slate-50 hover:shadow-lg hover:border-black transition-all duration-300 shadow-[0_4px_0_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.15)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.1)] active:translate-y-0.5">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <p className="font-black text-black text-xs sm:text-sm truncate">{listing.title}</p>
-                              <p className="text-[11px] sm:text-xs text-gray-600 line-clamp-1 mt-0.5">{listing.description}</p>
-                              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
+                              <p className="font-black text-black text-sm sm:text-base truncate">{listing.title}</p>
+                              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">{listing.description}</p>
+                              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3">
                                 {listing.price != null && (
-                                  <span className="text-[9px] sm:text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full">₹{listing.price.toLocaleString()}</span>
+                                  <span className="text-[10px] sm:text-xs font-black bg-black text-white px-3 py-1 rounded-full shadow-sm">₹{listing.price.toLocaleString()}</span>
                                 )}
                                 {listingResponses.length > 0 && (
-                                  <span className="text-[9px] sm:text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">{listingResponses.length} response{listingResponses.length !== 1 ? 's' : ''}</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-200">{listingResponses.length} response{listingResponses.length !== 1 ? 's' : ''}</span>
                                 )}
                                 {listing.category && (
-                                  <span className="text-[9px] sm:text-[10px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200 capitalize">{listing.category}</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-violet-700 bg-violet-50 px-3 py-1 rounded-full border border-violet-200 capitalize">{listing.category}</span>
                                 )}
-                                <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                                <span className={`text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full capitalize ${
                                   listing.status === 'live' ? 'text-green-700 bg-green-50 border border-green-200' : 'text-gray-500 bg-gray-50 border border-gray-200'
                                 }`}>{listing.status}</span>
                               </div>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                            <div className="flex flex-col items-center gap-1 mt-1">
+                              <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                              {listingResponses.length > 0 && (
+                                <span className="text-[9px] font-bold text-green-600">→</span>
+                              )}
+                            </div>
                           </div>
                         </Link>
                       );
                     })}
                   </div>
                 )}
+              </CardContent>
+            </Card>
           </div>
         )}
 
