@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X } from 'lucide-react';
 
 function formatPrice(l: SellListing) {
   if (l.priceType === 'range') return `₹${l.priceMin ?? ''} - ₹${l.priceMax ?? ''}`;
@@ -43,53 +43,80 @@ export default function Marketplace() {
 
   const canSearch = useMemo(() => search.trim().length === 0 || search.trim().length >= 2, [search]);
 
+  const hasFilters = category !== 'all' || location !== 'all';
+
   return (
     <SellShell title="Marketplace">
-      <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] mb-4">
-        <CardHeader className="font-black text-black">Search & Filters</CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+      {/* Search & Filters */}
+      <div className="space-y-3 mb-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            className="sm:col-span-2"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
             placeholder="Search listings…"
+            className="pl-10 pr-10 h-11 bg-white border border-black rounded-xl text-sm font-medium focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_4px_0_0_rgba(0,0,0,0.1)]"
           />
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="border border-black">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {SELL_CATEGORIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={location} onValueChange={setLocation}>
-            <SelectTrigger className="border border-black">
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All locations</SelectItem>
-              {SELL_LOCATIONS.map((l) => (
-                <SelectItem key={l} value={l}>
-                  {l}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {search && (
+            <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
+        {/* Filter Row */}
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Select value={category} onValueChange={(v) => { setCategory(v); }}>
+              <SelectTrigger className="h-10 border border-black rounded-xl text-xs font-bold bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.08)]">
+                <SlidersHorizontal className="h-3 w-3 mr-1.5 text-gray-500" />
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All categories</SelectItem>
+                {SELL_CATEGORIES.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1">
+            <Select value={location} onValueChange={(v) => { setLocation(v); }}>
+              <SelectTrigger className="h-10 border border-black rounded-xl text-xs font-bold bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.08)]">
+                <MapPin className="h-3 w-3 mr-1.5 text-gray-500" />
+                <SelectValue placeholder="Location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All locations</SelectItem>
+                {SELL_LOCATIONS.map((l) => (
+                  <SelectItem key={l} value={l}>{l}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Active Filters + Search Button */}
+        <div className="flex items-center gap-2">
+          {hasFilters && (
+            <button
+              onClick={() => { setCategory('all'); setLocation('all'); }}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 transition-colors flex-shrink-0"
+            >
+              <X className="h-3 w-3" />Clear filters
+            </button>
+          )}
           <Button
-            className="sm:col-span-4 bg-black text-white border border-black font-black"
+            className="flex-1 h-10 bg-black text-white border border-black rounded-xl font-black text-sm shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
             onClick={load}
             disabled={!canSearch || loading}
           >
             {loading ? 'Loading…' : 'Search'}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {listings.map((l) => (
