@@ -91,14 +91,13 @@ export default function SellerDashboard() {
       {/* Stats Row */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
         {[
-          { label: 'Listings', count: listings.length, icon: LayoutDashboard },
-          { label: 'Active', count: liveCount, icon: Eye },
-          { label: 'Responses', count: responses.length, icon: MessageSquare },
-        ].map(({ label, count, icon: Icon }) => (
+          { label: 'Listings', count: listings.length },
+          { label: 'Active', count: liveCount },
+          { label: 'Responses', count: responses.length },
+        ].map(({ label, count }) => (
           <div key={label} className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24">
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
             <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <Icon className="h-3 w-3 text-gray-400 mb-0.5" />
               <h3 className="text-base sm:text-lg lg:text-2xl font-black text-black mb-0 leading-none">
                 {loading ? '—' : count}
               </h3>
