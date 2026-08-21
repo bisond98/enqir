@@ -250,10 +250,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     >
                       <Link
                         to={item.path}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 min-h-[44px] ${
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 min-h-[44px] border border-black ${
                           isActive(item.path)
-                            ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md"
-                            : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 hover:shadow-sm"
+                            ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md border-black"
+                            : "text-black hover:text-black hover:bg-gray-100 hover:shadow-sm"
                         }`}
                       >
                         <Icon className="h-4 w-4" />
@@ -282,20 +282,20 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   <SmartNotifications />
                   
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
-                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Dashboard</span>
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Dashboard</span>
                     </Button>
                   </Link>
                   <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="flex h-7 sm:h-9 px-2 sm:px-3">
-                      <User className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">Profile</span>
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Profile</span>
                     </Button>
                   </Link>
-                  <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex h-7 sm:h-9 px-2 sm:px-3">
-                    <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                    <span className="hidden sm:inline text-xs sm:text-sm">Sign Out</span>
+                  <Button variant="ghost" size="sm" onClick={handleSignOutClick} className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                    <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                    <span className="hidden lg:inline text-xs sm:text-sm truncate">Sign Out</span>
                   </Button>
                 </div>
               ) : (
