@@ -123,6 +123,7 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
       senderId: input.buyerId,
       senderName: input.buyerName || 'Buyer',
       senderType: 'buyer',
+      recipientId: input.sellerId,
       message: input.message,
       timestamp: serverTimestamp(),
       offeringPrice: input.offeredPrice || null,
