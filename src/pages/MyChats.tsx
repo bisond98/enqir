@@ -629,19 +629,34 @@ export default function MyChats() {
               ))}
             </div>
           ) : chats.length === 0 ? (
-            <Card className="border-2 border-black bg-gradient-to-br from-white to-gray-50 shadow-lg p-4 sm:p-6 text-center">
-              <div className="flex flex-col items-center gap-2">
-                <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600" />
-                <p className="text-base sm:text-lg text-black font-bold">
-                  No chats yet
-                </p>
-                <p className="text-[10px] sm:text-xs text-gray-900 font-medium">
+            <div className="border border-black rounded-2xl overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+              {/* Black header */}
+              <div className="bg-black p-4 sm:p-6">
+                <div className="flex items-center justify-center gap-2">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  <h3 className="text-sm sm:text-base font-bold text-white">Your Chats</h3>
+                </div>
+              </div>
+              {/* Empty state body */}
+              <div className="bg-white p-6 sm:p-10 text-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-black/10">
+                  <MessageSquare className="h-7 w-7 sm:h-9 sm:w-9 text-gray-400" />
+                </div>
+                <p className="text-base sm:text-lg font-black text-black mb-1">No chats yet</p>
+                <p className="text-[11px] sm:text-xs text-gray-500 max-w-xs mx-auto leading-relaxed mb-5">
                   {viewMode === 'buyer' 
                     ? "Start posting enquiries to begin chatting with sellers."
-                    : "Start responding to enquiries to begin chatting with buyers."}
+                    : viewMode === 'seller'
+                    ? "Start responding to enquiries to begin chatting with buyers."
+                    : "List products for sale to start chatting with buyers."}
                 </p>
+                <Link to={viewMode === 'buyer' ? '/post-enquiry' : viewMode === 'seller' ? '/enquiries' : '/sell/new'}>
+                  <Button className="bg-black text-white border border-black font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+                    {viewMode === 'buyer' ? 'Post an Enquiry' : viewMode === 'seller' ? 'Browse Enquiries' : 'Create Listing'}
+                  </Button>
+                </Link>
               </div>
-            </Card>
+            </div>
           ) : (
             <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
