@@ -57,7 +57,7 @@ export default function Marketplace() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
             placeholder="Search listings…"
-            className="pl-10 pr-10 h-11 bg-white border border-black rounded-xl text-sm font-medium focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_4px_0_0_rgba(0,0,0,0.1)]"
+            className="pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black rounded-none focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px]"
           />
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
@@ -70,9 +70,9 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="h-10 border border-black rounded-xl text-xs font-bold bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.08)]">
-                <SlidersHorizontal className="h-3 w-3 mr-1.5 text-gray-500" />
-                <SelectValue placeholder="Category" />
+              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black rounded-none focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+                <SelectValue placeholder="Categories" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All categories</SelectItem>
@@ -84,9 +84,9 @@ export default function Marketplace() {
           </div>
           <div className="flex-1">
             <Select value={location} onValueChange={(v) => { setLocation(v); }}>
-              <SelectTrigger className="h-10 border border-black rounded-xl text-xs font-bold bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.08)]">
-                <MapPin className="h-3 w-3 mr-1.5 text-gray-500" />
-                <SelectValue placeholder="Location" />
+              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black rounded-none focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                <MapPin className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+                <SelectValue placeholder="Locations" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All locations</SelectItem>
