@@ -249,6 +249,57 @@ export default function ListingChat() {
             )}
           </div>
 
+          {/* Quick Suggestions */}
+          <div className="border-t border-black/10 px-3 pt-3 pb-1 bg-white">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+              {user?.uid === listing?.sellerId ? (
+                // Seller suggestions
+                <>
+                  <button onClick={() => setNewMessage('Payment: 50% advance, 50% on delivery')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Payment
+                  </button>
+                  <button onClick={() => setNewMessage('Delivery: 3-5 days')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Delivery
+                  </button>
+                  <button onClick={() => setNewMessage('Bulk discounts available')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Bulk
+                  </button>
+                  <button onClick={() => setNewMessage('Quality guarantee included')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Quality
+                  </button>
+                  <button onClick={() => setNewMessage('Can we schedule a meetup to discuss details?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Meetup
+                  </button>
+                  <button onClick={() => setNewMessage('I sell samples for testing')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Samples
+                  </button>
+                </>
+              ) : (
+                // Buyer suggestions
+                <>
+                  <button onClick={() => setNewMessage('Can you provide more details about pricing?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Pricing
+                  </button>
+                  <button onClick={() => setNewMessage("What's the delivery timeline?")} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Timeline
+                  </button>
+                  <button onClick={() => setNewMessage('Can you share more images?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Images
+                  </button>
+                  <button onClick={() => setNewMessage('What are the payment terms?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Terms
+                  </button>
+                  <button onClick={() => setNewMessage('Is this still available?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Available
+                  </button>
+                  <button onClick={() => setNewMessage('Can we negotiate the price?')} className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-full font-normal transition-all duration-200 hover:scale-105 active:scale-95">
+                    Negotiate
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
           {/* Input */}
           <div className="border-t border-black p-3 bg-white">
             <div className="flex gap-2">
