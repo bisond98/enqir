@@ -2050,7 +2050,7 @@ const Dashboard = () => {
                   <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
-                        Track your sales; We won't be tracking you.
+                        Track your reply to the enquiries
                       </p>
                     </div>
                   </div>
@@ -2661,7 +2661,7 @@ const Dashboard = () => {
                   <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 w-full">
                     <div className="text-center">
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-white leading-snug">
-                        Track your reply to the enquiries
+                        Manage your sell listings and track responses.
                       </p>
                     </div>
                   </div>
