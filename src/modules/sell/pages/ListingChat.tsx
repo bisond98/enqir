@@ -7,7 +7,8 @@ import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User } from 'lucide-rea
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
@@ -30,7 +31,6 @@ export default function ListingChat() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const [listing, setListing] = useState<SellListing | null>(null);
-  const [buyerProfile, setBuyerProfile] = useState<any>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [responses, setResponses] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -56,13 +56,7 @@ export default function ListingChat() {
     load();
   }, [id]);
 
-  // Load buyer profile
-  useEffect(() => {
-    if (!buyerId) return;
-    getDoc(doc(db, 'userProfiles', buyerId)).then(snap => {
-      if (snap.exists()) setBuyerProfile(snap.data());
-    }).catch(() => {});
-  }, [buyerId]);
+
 
   // Real-time chat messages
   useEffect(() => {
@@ -127,6 +121,19 @@ export default function ListingChat() {
     }
   };
 
+  // Find buyer's response index and offered price (must be before any early return)
+  const buyerResponse = useMemo(() => {
+    const idx = responses.findIndex(r => r.buyerId === buyerId);
+    const resp = responses.find(r => r.buyerId === buyerId);
+    return { number: idx >= 0 ? idx + 1 : null, offeredPrice: resp?.offeredPrice };
+  }, [responses, buyerId]);
+
+  // Generate a short identification number for the buyer (not their real name)
+  const buyerIdShort = useMemo(() => {
+    if (!buyerId) return '—';
+    return buyerId.slice(0, 6).toUpperCase();
+  }, [buyerId]);
+
   if (loading) {
     return (
       <Layout showNavigation={false}>
@@ -136,13 +143,6 @@ export default function ListingChat() {
       </Layout>
     );
   }
-
-  // Find buyer's response index and offered price
-  const buyerResponse = useMemo(() => {
-    const idx = responses.findIndex(r => r.buyerId === buyerId);
-    const resp = responses.find(r => r.buyerId === buyerId);
-    return { number: idx >= 0 ? idx + 1 : null, offeredPrice: resp?.offeredPrice };
-  }, [responses, buyerId]);
 
   return (
     <Layout showNavigation={false}>
@@ -163,10 +163,7 @@ export default function ListingChat() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h2 className="text-sm sm:text-base font-bold text-black truncate">{buyerProfile?.fullName || 'Buyer'}</h2>
-                {buyerResponse.number && (
-                  <span className="inline-flex items-center bg-black text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0">#{buyerResponse.number}</span>
-                )}
+                <h2 className="text-sm sm:text-base font-bold text-black truncate">Buyer #{buyerResponse.number || buyerIdShort}</h2>
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <p className="text-[10px] sm:text-[11px] text-gray-500 truncate">{listing?.title || 'Listing'}</p>
@@ -209,7 +206,7 @@ export default function ListingChat() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold text-white">Chat</h3>
-              <p className="text-[10px] text-green-300">with {buyerProfile?.fullName || 'Buyer'}</p>
+              <p className="text-[10px] text-green-300">with Buyer #{buyerResponse.number || buyerIdShort}</p>
             </div>
           </CardHeader>
 
