@@ -70,17 +70,29 @@ export default function MyChats() {
     return 'buyer';
   });
   
+  // Check if a chat has unread messages based on last viewed time
+  const hasUnreadMessages = useCallback((chat: ChatThread) => {
+    if (!chat.enquiryId || !chat.sellerId || !user?.uid || chat.isDisabled) return false;
+    const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
+    const readKey = `chat_read_${user.uid}_${threadKey}`;
+    const lastViewed = localStorage.getItem(readKey);
+    if (!lastViewed) return true; // Never viewed = unread
+    const lastViewedTime = parseInt(lastViewed, 10);
+    const chatTime = chat.updatedAt?.toDate ? chat.updatedAt.toDate().getTime() : (chat.updatedAt ? new Date(chat.updatedAt).getTime() : 0);
+    return chatTime > lastViewedTime;
+  }, [user?.uid]);
+
   // Calculate unread counts
   const buyerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === true && !chat.isSellListingChat && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === true && !chat.isSellListingChat && hasUnreadMessages(chat))
     .length;
   
   const sellerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === false && !chat.isSellListingChat && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isBuyerChat === false && !chat.isSellListingChat && hasUnreadMessages(chat))
     .length;
 
   const listingsUnreadCount = allChats
-    .filter(chat => chat.isSellListingChat === true && !chat.isDisabled && (chat.unreadCount || 0) > 0)
+    .filter(chat => chat.isSellListingChat === true && hasUnreadMessages(chat))
     .length;
 
   const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
@@ -578,9 +590,14 @@ export default function MyChats() {
                           <Icon className="h-3.5 w-3.5" />
                           <span>{label}</span>
                           {unread > 0 && (
-                            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm">
+                            <motion.span
+                              className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                            >
                               {unread > 9 ? '9+' : unread}
-                            </span>
+                            </motion.span>
                           )}
                         </motion.button>
                       ))}
