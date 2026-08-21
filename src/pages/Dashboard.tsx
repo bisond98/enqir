@@ -1456,7 +1456,7 @@ const Dashboard = () => {
                   </div>
                   {/* 3-Way Toggle: Buy | Sell | Listings */}
                   <div className="flex justify-center mt-4 sm:mt-5">
-                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                       {([
                         { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
                         { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
@@ -1467,7 +1467,7 @@ const Dashboard = () => {
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 lg:px-6 py-2 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] lg:text-xs font-bold transition-all duration-200 whitespace-nowrap',
+                            'relative flex items-center gap-2 sm:gap-2 px-5 sm:px-5 lg:px-6 py-2.5 sm:py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-bold transition-all duration-200 whitespace-nowrap',
                             viewMode === key
                               ? activeColor
                               : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
@@ -1476,7 +1476,7 @@ const Dashboard = () => {
                           animate={viewMode === key ? { scale: 1.05 } : { scale: 1 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
-                          <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <Icon className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
                           <span>{label}</span>
                         </motion.button>
                       ))}
