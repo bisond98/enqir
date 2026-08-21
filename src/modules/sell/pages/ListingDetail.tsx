@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles } from 'lucide-react';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
 
 
@@ -133,47 +133,45 @@ export default function ListingDetail() {
 
   return (
     <SellShell title="Listing">
-      <div className="space-y-4 sm:space-y-5">
+      <div className="space-y-4 pb-6">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
-            {/* Main Image */}
-            <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden border border-black/20 bg-gray-100">
+            <div className="relative w-full h-56 sm:h-72 lg:h-80 rounded-2xl overflow-hidden border border-black/10 bg-gray-100">
               <img
                 src={listing.images[activeImage]}
                 alt={listing.title}
                 className="w-full h-full object-cover"
+                onClick={() => setShowAllImages(true)}
               />
               {listing.images.length > 1 && (
                 <>
                   <button
-                    onClick={() => setActiveImage((prev) => (prev === 0 ? listing.images.length - 1 : prev - 1))}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-lg border border-black/10 active:scale-95 transition-transform"
+                    onClick={() => setActiveImage((p) => (p === 0 ? listing.images.length - 1 : p - 1))}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
                   >
-                    <ChevronLeft className="h-4 w-4 text-black" />
+                    <ChevronLeft className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => setActiveImage((prev) => (prev === listing.images.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-lg border border-black/10 active:scale-95 transition-transform"
+                    onClick={() => setActiveImage((p) => (p === listing.images.length - 1 ? 0 : p + 1))}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
                   >
-                    <ChevronRight className="h-4 w-4 text-black" />
+                    <ChevronRight className="h-4 w-4" />
                   </button>
-                  {/* Image counter */}
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-[10px] px-2.5 py-1 rounded-full font-medium">
                     {activeImage + 1} / {listing.images.length}
                   </div>
                 </>
               )}
             </div>
-            {/* Thumbnail strip */}
             {listing.images.length > 1 && (
               <div className="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
                 {listing.images.map((url, idx) => (
                   <button
                     key={url}
                     onClick={() => setActiveImage(idx)}
-                    className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
-                      idx === activeImage ? 'border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)]' : 'border-transparent opacity-60'
+                    className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 transition-all ${
+                      idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-transparent opacity-60'
                     }`}
                   >
                     <img src={url} alt="" className="w-full h-full object-cover" />
@@ -185,193 +183,156 @@ export default function ListingDetail() {
         )}
 
         {/* Listing Info Card */}
-        <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-          <CardContent className="p-4 sm:p-6 space-y-4">
-            {/* Title */}
-            <h2 className="text-lg sm:text-xl font-black text-black tracking-tight leading-tight">
-              {listing.title}
-            </h2>
-
-            {/* Price & Meta */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center gap-1.5 bg-black text-white text-xs sm:text-sm font-black px-3 py-1.5 rounded-lg">
-                <IndianRupee className="h-3.5 w-3.5" />
-                {formatPrice(listing)}
+        <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+          <div className="p-4 sm:p-5 space-y-3">
+            <h2 className="text-base sm:text-lg font-black text-black leading-tight">{listing.title}</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 bg-black text-white text-xs font-black px-2.5 py-1 rounded-lg">
+                <IndianRupee className="h-3 w-3" />{formatPrice(listing)}
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-gray-600 font-medium bg-slate-100 px-2.5 py-1.5 rounded-lg border border-black/5">
-                <MapPin className="h-3 w-3" />
-                {listing.location}
+              <span className="inline-flex items-center gap-1 text-[10px] text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded-lg">
+                <MapPin className="h-2.5 w-2.5" />{listing.location}
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-gray-600 font-medium bg-slate-100 px-2.5 py-1.5 rounded-lg border border-black/5">
-                <Tag className="h-3 w-3" />
-                {listing.category}
+              <span className="inline-flex items-center gap-1 text-[10px] text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded-lg">
+                <Tag className="h-2.5 w-2.5" />{listing.category}
               </span>
             </div>
-
-            {/* Description */}
             <div className="border-t border-black/5 pt-3">
-              <p className="text-xs sm:text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-                {listing.description}
-              </p>
+              <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
             </div>
-
-            {/* Tags */}
             {listing.tags && listing.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {listing.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[10px] sm:text-[11px] font-semibold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg border border-black/5"
-                  >
-                    {tag}
-                  </span>
+                  <span key={tag} className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>
                 ))}
               </div>
             )}
-
-            {/* Condition */}
             {listing.condition && (
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider">Condition:</span>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-black capitalize">{listing.condition}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold text-gray-400 uppercase">Condition:</span>
+                <span className="text-[10px] font-bold text-black capitalize">{listing.condition}</span>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Message Seller Card */}
         {!isOwner && (
-          <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-            <CardContent className="p-4 sm:p-6 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <MessageSquare className="h-4 w-4 text-black" />
-                <h3 className="text-sm sm:text-base font-black text-black">Message Seller</h3>
+          <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+            <div className="bg-black p-3">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-white" />
+                <h3 className="text-sm font-bold text-white">Message Seller</h3>
               </div>
-
-              {/* Offered Price */}
-              <div className="space-y-2.5">
-                <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Offered Price (optional)</Label>
-                <div className="relative">
-                  <Input
-                    value={offeredPrice}
-                    onChange={(e) => setOfferedPrice(e.target.value)}
-                    placeholder="e.g., 15000"
-                    inputMode="numeric"
-                    className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
-                    style={{ fontSize: '16px' }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
-                </div>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Offered Price (optional)</Label>
+                <Input
+                  value={offeredPrice}
+                  onChange={(e) => setOfferedPrice(e.target.value)}
+                  placeholder="e.g., 15000"
+                  inputMode="numeric"
+                  className="h-10 sm:h-11 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px]"
+                />
               </div>
-
-              {/* Message */}
-              <div className="space-y-2.5">
-                <Label className="text-[10px] sm:text-xs font-bold text-gray-900">Your Message</Label>
-                <div className="relative">
-                  <Textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write your message to the seller…"
-                    rows={4}
-                    className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[120px] rounded-none transition-all duration-300 pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
-                    style={{ fontSize: '16px' }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
-                </div>
+              <div>
+                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Your Message</Label>
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Write your message to the seller…"
+                  rows={3}
+                  className="text-sm border border-black rounded-none min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
+                />
               </div>
-
-              {/* Send Button */}
               <Button
-                className="w-full h-12 sm:h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white border border-blue-700 font-black text-sm sm:text-base rounded-xl shadow-[0_6px_0_0_rgba(37,99,235,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4)] active:translate-y-[4px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-50"
                 onClick={submitResponse}
                 disabled={!user || sending}
               >
                 <Send className="h-4 w-4 mr-2" />
                 {user ? (sending ? 'Sending…' : 'Send Message') : 'Sign in to message'}
               </Button>
-
               {!user && (
-                <p className="text-[11px] text-gray-500 text-center">
+                <p className="text-[10px] text-gray-400 text-center">
                   <Link to="/signin" className="underline font-bold text-black">Sign in</Link> to contact the seller.
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Buyer Responses (Owner Only) */}
         {isOwner && (
-          <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-            <CardContent className="p-4 sm:p-6 space-y-3">
-              <div className="flex items-center gap-2 mb-1">
-                <UserCircle className="h-4 w-4 text-black" />
-                <h3 className="text-sm sm:text-base font-black text-black">Buyer Responses ({responses.length})</h3>
+          <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+            <div className="bg-black p-3">
+              <div className="flex items-center gap-2">
+                <UserCircle className="h-4 w-4 text-white" />
+                <h3 className="text-sm font-bold text-white">Buyer Responses ({responses.length})</h3>
               </div>
-
+            </div>
+            <div className="p-4 space-y-2">
               {responses.length === 0 && (
-                <p className="text-xs text-gray-500 text-center py-4">No responses yet.</p>
+                <p className="text-xs text-gray-400 text-center py-6">No responses yet.</p>
               )}
-
               {responses.slice(0, 20).map((r) => (
                 <Link
                   key={r.id}
                   to={`/sell/listing/${listing?.id}/chat/${r.buyerId}`}
-                  className="block border border-black/10 rounded-xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_2px_0_0_rgba(0,0,0,0.05)] hover:border-black/30 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.08)] transition-all duration-200"
+                  className="block border border-black/10 rounded-xl p-3 hover:bg-gray-50 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.05)]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{r.buyerName || 'Buyer'}</p>
-                      <p className="text-xs sm:text-sm text-gray-800 whitespace-pre-wrap leading-relaxed mt-1">{r.message}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase">{r.buyerName || 'Buyer'}</p>
+                      <p className="text-xs text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
                       {r.offeredPrice != null && (
-                        <p className="text-xs font-black text-black mt-2 flex items-center gap-1">
-                          <IndianRupee className="h-3 w-3" />
-                          Offer: ₹{r.offeredPrice.toLocaleString('en-IN')}
-                        </p>
+                        <span className="inline-flex items-center gap-0.5 text-[10px] font-black text-black mt-1.5">
+                          <IndianRupee className="h-2.5 w-2.5" />₹{r.offeredPrice.toLocaleString('en-IN')}
+                        </span>
                       )}
                     </div>
-                    <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
+                    <MessageSquare className="h-4 w-4 text-gray-300 flex-shrink-0 mt-1" />
                   </div>
                 </Link>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* AI Suggestions */}
-        <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-          <CardContent className="p-4 sm:p-6 space-y-3">
-            <h3 className="text-sm sm:text-base font-black text-black">AI Suggestions</h3>
-            <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed">
-              Read-only layer — suggests matching enquiries and does not affect listings.
-            </p>
-
+        <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+          <div className="bg-black p-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-white" />
+              <h3 className="text-sm font-bold text-white">AI Suggestions</h3>
+            </div>
+          </div>
+          <div className="p-4 space-y-2">
+            <p className="text-[10px] text-gray-400">Matching enquiries — read only.</p>
             {loadingMatches && (
-              <div className="flex items-center gap-2 py-4 justify-center">
+              <div className="flex items-center gap-2 py-6 justify-center">
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs text-gray-500">Finding matches…</p>
               </div>
             )}
-
             {!loadingMatches && (!matches || matches.length === 0) && (
-              <p className="text-xs text-gray-500 text-center py-4">No strong matches yet.</p>
+              <p className="text-xs text-gray-400 text-center py-6">No strong matches yet.</p>
             )}
-
             {!loadingMatches && matches?.map((m) => (
               <Link key={m.enquiry.id} to={`/enquiry/${m.enquiry.id}`} className="block">
-                <div className="border border-black/10 rounded-xl p-3 hover:bg-gray-50 active:bg-gray-100 transition-colors shadow-[0_2px_0_0_rgba(0,0,0,0.03)]">
-                  <p className="text-xs sm:text-sm font-black text-black line-clamp-1">{m.enquiry.title ?? 'Enquiry'}</p>
-                  <p className="text-[11px] text-gray-600 line-clamp-2 mt-1 leading-relaxed">{m.enquiry.description ?? ''}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-[10px] text-gray-500">
-                      Match: {Math.round(m.score * 100)}%
-                    </p>
-                    <span className="text-[10px] font-semibold text-black underline">View</span>
+                <div className="border border-black/10 rounded-xl p-3 hover:bg-gray-50 transition-colors">
+                  <p className="text-xs font-bold text-black line-clamp-1">{m.enquiry.title ?? 'Enquiry'}</p>
+                  <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5">{m.enquiry.description ?? ''}</p>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className="text-[9px] font-bold text-gray-400">Match: {Math.round(m.score * 100)}%</span>
+                    <span className="text-[9px] font-bold text-black">View →</span>
                   </div>
                 </div>
               </Link>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Full-screen image viewer */}
