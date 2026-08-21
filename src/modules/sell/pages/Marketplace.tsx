@@ -21,9 +21,11 @@ export default function Marketplace() {
   const [location, setLocation] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<SellListing[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await listMarketplace({
         search,
@@ -31,6 +33,9 @@ export default function Marketplace() {
         location: location === 'all' ? undefined : location,
       });
       setListings(data);
+    } catch (err: any) {
+      console.error('Marketplace load error:', err);
+      setError(err?.message || 'Failed to load listings');
     } finally {
       setLoading(false);
     }
@@ -173,7 +178,14 @@ export default function Marketplace() {
         ))}
       </div>
 
-      {!loading && listings.length === 0 && (
+      {!loading && error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <p className="text-sm text-red-700 font-medium">Failed to load listings</p>
+          <p className="text-xs text-red-500 mt-1">{error}</p>
+          <Button onClick={load} className="mt-3 h-9 bg-black text-white border border-black font-black text-xs rounded-xl">Retry</Button>
+        </div>
+      )}
+      {!loading && !error && listings.length === 0 && (
         <p className="text-sm text-gray-700">No listings found.</p>
       )}
     </SellShell>
