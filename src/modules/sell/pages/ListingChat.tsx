@@ -210,7 +210,7 @@ export default function ListingChat() {
 
   return (
     <Layout showNavigation={false}>
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-[100dvh] flex flex-col bg-gray-50 overflow-hidden">
         {/* Top Bar */}
         <div className="flex items-center gap-2 px-3 py-2 bg-white border-b border-black/10 flex-shrink-0 safe-area-top">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 w-8 p-0 flex-shrink-0 rounded-full">
@@ -330,52 +330,55 @@ export default function ListingChat() {
           </div>
         )}
 
-        {/* Suggestions */}
-        {!isRecording && !audioBlob && (
-          <div className="px-3 pb-1.5 flex-shrink-0">
-            <div className="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-hide">
-              {suggestions.map((s) => (
-                <button
-                  key={s.label}
-                  onClick={() => setNewMessage(s.text)}
-                  className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border border-black/20 rounded-full font-medium transition-all active:scale-95"
-                >
-                  {s.label}
-                </button>
-              ))}
+        {/* Bottom Area - Suggestions + Input */}
+        <div className="flex-shrink-0 bg-white border-t border-black/5 pb-20 sm:pb-2">
+          {/* Suggestions */}
+          {!isRecording && !audioBlob && (
+            <div className="px-3 pt-2">
+              <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.label}
+                    onClick={() => setNewMessage(s.text)}
+                    className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border border-black/20 rounded-full font-medium transition-all active:scale-95"
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Input Bar */}
-        {!isRecording && !audioBlob && (
-          <div className="px-3 pb-3 pt-1 bg-white border-t border-black/5 flex-shrink-0 safe-area-bottom">
-            <div className="flex gap-2 items-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={startRecording}
-                className="h-10 w-10 p-0 rounded-full flex-shrink-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-              >
-                <Mic className="h-5 w-5" />
-              </Button>
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                placeholder="Type a message…"
-                className="flex-1 h-10 bg-gray-100 border-0 focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm rounded-full px-4"
-              />
-              <Button
-                onClick={sendMessage}
-                disabled={!newMessage.trim() || sending}
-                className="h-10 w-10 p-0 bg-black text-white border-0 rounded-full hover:bg-gray-800 transition-all flex-shrink-0 disabled:opacity-30"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+          {/* Input Bar */}
+          {!isRecording && !audioBlob && (
+            <div className="px-3">
+              <div className="flex gap-2 items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={startRecording}
+                  className="h-10 w-10 p-0 rounded-full flex-shrink-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <Mic className="h-5 w-5" />
+                </Button>
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                  placeholder="Type a message…"
+                  className="flex-1 h-10 bg-gray-100 border-0 focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm rounded-full px-4"
+                />
+                <Button
+                  onClick={sendMessage}
+                  disabled={!newMessage.trim() || sending}
+                  className="h-10 w-10 p-0 bg-black text-white border-0 rounded-full hover:bg-gray-800 transition-all flex-shrink-0 disabled:opacity-30"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Layout>
   );
