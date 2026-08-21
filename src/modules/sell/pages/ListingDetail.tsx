@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +12,7 @@ import { getListing, listResponsesForListing, createListingResponse } from '../s
 import type { SellListing, SellListingResponse } from '../types';
 import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle } from 'lucide-react';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
-import { db } from '@/firebase';
-import { collection, query, where, onSnapshot, addDoc, orderBy, serverTimestamp, getDoc, doc } from 'firebase/firestore';
+
 
 function formatPrice(l: SellListing) {
   if (l.priceType === 'range') return `₹${l.priceMin ?? ''} – ₹${l.priceMax ?? ''}`;
@@ -31,11 +30,7 @@ export default function ListingDetail() {
   const [sending, setSending] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
-  const [selectedBuyerId, setSelectedBuyerId] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState<any[]>([]);
-  const [chatInput, setChatInput] = useState('');
-  const [sendingChat, setSendingChat] = useState(false);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+
 
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
 
@@ -56,60 +51,6 @@ export default function ListingDetail() {
     };
     run();
   }, [id]);
-
-  // Real-time chat listener for selected buyer
-  useEffect(() => {
-    if (!selectedBuyerId || !listing || !isOwner) return;
-
-    const chatQuery = query(
-      collection(db, 'chatMessages'),
-      where('enquiryId', '==', `sell_listing_${listing.id}`),
-      where('sellerId', '==', selectedBuyerId)
-    );
-
-    const unsubscribe = onSnapshot(chatQuery, (snapshot) => {
-      const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      messages.sort((a, b) => {
-        const timeA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : new Date(a.timestamp || 0).getTime();
-        const timeB = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : new Date(b.timestamp || 0).getTime();
-        return timeA - timeB;
-      });
-      setChatMessages(messages);
-
-      setTimeout(() => {
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
-      }, 100);
-    }, (error) => {
-      console.error('Chat listener error:', error);
-    });
-
-    return () => unsubscribe();
-  }, [selectedBuyerId, listing, isOwner]);
-
-  const sendChatMessage = async () => {
-    if (!user || !listing || !selectedBuyerId || !chatInput.trim()) return;
-    setSendingChat(true);
-    try {
-      await addDoc(collection(db, 'chatMessages'), {
-        enquiryId: `sell_listing_${listing.id}`,
-        sellerId: selectedBuyerId,
-        senderId: user.uid,
-        senderName: user.displayName || user.email?.split('@')[0] || 'Seller',
-        recipientId: selectedBuyerId,
-        message: chatInput.trim(),
-        timestamp: serverTimestamp(),
-        isSystemMessage: false,
-      });
-      setChatInput('');
-    } catch (err: any) {
-      console.error('Failed to send message:', err);
-      toast({ title: 'Failed', description: 'Could not send message.', variant: 'destructive' });
-    } finally {
-      setSendingChat(false);
-    }
-  };
 
   const submitResponse = async () => {
     if (!user || !listing) {
@@ -372,17 +313,10 @@ export default function ListingDetail() {
               )}
 
               {responses.slice(0, 20).map((r) => (
-                <div
+                <Link
                   key={r.id}
-                  onClick={() => {
-                    setSelectedBuyerId(r.buyerId);
-                    setChatMessages([]);
-                  }}
-                  className={`border rounded-xl p-3 cursor-pointer transition-all duration-200 ${
-                    selectedBuyerId === r.buyerId
-                      ? 'border-black bg-slate-50 shadow-[0_4px_0_0_rgba(0,0,0,0.1)]'
-                      : 'border-black/10 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_2px_0_0_rgba(0,0,0,0.05)] hover:border-black/30 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.08)]'
-                  }`}
+                  to={`/sell/listing/${listing?.id}/chat/${r.buyerId}`}
+                  className="block border border-black/10 rounded-xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_2px_0_0_rgba(0,0,0,0.05)] hover:border-black/30 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.08)] transition-all duration-200"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
@@ -395,81 +329,11 @@ export default function ListingDetail() {
                         </p>
                       )}
                     </div>
-                    <MessageSquare className={`h-4 w-4 flex-shrink-0 mt-1 ${selectedBuyerId === r.buyerId ? 'text-black' : 'text-gray-400'}`} />
+                    <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
                   </div>
-                </div>
+                </Link>
               ))}
             </CardContent>
-          </Card>
-        )}
-
-        {/* Chat Box (Owner Only, when buyer selected) */}
-        {isOwner && selectedBuyerId && listing && (
-          <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden flex flex-col" style={{ height: 'min(500px, 60vh)' }}>
-            <CardHeader className="bg-green-950 p-3 flex flex-row items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-black">
-                <MessageSquare className="h-4 w-4 text-black" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-white">Chat with Buyer</h3>
-                <p className="text-[10px] text-green-300">{selectedBuyerId.slice(0, 8)}…</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedBuyerId(null)}
-                className="text-white hover:text-white hover:bg-white/10 h-8 w-8 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </CardHeader>
-
-            {/* Messages */}
-            <div ref={chatContainerRef} className="flex-1 overflow-y-auto bg-white min-h-0 p-3 sm:p-4 space-y-2">
-              {chatMessages.length === 0 ? (
-                <div className="flex items-center justify-center h-full min-h-[150px]">
-                  <div className="text-center">
-                    <MessageSquare className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-xs font-bold text-gray-500">Start chatting</p>
-                    <p className="text-[10px] text-gray-400 mt-1">Send a message to this buyer</p>
-                  </div>
-                </div>
-              ) : (
-                chatMessages.map((msg, i) => (
-                  <div key={msg.id || i} className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[75%] px-3 py-2 rounded-xl border border-black ${
-                      msg.senderId === user?.uid ? 'bg-white' : 'bg-gray-100'
-                    }`}>
-                      {msg.isSystemMessage || msg.senderId === 'system' ? (
-                        <p className="text-[10px] text-center text-gray-500 font-medium">{msg.message}</p>
-                      ) : (
-                        <p className="text-sm leading-relaxed break-words text-black font-medium">{msg.message}</p>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Input */}
-            <div className="border-t border-black p-3 bg-white">
-              <div className="flex gap-2">
-                <Input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
-                  placeholder="Type a message…"
-                  className="flex-1 h-10 border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm rounded-lg"
-                />
-                <Button
-                  onClick={sendChatMessage}
-                  disabled={!chatInput.trim() || sendingChat}
-                  className="h-10 px-4 bg-black text-white border border-black rounded-lg hover:bg-gray-800 transition-all"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
           </Card>
         )}
 
