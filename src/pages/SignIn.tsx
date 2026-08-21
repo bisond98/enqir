@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation, Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
@@ -19,6 +19,7 @@ const SignIn = () => {
   // Use Firebase authentication directly since it's working
   const { user, signUp, signIn, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   
   // STRICT: Redirect if user is already signed in AND verified - check both AuthContext and Firebase directly
@@ -55,7 +56,9 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [isEmailLinkMode, setIsEmailLinkMode] = useState(false);
   const [pendingEmailLink, setPendingEmailLink] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">(
+    (location.state as any)?.mode === 'signup' ? 'signup' : 'signin'
+  );
   
   // Resend email state
   const [emailSentTime, setEmailSentTime] = useState<number | null>(null);
