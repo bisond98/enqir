@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, MessageCircle, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
-import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
-import { PaymentPlan, PAYMENT_PLANS } from "@/config/paymentPlans";
+import { PaymentPlan, PAYMENT_PLANS, getUpgradeOptions } from "@/config/paymentPlans";
 import { getUserPaymentPlan, updateEnquiryPremiumStatus } from "@/services/paymentService";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 interface Enquiry {
   id: string;
@@ -21,7 +23,7 @@ interface Enquiry {
   description: string;
   category: string;
   budget: number;
-  status: 'pending' | 'live' | 'rejected' | 'completed';
+  status: 'pending' | 'live' | 'rejected' | 'completed' | 'deal_closed';
   location?: string;
   userId: string;
   createdAt: any;
@@ -38,11 +40,15 @@ interface Enquiry {
   isPremium?: boolean;
   selectedPlanId?: string;
   selectedPlanPrice?: number;
+  dealClosed?: boolean;
+  dealClosedAt?: any;
+  dealClosedBy?: string;
 }
 
 const MyEnquiries = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [enquiryResponses, setEnquiryResponses] = useState<{[key: string]: any[]}>({});
   const [selectedEnquiryForResponses, setSelectedEnquiryForResponses] = useState<Enquiry | null>(null);
@@ -53,7 +59,79 @@ const MyEnquiries = () => {
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [userPaymentPlan, setUserPaymentPlan] = useState<any>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
+  const [highlightEnquiryId, setHighlightEnquiryId] = useState<string | null>(null);
+  const highlightedEnquiryRef = useRef<HTMLDivElement | null>(null);
+
+  // State to force re-render when responses are viewed
+  const [, forceUpdate] = useState({});
+
+  // Helper function to check if enquiry has unread responses
+  const hasUnreadResponses = (enquiryId: string) => {
+    if (!user) return false;
+    
+    const responses = enquiryResponses[enquiryId] || [];
+    if (responses.length === 0) return false;
+
+    const viewedKey = `responses_viewed_${user.uid}_${enquiryId}`;
+    const lastViewedTime = localStorage.getItem(viewedKey);
+
+    // Never viewed = has unread
+    if (!lastViewedTime) return true;
+
+    const viewedTime = parseInt(lastViewedTime, 10);
+    if (isNaN(viewedTime)) return true; // Invalid timestamp = treat as unread
+    
+    // Check if ANY response is newer than viewed time
+    return responses.some(response => {
+      const responseTime = response.createdAt?.toDate
+        ? response.createdAt.toDate().getTime()
+        : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
+      return responseTime > viewedTime;
+    });
+  };
+
+  // Listen for response viewed events to update badges in real-time
+  useEffect(() => {
+    const handleResponseViewed = (e?: any) => {
+      const detail = e?.detail;
+      console.log(`🔄 MyEnquiries: Event received for enquiry ${detail?.enquiryId}`);
+      // Immediate update - localStorage is already updated
+      forceUpdate({});
+    };
+
+    window.addEventListener('responseViewed', handleResponseViewed);
+
+    return () => {
+      window.removeEventListener('responseViewed', handleResponseViewed);
+    };
+  }, []);
+
+  // Force immediate update when component mounts or becomes visible
+  useEffect(() => {
+    // Force update on mount to ensure badges are accurate
+    console.log('🔄 MyEnquiries: Component mounted/updated, refreshing badges');
+    forceUpdate({});
+  }, [location.pathname]); // Re-check whenever route changes
+
+  // Force update when page becomes visible (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 MyEnquiries: Page visible, refreshing badges');
+        forceUpdate({});
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -73,6 +151,20 @@ const MyEnquiries = () => {
     };
     
     fetchUserPaymentPlan();
+
+    // Fetch user profile for verification status
+    const fetchUserProfile = async () => {
+      try {
+        const profileDoc = await getDoc(doc(db, 'userProfiles', user.uid));
+        if (profileDoc.exists()) {
+          setUserProfile(profileDoc.data());
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    
+    fetchUserProfile();
 
     const enquiriesQuery = query(
       collection(db, 'enquiries'),
@@ -99,8 +191,14 @@ const MyEnquiries = () => {
         const live = enquiriesData.filter(e => !isExpired(e)).sort((a, b) => (toDate(b.createdAt).getTime() - toDate(a.createdAt).getTime()));
         const expired = enquiriesData.filter(e => isExpired(e)).sort((a, b) => (toDate(b.createdAt).getTime() - toDate(a.createdAt).getTime()));
         const combined = [...live, ...expired];
-        console.log('MyEnquiries: Ordered live then expired:', { live: live.length, expired: expired.length });
-        setEnquiries(combined);
+        
+        // Deduplicate by enquiry ID to prevent duplicates
+        const uniqueEnquiries = Array.from(
+          new Map(combined.map(e => [e.id, e])).values()
+        );
+        
+        console.log('MyEnquiries: Ordered live then expired:', { live: live.length, expired: expired.length, unique: uniqueEnquiries.length });
+        setEnquiries(uniqueEnquiries);
         setLoading(false);
       } catch (error) {
         console.log('Error loading enquiries:', error);
@@ -111,9 +209,53 @@ const MyEnquiries = () => {
     loadEnquiries();
   }, [user]);
 
+  // Read highlight from navigation state or query parameter (from dashboard deep-link)
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    let highlight: string | null = null;
+
+    // Prefer state passed via navigate('/my-enquiries', { state: { highlightId } })
+    const state = location.state as any;
+    if (state && typeof state.highlightId === "string") {
+      highlight = state.highlightId;
+    } else {
+      // Fallback to query param ?highlight=<id> if present
+      const params = new URLSearchParams(location.search);
+      highlight = params.get("highlight");
+    }
+
+    if (highlight) {
+      setHighlightEnquiryId(highlight);
+    } else {
+      // Only scroll to top if no highlight
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
+  // Scroll highlighted enquiry into view once data & ref are ready
+  useEffect(() => {
+    if (highlightEnquiryId && highlightedEnquiryRef.current && enquiries.length > 0 && !loading) {
+      // Use requestAnimationFrame for smoother scroll
+      const scrollToHighlight = () => {
+        if (highlightedEnquiryRef.current) {
+          const element = highlightedEnquiryRef.current;
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - (window.innerHeight / 2) + (element.offsetHeight / 2);
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      };
+      
+      // Wait for DOM to be fully rendered
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(scrollToHighlight);
+        });
+      }, 500);
+    }
+  }, [highlightEnquiryId, enquiries, loading]);
   
   // Fetch user payment plan
   useEffect(() => {
@@ -211,27 +353,15 @@ const MyEnquiries = () => {
     
     console.log('MyEnquiries: Plan selected:', { planId, price, enquiryId: selectedEnquiryForUpgrade.id });
     
-    // Update the enquiry in the database
+    // Payment was already processed via Razorpay in PaymentPlanSelector
+    // Just update the enquiry to reflect the new plan
     try {
       const { updateDoc, serverTimestamp } = await import('firebase/firestore');
-      const { updateUserPaymentPlan, savePaymentRecord } = await import('@/services/paymentService');
       
-      // 1. Save payment record
-      const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const plan = PAYMENT_PLANS.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
       
-      const paymentRecordId = await savePaymentRecord(
-        selectedEnquiryForUpgrade.id,
-        user.uid,
-        plan,
-        transactionId
-      );
-      
-      // 2. Update user payment plan
-      await updateUserPaymentPlan(user.uid, planId, paymentRecordId, selectedEnquiryForUpgrade.id);
-      
-      // 3. Update enquiry
+      // Update enquiry
       await updateDoc(doc(db, 'enquiries', selectedEnquiryForUpgrade.id), {
         selectedPlanId: planId,
         selectedPlanPrice: price,
@@ -256,10 +386,10 @@ const MyEnquiries = () => {
       setSelectedEnquiryForUpgrade(null);
       
       // Show success message
-      if (planId === 'pro') {
+      if (planId === 'premium') {
         toast({
-          title: "Pro Plan Activated! 🎉",
-          description: `Your next 10 enquiries will automatically get unlimited responses at no extra cost!`,
+          title: "Premium Plan Activated! 🎉",
+          description: `Your enquiry now has unlimited responses!`,
         });
       } else {
         toast({
@@ -280,21 +410,31 @@ const MyEnquiries = () => {
 
   // Handle upgrade button click
   const handleUpgradeClick = (enquiry: Enquiry) => {
+    // Always use selectedPlanId if available, otherwise default to 'free'
+    // Don't use isPremium flag to determine plan - it can be incorrectly set
+    const currentPlanId = enquiry.selectedPlanId || 'free';
+    console.log('🚀 Upgrade clicked for enquiry:', {
+      enquiryId: enquiry.id,
+      currentPlanId: currentPlanId,
+      selectedPlanId: enquiry.selectedPlanId,
+      isPremium: enquiry.isPremium,
+      selectedPlanPrice: enquiry.selectedPlanPrice
+    });
     setSelectedEnquiryForUpgrade(enquiry);
-    setCurrentPlan(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'));
+    setCurrentPlan(currentPlanId);
     setShowPaymentSelector(true);
   };
 
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'bg-amber-100 text-amber-800 border-amber-200',
-      live: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      live: 'bg-green-800 text-white border-green-900',
       rejected: 'bg-red-100 text-red-800 border-red-200',
       completed: 'bg-slate-100 text-slate-800 border-slate-200'
     };
     
     return (
-      <Badge className={`text-[10px] sm:text-xs rounded-full border ${variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}`}>
+      <Badge className={`text-[8px] sm:text-[9px] rounded-full border ${variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -303,7 +443,7 @@ const MyEnquiries = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'live':
-        return <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />;
+        return null; // Only show Live badge, no green tick
       case 'pending':
         return <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />;
       case 'rejected':
@@ -317,28 +457,28 @@ const MyEnquiries = () => {
 
   const getResponseLimitText = (planId: string) => {
     const plan = PAYMENT_PLANS.find(p => p.id === planId);
-    if (!plan) return 'Shows 2 responses';
+    if (!plan) return 'Connect With 2 Different Sellers';
     
     switch (planId) {
       case 'free':
-        return 'Shows 2 responses';
+        return 'Connect With 2 Different Sellers';
       case 'basic':
-        return 'Shows 5 responses';
+        return 'Connect With 5 Different Sellers';
       case 'standard':
-        return 'Shows 10 responses';
+        return 'Connect With 10 Different Sellers';
       case 'premium':
-        return 'Shows unlimited responses';
+        return 'Connect With Unlimited Sellers';
       case 'pro':
-        return 'Shows unlimited responses';
+        return 'Connect With Unlimited Sellers';
       default:
-        return 'Shows 2 responses';
+        return 'Connect With 2 Different Sellers';
     }
   };
 
   const getStatusMessage = (enquiry: Enquiry) => {
     switch (enquiry.status) {
       case 'live':
-        return 'Your enquiry is live and receiving responses from sellers';
+        return '';
       case 'pending':
         return 'Your enquiry is under admin review';
       case 'rejected':
@@ -346,7 +486,7 @@ const MyEnquiries = () => {
       case 'completed':
         return 'Your enquiry has been completed';
       default:
-        return 'Status unknown';
+        return '';
     }
   };
 
@@ -385,324 +525,554 @@ const MyEnquiries = () => {
   }
 
   if (loading) {
-    return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-blue-600 mx-auto"></div>
-            <p className="mt-4 text-slate-600 font-medium">Loading your enquiries...</p>
-          </div>
-        </div>
-      </Layout>
-    );
+    return <LoadingAnimation message="Loading your enquiries" />;
   }
 
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Header with gray background */}
-          <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
-            {/* Header Section - Top 10% with gray background */}
-            <div className="bg-gray-800 px-6 py-6">
-              <div className="flex items-start justify-between mb-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/dashboard')}
-                  className="p-2 hover:bg-gray-700 rounded-lg text-white"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div className="text-center flex-1">
-                  <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                    Your Enquiries
-                  </h1>
+        {/* Header - Matching Profile Background - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
+            {/* Spacer Section to Match Dashboard/Profile */}
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                  type="button"
+                    onClick={() => navigate('/dashboard')}
+                    className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  >
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </Button>
+                <div className="w-10 h-10"></div>
                 </div>
-                <div className="w-10"></div> {/* Spacer for balance */}
               </div>
-              <p className="text-gray-300 text-xs lg:text-sm max-w-2xl mx-auto leading-relaxed text-center">
-                Manage and track your requests
-              </p>
+              
+            {/* My Enquiries Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
+                My Enquiries.
+              </h1>
+                  </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    Track & Manage Your Enquiries.
+                  </p>
+                </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Post New Enquiry Button */}
-          <div className="flex justify-center mb-8">
-            <Link to="/post-enquiry" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-sm font-semibold">
-                <Plus className="h-4 w-4 mr-2" />
-                Post New Enquiry
-              </Button>
-            </Link>
-          </div>
-
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
-            <Card className="p-3 sm:p-6 text-center border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
-              <div className="text-lg sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">{enquiries.length}</div>
-              <p className="text-xs sm:text-base text-blue-700 font-medium">Total Enquiries</p>
-            </Card>
-            <Card className="p-3 sm:p-6 text-center border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100">
-              <div className="text-lg sm:text-3xl font-bold text-emerald-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'live').length}</div>
-              <p className="text-xs sm:text-base text-emerald-700 font-medium">Live</p>
-            </Card>
-            <Card className="p-3 sm:p-6 text-center border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
-              <div className="text-lg sm:text-3xl font-bold text-amber-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'pending').length}</div>
-              <p className="text-xs sm:text-base text-amber-700 font-medium">Pending</p>
-            </Card>
-            <Card className="p-3 sm:p-6 text-center border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100">
-              <div className="text-lg sm:text-3xl font-bold text-slate-600 mb-1 sm:mb-2">{enquiries.filter(e => e.status === 'completed').length}</div>
-              <p className="text-xs sm:text-base text-slate-700 font-medium">Completed</p>
-            </Card>
+        {/* Content - Inside Container */}
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
+          {/* Professional Stats Summary - Circular Design */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-8 flex-wrap">
+            {(() => {
+              const now = new Date();
+              const isExpired = (e: Enquiry) => {
+                if (!e.deadline) return false;
+                try {
+                  const d = (e.deadline as any).toDate ? (e.deadline as any).toDate() : new Date(e.deadline);
+                  return d < now;
+                } catch {
+                  return false;
+                }
+              };
+              
+              const liveCount = enquiries.filter(e => e.status === 'live' && !isExpired(e)).length;
+              const pendingCount = enquiries.filter(e => e.status === 'pending').length;
+              const completedCount = enquiries.filter(e => e.dealClosed === true || e.status === 'deal_closed').length;
+              const totalCount = enquiries.length;
+              
+              return (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  >
+                      {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{totalCount}</h3>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total Enquiries</p>
+                          </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  >
+                      {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{liveCount}</h3>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Live</p>
+                          </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                    className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  >
+                      {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{pendingCount}</h3>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
+                          </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
+                    className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"
+                  >
+                      {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{completedCount}</h3>
+                      <p className="text-[6px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Completed</p>
+                          </div>
+                  </motion.div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Enquiries List */}
           {enquiries.length === 0 ? (
-            <Card className="p-6 sm:p-12 text-center border-0 shadow-lg">
-              <div className="w-12 h-12 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <Eye className="h-6 w-6 sm:h-10 sm:w-10 text-blue-600" />
-              </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-3">No enquiries yet</h3>
-              <p className="text-xs sm:text-base text-slate-600 mb-4 sm:mb-6 max-w-md mx-auto">
-                Start by posting your first enquiry to find what you're looking for in our community.
-              </p>
-              <Link to="/post-enquiry">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-base">
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                  Post Your First Enquiry
-                </Button>
-              </Link>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="p-8 sm:p-12 lg:p-16 text-center border-2 border-black border-dashed shadow-xl bg-gradient-to-br from-gray-50 via-white to-gray-50/50 rounded-2xl sm:rounded-3xl lg:rounded-[2rem]">
+                <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto mb-5 sm:mb-6 lg:mb-8 shadow-lg flex-shrink-0">
+                  <Eye className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 text-blue-600" />
+                </div>
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 mb-2.5 sm:mb-3 lg:mb-4 tracking-tight">No enquiries yet</h3>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-md lg:max-w-lg mx-auto leading-relaxed px-4">
+                  Start by posting your first enquiry to find what you're looking for in our community.
+                </p>
+                <Link to="/post-enquiry">
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center mx-auto border-2 border-gray-800 hover:border-gray-900">
+                    <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 flex-shrink-0" />
+                    Post Your First Enquiry
+                  </Button>
+                </Link>
+              </Card>
+            </motion.div>
           ) : (
-            <div className="space-y-4 sm:space-y-6">
-              {enquiries.map((enquiry) => {
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+              {enquiries.map((enquiry, index) => {
                 const isExpired = (() => {
                   if (!enquiry.deadline) return false;
                   const d = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
                   return d < new Date();
                 })();
+                const isHighlighted = highlightEnquiryId === enquiry.id;
                 return (
-                <Card key={enquiry.id} className={`${isExpired ? 'opacity-70 bg-gray-100 border-4 border-gray-300 grayscale' : 'border-4 border-blue-200'} shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden`}>
-                  {/* Card Header - Top 10% with gray background */}
-                  <div className="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2 sm:space-x-3">
-                        {getStatusIcon(enquiry.status)}
-                        <h3 className={`text-sm sm:text-lg font-semibold truncate ${isExpired ? 'text-gray-300' : 'text-white'}`}>
-                          {enquiry.title}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isExpired && (
-                          <Badge variant="outline" className="text-[10px] sm:text-xs text-gray-500 border-gray-300">Expired</Badge>
-                        )}
-                        {getStatusBadge(enquiry.status)}
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      <span className="text-xs sm:text-sm ${isExpired ? 'text-gray-400' : 'text-gray-300'}">{getStatusMessage(enquiry)}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Card Content - Rest with white background */}
-                  <CardContent className="p-3 sm:p-6">
-
-                    {/* Deadline Timer */}
-                    {enquiry.deadline && (
-                      <div className="mb-3 sm:mb-4">
-                        <CountdownTimer 
-                          deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                          className="justify-start"
-                        />
-                      </div>
+                <motion.div
+                  key={enquiry.id}
+                  ref={isHighlighted ? highlightedEnquiryRef : undefined}
+                  style={{ willChange: 'transform, opacity' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card className={`group relative rounded-xl overflow-visible transition-all duration-200 ${
+                    isExpired
+                      ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                      : 'bg-white border-[0.5px] border-black hover:bg-gray-50 cursor-pointer shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
+                  }`}>
+                    {/* Physical button depth effect - matching View Details button */}
+                    {!isExpired && (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                      </>
                     )}
-
-                    {/* Enquiry Details */}
-                    <div className="mb-3 sm:mb-4">
+                    {/* Premium Header with Sophisticated Design */}
+                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${
+                      isExpired ? 'opacity-70' : ''
+                    }`}>
+                      {/* Elegant pattern overlay */}
+                      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                      
+                      {/* Shine effect on hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                      
+                      <div className="relative flex items-start justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                        {/* Title Section - Removed, moved to card content */}
+                        <div className="flex-1 min-w-0 pr-1.5 sm:pr-2 lg:pr-1.5 xl:pr-2">
+                          <div className="flex items-start gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                            {/* Show verified badge if: 
+                                1. User has profile-level verification (applies to all enquiries), OR
+                                2. This specific enquiry has ID images (enquiry-specific verification) */}
+                            {((userProfile?.isProfileVerified || 
+                               userProfile?.isVerified || 
+                               userProfile?.trustBadge || 
+                               userProfile?.isIdentityVerified) || 
+                              (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
+                              <div className={`flex items-center justify-center w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 rounded-full flex-shrink-0 shadow-lg ring-1 ring-white/20 ${
+                                isExpired ? 'bg-gray-500' : 'bg-blue-500'
+                              }`}>
+                                <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Status Badge - More Refined */}
+                          {isExpired && (
+                            <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-0.5 lg:py-0.5 xl:py-0.5 bg-red-500/25 border border-red-400/40 rounded-md backdrop-blur-sm shadow-sm mt-0.5">
+                              <span className="w-1 h-1 bg-red-400 rounded-full animate-pulse"></span>
+                              <span className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] text-red-200 font-semibold tracking-wide">Expired</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Right Side Badges - Properly Aligned */}
+                        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
+                          {/* Premium Plan Badge */}
+                          <Badge className={`flex items-center gap-0.5 sm:gap-1 lg:gap-0.5 xl:gap-1 px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-0.5 lg:py-0.5 xl:py-0.5 rounded-md lg:rounded-sm xl:rounded-md shadow-sm border backdrop-blur-md ${
+                            enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
+                              ? 'bg-white/15 text-gray-100 border-white/20' 
+                              : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
+                          }`}>
+                            {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
+                              <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-yellow-300 drop-shadow-sm" />
+                            ) : null}
+                            <span className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-bold whitespace-nowrap tracking-wide">
+                              {enquiry.selectedPlanId ? (
+                                enquiry.selectedPlanId === 'free' ? 'Free Plan' :
+                                enquiry.selectedPlanId === 'basic' ? 'Basic Plan' :
+                                enquiry.selectedPlanId === 'standard' ? 'Standard Plan' :
+                                enquiry.selectedPlanId === 'premium' ? 'Premium Plan' :
+                                enquiry.selectedPlanId === 'pro' ? 'Pro Plan' : 'Paid Plan'
+                              ) : (
+                                enquiry.isPremium ? 'Premium Plan' : 'Free Plan'
+                              )}
+                            </span>
+                          </Badge>
+                          
+                          {/* Status Badge with Icon */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                            {getStatusIcon(enquiry.status)}
+                            {getStatusBadge(enquiry.status)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  
+                    {/* Premium Content Area with Better Structure */}
+                    <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-5 overflow-visible">
+                      {/* Subtle background texture */}
+                      <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
+                      
+                      {/* Urgent Badge - Above Deadline Badge */}
                       {enquiry.isUrgent && (
-                        <div className="mb-2">
-                          <Badge variant="destructive" className="text-[10px] sm:text-xs">
+                        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-3 lg:right-3 xl:top-3.5 xl:right-3.5 z-30">
+                          <Badge variant="destructive" className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 flex-shrink-0 shadow-lg">
+                            <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1" />
                             Urgent
                           </Badge>
                         </div>
                       )}
-                      <p className="text-xs sm:text-base text-slate-600 mb-2 sm:mb-3 line-clamp-2">{enquiry.description}</p>
                       
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-500 mb-2 sm:mb-3">
-                        <span className="flex items-center space-x-1">
-                          <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                          <span>{enquiry.responses || 0} responses</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                          <span>{enquiry.views || 0} views</span>
-                        </span>
-                        <Badge variant="outline" className="text-[10px] sm:text-xs">
-                          {enquiry.category}
-                        </Badge>
-                      </div>
-                      
-                      {/* Plan Information and Response Limit */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span className="text-xs sm:text-sm font-medium text-blue-800">
-                              {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
+                      {/* Deadline Badge - Premium Design - Lowered to make space for Urgent */}
+                      {(() => {
+                        const deadline = enquiry.deadline;
+                        if (!deadline) return null;
+                        
+                        try {
+                          let deadlineDate: Date;
+                          
+                          if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
+                            deadlineDate = deadline.toDate();
+                          } else if (typeof deadline === 'string' || typeof deadline === 'number') {
+                            deadlineDate = new Date(deadline);
+                          } else if (deadline instanceof Date) {
+                            deadlineDate = deadline;
+                          } else {
+                            return null;
+                          }
+                          
+                          if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                            return null;
+                          }
+                          
+                          return (
+                            <div className={`absolute right-3 sm:right-4 lg:right-3 xl:right-3.5 flex items-center gap-1 lg:gap-1.5 bg-gradient-to-r from-red-50 to-red-100/80 border-2 border-red-200/60 rounded-md lg:rounded-lg px-2 lg:px-2.5 xl:px-2.5 py-1 lg:py-1.5 xl:py-1.5 shadow-lg z-20 backdrop-blur-sm max-w-[140px] sm:max-w-[160px] lg:max-w-[150px] xl:max-w-[160px] ${
+                              enquiry.isUrgent 
+                                ? 'top-12 sm:top-14 lg:top-12 xl:top-14' 
+                                : 'top-3 sm:top-4 lg:top-3 xl:top-3.5'
+                            }`}>
+                              <div className="flex items-center justify-center w-3 h-3 lg:w-3.5 lg:h-3.5 xl:w-3.5 xl:h-3.5 bg-red-500 rounded-full flex-shrink-0">
+                                <Clock className="h-1.5 w-1.5 lg:h-2 lg:w-2 xl:h-2 xl:w-2 text-white" />
+                              </div>
+                              <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
+                                {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                              </span>
+                            </div>
+                          );
+                        } catch (e) {
+                          console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
+                          return null;
+                        }
+                      })()}
+
+                      <div className="relative space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
+                        {/* Enquiry Heading - Moved from header */}
+                        <div className="mb-2 sm:mb-3 lg:mb-2 xl:mb-3">
+                          <h3 className={`text-lg sm:text-xl lg:text-lg xl:text-xl font-bold leading-tight tracking-tight ${
+                            isExpired ? 'text-gray-400' : 'text-black'
+                          }`}>
+                            {enquiry.title}
+                          </h3>
+                          {/* Status Message as Subheading */}
+                          {getStatusMessage(enquiry) && (
+                            <div className="mt-1 sm:mt-1 lg:mt-0.5 xl:mt-1">
+                              <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500 font-medium">{getStatusMessage(enquiry)}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Enquiry Information Group */}
+                        <div className="space-y-2 sm:space-y-2.5 lg:space-y-2 pb-3 sm:pb-3.5 lg:pb-2.5 xl:pb-3 border-b-2 border-gray-200/60">
+                          {/* Deadline Timer - Desktop only, mobile shows badge */}
+                          {enquiry.deadline && (
+                            <div className="hidden sm:block pb-2">
+                              <CountdownTimer 
+                                deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
+                                className="justify-start"
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Category */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 pt-1.5 sm:pt-2 lg:pt-1.5 xl:pt-2">
+                            <Badge variant="outline" className="text-[7px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold border-0 text-gray-800 px-1.5 sm:px-3 lg:px-2.5 xl:px-3 py-0.5 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white shadow-sm">
+                              {enquiry.category}
+                            </Badge>
+                            {/* Posted - Mobile Only */}
+                            <span className="sm:hidden flex items-center gap-1 px-1.5 py-0.5 bg-gray-50/80 border-0 rounded-md text-[7px] text-gray-600 font-semibold">
+                              Posted: {formatDate(enquiry.createdAt)}
                             </span>
                           </div>
-                          {enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free' && (
-                            <Badge className="text-[10px] sm:text-xs bg-blue-100 text-blue-700 border-blue-200">
-                              {PAYMENT_PLANS.find(p => p.id === enquiry.selectedPlanId)?.name || 'Premium Plan'}
-                            </Badge>
+                        </div>
+
+                        {/* Budget & Location Group */}
+                        <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 p-2 sm:p-2.5 lg:p-2 xl:p-2.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl border-[0.5px] border-gray-800 shadow-sm">
+                          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
+                            <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6.5 lg:h-6.5 xl:w-7 xl:h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                              <span className="text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs">₹</span>
+                            </div>
+                            <div>
+                              <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] text-gray-600 font-bold uppercase tracking-wide">Budget</div>
+                              <div className="text-xs sm:text-base lg:text-sm xl:text-base font-black text-gray-900 tracking-tight">{formatBudget(enquiry.budget)}</div>
+                            </div>
+                          </div>
+                          {enquiry.location && (
+                            <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-[0.5px] border-gray-800 rounded-md lg:rounded-sm xl:rounded-md">
+                              <span className="text-sm sm:text-base lg:text-sm xl:text-base">📍</span>
+                              <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-700 font-semibold truncate max-w-[120px] sm:max-w-none">{enquiry.location}</span>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Budget and Location */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 p-3 sm:p-4 bg-slate-50 rounded-lg gap-2 sm:gap-0">
-                      <div className="text-sm sm:text-lg font-bold text-slate-900">
-                        Budget: {formatBudget(enquiry.budget)}
-                      </div>
-                      {enquiry.location && (
-                        <div className="text-xs sm:text-base text-slate-600">
-                          📍 {enquiry.location}
+                        {/* Plan Information Group - Premium Design */}
+                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-[0.5px] border-gray-800 shadow-md">
+                          {/* Current Plan & Response Limit */}
+                          <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                            <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                                <Crown className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Plan</div>
+                                <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-black text-gray-900 whitespace-nowrap">
+                                  {enquiry.selectedPlanId ? (
+                                    enquiry.selectedPlanId === 'free' ? 'Free' :
+                                    enquiry.selectedPlanId === 'basic' ? 'Basic' :
+                                    enquiry.selectedPlanId === 'standard' ? 'Standard' :
+                                    enquiry.selectedPlanId === 'premium' ? 'Premium' :
+                                    enquiry.selectedPlanId === 'pro' ? 'Pro' : 'Paid'
+                                  ) : (
+                                    enquiry.isPremium ? 'Premium' : 'Free'
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                              {/* Physical depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0 relative z-10"></div>
+                              <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap relative z-10">
+                                {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
+                          {(() => {
+                            // Always use selectedPlanId - don't use isPremium flag
+                            const enquiryPlan = enquiry.selectedPlanId || 'free';
+                            // Don't show upgrade button for premium (top tier) or pro (hidden for future)
+                            if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
+                            const upgradeOptions = getUpgradeOptions(
+                              enquiryPlan, 
+                              userPaymentPlan?.currentPlan,
+                              enquiry.createdAt,
+                              userPaymentPlan?.proActivationDate
+                            );
+                            return upgradeOptions.length > 0;
+                          })() && !isExpired && (
+                            <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5">
+                              <button
+                                onClick={() => handleUpgradeClick(enquiry)}
+                                className="w-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/upgrade"
+                              >
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                                <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform duration-200 relative z-10" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">Upgrade to Premium</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Premium Plan Information */}
-                    <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 sm:gap-0">
-                        <div className="flex items-center gap-1 sm:gap-2">
-                          <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
-                          <span className="text-xs sm:text-base font-semibold text-slate-800">
-                            {enquiry.selectedPlanId ? (
-                              enquiry.selectedPlanId === 'free' ? 'Free Plan' :
-                              enquiry.selectedPlanId === 'basic' ? 'Basic Plan (₹99)' :
-                              enquiry.selectedPlanId === 'standard' ? 'Standard Plan (₹199)' :
-                              enquiry.selectedPlanId === 'premium' ? 'Premium Plan (₹499)' :
-                              enquiry.selectedPlanId === 'pro' ? 'Pro Plan (₹1,499)' : 'Paid Plan'
-                            ) : (
-                              enquiry.isPremium ? 'Premium Plan (Legacy)' : 'Free Plan'
+                        {/* Timestamps & Admin Notes Group */}
+                        <div className="space-y-1 sm:space-y-1.5 lg:space-y-1 xl:space-y-1.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
+                          {/* Admin Notes - Hidden */}
+                          {/* Timestamps */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
+                            <span className="hidden sm:flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-0 rounded-lg lg:rounded-md xl:rounded-lg">
+                              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                              <span className="font-semibold">Posted: {formatDate(enquiry.createdAt)}</span>
+                            </span>
+                            {enquiry.rejectedAt && (
+                              <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50/80 border border-red-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-red-700 font-semibold">
+                                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                                <span>Rejected: {formatDate(enquiry.rejectedAt)}</span>
+                              </span>
                             )}
-                          </span>
+                          </div>
                         </div>
-                        <div className="flex gap-1 sm:gap-2">
-                          {enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free' && (
-                            <Badge className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs">
-                              {enquiry.selectedPlanId === 'basic' ? 'Basic' :
-                               enquiry.selectedPlanId === 'standard' ? 'Standard' :
-                               enquiry.selectedPlanId === 'premium' ? 'Premium' :
-                               enquiry.selectedPlanId === 'pro' ? 'Pro' : 'Paid'} Plan
-                            </Badge>
-                          )}
-                          {!enquiry.selectedPlanId && enquiry.isPremium && (
-                            <Badge className="bg-yellow-100 text-yellow-800 text-[10px] sm:text-xs">
-                              Premium
-                            </Badge>
-                          )}
-                          {!enquiry.selectedPlanId && !enquiry.isPremium && (
-                            <Badge className="bg-gray-100 text-gray-600 text-[10px] sm:text-xs">
-                              Free
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Never show upgrade button for Pro users */}
-                      {(() => {
-                        // If user has Pro plan or Pro enquiries remaining, never show upgrade button
-                        if (userPaymentPlan && 
-                            (userPaymentPlan.currentPlan === 'pro' || 
-                             (userPaymentPlan.proEnquiriesRemaining && userPaymentPlan.proEnquiriesRemaining > 0))) {
-                          return false;
-                        }
-                        
-                        // Also don't show if enquiry is already Pro
-                        const enquiryPlan = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
-                        if (enquiryPlan === 'pro') {
-                          return false;
-                        }
-                        
-                        return true;
-                      })() && (
-                        <div className="mt-2 sm:mt-3">
-                          <Button
-                            onClick={() => handleUpgradeClick(enquiry)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm py-2 sm:py-2"
-                            size="sm"
-                          >
-                            <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                            Upgrade Plan
-                          </Button>
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Admin Notes */}
-                    {enquiry.adminNotes && (
-                      <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <h4 className="text-xs sm:text-sm font-semibold text-amber-800 mb-1 sm:mb-2">Admin Notes:</h4>
-                        <p className="text-amber-700 text-xs sm:text-sm">{enquiry.adminNotes}</p>
-                      </div>
-                    )}
-
-                    {/* Timestamps */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-slate-500 mb-3 sm:mb-4 gap-1 sm:gap-0">
-                      <span>Created: {formatDate(enquiry.createdAt)}</span>
-                      {enquiry.approvedAt && (
-                        <span className="text-emerald-600">✓ Approved: {formatDate(enquiry.approvedAt)}</span>
-                      )}
-                      {enquiry.rejectedAt && (
-                        <span className="text-red-600">✗ Rejected: {formatDate(enquiry.rejectedAt)}</span>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
-                      <div className="flex flex-wrap gap-2 sm:gap-3">
-                        <Link to={`/enquiry/${enquiry.id}`} className="flex-1 sm:flex-none">
-                          <Button variant="outline" size="sm" className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50 text-[10px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3">
-                            <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="whitespace-nowrap">View Details</span>
-                          </Button>
-                        </Link>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex-1 sm:flex-none w-full sm:w-auto border-gray-300 text-gray-800 hover:bg-gray-100 text-[10px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3"
-                            onClick={() => navigate(`/enquiry/${enquiry.id}/responses-page`)}
-                          >
-                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            <span className="whitespace-nowrap">Show Responses ({enquiryResponses[enquiry.id]?.length || 0})</span>
-                          </Button>
-                        
-                        
-                        {enquiry.status === 'live' && (
-                          <Link to={`/enquiry/${enquiry.id}/responses`} className="flex-1 sm:flex-none">
-                            <Button variant="outline" size="sm" className="w-full sm:w-auto border-green-200 text-green-700 hover:bg-green-50 text-[10px] sm:text-xs py-1.5 sm:py-2 px-2 sm:px-3">
-                              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                              <span className="whitespace-nowrap">View Chats</span>
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                      
-                      <div className="flex justify-end sm:justify-start">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => deleteEnquiry(enquiry.id)}
-                          className="border-red-200 text-red-700 hover:bg-red-50 text-xs sm:text-sm py-2 sm:py-2"
+                        {/* Premium Action Buttons - Perfectly Aligned */}
+                        <div 
+                          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 relative z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
                         >
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
+                          {isExpired ? (
+                            <button disabled className="flex-shrink-0 lg:flex-1 border-[0.5px] border-black text-gray-400 bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden">
+                              <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10" />
+                              <span className="whitespace-nowrap relative z-10">View Details</span>
+                            </button>
+                          ) : (
+                            <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-shrink-0 lg:flex-1 group/btn">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                                <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">View Details</span>
+                              </button>
+                            </Link>
+                          )}
+                          
+                          <button 
+                            disabled={isExpired}
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
+                            onClick={() => {
+                              if (!isExpired) {
+                                navigate(`/enquiry/${enquiry.id}/responses-page`);
+                              }
+                            }}
+                          >
+                            {/* Physical button depth effect */}
+                            {!isExpired && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              </>
+                            )}
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
+                            {(() => {
+                              const allResponses = enquiryResponses[enquiry.id] || [];
+                              // Count only approved responses to match what's shown on responses page
+                              const approvedResponses = allResponses.filter((r: any) => r.status === 'approved');
+                              const responseCount = approvedResponses.length || 0;
+                              return (
+                                <>
+                                  <span className="whitespace-nowrap tracking-tight relative z-10">Responses ({responseCount})</span>
+                                  {hasUnreadResponses(enquiry.id) && responseCount > 0 && (
+                              <div className="ml-1 sm:ml-1.5 flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full shadow-md relative z-10">
+                                      {responseCount}
+                              </div>
+                            )}
+                                </>
+                              );
+                            })()}
+                          </button>
+                          
+                          {enquiry.status === 'live' && !isExpired && (
+                            <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-shrink-0 lg:flex-1 group/chats">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                                {/* Physical button depth effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                                <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10 text-green-500 fill-green-500 stroke-black stroke-2" />
+                                <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
+                              </button>
+                            </Link>
+                          )}
+                          
+                          <button
+                            onClick={() => {
+                              if (!isExpired) {
+                                deleteEnquiry(enquiry.id);
+                              }
+                            }}
+                            disabled={isExpired}
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                          >
+                            {/* Physical button depth effect */}
+                            {!isExpired && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                              </>
+                            )}
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-red-500 fill-red-500 stroke-black stroke-2" />
+                            <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>
+                            <span className="sm:hidden whitespace-nowrap tracking-tight relative z-10">Delete</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </Card>
+                </motion.div>
               );})}
             </div>
           )}
@@ -711,18 +1081,23 @@ const MyEnquiries = () => {
       {/* Payment Plan Selector Modal */}
       {showPaymentSelector && selectedEnquiryForUpgrade && (
         <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-center mb-4 flex items-center justify-center gap-2">
-                <Crown className="h-6 w-6 text-yellow-500" />
-                Upgrade Plan for "{selectedEnquiryForUpgrade.title}"
+          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
+            {/* Physical button depth effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
+            
+            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
+              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
+                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
+                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
+                </div>
+                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
               </DialogTitle>
-              <DialogDescription className="text-center text-slate-600">
-                Choose a plan to unlock more responses and premium features for this enquiry
+              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
+                Upgrade to unlock more curated, verified sellers.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="mt-6">
+            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
               <PaymentPlanSelector
                 currentPlanId={currentPlan}
                 enquiryId={selectedEnquiryForUpgrade.id}
@@ -730,7 +1105,8 @@ const MyEnquiries = () => {
                 onPlanSelect={handlePlanSelect}
                 isUpgrade={true}
                 enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
-                className="max-w-5xl mx-auto"
+                className="max-w-4xl mx-auto w-full"
+                user={user}
               />
             </div>
           </DialogContent>

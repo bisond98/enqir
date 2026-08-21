@@ -1,50 +1,176 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark } from "lucide-react";
+import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNotifications } from "@/contexts/NotificationContext";
+import { NotificationContext } from "@/contexts/NotificationContext";
 import CountdownTimer from "@/components/CountdownTimer";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/firebase";
 import { collection, query, where, orderBy, limit, doc, updateDoc, setDoc, arrayUnion, arrayRemove, increment, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { createPortal } from "react-dom";
 import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { listMarketplace } from "@/modules/sell/services/sellDb";
 
 const Landing = () => {
   const features = [
     {
-      icon: Shield,
-      title: "Trust Badge (Optional)",
-      description: "Get a trust badge by sharing your ID - completely optional"
-    },
-    {
       icon: Search,
       title: "AI-Powered Discovery",
-      description: "Smart AI helps you find exactly what you need, instantly"
+      description: "We do not exploit unpaid interns"
+    },
+    {
+      icon: Zap,
+      title: "Post any need. Sell to real demand",
+      description: "Close deals at godspeed with perfectly curated demand & supply."
     },
     {
       icon: Users,
       title: "Simple & Safe",
-      description: "Easy to use, safe to connect with others"
+      description: "We don't need your data; we already have a revenue model"
     }
   ];
 
-  const categories = [
-    "Household & Personal",
-    "Community Help",
-    "Services & Skills",
-    "Collectibles & Hobbies",
-    "Transportation",
-    "Home & Garden"
+  // All categories from enquiry form
+  const allEnquiryCategories = [
+    { value: "jobs", label: "Jobs & Employment" },
+    { value: "professional-services", label: "Professional Services" },
+    { value: "real-estate", label: "Real Estate" },
+    { value: "real-estate-services", label: "Real Estate Services" },
+    { value: "legal-financial", label: "Legal & Financial" },
+    { value: "marketing-advertising", label: "Marketing & Advertising" },
+    { value: "insurance-services", label: "Insurance Services" },
+    { value: "government-public", label: "Government & Public" },
+    { value: "non-profit-charity", label: "Non-Profit & Charity" },
+    { value: "antiques", label: "Antiques" },
+    { value: "art", label: "Art & Artifacts" },
+    { value: "automobile", label: "Automobile" },
+    { value: "books-publications", label: "Books & Publications" },
+    { value: "collectibles", label: "Collectibles" },
+    { value: "electronics-gadgets", label: "Electronics & Gadgets" },
+    { value: "fashion-apparel", label: "Fashion & Apparel" },
+    { value: "home-furniture", label: "Home & Furniture" },
+    { value: "jewelry-accessories", label: "Jewelry & Accessories" },
+    { value: "memorabilia", label: "Memorabilia" },
+    { value: "sneakers", label: "Sneakers" },
+    { value: "souvenir", label: "Souvenir" },
+    { value: "thrift", label: "Thrift" },
+    { value: "vintage", label: "Vintage Items" },
+    { value: "agriculture-farming", label: "Agriculture & Farming" },
+    { value: "childcare-family", label: "Childcare & Family" },
+    { value: "education-training", label: "Education & Training" },
+    { value: "entertainment-media", label: "Entertainment & Media" },
+    { value: "events-entertainment", label: "Events & Entertainment" },
+    { value: "food-beverage", label: "Food & Beverage" },
+    { value: "gaming-recreation", label: "Gaming & Recreation" },
+    { value: "health-beauty", label: "Health & Beauty" },
+    { value: "pets", label: "Pets & Animals" },
+    { value: "sports-outdoor", label: "Sports & Outdoor" },
+    { value: "travel-tourism", label: "Travel & Tourism" },
+    { value: "wedding-events", label: "Wedding & Events" },
+    { value: "technology", label: "Technology" },
+    { value: "renewable-energy", label: "Renewable Energy" },
+    { value: "construction-renovation", label: "Construction & Renovation" },
+    { value: "raw-materials-industrial", label: "Raw Materials & Industrial" },
+    { value: "transportation-logistics", label: "Transportation & Logistics" },
+    { value: "waste-management", label: "Waste Management" },
+    { value: "security-safety", label: "Security & Safety" },
+    { value: "other", label: "Other" }
   ];
 
+  // Icon mapping for categories - Each category has a matching icon
+  const getCategoryIcon = (value: string) => {
+    const iconMap: { [key: string]: any } = {
+      "jobs": Briefcase,
+      "professional-services": Briefcase,
+      "real-estate": Home,
+      "real-estate-services": Home,
+      "legal-financial": Scale,
+      "marketing-advertising": Megaphone,
+      "insurance-services": Shield,
+      "government-public": Building2,
+      "non-profit-charity": Heart,
+      "antiques": Package,
+      "art": Palette,
+      "automobile": Car,
+      "books-publications": BookOpen,
+      "collectibles": Package,
+      "electronics-gadgets": Laptop,
+      "fashion-apparel": ShoppingBag,
+      "home-furniture": Home,
+      "jewelry-accessories": Gem,
+      "memorabilia": Camera,
+      "sneakers": Footprints,
+      "souvenir": Gift,
+      "thrift": ShoppingBag,
+      "vintage": Package,
+      "agriculture-farming": Sprout,
+      "childcare-family": Baby,
+      "education-training": GraduationCap,
+      "entertainment-media": Music,
+      "events-entertainment": Calendar,
+      "food-beverage": Utensils,
+      "gaming-recreation": Gamepad2,
+      "health-beauty": Stethoscope,
+      "pets": PawPrint,
+      "sports-outdoor": Dumbbell,
+      "travel-tourism": Plane,
+      "wedding-events": Cake,
+      "technology": Smartphone,
+      "renewable-energy": Zap,
+      "construction-renovation": Hammer,
+      "raw-materials-industrial": Package,
+      "transportation-logistics": Truck,
+      "waste-management": Recycle,
+      "security-safety": Shield,
+      "other": Package
+    };
+    return iconMap[value] || Package;
+  };
+
+  // State for shuffled categories (showing 6 at a time)
+  const [displayedCategories, setDisplayedCategories] = useState<any[]>([]);
+  const [isShufflingCategories, setIsShufflingCategories] = useState(false);
+
+  // Function to shuffle and get 6 random categories
+  const getRandomCategories = () => {
+    const shuffled = [...allEnquiryCategories].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6).map(cat => ({
+      name: cat.label,
+      icon: getCategoryIcon(cat.value),
+      value: cat.value
+    }));
+  };
+
+  // Initialize and shuffle categories every 20 seconds
+  useEffect(() => {
+    // Set initial categories
+    setDisplayedCategories(getRandomCategories());
+
+    // Shuffle every 20 seconds
+    const interval = setInterval(() => {
+      setIsShufflingCategories(true);
+      setTimeout(() => {
+        setDisplayedCategories(getRandomCategories());
+        setTimeout(() => {
+          setIsShufflingCategories(false);
+        }, 100);
+      }, 500); // Fade out duration
+    }, 20000); // 20 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const { user, signOut } = useAuth();
-  const { createNotification } = useNotifications();
+  const notificationContext = useContext(NotificationContext);
+  const createNotification = notificationContext?.createNotification || (async () => {
+    console.warn('NotificationContext not available');
+  });
   const navigate = useNavigate();
   const [userStats, setUserStats] = useState({
     enquiries: 0,
@@ -59,10 +185,20 @@ const Landing = () => {
   const [publicRecentEnquiries, setPublicRecentEnquiries] = useState<any[]>([]);
   // All live enquiries for count and search
   const [allLiveEnquiries, setAllLiveEnquiries] = useState<any[]>([]);
+  // 🛡️ PROTECTED: Live enquiries count (non-expired only) - REQUIRED for matching EnquiryWall.tsx count
+  // DO NOT MODIFY - This count must match EnquiryWall.tsx exactly
+  const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   // State for shuffled display
   const [shuffledEnquiries, setShuffledEnquiries] = useState<any[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [sellListings, setSellListings] = useState<any[]>([]);
+  const [shuffledSellListings, setShuffledSellListings] = useState<any[]>([]);
+  const [isShufflingSell, setIsShufflingSell] = useState(false);
+  const [expandedSellCardId, setExpandedSellCardId] = useState<string | null>(null);
   // State for showing more enquiries
   const [showAllEnquiries, setShowAllEnquiries] = useState(false);
+  // State for expanded card (for hover/click interaction)
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   // State for search functionality
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -72,7 +208,14 @@ const Landing = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchPosition, setSearchPosition] = useState({ top: 0, left: 0, width: 0 });
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
+  // Track window width for responsive behavior
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  // User profiles for trust badge verification
+  const [userProfiles, setUserProfiles] = useState<Record<string, any>>({});
 
+  // 🛡️ PROTECTED: FINALIZED KEYWORD-TO-CATEGORY MAPPING - DO NOT MODIFY WITHOUT UPDATING BOTH PAGES
+  // This mapping connects homescreen search keywords to Live Enquiries categories
+  // ⚠️ CRITICAL: Any changes must be coordinated with EnquiryWall.tsx search logic
   // Keyword to category mapping for smart search
   const keywordToCategory = {
     'car': 'automobile',
@@ -149,6 +292,9 @@ const Landing = () => {
     'shipping': 'transportation-logistics'
   };
 
+  // 🛡️ PROTECTED: FINALIZED HOMESCREEN SEARCH LOGIC - DO NOT MODIFY
+  // This function handles keyword-to-category mapping and redirects to Live Enquiries
+  // ⚠️ CRITICAL: Changes here will break the search flow between homescreen and Live Enquiries
   // Search function - redirects to Live Enquiries page with category filter
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -209,13 +355,16 @@ const Landing = () => {
   // Get search suggestions based on current input
   const getSearchSuggestions = () => {
     if (!searchTerm.trim()) {
-      return [...recentSearches, ...popularSearches].slice(0, 6);
+      // Remove duplicates by converting to Set and back to array
+      const uniqueSuggestions = Array.from(new Set([...recentSearches, ...popularSearches]));
+      return uniqueSuggestions.slice(0, 6);
     }
     
     const allSuggestions = [...recentSearches, ...popularSearches];
-    return allSuggestions
-      .filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
-      .slice(0, 6);
+    // Remove duplicates and filter
+    const uniqueFiltered = Array.from(new Set(allSuggestions))
+      .filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+    return uniqueFiltered.slice(0, 6);
   };
 
   // Update search position for portal
@@ -231,7 +380,10 @@ const Landing = () => {
   };
 
   // Use shuffled enquiries for display (search redirects to Live Enquiries page)
-  const filteredEnquiries = shuffledEnquiries;
+  // Final deduplication before rendering to prevent any duplicates
+  const filteredEnquiries = Array.from(
+    new Map(shuffledEnquiries.map(e => [e.id, e])).values()
+  );
 
   // Load saved enquiries on mount
   useEffect(() => {
@@ -657,74 +809,360 @@ const Landing = () => {
 
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
+    // 🛡️ PROTECTED: Enquiry Loading Logic - DO NOT MODIFY
+    // This section ensures homescreen count matches Live Enquiries page count exactly
+    // - NO LIMIT: Must get ALL enquiries (not just first 50)
+    // - onSnapshot: Real-time updates matching EnquiryWall.tsx
+    // - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired
+    // Use onSnapshot for real-time updates and to get ALL enquiries (no limit) to match EnquiryWall.tsx count
     const q = query(
       collection(db, 'enquiries'),
-      where('status', '==', 'live'),
       orderBy('createdAt', 'desc')
+      // 🛡️ NO LIMIT - must get all enquiries to match EnquiryWall.tsx count
     );
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const items: any[] = [];
-      snap.forEach((doc) => {
-        const data = doc.data();
-        items.push({
-          id: doc.id,
-          ...data
-        });
+    
+    // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      try {
+          const items: any[] = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            items.push({
+              id: doc.id,
+              ...data
+            });
+          });
+      
+          console.log('📊 Landing: Total enquiries from query:', items.length);
+      
+          // Filter to show enquiries with status='live' OR status='deal_closed' (matches EnquiryWall.tsx)
+          // Use case-insensitive check to catch any variations
+          const liveStatusEnquiries = items.filter(e => {
+            const status = (e.status || '').toLowerCase().trim();
+            return status === 'live' || status === 'deal_closed';
+          });
+      
+          console.log('📊 Landing: Enquiries with status=live or deal_closed:', liveStatusEnquiries.length);
+      
+          // Deduplicate by ID first (in case same document appears multiple times)
+          const uniqueItems = Array.from(
+            new Map(liveStatusEnquiries.map(e => [e.id, e])).values()
+          );
+      
+          // Filter out deal closed enquiries (matches EnquiryWall.tsx logic)
+          const activeEnquiries = uniqueItems.filter(enquiry => {
+            const status = (enquiry.status || '').toLowerCase().trim();
+            return !(status === 'deal_closed' || enquiry.dealClosed === true);
+          });
+      
+          // Separate live and expired enquiries
+          // Use same deadline handling logic as EnquiryWall.tsx
+          const now = new Date();
+          const liveEnquiries: any[] = [];
+          const expiredEnquiries: any[] = [];
+          
+          activeEnquiries.forEach(enquiry => {
+            if (!enquiry.deadline) {
+              liveEnquiries.push(enquiry); // No deadline = live
+              return;
+            }
+            try {
+              let deadlineDate: Date;
+              
+              // Handle Firestore Timestamp (has toDate method)
+              if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+                deadlineDate = enquiry.deadline.toDate();
+              }
+              // Handle Firestore Timestamp object (has seconds and nanoseconds)
+              else if (enquiry.deadline?.seconds !== undefined) {
+                deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+              }
+              // Handle Date object
+              else if (enquiry.deadline instanceof Date) {
+                deadlineDate = enquiry.deadline;
+              }
+              // Handle string or number
+              else {
+                deadlineDate = new Date(enquiry.deadline);
+              }
+              
+              if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                liveEnquiries.push(enquiry); // If invalid, assume live
+                return;
+              }
+              
+              if (deadlineDate.getTime() >= now.getTime()) {
+                liveEnquiries.push(enquiry);
+              } else {
+                expiredEnquiries.push(enquiry);
+              }
+            } catch {
+              liveEnquiries.push(enquiry); // If error, assume live
+            }
+          });
+      
+      console.log('📊 Landing: Live enquiries:', liveEnquiries.length, 'Expired enquiries:', expiredEnquiries.length);
+      
+        // Sort live enquiries by createdAt (newest first) - already sorted by query but ensure consistency
+      liveEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
       });
       
-      // Separate live and expired
-      const live = items.filter(e => !isEnquiryOutdated(e));
-      const expired = items.filter(e => isEnquiryOutdated(e));
-      
-      // Sort both by createdAt (newest first)
-      live.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      });
-      expired.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
+      // Sort expired enquiries by createdAt (newest first)
+      expiredEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
       });
       
-      // Set all live enquiries for count and search
-      setAllLiveEnquiries([...live, ...expired]);
+      // Set all live enquiries for count and search (includes expired for count/search)
+      setAllLiveEnquiries(uniqueItems);
       
-      // Set display enquiries (first 3 live, then expired if needed)
-      let combined: any[] = [];
-      if (live.length >= 3) {
-        combined = live.slice(0, 3);
-      } else {
-        const needed = 3 - live.length;
-        combined = [...live, ...expired.slice(0, needed)];
+      // 🛡️ PROTECTED: Set live enquiries count (non-expired, non-deal-closed only) - matches EnquiryWall.tsx logic exactly
+      // DO NOT MODIFY - This count must match EnquiryWall.tsx
+      setLiveEnquiriesCount(liveEnquiries.length);
+      
+      // Set display enquiries - store live and expired separately
+      // Store all live and expired enquiries for shuffling
+      setPublicRecentEnquiries([...liveEnquiries, ...expiredEnquiries]);
+      
+          // Set initial shuffled display (3 random from live enquiries, then expired)
+          const initialShuffled = liveEnquiries.length > 0 ? getRandomThree(liveEnquiries) : [];
+          setShuffledEnquiries([...initialShuffled, ...expiredEnquiries]);
+      } catch (error) {
+        console.error('Error processing enquiries:', error);
+        // Set empty arrays on error
+        setAllLiveEnquiries([]);
+        setPublicRecentEnquiries([]);
+        setShuffledEnquiries([]);
+        setLiveEnquiriesCount(0);
       }
-      setPublicRecentEnquiries(combined);
-      setShuffledEnquiries(combined);
     }, (error) => {
       console.error('Error loading enquiries:', error);
       // Set empty arrays on error
       setAllLiveEnquiries([]);
       setPublicRecentEnquiries([]);
       setShuffledEnquiries([]);
+      setLiveEnquiriesCount(0);
     });
+    
+    // Return unsubscribe function for cleanup
     return () => unsubscribe();
   }, []);
 
-  // Shuffle every 1 minute
+  // Fetch user profiles for trust badge verification
   useEffect(() => {
-    if (publicRecentEnquiries.length <= 1) {
-      setShuffledEnquiries(publicRecentEnquiries);
-      return;
-    }
+    if (publicRecentEnquiries.length === 0) return;
+
+    const fetchUserProfiles = async () => {
+      try {
+        const uniqueUserIds = Array.from(
+          new Set(publicRecentEnquiries.map(e => e.userId).filter(Boolean))
+        );
+
+        const profiles: Record<string, any> = {};
+        
+        await Promise.all(
+          uniqueUserIds.map(async (userId) => {
+            try {
+              const profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+              if (profileDoc.exists()) {
+                profiles[userId] = profileDoc.data();
+              }
+            } catch (error) {
+              console.error(`Error fetching profile for ${userId}:`, error);
+            }
+          })
+        );
+
+        setUserProfiles(profiles);
+      } catch (error) {
+        console.error('Error fetching user profiles:', error);
+      }
+    };
+
+    fetchUserProfiles();
+  }, [publicRecentEnquiries]);
+
+  // Mobile home "For Sale" card deck with shuffle behavior similar to enquiry cards
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSellListings = async () => {
+      try {
+        const listings = await listMarketplace({ pageSize: 24 });
+        if (!isMounted) return;
+        setSellListings(listings);
+        setShuffledSellListings(getRandomThree(listings));
+      } catch (error) {
+        console.error("Failed to load sell listings for landing:", error);
+      }
+    };
+
+    loadSellListings();
+    const refreshTimer = setInterval(loadSellListings, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(refreshTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (sellListings.length <= 1) return;
+
     const interval = setInterval(() => {
-      setShuffledEnquiries(getRandomThree(publicRecentEnquiries));
-    }, 60000); // 1 minute
+      setIsShufflingSell(true);
+      setTimeout(() => {
+        setShuffledSellListings(getRandomThree(sellListings));
+        setTimeout(() => setIsShufflingSell(false), 100);
+      }, 500);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [sellListings]);
+
+  // Shuffle live enquiries every 10 seconds, show expired after live
+  useEffect(() => {
+    // Deduplicate before processing
+    const uniqueEnquiries = Array.from(
+      new Map(publicRecentEnquiries.map(e => [e.id, e])).values()
+    );
+    
+    // Separate live and expired enquiries
+    const now = new Date();
+    const liveOnlyEnquiries: any[] = [];
+    const expiredOnlyEnquiries: any[] = [];
+    
+    uniqueEnquiries.forEach(enquiry => {
+      if (!enquiry.deadline) {
+        liveOnlyEnquiries.push(enquiry); // No deadline = live
+        return;
+      }
+      try {
+        const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+        if (deadlineDate.getTime() >= now.getTime()) {
+          liveOnlyEnquiries.push(enquiry);
+        } else {
+          expiredOnlyEnquiries.push(enquiry);
+        }
+      } catch {
+        liveOnlyEnquiries.push(enquiry); // If error, assume live
+      }
+    });
+    
+    // Sort expired by createdAt (newest first)
+    expiredOnlyEnquiries.sort((a, b) => {
+      try {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      } catch {
+        return 0;
+    }
+    });
+    
+    // Set initial display: shuffled live enquiries first, then expired
+    if (liveOnlyEnquiries.length > 0) {
+    const initialShuffled = getRandomThree(liveOnlyEnquiries);
+    const uniqueInitial = Array.from(
+      new Map(initialShuffled.map(e => [e.id, e])).values()
+    );
+      // Combine: live (shuffled) first, then expired
+      setShuffledEnquiries([...uniqueInitial, ...expiredOnlyEnquiries]);
+    } else {
+      // No live enquiries, just show expired
+      setShuffledEnquiries(expiredOnlyEnquiries);
+    }
+    
+    // Only set up interval if there are live enquiries to shuffle
+    if (liveOnlyEnquiries.length <= 1) {
+      return; // No need to shuffle if 1 or fewer live enquiries
+    }
+    
+    const interval = setInterval(() => {
+      // Re-filter to ensure we only shuffle live enquiries
+      const currentNow = new Date();
+      const currentLiveEnquiries: any[] = [];
+      const currentExpiredEnquiries: any[] = [];
+      
+      uniqueEnquiries.forEach(enquiry => {
+        if (!enquiry.deadline) {
+          currentLiveEnquiries.push(enquiry);
+          return;
+        }
+        try {
+          const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
+          if (deadlineDate.getTime() >= currentNow.getTime()) {
+            currentLiveEnquiries.push(enquiry);
+          } else {
+            currentExpiredEnquiries.push(enquiry);
+          }
+        } catch {
+          currentLiveEnquiries.push(enquiry);
+        }
+      });
+      
+      // Sort expired by createdAt (newest first)
+      currentExpiredEnquiries.sort((a, b) => {
+        try {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        } catch {
+          return 0;
+        }
+      });
+      
+      if (currentLiveEnquiries.length > 1) {
+        // Trigger shuffle animation - smooth fade out
+        setIsShuffling(true);
+        
+        // Wait for smooth fade out (500ms for smooth transition), then update cards
+        setTimeout(() => {
+          const shuffled = getRandomThree(currentLiveEnquiries);
+          const uniqueShuffled = Array.from(
+            new Map(shuffled.map(e => [e.id, e])).values()
+          );
+          // Combine: live (shuffled) first, then expired
+          setShuffledEnquiries([...uniqueShuffled, ...currentExpiredEnquiries]);
+          
+          // Smooth fade in new cards (small delay for seamless transition)
+          setTimeout(() => {
+            setIsShuffling(false);
+          }, 100);
+        }, 500);
+      } else if (currentLiveEnquiries.length === 1) {
+        // Only one live enquiry, just combine with expired
+        setShuffledEnquiries([...currentLiveEnquiries, ...currentExpiredEnquiries]);
+      } else {
+        // No live enquiries, just show expired
+        setShuffledEnquiries(currentExpiredEnquiries);
+      }
+    }, 10000); // 10 seconds
     return () => clearInterval(interval);
   }, [publicRecentEnquiries]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Track window width for responsive card behavior
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Fetch user's dashboard data
@@ -823,78 +1261,142 @@ const Landing = () => {
     // Set up real-time listener for new responses to user's enquiries
     let unsubscribeResponses = () => {};
     
-    if (recentEnquiries.length > 0) {
-      const responsesQuery = query(
-        collection(db, 'sellerSubmissions'),
-        where('enquiryId', 'in', recentEnquiries.map(e => e.id)),
-        orderBy('createdAt', 'desc')
-      );
-      
-      unsubscribeResponses = onSnapshot(responsesQuery, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const responseData = change.doc.data();
-            const enquiry = recentEnquiries.find(e => e.id === responseData.enquiryId);
-            
-            if (enquiry) {
-              if (responseData.status === 'approved') {
-                // Create notification for new live response
-                createNotification('new_response', {
-                  title: '🎯 New Response to Your Enquiry!',
-                  message: `"${responseData.sellerName}" responded to "${enquiry.title}"`,
-                  priority: 'high',
-                  actionUrl: `/enquiry-responses/${enquiry.id}`,
-                  actionText: 'View Response'
+    if (recentEnquiries.length > 0 && Array.isArray(recentEnquiries)) {
+      try {
+        // Limit to 10 enquiries to avoid Firestore query limits (max 10 items in "in" query)
+        const enquiryIds = recentEnquiries.slice(0, 10).map(e => e?.id).filter(Boolean);
+        
+        if (enquiryIds.length > 0) {
+          // Remove orderBy to avoid requiring a composite index
+          // We'll sort in JavaScript after fetching
+          const responsesQuery = query(
+            collection(db, 'sellerSubmissions'),
+            where('enquiryId', 'in', enquiryIds)
+          );
+          
+          unsubscribeResponses = onSnapshot(
+            responsesQuery, 
+            (snapshot) => {
+              try {
+                snapshot.docChanges().forEach((change) => {
+                  try {
+                    if (change.type === 'added') {
+                      const responseData = change.doc.data();
+                      if (!responseData || !responseData.enquiryId) return;
+                      
+                      const enquiry = recentEnquiries.find(e => e?.id === responseData.enquiryId);
+                      
+                      if (enquiry && enquiry.id) {
+                        if (responseData.status === 'approved') {
+                          // Create notification for new live response
+                          createNotification('new_response', {
+                            title: '🎯 New Response to Your Enquiry!',
+                            message: `"${responseData.sellerName || 'A seller'}" responded to "${enquiry.title}"`,
+                            priority: 'high',
+                            actionUrl: `/enquiry/${enquiry.id}/responses-page`,
+                            actionText: 'View Response'
+                          });
+                        } else if (responseData.status === 'pending') {
+                          // Create notification for new pending response
+                          createNotification('new_response', {
+                            title: '📝 New Response Submitted!',
+                            message: `"${responseData.sellerName || 'A seller'}" submitted a response to "${enquiry.title}" (under review)`,
+                            priority: 'medium',
+                            actionUrl: `/enquiry/${enquiry.id}/responses-page`,
+                            actionText: 'View Response'
+                          });
+                        }
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error processing response change:', error);
+                  }
                 });
-              } else if (responseData.status === 'pending') {
-                // Create notification for new pending response
-                createNotification('new_response', {
-                  title: '📝 New Response Submitted!',
-                  message: `"${responseData.sellerName}" submitted a response to "${enquiry.title}" (under review)`,
-                  priority: 'medium',
-                  actionUrl: `/enquiry-responses/${enquiry.id}`,
-                  actionText: 'View Response'
-                });
+              } catch (error) {
+                console.error('Error processing snapshot:', error);
+              }
+            }, 
+            (error) => {
+              // Handle Firestore listener errors gracefully (including CORS)
+              if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin')) {
+                console.warn('Firestore CORS error in responses listener. Real-time updates may be limited.');
+                // Don't crash - just log the warning
+              } else {
+                console.error('Firestore responses listener error:', error);
               }
             }
-          }
-        });
-      }, (error) => {
-        // Handle responses listener error silently
-      });
+          );
+        }
+      } catch (error) {
+        console.error('Error setting up responses listener:', error);
+      }
     }
 
     // Set up real-time listener for chat messages
-    const chatQuery = query(
-      collection(db, 'chats'),
-      where('participants', 'array-contains', user.uid)
-    );
+    let unsubscribeChats = () => {};
     
-    const unsubscribeChats = onSnapshot(chatQuery, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'modified') {
-          const chatData = change.doc.data();
-          const lastMessage = chatData.lastMessage;
-          
-          if (lastMessage && lastMessage.senderId !== user.uid) {
-            // Create notification for new chat message
-            createNotification('new_chat', {
-              title: '💬 New Message',
-              message: `${lastMessage.senderName}: ${lastMessage.text.substring(0, 50)}${lastMessage.text.length > 50 ? '...' : ''}`,
-              priority: 'medium',
-              actionUrl: `/enquiry-responses/${chatData.enquiryId}`,
-              actionText: 'Open Chat'
+    try {
+      const chatQuery = query(
+        collection(db, 'chats'),
+        where('participants', 'array-contains', user.uid)
+      );
+      
+      unsubscribeChats = onSnapshot(
+        chatQuery, 
+        (snapshot) => {
+          try {
+            snapshot.docChanges().forEach((change) => {
+              try {
+                if (change.type === 'modified') {
+                  const chatData = change.doc.data();
+                  if (!chatData || !chatData.lastMessage || !chatData.enquiryId) return;
+                  
+                  const lastMessage = chatData.lastMessage;
+                  
+                  if (lastMessage && lastMessage.senderId !== user.uid && chatData.enquiryId) {
+                    // Create notification for new chat message
+                    createNotification('new_chat', {
+                      title: '💬 New Message',
+                      message: `${lastMessage.senderName || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
+                      priority: 'medium',
+                      actionUrl: `/enquiry/${chatData.enquiryId}/responses`,
+                      actionText: 'Open Chat'
+                    });
+                  }
+                }
+              } catch (error) {
+                console.error('Error processing chat change:', error);
+              }
             });
+          } catch (error) {
+            console.error('Error processing chat snapshot:', error);
+          }
+        },
+        (error) => {
+          // Handle Firestore listener errors gracefully (including CORS)
+          if (error?.message?.includes('CORS') || error?.message?.includes('Access-Control-Allow-Origin')) {
+            console.warn('Firestore CORS error in chat listener. Real-time updates may be limited.');
+            // Don't crash - just log the warning
+          } else {
+            console.error('Firestore chat listener error:', error);
           }
         }
-      });
-    }, (error) => {
-      // Handle chats listener error silently
-    });
+      );
+    } catch (error) {
+      console.error('Error setting up chat listener:', error);
+    }
 
     return () => {
-      unsubscribeResponses();
-      unsubscribeChats();
+      try {
+        if (unsubscribeResponses && typeof unsubscribeResponses === 'function') {
+          unsubscribeResponses();
+        }
+        if (unsubscribeChats && typeof unsubscribeChats === 'function') {
+          unsubscribeChats();
+        }
+      } catch (error) {
+        console.error('Error cleaning up listeners:', error);
+      }
     };
   }, [user, recentEnquiries, createNotification]);
 
@@ -939,7 +1441,7 @@ const Landing = () => {
   return (
     <Layout showNavigation={false}>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto">
+      <section className="relative min-h-screen flex items-center justify-center overflow-x-hidden overflow-y-auto" style={{ overflow: 'visible' }}>
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-32 h-32 bg-pal-blue/5 rounded-full animate-float"></div>
@@ -948,7 +1450,7 @@ const Landing = () => {
         </div>
 
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="absolute inset-0 bg-white" style={{ backgroundColor: '#ffffff', background: '#ffffff' }}>
           {/* 2D Black and White Cartoon Drawing - Mobile Compatible */}
           <div className="absolute inset-0 opacity-20 sm:opacity-25">
             <svg className="w-full h-full min-w-full min-h-full" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -1197,11 +1699,11 @@ const Landing = () => {
           {/* Logo with Cartoon Story Around It */}
           <div className="mb-3 sm:mb-4 animate-slide-up text-center">
             <div className="relative inline-block -m-1 sm:-m-2">
-              <img src={newLogo} alt="Enqir.in" className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-20" style={{ background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
-              <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl"></div>
+              <img src={newLogo} alt="Enqir.in" className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-50" style={{ display: 'block', visibility: 'visible', opacity: 1, background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
+              <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl z-0 pointer-events-none"></div>
               
               {/* MINIMAL PROFESSIONAL SKETCH IN LOGO PADDING */}
-              <div className="absolute inset-0 pointer-events-none opacity-30">
+              <div className="absolute inset-0 pointer-events-none opacity-30 z-10">
                 <svg className="w-full h-full min-w-full min-h-full" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                   {/* Central Hub - Logo Area */}
                   <g transform="translate(200, 200)" opacity="0.8">
@@ -1346,23 +1848,65 @@ const Landing = () => {
 
 
           {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.4s' }}>
-            <Link to="/post-enquiry" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <span className="text-xs sm:text-base">Post Your Need</span>
-              <ArrowRight className="h-3 w-3 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
+            <div className="flex items-center justify-center gap-3 sm:gap-4">
+            <Link to="/post-enquiry" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
+            <button className="w-40 h-40 sm:w-auto sm:h-12 border border-black bg-black text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative" style={{ overflow: 'visible' }}>
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="text-[10px] leading-[1] sm:text-base relative z-10 text-center">Post Need</span>
+              <Plus className="h-4.5 w-4.5 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
           </Link>
-          <Link to="/enquiries" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2.5 sm:py-2 px-4 sm:px-4 rounded-lg sm:rounded-lg border-2 border-gray-800 hover:border-gray-800 flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              <Eye className="h-3 w-3 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200" />
-              <span className="text-xs sm:text-base">Show All Enquiries</span>
+          <Link to="/enquiries" className="w-auto group">
+            <button className="w-40 h-40 sm:w-auto sm:h-12 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 sm:py-0 sm:px-4 rounded-full flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] lg:min-w-[220px] relative overflow-hidden">
+              {/* Physical button depth effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="text-[10px] leading-[1] sm:text-base relative z-10 text-center">Enquiries</span>
+              <Eye className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
             </Link>
-            <div className="w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
-              <div className="flex gap-2 sm:gap-2">
+            </div>
+            {/* Sell Row - Mobile Only */}
+            <div className="flex items-center justify-center gap-3 sm:hidden">
+              <Link to="/sell" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
+              <button className="w-40 h-40 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <span className="text-[10px] leading-[1] relative z-10">Sell</span>
+                <Plus className="h-4.5 w-4.5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              </button>
+            </Link>
+            {/* For Sale Button - Mobile Only */}
+            <Link to="/sell/marketplace" className="w-auto group relative">
+              <button className="w-40 h-40 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <span className="text-[10px] leading-[1] relative z-10">For Sale</span>
+                <Package className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              </button>
+            </Link>
+            </div>
+            {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
+                - Text centered with slight right offset (paddingLeft: '2.75rem')
+                - Icon positioned at left-2.5 sm:left-5
+                - Search bar and button connected (gap-0, rounded corners adjusted)
+                - Placeholder text size matches "Show All Enquiries" (text-xs sm:text-base)
+                Last updated: Search bar styling and positioning finalized
+                - Hidden on mobile, visible on desktop (sm: and above)
+            */}
+            <div className="hidden sm:block w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
+              <div className="flex gap-0">
                 <div className="relative flex-1" style={{ zIndex: 50 }}>
-                  <Search className="absolute left-2 sm:left-5 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-5 sm:w-5 text-gray-400" />
+                  <Search className="absolute left-2.5 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -1379,247 +1923,726 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full px-2 sm:px-5 py-2.5 sm:py-4 pl-8 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-2xl focus:border-blue-500 focus:ring-2 sm:focus:ring-4 focus:ring-blue-100 transition-all duration-300 ease-out bg-white shadow-sm placeholder-gray-400"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    style={{ 
+                      lineHeight: '1.5',
+                      paddingTop: '0.75rem',
+                      paddingBottom: '0.75rem',
+                      textAlign: 'center',
+                      paddingLeft: '2.75rem'
+                    }}
                   />
+                  {/* Physical button depth effect for input */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
                   
                 </div>
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold py-2.5 sm:py-2 px-3 sm:px-3 rounded-lg sm:rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl min-w-[40px] sm:min-w-[52px]"
+                className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 sm:h-12 px-3 sm:px-3 rounded-r-xl sm:rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] sm:min-w-[52px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
               >
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 {isSearching ? (
-                  <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
                 ) : (
-                  <Search className="h-3 w-3 sm:h-5 sm:w-5" />
+                  <Search className="h-3 w-3 sm:h-5 sm:w-5 relative z-10" />
                 )}
               </button>
               </div>
             </div>
           </div>
 
+          {/* Mobile: All cards in one container for equal spacing and centering */}
+          <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
+          {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
+            <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
+            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
+              <div className="relative">
+                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
+              </div>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
+              <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
+                We don't need your data; we already have a revenue model
+              </p>
+            </Card>
+          </div>
+
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-blue-50/30 border-blue-100/50 rounded-xl sm:rounded-2xl">
+              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
                 <div className="relative">
-                  <feature.icon className="h-5 w-5 sm:h-8 sm:w-8 text-pal-blue mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
+                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
                 </div>
-                <h3 className="text-xs sm:text-lg font-semibold text-foreground mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
-                <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">{feature.description}</p>
+                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
               </Card>
             ))}
+            </div>
           </div>
 
           {/* Sell Section */}
 
-          {/* Recent Enquiries Grid (Reverted to previous implementation) */}
-          <section className="py-4 sm:py-16">
+          {/* Recent Enquiries Grid - White background full viewport width */}
+          <section className="py-4 sm:py-16 relative w-full" style={{ 
+            backgroundColor: '#ffffff',
+            background: '#ffffff',
+            width: '100vw',
+            marginLeft: 'calc(-50vw + 50%)',
+            marginRight: 'calc(-50vw + 50%)',
+            paddingLeft: 'calc(50vw - 50%)',
+            paddingRight: 'calc(50vw - 50%)',
+            position: 'relative',
+            zIndex: 10,
+            overflow: 'hidden', // Prevent any grey from showing
+            // Ensure pure white on mobile - no gradients
+            boxShadow: windowWidth < 1024 ? 'none' : (expandedCardId ? 'inset 0 0 100px rgba(0,0,0,0.02)' : 'none'),
+            transition: 'box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}>
             <div className="text-center mb-4 sm:mb-12">
               {/* Space kept blank as requested */}
             </div>
-            {/* Live Needs Heading */}
+            {/* 🛡️ PROTECTED: Live Enquiries Count - DO NOT MODIFY
+                This displays the dynamic count of live (non-expired, non-deal-closed) enquiries
+                Format: "{count} real buyers waiting for the right seller"
+                Must match EnquiryWall.tsx count logic exactly
+                - NO LIMIT on query (gets all enquiries)
+                - onSnapshot for real-time updates
+                - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
+            {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-8">
-              <h3 className="text-sm sm:text-2xl md:text-3xl font-bold text-foreground mb-1 sm:mb-4">
-                Live Needs
-              </h3>
-              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-full shadow-sm">
+              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                 <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm sm:text-sm font-medium text-slate-700">
-                  {allLiveEnquiries.length} enquir{allLiveEnquiries.length !== 1 ? 'ys' : 'y'} available
+                <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
+                  {liveEnquiriesCount} real buyers waiting for the right seller {/* 🛡️ PROTECTED TEXT - DO NOT MODIFY */}
                 </span>
               </div>
             </div>
-            {/* Recent Enquiries Grid */}
+            {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
               <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 px-1 sm:px-0">
-                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry) => (
-                  <Link key={enquiry.id} to={`/enquiry/${enquiry.id}`} className="block h-full">
-                    <div className={`bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-200 hover:border-gray-300 flex flex-col h-full transform transition-all duration-200 hover:scale-[1.01] overflow-hidden group ${
-                      isEnquiryOutdated(enquiry) ? 'opacity-70 bg-gray-100 border-gray-300 grayscale' : ''
-                    }`}>
-                      {/* Card Header - Compact */}
-                      <div className="bg-gray-800 px-3 py-2">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-1">
-                            {(enquiry.userProfileVerified || enquiry.idFrontImage || enquiry.idBackImage) && (
+              {/* Container for overlapped cards - horizontal right-to-left layout */}
+              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl" style={{ 
+                backgroundColor: '#ffffff',
+                background: '#ffffff',
+                // Creative: Add subtle elevation effect when cards are touched
+                // Remove all shadows on mobile (< 640px) to prevent dulling center card
+                // The default shadow overlays the center card position, making it appear dull
+                boxShadow: windowWidth < 640 ? 'none' : (expandedCardId ? '0 12px 48px rgba(0,0,0,0.12)' : '0 4px 16px rgba(0,0,0,0.04)'),
+                // Mobile: Container exactly matches card size (180px x 320px)
+                width: windowWidth < 640 ? '180px' : 'auto',
+                minHeight: showAllEnquiries ? 'auto' : (() => {
+                  if (windowWidth >= 1024) return '500px';
+                  if (windowWidth >= 640) return '450px';
+                  // Mobile: container exactly matches card height
+                  if (expandedCardId && windowWidth < 640) {
+                    const cardHeight = 320;
+                    const nonHoveredScale = 0.97;
+                    return `${cardHeight * nonHoveredScale}px`;
+                  }
+                  return '320px'; // Exact card height
+                })(),
+                height: showAllEnquiries ? 'auto' : (() => {
+                  if (windowWidth >= 1024) return '500px';
+                  if (windowWidth >= 640) return '450px';
+                  // Mobile: container exactly matches card height
+                  if (expandedCardId && windowWidth < 640) {
+                    const cardHeight = 320;
+                    const nonHoveredScale = 0.97;
+                    return `${cardHeight * nonHoveredScale}px`;
+                  }
+                  return '320px'; // Exact card height
+                })(),
+                // Creative: Smooth, elastic transitions
+                transition: 'height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s ease-out',
+                paddingTop: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '0px'), 
+                paddingBottom: windowWidth >= 1024 ? '30px' : (windowWidth >= 640 ? '20px' : '0px'),
+                paddingLeft: windowWidth < 640 ? '0px' : (windowWidth >= 1024 ? '32px' : '24px'),
+                paddingRight: windowWidth < 640 ? '0px' : (windowWidth >= 1024 ? '32px' : '24px'),
+                overflow: 'visible', // Allow smooth card animations
+                position: 'relative',
+                zIndex: 1,
+                // Creative: Add subtle border that appears on interaction
+                // Remove border on mobile to prevent dulling shadow on center card
+                border: expandedCardId && windowWidth < 640 ? '2px solid transparent' : (expandedCardId ? '2px solid rgba(0,0,0,0.05)' : '2px solid transparent'),
+                transform: expandedCardId && windowWidth < 1024 ? 'translateY(-2px)' : 'translateY(0)',
+                transformOrigin: 'center'
+              }}>
+                {/* Permanent white background layer for mobile - ensures no grey shows */}
+                {windowWidth < 1024 && (
+                  <div 
+                    className="absolute inset-0 bg-white rounded-2xl sm:rounded-3xl -z-10"
+                    style={{ 
+                      background: '#ffffff',
+                      backgroundColor: '#ffffff',
+                      top: windowWidth < 640 ? '0px' : `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      bottom: windowWidth < 640 ? '0px' : `-${windowWidth >= 640 ? '20px' : '15px'}`,
+                      left: windowWidth < 640 ? '0px' : (windowWidth >= 640 ? '-24px' : '-16px'),
+                      right: windowWidth < 640 ? '0px' : (windowWidth >= 640 ? '-24px' : '-16px')
+                    }}
+                  />
+                )}
+                {/* Creative: Animated background glow effect when cards are active - desktop only */}
+                {expandedCardId && windowWidth >= 1024 && (
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br from-white via-white to-slate-50/30 rounded-2xl sm:rounded-3xl -z-10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    style={{ 
+                      background: '#ffffff',
+                      backgroundColor: '#ffffff',
+                      top: '-30px',
+                      bottom: '-30px',
+                      left: '-32px',
+                      right: '-32px'
+                    }}
+                  />
+                )}
+                <AnimatePresence mode="wait">
+                  {(showAllEnquiries ? filteredEnquiries : filteredEnquiries.slice(0, 3)).map((enquiry, index) => {
+                    const isHovered = expandedCardId === enquiry.id;
+                    const isAnyCardHovered = expandedCardId !== null;
+                    const isRightmostCard = index === 0 && !showAllEnquiries; // Rightmost card is index 0 in right-to-left
+                    // Z-index: rightmost card (index 0) = 30, middle (index 1) = 20, leftmost (index 2) = 10
+                    const baseZIndex = showAllEnquiries ? 10 : (3 - index) * 10;
+                    const zIndex = isHovered ? 50 : (isAnyCardHovered && !isHovered ? 40 : baseZIndex);
+                    // Horizontal overlap: Each card shows enough to see the enquiry title/heading text
+                    // Right-to-left: Cards positioned to center the entire stack
+                    // Card widths: mobile 180px (fits 3 cards on screen), tablet 280px, desktop 320px
+                    // Overlap adjusted: Show enough of card to see header section + title text area clearly
+                    // Title text is at the top of content area, so we need ~80% visible to ensure title is visible on all cards
+                    const cardWidth = windowWidth >= 1024 ? 320 : (windowWidth >= 640 ? 280 : 180);
+                    // Desktop: 20% overlap (80% visible - title text clearly visible on all cards), Tablet: 25%, Mobile: 50%
+                    const shiftAmount = windowWidth >= 1024 ? (cardWidth * 0.20) : (windowWidth >= 640 ? (cardWidth * 0.25) : (cardWidth * 0.5));
+                    // Position cards so the middle card (index 1) is centered below "Live Needs" heading
+                    // Middle card should be at 50% (page center)
+                    // Rightmost card (index 0) at: 50% - shiftAmount
+                    // Middle card (index 1) at: 50% - shiftAmount + shiftAmount = 50% ✓
+                    // Leftmost card (index 2) at: 50% + shiftAmount
+                    // Also need to account for card width to center the card itself, not just its left edge
+                    const cardCenterOffset = cardWidth / 2; // Half card width to center the card
+                    const baseLeft = showAllEnquiries ? 'auto' : `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
+                    // Creative animation: When any card is hovered/touched, it pops forward with spring effect
+                    // Other cards elegantly move back and slightly up with rotation
+                    // Highly optimized for mobile with minimal movements and no rotation
+                    const isMobile = windowWidth < 1024;
+                    const isSmallMobile = windowWidth < 640;
+                    const isTinyMobile = windowWidth < 400;
+                    
+                    // Hovered card: Creative pop with subtle bounce
+                    // Y movement limited to stay within padding bounds (paddingTop: 30px desktop, 20px tablet, 15px mobile)
+                    // Account for scale effect which also moves the card up
+                    const hoveredScale = isTinyMobile ? 1.04 : (isSmallMobile ? 1.05 : (isMobile ? 1.07 : 1.09));
+                    // Calculate safe Y movement: paddingTop - margin - scale effect
+                    const paddingTop = windowWidth >= 1024 ? 30 : (windowWidth >= 640 ? 20 : 15);
+                    const scaleEffect = (hoveredScale - 1) * (windowWidth >= 1024 ? 450 : (windowWidth >= 640 ? 400 : 320)) * 0.5; // Half card height * scale increase
+                    const safeMargin = 8; // Safe margin from padding border
+                    const maxYMovement = Math.max(0, paddingTop - safeMargin - scaleEffect);
+                    const hoveredY = isTinyMobile ? -4 : (isSmallMobile ? -5 : (isMobile ? -7 : -maxYMovement));
+                    // Subtle rotation for depth on hovered card
+                    const hoveredRotateZ = isMobile ? 0 : 0.5;
+                    const hoveredCardAnimation = {
+                      scale: hoveredScale,
+                      y: hoveredY,
+                      rotateZ: hoveredRotateZ,
+                      rotateY: 0,
+                    };
+                    
+                    // Non-hovered cards: Keep at normal size on mobile to prevent dull appearance
+                    // Only hovered card scales up, others stay normal size
+                    // On desktop, still scale down for depth effect
+                    const nonHoveredScale = isMobile ? 1.0 : 0.94; // Keep full size on mobile - no scaling down to prevent dulling
+                    const nonHoveredY = isTinyMobile ? -1 : (isSmallMobile ? -1.5 : (isMobile ? -2.5 : -10));
+                    const nonHoveredRotationZ = isMobile ? 0 : (index % 2 === 0 ? -2 : 2);
+                    const nonHoveredRotationY = isMobile ? 0 : (index % 2 === 0 ? -2.5 : 2.5);
+                    const nonHoveredCardAnimation = {
+                      scale: nonHoveredScale,
+                      y: nonHoveredY,
+                      rotateZ: nonHoveredRotationZ,
+                      rotateY: nonHoveredRotationY,
+                    };
+                    
+                    // Default state: normal position
+                    const defaultAnimation = {
+                      scale: 1,
+                      y: 0,
+                      rotateZ: 0,
+                      rotateY: 0,
+                    };
+                    
+                    // Determine animation state
+                    let animationState;
+                    if (isShuffling) {
+                      animationState = { opacity: 0, scale: 0.92, y: 10, rotateY: 0, rotateZ: 0 };
+                    } else if (isHovered && isAnyCardHovered) {
+                      animationState = { opacity: 1, ...hoveredCardAnimation };
+                    } else if (isAnyCardHovered && !isHovered) {
+                      // On mobile, keep non-hovered cards at default state (no animation) to prevent dulling
+                      // Only apply non-hovered animation on desktop for depth effect
+                      animationState = isMobile ? { opacity: 1, ...defaultAnimation } : { opacity: 1, ...nonHoveredCardAnimation };
+                    } else {
+                      animationState = { opacity: 1, ...defaultAnimation };
+                    }
+                    
+                    // Smooth initial and exit animations with elegant curves
+                    const initialX = isTinyMobile ? 5 : (isSmallMobile ? 8 : (isMobile ? 12 : 25));
+                    const initialY = isTinyMobile ? 5 : (isSmallMobile ? 6 : (isMobile ? 10 : 18));
+                    const initialRotateZ = isMobile ? 0 : (isSmallMobile ? -1 : -6);
+                    const initialRotateY = isMobile ? 0 : (isSmallMobile ? 2 : 12);
+                    
+                    return (
+                    <motion.div
+                      key={enquiry.id}
+                      initial={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: initialRotateZ, rotateY: initialRotateY }}
+                      animate={animationState}
+                      exit={{ opacity: 0, x: initialX, scale: 0.88, y: initialY, rotateZ: -initialRotateZ, rotateY: -initialRotateY }}
+                      transition={{ 
+                        type: isShuffling ? "tween" : "spring", // Always use spring for natural feel
+                        duration: isShuffling ? 0.4 : undefined,
+                        // Creative: Different spring physics for mobile vs desktop - optimized for smoothness
+                        stiffness: isShuffling ? undefined : (isMobile ? 100 : 80), // Reduced for smoother motion
+                        damping: isShuffling ? undefined : (isMobile ? 20 : 16), // Increased damping for smoother stop
+                        mass: isShuffling ? undefined : (isMobile ? 0.4 : 0.6), // Lighter for faster, smoother response
+                        ease: isShuffling ? [0.25, 0.1, 0.25, 1] : undefined, // Smoother easing curve
+                        delay: isShuffling ? index * 0.06 : 0 // Faster stagger for smoother loading
+                      }}
+                      className={`${showAllEnquiries ? 'relative mb-6' : 'absolute'} w-full`}
+                      style={{
+                        willChange: 'transform, opacity',
+                        perspective: '1000px',
+                        perspectiveOrigin: 'center center',
+                        // Position cards right-to-left: middle card centered below "Live Needs"
+                        left: baseLeft,
+                        transform: showAllEnquiries ? 'none' : 'none',
+                        zIndex: zIndex,
+                        // Same dimensions for all cards - optimized for mobile to fit 3 cards
+                        ...(showAllEnquiries ? {} : {
+                          width: windowWidth >= 1024 ? '320px' : (windowWidth >= 640 ? '280px' : '180px'),
+                          height: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                        }),
+                      }}
+                      onMouseEnter={() => {
+                        if (!isEnquiryOutdated(enquiry) && windowWidth >= 1024) {
+                          setExpandedCardId(enquiry.id);
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        if (windowWidth >= 1024) {
+                          setExpandedCardId(null);
+                        }
+                      }}
+                      onMouseMove={() => {
+                        // Ensure hover effect is active when mouse moves over card on desktop
+                        if (!isEnquiryOutdated(enquiry) && windowWidth >= 1024 && expandedCardId !== enquiry.id) {
+                          setExpandedCardId(enquiry.id);
+                        }
+                      }}
+                      onTouchStart={(e) => {
+                        if (!isEnquiryOutdated(enquiry)) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // Toggle expansion - same as desktop hover
+                          setExpandedCardId(expandedCardId === enquiry.id ? null : enquiry.id);
+                        }
+                      }}
+                      onTouchEnd={(e) => {
+                        // Prevent default link navigation when touching to expand/view details
+                        if (isAnyCardHovered) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
+                    <Link 
+                      key={enquiry.id} 
+                      to={isEnquiryOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
+                      className="block h-full"
+                      style={{
+                        height: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                      }}
+                      onClick={(e) => {
+                        if (isEnquiryOutdated(enquiry)) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        } else if (isHovered && isAnyCardHovered) {
+                          // Allow navigation when card is hovered/expanded
+                          // Don't prevent default
+                        } else if (!isHovered && isAnyCardHovered) {
+                          // When another card is hovered, prevent navigation to allow viewing details
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
+            <motion.div 
+              className={`bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black hover:border-gray-700 flex flex-col h-full overflow-visible group relative ${
+                isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
+              }`}
+              animate={{
+                rotateX: isHovered ? 2 : 0,
+                rotateY: isHovered ? -2 : 0,
+                z: isHovered ? 20 : 0,
+                scale: isHovered ? 1.02 : 1,
+              }}
+              transition={{ 
+                duration: 0.5, 
+                ease: [0.22, 1, 0.36, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              style={{ 
+                backgroundColor: '#f3f4f6',
+                transformStyle: 'preserve-3d',
+                perspective: '1000px',
+                willChange: 'transform',
+                filter: isHovered 
+                  ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' 
+                  : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+                boxShadow: isHovered 
+                  ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
+                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
+              }}
+            >
+                      {/* Subtle glow effect for mobile-friendly animation */}
+                      {!isEnquiryOutdated(enquiry) && (
+                        <motion.div 
+                          className="absolute inset-0 rounded-xl sm:rounded-2xl lg:rounded-3xl pointer-events-none z-0"
+                          animate={{
+                            opacity: [0.2, 0.3, 0.2],
+                            background: [
+                              "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 70%)",
+                              "radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 70%)",
+                              "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 70%)",
+                            ]
+                          }}
+                          transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            repeatType: "reverse"
+                          }}
+                        />
+                      )}
+                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
+                      {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative`}>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-[8px] sm:text-[9px] lg:text-xs font-medium text-white`}>Need</span>
+                        </div>
+                        <div className="flex justify-between items-center relative z-10">
+                          <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
+                            {/* 🛡️ PROTECTED: Trust Badge Display Logic - DO NOT MODIFY
+                                This condition checks multiple verification sources:
+                                1. User profile verification (userProfiles collection)
+                                2. Enquiry-level verification flags (userProfileVerified, isProfileVerified, userVerified)
+                                3. ID image uploads (idFrontImage, idBackImage)
+                                All these checks are REQUIRED for proper trust badge display */}
+                            {((userProfiles[enquiry.userId]?.isProfileVerified || 
+                               userProfiles[enquiry.userId]?.isVerified || 
+                               userProfiles[enquiry.userId]?.trustBadge || 
+                               userProfiles[enquiry.userId]?.isIdentityVerified) || 
+                              enquiry.userProfileVerified || // 🛡️ REQUIRED: Set in PostEnquiry.tsx
+                              enquiry.isProfileVerified || 
+                              enquiry.userVerified ||
+                              enquiry.idFrontImage || 
+                              enquiry.idBackImage) && (
                               <>
-                                <div className={`flex items-center justify-center w-3 h-3 rounded-full ${
+                                <div className={`flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full ${
                                   isEnquiryOutdated(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
                                 }`}>
-                                  <Check className="h-1.5 w-1.5 text-white" />
+                                  <Check className="h-1 w-1 sm:h-1.5 sm:w-1.5 lg:h-2 lg:w-2 text-white" />
                                 </div>
-                                <span className={`text-[9px] font-medium hidden sm:inline ${
+                                <span className={`text-[8px] sm:text-[9px] lg:text-xs font-medium hidden sm:inline ${
                                   isEnquiryOutdated(enquiry) ? 'text-gray-300' : 'text-blue-300'
                                 }`}>Verified</span>
                               </>
                             )}
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-2">
                             {!isEnquiryOutdated(enquiry) && (
-                              <Badge variant="default" className="text-[9px] px-1.5 py-0.5 bg-green-100 text-green-700 border-green-200">Live</Badge>
+                              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-green-500 flex-shrink-0"></span>
                             )}
                             {enquiry.isUrgent && !isEnquiryOutdated(enquiry) && (
-                              <Badge variant="destructive" className="text-[9px] px-1.5 py-0.5">Urgent</Badge>
+                              <Badge variant="destructive" className="text-[8px] sm:text-[9px] lg:text-xs px-1 sm:px-1.5 lg:px-2.5 py-0.5 lg:py-1">Urgent</Badge>
                             )}
                             {isEnquiryOutdated(enquiry) && (
-                              <Badge variant="outline" className="text-[9px] px-1.5 py-0.5 text-gray-300 border-gray-400">Expired</Badge>
+                              <Badge variant="outline" className="text-[8px] sm:text-[9px] lg:text-xs px-1 sm:px-1.5 lg:px-2.5 py-0.5 lg:py-1 text-gray-300 border-gray-400">Expired</Badge>
                             )}
                           </div>
                         </div>
                       </div>
                       
-                      {/* Category Mural - Smaller */}
-                      <div className="w-full h-12 overflow-hidden bg-gradient-to-br from-slate-50 to-white relative">
-                        {getCategoryMural(enquiry.category)}
-                      </div>
+                      {/* Category Mural - Hidden */}
                       
-                      {/* Card Content - Compact */}
-                      <div className="p-3 flex-1 flex flex-col">
-                      {/* Title */}
-                      <h3 className={`text-[13px] font-semibold mb-1.5 leading-snug line-clamp-2 ${
-                        isEnquiryOutdated(enquiry) ? 'text-gray-600' : 'text-gray-900'
-                      }`}>
-                        {enquiry.title}
+                      {/* Card Content - Professional Layout with Better Spacing */}
+                      <div className="px-2.5 pt-2.5 pb-6 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
+                      {/* Title - Professional Typography */}
+                      <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 pb-1.5 mb-2 sm:pb-2 sm:mb-2.5 ${
+                        isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
+                      } w-full overflow-hidden`}>
+                        {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
                       </h3>
                       
-                      {/* Quick facts: Budget • Location */}
-                      <div className="mb-2.5">
-                        <div className="flex items-center gap-2 text-[11px] text-slate-700 flex-wrap">
-                          {enquiry.budget && (
-                            <span className="inline-flex items-center font-semibold text-slate-900">
-                              <span className="mr-1 text-[13px]">₹</span>{formatIndianCurrency(enquiry.budget)}
-                            </span>
-                          )}
-                          {enquiry.budget && enquiry.location && (
-                            <span className="text-slate-300">•</span>
-                          )}
-                          {enquiry.location && (
-                            <span className="inline-flex items-center">
-                              <MapPin className="h-3 w-3 mr-1 text-slate-500" />
-                              <span className="line-clamp-1">
-                                {enquiry.location}
-                              </span>
-                            </span>
-                          )}
+                      {/* Budget - Equal Spacing */}
+                      {enquiry.budget && (
+                        <div className="w-full mb-2 sm:mb-2.5">
+                          <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black w-full px-1.5 py-1 sm:px-2 sm:py-1 h-9 min-h-[36px] shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">Budget -</span>
+                            <div className="flex items-center gap-0.5">
+                              <span className="text-xs sm:text-sm font-semibold text-gray-900 flex-shrink-0">₹</span>
+                              <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate min-w-0">{formatIndianCurrency(enquiry.budget)}</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
-                      {/* Meta: Category at left, Created date at right */}
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="secondary" className="text-[10px] px-2 py-0.5">
-                            {enquiry.category}
-                          </Badge>
-                          <div className="flex items-center text-[10px] text-slate-500">
-                            <Clock className="h-3 w-3 mr-1" />
-                            <span className="whitespace-nowrap">
-                              {enquiry.createdAt?.toDate ? formatDate(enquiry.createdAt.toDate().toISOString()) : 'N/A'}
+                      {/* Location - Equal Spacing */}
+                      {enquiry.location && (
+                        <div className="w-full mb-2 sm:mb-2.5">
+                          <div className="flex items-center justify-between bg-gray-200 text-gray-700 border border-black rounded-lg w-full px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
+                            <div className="flex items-center gap-1 sm:gap-1.5">
+                              <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-900 flex-shrink-0 stroke-[2.5]" />
+                              <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate min-w-0">{enquiry.location}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Before - Equal Spacing */}
+                      <div className="w-full mb-2 sm:mb-2.5">
+                        <div className="flex items-center justify-between bg-gray-200 text-gray-600 border border-black rounded-lg w-full px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                          <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">before</span>
+                          <div className="flex items-center gap-1 sm:gap-1.5">
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-black flex-shrink-0 stroke-[2]" />
+                            <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate min-w-0">
+                              {enquiry.deadline ? (enquiry.deadline.toDate ? formatDate(enquiry.deadline.toDate().toISOString()) : formatDate(new Date(enquiry.deadline).toISOString())) : 'N/A'}
                             </span>
                           </div>
                         </div>
-                        {/* Deadline Timer */}
-                        {enquiry.deadline && !isEnquiryOutdated(enquiry) && (
-                          <div className="mt-1">
+                      </div>
+                      
+                      {/* Left - Equal Spacing */}
+                      {enquiry.deadline && (enquiry.deadline.toDate || typeof enquiry.deadline === 'string' || enquiry.deadline instanceof Date) && !isEnquiryOutdated(enquiry) && (
+                        <div className="w-full mb-2 sm:mb-2.5">
+                          <div className="bg-gray-200 border border-black rounded-lg w-full flex items-center justify-between px-1.5 py-1 sm:px-2 sm:py-1 shadow-sm hover:shadow-md transition-all duration-200 hover:border-gray-700">
+                            <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">left</span>
                             <CountdownTimer
                               deadline={enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline)}
-                              className="text-[10px]"
+                              className="text-[9px] sm:text-[10px]"
+                              iconClassName="h-2.5 w-2.5 sm:h-3 sm:w-3 text-black"
                             />
                           </div>
-                        )}
+                        </div>
+                      )}
+                        
+                        {/* Sell Button - Mobile only (inside meta container) */}
+                        <div className="block sm:hidden w-full mb-2 sm:mb-2.5">
+                          {user ? (
+                            (() => {
+                              const isOwnEnquiry = enquiry.userId === user.uid;
+                              if (isOwnEnquiry) {
+                                return (
+                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <span className="relative z-10">Your Enquiry</span>
+                                  </button>
+                                );
+                              } else if (isEnquiryOutdated(enquiry)) {
+                                return (
+                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <span className="relative z-10">Expired</span>
+                                  </button>
+                                );
+                              } else {
+                                return (
+                                  <button 
+                                    className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                                    onClick={() => navigate(`/respond/${enquiry.id}`)}
+                                  >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
+                                    <span className="relative z-10">Sell</span>
+                                  </button>
+                                );
+                              }
+                            })()
+                          ) : (
+                            <button 
+                              className="w-full h-9 bg-gray-100 hover:bg-gray-200 text-black text-[10px] font-black rounded-t-lg rounded-b-xl border border-black hover:border-black transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                              onClick={() => navigate('/signin')}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
+                              <span className="relative z-10">Sign In</span>
+                            </button>
+                          )}
                       </div>
                       
-                      {/* Primary action - before footer */}
-                      <div className="flex flex-col gap-1 mt-auto">
+                        {/* Save and Share - Mobile only (inside meta container, after sell button) */}
+                        <div className="block sm:hidden w-full mb-2">
+                          <div className="flex items-center gap-1.5 justify-between">
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!isEnquiryOutdated(enquiry)) {
+                                  handleSave(enquiry.id, e);
+                                }
+                              }}
+                              disabled={!user || isEnquiryOutdated(enquiry)}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black ${
+                                savedEnquiries.includes(enquiry.id) 
+                                  ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                  : `text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-900`
+                              } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
+                            >
+                              <Bookmark className={`h-3 w-3 transition-transform duration-200 group-hover:scale-110 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                              <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!isEnquiryOutdated(enquiry)) {
+                                  handleShare(enquiry, e);
+                                }
+                              }}
+                              disabled={isEnquiryOutdated(enquiry)}
+                              className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 font-semibold text-[9px] min-h-[28px] border border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'} group`}
+                            >
+                              <Share2 className="h-3 w-3 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" />
+                              <span className="font-semibold">Share</span>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* Category - Desktop only */}
+                        <Badge variant="secondary" className="invisible sm:block bg-gray-100 text-black border border-black font-semibold rounded-lg shadow-sm w-full text-center text-[9px] sm:text-[10px] px-1.5 py-0.5 sm:px-2 sm:py-1">
+                          {enquiry.category}
+                        </Badge>
+                      </div>
+                      
+                      {/* Primary Action Button - Desktop only */}
+                      <div className="hidden sm:block mt-auto w-full pt-1.5 pb-0 sm:pt-2">
                         {user ? (
                           (() => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className="w-full h-8 bg-gray-100 text-gray-600 text-xs font-medium rounded border border-gray-300" disabled>
-                                  ✅ Your Enquiry
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  <span className="relative z-10">Your Enquiry</span>
                                 </button>
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className="w-full h-8 bg-gray-100 text-gray-600 text-xs font-medium rounded border border-gray-300" disabled>
-                                  Expired
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  <span className="relative z-10">Expired</span>
                                 </button>
                               );
                             } else {
                               return (
                                 <button 
-                                  className="w-full h-8 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700"
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
-                                  I Can Provide This
+                                  {/* Physical button depth effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/10 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                  {/* Shimmer effect */}
+                                  <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
+                                  <span className="relative z-10">Sell</span>
                                 </button>
                               );
                             }
                           })()
                         ) : (
                           <button 
-                            className="w-full h-8 bg-gray-100 text-gray-700 text-xs font-medium rounded border border-gray-300 hover:bg-gray-200"
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 hover:bg-gray-200 text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                             onClick={() => navigate('/signin')}
                           >
-                            Sign In to Respond
+                            {/* Physical button depth effect */}
+                            <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                            {/* Shimmer effect */}
+                            <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
+                            <span className="relative z-10">Sign In</span>
                           </button>
                         )}
                       </div>
                       
-                      {/* Footer - Save and Share only */}
-                      <div className="border-t border-gray-700 bg-gray-800 rounded-b-lg -mx-3 -mb-3 px-3 py-2">
-                        <div className="flex items-center justify-between h-[20px]">
+                      {/* Footer - Save and Share - Desktop only */}
+                      <div className="hidden sm:block mt-4 pt-2 pb-4">
+                        <div className="flex items-center gap-2 justify-between">
                           <button 
-                            onClick={(e) => handleSave(enquiry.id, e)}
-                            className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 h-auto text-[9px] transition-all duration-150 ${savedEnquiries.includes(enquiry.id) ? 'text-blue-300 hover:text-blue-200' : 'text-gray-300 hover:text-blue-300'}`}
-                            disabled={!user}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleSave(enquiry.id, e);
+                              }
+                            }}
+                            disabled={!user || isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg transition-all duration-200 font-semibold text-[10px] min-h-[32px] border border-black ${
+                              savedEnquiries.includes(enquiry.id) 
+                                ? `text-blue-700 bg-blue-50 hover:bg-blue-100` 
+                                : `text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-900`
+                            } ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Bookmark className={`h-3 w-3 transition-transform duration-150 ${savedEnquiries.includes(enquiry.id) ? 'fill-current scale-110' : 'hover:scale-110'}`} />
-                            <span className="hidden sm:inline">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
+                            <Bookmark className={`h-3 w-3 transition-transform duration-200 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                            <span className="font-semibold">{savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}</span>
                           </button>
                           <button 
-                            onClick={(e) => handleShare(enquiry, e)}
-                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 h-auto text-[9px] text-gray-300 hover:text-blue-300 transition-all duration-150"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isEnquiryOutdated(enquiry)) {
+                                handleShare(enquiry, e);
+                              }
+                            }}
+                            disabled={isEnquiryOutdated(enquiry)}
+                            className={`inline-flex items-center gap-1 flex-1 justify-center px-2 py-1.5 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 font-semibold text-[10px] min-h-[32px] border border-black ${isEnquiryOutdated(enquiry) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            <Share2 className="h-3 w-3 transition-transform duration-150 hover:scale-110" />
-                            <span className="hidden sm:inline">Share</span>
+                            <Share2 className="h-3 w-3 transition-transform duration-200 hover:scale-110" />
+                            <span className="font-semibold">Share</span>
                           </button>
                         </div>
                       </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </Link>
-                ))}
+                  </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+                {/* Backdrop overlay when card is expanded (mobile) */}
+                {expandedCardId && windowWidth < 1024 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black z-40"
+                    onClick={() => setExpandedCardId(null)}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      setExpandedCardId(null);
+                    }}
+                  />
+                )}
               </div>
-                
-            {/* Load More Button */}
-            {filteredEnquiries.length > 3 && (
-              <div className="text-center mt-6">
-                <Button
-                  onClick={() => setShowAllEnquiries(!showAllEnquiries)}
-                  variant="outline"
-                  className="mobile-button-outline"
-                >
-                  {showAllEnquiries ? 'Show Less' : `Load More Enquiries (${filteredEnquiries.length - 3} more)`}
-                </Button>
-              </div>
-            )}
 
-            {/* Show All Enquiries Button */}
-            <div className="text-center mt-4">
-              <Link to="/enquiries">
-                <Button 
-                  variant="outline" 
-                  className="h-8 sm:h-10 px-4 sm:px-6 text-xs sm:text-sm font-medium border-2 border-gray-800 text-gray-800 hover:border-gray-800 hover:bg-gray-50 transition-all duration-200"
-                >
-                  <Eye className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  Show All Enquiries
-                </Button>
-              </Link>
-            </div>
               </>
             ) : (
               <div className="text-center py-16">
@@ -1662,55 +2685,319 @@ const Landing = () => {
                 )}
               </div>
             )}
+
+            {/* Show All Enquiries Button */}
+            <div className="text-center mt-4">
+              <Link to="/enquiries" className="group inline-block">
+                <Button 
+                  variant="outline" 
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4 relative z-10" />
+                  <span className="relative z-10">Show All Enquiries</span>
+                </Button>
+              </Link>
+            </div>
           </section>
 
           {/* Compact Dashboard Section for Signed-in Users */}
           {user && (
-            <div className="mb-16 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
+            <div className="mb-6 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
               <div className="max-w-4xl mx-auto text-center">
-                <p className="text-slate-600 font-medium text-xs md:text-base mb-6 leading-tight">
-                  Stay anonymous until closing the deal
-                </p>
+                {/* Search Bar - Mobile Only */}
+                <div className="block sm:hidden w-full relative z-50 mb-4" style={{ zIndex: 50 }}>
+                  <div className="flex gap-0">
+                    <div className="relative flex-1" style={{ zIndex: 50 }}>
+                      <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black z-10 pointer-events-none" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Search enquiries..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setShowSearchSuggestions(true);
+                          updateSearchPosition();
+                        }}
+                        onFocus={() => {
+                          setShowSearchSuggestions(true);
+                          updateSearchPosition();
+                        }}
+                        onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+                        onKeyPress={handleKeyPress}
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        style={{ 
+                          lineHeight: '1.5',
+                          paddingTop: '0.75rem',
+                          paddingBottom: '0.75rem',
+                          textAlign: 'center',
+                          paddingLeft: '2.75rem'
+                        }}
+                      />
+                      {/* Physical button depth effect for input */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
+                    </div>
+                    <button
+                      onClick={handleSearch}
+                      disabled={isSearching}
+                      className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
+                    >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                      {isSearching ? (
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
+                      ) : (
+                        <Search className="h-3 w-3 relative z-10" />
+                      )}
+                    </button>
+                  </div>
+                </div>
                 
-                <div className="flex flex-row gap-2 justify-center items-center">
-                  <Link to="/dashboard">
-                    <button className="bg-gray-800 text-white px-2 py-1 text-xs rounded-md inline-flex items-center">
-                      <BarChart3 className="h-3 w-3 mr-1" />
-                      Dashboard
+                <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
+                  <Link to="/dashboard" className="group">
+                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
                     </button>
                   </Link>
-                  <Link to="/post-enquiry">
-                    <button className="bg-gray-800 text-white px-2 py-1 text-xs rounded-md inline-flex items-center">
-                      Post Enquiry
+                  <Link to="/post-enquiry" className="group">
+                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                      <Pen className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
                     </button>
                   </Link>
                 </div>
+                
+                {/* Stay Encrypted Text */}
+                <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mt-3 sm:mt-4 leading-tight">
+                  Stay Encrypted and Anonymous — let everyone be surprised!
+                </p>
+
+                {/* Mobile only: For Sale cards with enquiry-card style deck + shuffle */}
+                {windowWidth < 640 && shuffledSellListings.length > 0 && (
+                  <div className="mt-4 w-full flex flex-col items-center">
+                    <p className="text-xs font-black text-black mb-3">For Sale</p>
+                    <div
+                      className="relative bg-white rounded-2xl"
+                      style={{
+                        width: "180px",
+                        height: "320px",
+                        minHeight: "320px",
+                        overflow: "visible",
+                      }}
+                    >
+                      <AnimatePresence mode="wait">
+                        {shuffledSellListings.slice(0, 3).map((listing, index) => {
+                          const cardWidth = 180;
+                          const shiftAmount = cardWidth * 0.5;
+                          const cardCenterOffset = cardWidth / 2;
+                          const baseLeft = `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
+                          const isHovered = expandedSellCardId === listing.id;
+                          const isAnyCardHovered = expandedSellCardId !== null;
+                          const zIndex = isHovered ? 50 : (3 - index) * 10;
+                          const imageUrl = listing.images?.[0];
+                          const priceText =
+                            listing.priceType === "range"
+                              ? `₹${listing.priceMin ?? ""} - ₹${listing.priceMax ?? ""}`
+                              : listing.price
+                                ? `₹${listing.price}`
+                                : "₹—";
+
+                          return (
+                            <motion.div
+                              key={listing.id}
+                              initial={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              animate={
+                                isShufflingSell
+                                  ? { opacity: 0, scale: 0.92, y: 10 }
+                                  : isHovered && isAnyCardHovered
+                                    ? { opacity: 1, scale: 1.05, y: -5 }
+                                    : { opacity: 1, scale: 1, y: 0 }
+                              }
+                              exit={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              transition={{
+                                type: isShufflingSell ? "tween" : "spring",
+                                duration: isShufflingSell ? 0.4 : undefined,
+                                stiffness: 100,
+                                damping: 20,
+                                mass: 0.4,
+                                delay: isShufflingSell ? index * 0.06 : 0,
+                              }}
+                              className="absolute w-full"
+                              style={{
+                                left: baseLeft,
+                                width: "180px",
+                                height: "320px",
+                                zIndex,
+                              }}
+                              onTouchStart={() => {
+                                setExpandedSellCardId(expandedSellCardId === listing.id ? null : listing.id);
+                              }}
+                            >
+                              <Link to={`/sell/listing/${listing.id}`} className="block h-full">
+                                <div className="bg-gray-100 rounded-xl border-2 border-black flex flex-col h-full overflow-hidden">
+                                  <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 px-2 py-1.5 min-h-[36px] flex items-center justify-between">
+                                    <span className="text-[8px] text-white font-medium">For Sale</span>
+                                    <span className="text-[8px] text-white/90 font-semibold truncate max-w-[72px]">
+                                      {listing.category || "Other"}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 flex flex-col px-2.5 pt-2.5 pb-2">
+                                    <div className="w-full h-[108px] rounded-lg border border-black bg-white overflow-hidden mb-2">
+                                      {imageUrl ? (
+                                        <img src={imageUrl} alt={listing.title || "Listing"} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
+                                      )}
+                                    </div>
+                                    <h3 className="text-xs font-semibold leading-tight line-clamp-2 text-gray-900 mb-2">
+                                      {listing.title}
+                                    </h3>
+                                    <div className="w-full mb-2">
+                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 h-9 min-h-[36px]">
+                                        <span className="text-[7px] text-gray-500">Price -</span>
+                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{priceText}</span>
+                                      </div>
+                                    </div>
+                                    <div className="w-full mb-2">
+                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 min-h-[32px]">
+                                        <span className="text-[7px] text-gray-500">at</span>
+                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{listing.location || "N/A"}</span>
+                                      </div>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        navigate(`/sell/listing/${listing.id}`);
+                                      }}
+                                      className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black min-h-[36px]"
+                                    >
+                                      View Product
+                                    </button>
+                                  </div>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          );
+                        })}
+                      </AnimatePresence>
+                    </div>
+                    <Link to="/sell/marketplace" className="group mt-3">
+                      <button className="h-8 px-4 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[10px] font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                        <span className="relative z-10">Show All</span>
+                        <ArrowRight className="h-3 w-3 relative z-10" />
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Categories Preview - Compact & Elegant */}
-          <div className="mb-8 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1.2s' }}>
-            <div className="text-center mb-4 sm:mb-6">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1">
-                Popular Categories
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500">
-                What people are looking for
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 max-w-3xl mx-auto">
-              {categories.map((category, index) => (
-                <div
-                  key={index}
-                  className="group cursor-pointer"
-                  style={{ animationDelay: `${index * 0.05}s` }}
+          {/* Categories Preview - Professional & Engaging */}
+          <div className="mb-12 sm:mb-20 animate-slide-up" style={{ animationDelay: '1.2s' }}>
+            {/* Background Container */}
+            <div className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 via-white to-gray-50/30">
+              {/* Decorative Elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-100/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-100/20 rounded-full blur-3xl"></div>
+              </div>
+
+              <div className="max-w-7xl mx-auto relative">
+                {/* Categories Single Row - Professional Circles */}
+                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
+                <AnimatePresence mode="wait">
+                {displayedCategories.map((category, index) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <motion.div
+                      key={`${category.value}-${index}`}
+                        className="group flex justify-center items-center"
+                        style={{ willChange: 'transform, opacity, filter' }}
+                        initial={{ opacity: 0, scale: 0.5, y: 40, rotateX: -90, filter: "blur(8px)" }}
+                        animate={{ 
+                          opacity: isShufflingCategories ? 0 : 1, 
+                          scale: isShufflingCategories ? 0.5 : 1,
+                          y: isShufflingCategories ? 40 : 0,
+                          rotateX: isShufflingCategories ? -90 : 0,
+                          filter: isShufflingCategories ? "blur(8px)" : "blur(0px)"
+                        }}
+                        exit={{ opacity: 0, scale: 0.5, y: -40, rotateX: 90, filter: "blur(8px)" }}
+                        transition={{ 
+                          duration: 0.7, 
+                          delay: index * 0.06,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          type: "spring",
+                          stiffness: 120,
+                          damping: 18
+                        }}
+                        whileHover={{ 
+                          scale: 1.15,
+                          y: -8,
+                          transition: { duration: 0.3 }
+                        }}
+                    >
+                        {/* Circle Container - Styled exactly like Dashboard count circles with 3D shadow border */}
+                      <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                            className="group relative flex flex-col items-center justify-center bg-white rounded-full border-3 border-black overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] cursor-pointer w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40"
+                      >
+                            {/* Physical button depth effect */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                            
+                        {/* Content - Perfectly Centered */}
+                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                          {/* Icon Container */}
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center group-hover:bg-white transition-all duration-300 flex-shrink-0 mb-1 sm:mb-1.5">
+                                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-black transition-colors duration-300" />
+                          </div>
+                          
+                              {/* Category Name */}
+                              <h4 className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm font-black text-black tracking-tight leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
+                                {category.name}
+                              </h4>
+                          </div>
+                        </motion.div>
+                    </motion.div>
+                  );
+                })}
+                </AnimatePresence>
+              </div>
+
+              {/* View All CTA */}
+                <div className="text-center">
+                <Link
+                  to="/enquiries"
+                    className="group inline-flex items-center gap-2 h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
-                  <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-lg sm:rounded-xl text-gray-700 text-xs sm:text-sm font-medium hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 hover:scale-105 hover:shadow-md transition-all duration-200 ease-out">
-                    <span className="group-hover:font-semibold">{category}</span>
-                  </div>
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <span className="relative z-10">Explore All Categories</span>
+                    <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform relative z-10" />
+                </Link>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
 
@@ -1730,16 +3017,58 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-4 sm:mb-12">
-            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
+            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-1">
               How It Works
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
-              3 simple steps to connect
+            <p className="text-[10px] sm:text-xs font-black text-black">
+              This isn't rocket science.
             </p>
           </div>
 
-          {/* Animated SVG Flow - Compact Layout */}
-          <div className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border border-gray-200 sm:border-2 shadow-md sm:shadow-lg">
+          {/* Animated SVG Flow - Compact Layout with 3D Border */}
+          <div 
+            className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-[0.5px] border-black shadow-md sm:shadow-lg relative"
+            style={{
+              transformStyle: 'preserve-3d',
+              perspective: '1000px',
+              transform: 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)',
+              boxShadow: `
+                0 8px 20px rgba(0,0,0,0.1),
+                0 4px 10px rgba(0,0,0,0.08),
+                0 2px 5px rgba(0,0,0,0.05),
+                0 0 0 1px rgba(0,0,0,0.1),
+                inset 0 1px 2px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.03)
+              `,
+              transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              willChange: 'transform, box-shadow'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateX(4deg) rotateY(-2deg) translateZ(30px)';
+              e.currentTarget.style.boxShadow = `
+                0 10px 25px rgba(0,0,0,0.12),
+                0 5px 12px rgba(0,0,0,0.1),
+                0 2px 6px rgba(0,0,0,0.08),
+                0 0 0 1px rgba(0,0,0,0.15),
+                inset 0 2px 3px rgba(255,255,255,0.6),
+                inset 0 -2px 3px rgba(0,0,0,0.05)
+              `;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateX(2deg) rotateY(-1deg) translateZ(20px)';
+              e.currentTarget.style.boxShadow = `
+                0 8px 20px rgba(0,0,0,0.1),
+                0 4px 10px rgba(0,0,0,0.08),
+                0 2px 5px rgba(0,0,0,0.05),
+                0 0 0 1px rgba(0,0,0,0.1),
+                inset 0 1px 2px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.03)
+              `;
+            }}
+          >
+            <div className="text-center mb-8 sm:mb-4 lg:mb-6">
+              <p className="text-[8px] sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
+            </div>
             <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
               {/* Step 1: Larger Animated Human Character */}
               <g transform="translate(120, 150)">
@@ -1867,7 +3196,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
                 <g transform="translate(0, 0)">
@@ -1876,7 +3207,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
                 <g transform="translate(70, 0)">
@@ -1885,7 +3218,9 @@ const Landing = () => {
                   </circle>
                   <circle cx="-16" cy="-16" r="5" fill="#1F2937"/>
                   <circle cx="16" cy="-16" r="5" fill="#1F2937"/>
-                  <path d="M-18,15 Q0,10 18,15" stroke="#1F2937" strokeWidth="4" fill="none"/>
+                  <path d="M-18,15 Q0,22 18,15" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round">
+                    <animate attributeName="d" values="M-18,15 Q0,22 18,15; M-18,15 Q0,25 18,15" dur="2s" repeatCount="indefinite"/>
+                  </path>
                   <path d="M-35,25 L35,25 M-42,38 L42,38" stroke="#1F2937" strokeWidth="4" strokeLinecap="round"/>
                 </g>
               </g>
@@ -1910,21 +3245,50 @@ const Landing = () => {
               </g>
               
               {/* Horizontal Step Labels at Bottom - Compact for Mobile */}
-              <g transform="translate(140, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">1. Post Need</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Share what you need</text>
+              <g transform="translate(140, 380)">
+                <text x="0" y="0" textAnchor="start" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold">1. Post Whatever You Need At The Moment.</text>
+                <text x="0" y="25" textAnchor="start" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Share your enquiry.</text>
               </g>
               
-              <g transform="translate(470, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">2. AI Matches</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Finds verified sellers</text>
+              <g transform="translate(600, 480)">
+                <text x="0" y="0" textAnchor="middle" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold" style={{ wordSpacing: '0.05em', letterSpacing: '0.01em' }}>2. Connect Only With The Right Providers.</text>
+                <text x="0" y="25" textAnchor="middle" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Discover verified, curated sellers easily</text>
               </g>
               
-              <g transform="translate(800, 450)">
-                <text x="0" y="0" textAnchor="start" fontSize="16" fill="#1F2937" fontWeight="700" className="sm:text-2xl">3. Connect &amp; Complete</text>
-                <text x="0" y="20" textAnchor="start" fontSize="12" fill="#6B7280" className="sm:text-lg">→ Chat &amp; close deal</text>
+              <g transform="translate(1150, 580)">
+                <text x="0" y="0" textAnchor="end" fontSize="18" fill="#1F2937" fontWeight="900" className="sm:text-2xl lg:text-lg font-bold">3. Close The Deal, Stay Anonymous, Stay Secure.</text>
+                <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
+            
+            {/* 🛡️ PROTECTED: Learn More Button - DO NOT REVERT OR MODIFY WITHOUT PERMISSION */}
+            {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
+            <div className="text-center mt-4 sm:mt-6 sm:block relative">
+              {/* Mobile: Bottom left, bigger - PROTECTED: w-24 h-24, bottom-6 left-6 */}
+              <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-6 z-50 group">
+                <button
+                  className="w-16 h-16 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                  <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                </button>
+              </Link>
+              {/* Desktop: Centered */}
+              <Link to="/help-guide" className="hidden sm:inline-flex items-center justify-center group">
+                <button
+                  className="w-10 h-10 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                  <Plus className="h-3 w-3 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -1932,7 +3296,7 @@ const Landing = () => {
       {/* Portal-based Search Suggestions - Renders outside normal DOM hierarchy */}
       {showSearchSuggestions && getSearchSuggestions().length > 0 && createPortal(
         <div 
-          className="fixed bg-white border-2 border-blue-400 rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
+          className="fixed bg-white border-4 border-black rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
           style={{
             top: searchPosition.top,
             left: searchPosition.left,
@@ -1948,10 +3312,10 @@ const Landing = () => {
                 setShowSearchSuggestions(false);
                 handleSearch();
               }}
-              className="w-full px-4 py-3 text-left hover:bg-blue-100 transition-colors duration-150 first:rounded-t-2xl last:rounded-b-2xl flex items-center gap-3 border-b border-gray-200 last:border-b-0"
+              className="w-full px-4 py-3 text-left hover:bg-gray-100 transition-colors duration-150 first:rounded-t-2xl last:rounded-b-2xl flex items-center gap-3 border-b border-black last:border-b-0"
             >
-              <Search className="h-4 w-4 text-blue-500" />
-              <span className="text-sm text-gray-800 font-medium">{suggestion}</span>
+              <Search className="h-4 w-4 text-black" />
+              <span className="text-sm text-black font-medium">{suggestion}</span>
             </button>
           ))}
         </div>,

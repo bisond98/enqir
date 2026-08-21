@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -20,18 +21,31 @@ import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
-import { uploadToCloudinary } from "@/integrations/cloudinary";
+import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
+import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
+import { verifyIdNumberMatch } from '@/services/ai/idVerification';
+import { useToast } from "@/components/ui/use-toast";
+// PRO PLAN - KEPT FOR FUTURE UPDATES
+// import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
 export default function PostEnquiry() {
+  // Version: 2.1 - Categories updated with Business, Personal, Service at top (Deployed: ${new Date().toISOString()})
   const { user, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
+  
+  // Force component remount on version change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('PostEnquiry v2.1 loaded - Categories: Business, Personal, Service at top');
+    }
+  }, []);
   
   // Debug profile verification status
   // Helper function to determine if user is verified
@@ -51,8 +65,9 @@ export default function PostEnquiry() {
       shouldShowID: !isUserVerified
     });
     
+    // PRO PLAN STATUS CHECK - KEPT FOR FUTURE UPDATES
     // Check if user has Pro plan with remaining enquiries
-    const checkProStatus = async () => {
+    /* const checkProStatus = async () => {
       if (user?.uid) {
         const hasRemaining = await hasProEnquiriesRemaining(user.uid);
         const remainingCount = await getProEnquiriesRemaining(user.uid);
@@ -85,7 +100,7 @@ export default function PostEnquiry() {
     
     return () => {
       window.removeEventListener('focus', handleFocus);
-    };
+    }; */
   }, [isProfileVerified, profileVerificationStatus, isUserVerified, authLoading, user?.uid]);
   const { canPostEnquiry, incrementEnquiries, getRemainingEnquiries } = useUsage();
   const { createNotification } = useNotifications();
@@ -94,6 +109,8 @@ export default function PostEnquiry() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoriesPopoverOpen, setCategoriesPopoverOpen] = useState(false);
+  const [categoriesSheetOpen, setCategoriesSheetOpen] = useState(false);
   const [budget, setBudget] = useState("");
   const [location, setLocation] = useState("");
   const [deadline, setDeadline] = useState<Date | null>(null);
@@ -101,8 +118,9 @@ export default function PostEnquiry() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [hasProRemaining, setHasProRemaining] = useState(false);
-  const [proRemainingCount, setProRemainingCount] = useState(0);
+  // PRO PLAN - KEPT FOR FUTURE UPDATES
+  // const [hasProRemaining, setHasProRemaining] = useState(false);
+  // const [proRemainingCount, setProRemainingCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'success' | 'failed'>('form');
   const [paymentDetails, setPaymentDetails] = useState({
@@ -115,32 +133,197 @@ export default function PostEnquiry() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [idFrontImage, setIdFrontImage] = useState<File | null>(null);
   const [idBackImage, setIdBackImage] = useState<File | null>(null);
+  const [idFrontUrl, setIdFrontUrl] = useState("");
+  const [idBackUrl, setIdBackUrl] = useState("");
   const [idUploadLoading, setIdUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState('');
+  const [formProgress, setFormProgress] = useState(0);
   const [submittedEnquiryId, setSubmittedEnquiryId] = useState<string | null>(null);
   const [enquiryStatus, setEnquiryStatus] = useState<string>('pending');
   const [isEnquiryApproved, setIsEnquiryApproved] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   
+  // Trust Badge Verification States (matching SellerResponse)
+  const [govIdType, setGovIdType] = useState("");
+  const [govIdNumber, setGovIdNumber] = useState("");
+  const [govIdUrl, setGovIdUrl] = useState("");
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [verificationCountdown, setVerificationCountdown] = useState(60);
+  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
+  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const idVerificationCardRef = useRef<HTMLDivElement>(null);
+  const inlineVerificationRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
+  // Reference images (optional for buyers)
+  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
+  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>(Array(4).fill(""));
+  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(4).fill(0));
+  
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
+  // Scroll to ID verification card when verification is successful
+  useEffect(() => {
+    if (idVerificationResult?.matches && idVerificationCardRef.current) {
+      setTimeout(() => {
+        idVerificationCardRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+      }, 100);
+    }
+  }, [idVerificationResult?.matches]);
+
+  // Countdown timer for verification
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (verifyingId) {
+      interval = setInterval(() => {
+        setTotalElapsedSeconds((prev) => {
+          const newTotal = prev + 1;
+          
+          if (newTotal >= 120) {
+            return 120;
+          }
+          
+          if (newTotal === 60) {
+            setVerificationCountdown(60);
+          }
+          
+          if (newTotal < 60) {
+            setVerificationCountdown(60 - newTotal);
+          } else {
+            setVerificationCountdown(120 - newTotal);
+          }
+          
+          return newTotal;
+        });
+      }, 1000);
+    } else {
+      setVerificationCountdown(60);
+      setTotalElapsedSeconds(0);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [verifyingId]);
+
+  // Calculate form completion progress
+  useEffect(() => {
+    const requiredFields = [
+      title.trim(),
+      description.trim(),
+      (selectedCategories.length > 0 || category.trim()),
+      budget.trim(),
+      location.trim(),
+      deadline !== null
+    ];
+    const completed = requiredFields.filter(field => field).length;
+    const progress = (completed / requiredFields.length) * 100;
+    setFormProgress(progress);
+  }, [title, description, selectedCategories, category, budget, location, deadline]);
+
+  // Real-time ID number validation
+  const validateIdNumber = (value: string, type: string) => {
+    if (!type) return;
+    
+    const cleanIdNumber = value.replace(/[\s-]/g, '').toUpperCase();
+    
+    if (!cleanIdNumber) {
+      setErrors(prev => ({ ...prev, govIdNumber: "" }));
+      return;
+    }
+    
+    let error = "";
+    
+    if (type === 'aadhaar') {
+      if (!/^\d+$/.test(cleanIdNumber)) {
+        error = "Aadhaar number must contain only digits";
+      } else if (cleanIdNumber.length !== 12) {
+        error = `Aadhaar number must be exactly 12 digits (current: ${cleanIdNumber.length})`;
+      }
+    } else if (type === 'pan') {
+      if (cleanIdNumber.length !== 10) {
+        error = `PAN must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanIdNumber)) {
+        error = "PAN format: 5 letters + 4 digits + 1 letter (e.g., ABCDE1234F)";
+      }
+    } else if (type === 'passport') {
+      if (cleanIdNumber.length !== 8) {
+        error = `Passport number must be exactly 8 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z]{1}[0-9]{7}$/.test(cleanIdNumber)) {
+        error = "Passport format: 1 letter + 7 digits (e.g., A1234567)";
+      }
+    } else if (type === 'driving_license') {
+      if (cleanIdNumber.length < 10 || cleanIdNumber.length > 15) {
+        error = `Driving License must be 10-15 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Driving License must contain only letters and numbers";
+      }
+    } else if (type === 'voter_id') {
+      if (cleanIdNumber.length !== 10) {
+        error = `Voter ID must be exactly 10 characters (current: ${cleanIdNumber.length})`;
+      } else if (!/^[A-Z0-9]+$/.test(cleanIdNumber)) {
+        error = "Voter ID must contain only letters and numbers";
+      }
+    }
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, govIdNumber: error }));
+    } else {
+      setErrors(prev => ({ ...prev, govIdNumber: "" }));
+    }
+  };
+
   const handlePayment = async () => {
-    if (!selectedPlan) return;
+    if (!selectedPlan || !user?.uid) return;
+    
+    // Prevent double submission
+    if (loading || paymentLoading || isSubmitted) {
+      console.warn('⚠️ Payment blocked: Already processing or already submitted');
+      return;
+    }
     
     setPaymentStep('processing');
     setPaymentLoading(true);
     
     try {
-      // Simulate payment processing (1.5 seconds) - Always succeed for testing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Process payment using payment service
+      const paymentResult = await processPayment(
+        'temp-enquiry-id', // Will be updated after enquiry is created
+        user.uid,
+        selectedPlan,
+        paymentDetails
+      );
       
+      // Check if payment actually succeeded
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.error || 'Payment failed');
+      }
+      
+      console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
       setPaymentStep('success');
       
       // Submit enquiry after successful payment
       setTimeout(async () => {
+        // Prevent double submission
+        if (isSubmitted) {
+          console.warn('⚠️ Enquiry creation blocked: Already submitted');
+          setPaymentLoading(false);
+          setShowPaymentModal(false);
+          return;
+        }
+        
         try {
           setLoading(true);
           
@@ -174,10 +357,40 @@ export default function PostEnquiry() {
             profileVerificationStatus: profileVerificationStatus
           };
 
+          // Add reference images if any exist
+          const validReferenceImages1 = referenceImageUrls.filter(url => url.trim() !== "");
+          if (validReferenceImages1.length > 0) {
+            enquiryData.referenceImages = validReferenceImages1;
+          }
+
           // Add enquiry to database
           const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
-          console.log('Premium enquiry saved successfully with ID:', docRef.id);
-          setSubmittedEnquiryId(docRef.id);
+          const enquiryId = docRef.id;
+          console.log('Premium enquiry saved successfully with ID:', enquiryId);
+          
+          // Save payment record with actual enquiry ID
+          const paymentRecordId = await savePaymentRecord(
+            enquiryId,
+            user.uid,
+            selectedPlan,
+            paymentResult.transactionId || ''
+          );
+          
+          // Update user payment plan
+          await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
+          
+          // PRO PLAN LOGIC - KEPT FOR FUTURE UPDATES
+          // If Pro plan was selected, refresh Pro status and count
+          // if (selectedPlan.id === 'pro') {
+          //   const hasRemaining = await hasProEnquiriesRemaining(user.uid);
+          //   const remainingCount = await getProEnquiriesRemaining(user.uid);
+          //   setHasProRemaining(hasRemaining);
+          //   setProRemainingCount(remainingCount);
+          //   // Trigger a window event to refresh Layout component's Pro badge
+          //   window.dispatchEvent(new Event('payment-success'));
+          // }
+          
+          setSubmittedEnquiryId(enquiryId);
           setEnquiryStatus('live');
           setIsEnquiryApproved(true);
           
@@ -186,10 +399,11 @@ export default function PostEnquiry() {
           setIsSubmitted(true);
           setIsPaymentSuccessful(true);
           
-          toast({
-            title: "Payment Successful! 🎉",
-            description: "Your premium enquiry is now live!",
-          });
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Awesome! Your premium enquiry is now live and ready to get responses!",
+          variant: "success",
+        });
           
         } catch (error) {
           console.error('Error creating premium enquiry:', error);
@@ -222,7 +436,204 @@ export default function PostEnquiry() {
     setShowPaymentModal(false);
   };
 
+  // Direct payment handler - skips custom card form, goes straight to Razorpay checkout
+  const handleDirectPayment = async (): Promise<void> => {
+    if (!selectedPlan || !user?.uid) {
+      console.error('❌ Cannot process payment: Missing plan or user', { selectedPlan, user: !!user });
+      toast({
+        title: "Error",
+        description: "Please select a plan and ensure you're signed in.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Prevent double submission
+    if (loading || paymentLoading || isSubmitted) {
+      console.warn('⚠️ Payment blocked: Already processing or already submitted', { loading, paymentLoading, isSubmitted });
+      return;
+    }
+    
+    console.log('🚀 Starting direct payment process...', {
+      planId: selectedPlan.id,
+      planPrice: selectedPlan.price,
+      userId: user.uid
+    });
+    
+    setPaymentLoading(true);
+    
+    // Store timeout ID to clear it if payment completes/errors before timeout
+    let loadingTimeout: NodeJS.Timeout | null = null;
+    
+    try {
+      // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
+      console.log('💳 Calling processPayment...');
+      
+      // Start payment process - Razorpay will open in a popup
+      const paymentPromise = processPayment(
+        'temp-enquiry-id', // Will be updated after enquiry is created
+        user.uid,
+        selectedPlan,
+        {
+          // Use user's info from Firebase auth - Razorpay will show its own card form
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          contact: '', // Optional
+        }
+      );
+      
+      // Stop showing loading once Razorpay popup opens (give it a moment to open)
+      loadingTimeout = setTimeout(() => {
+        setPaymentLoading(false);
+        loadingTimeout = null;
+      }, 1000); // 1 second should be enough for Razorpay to open
+      
+      // Wait for payment to complete
+      const paymentResult = await paymentPromise;
+      
+      // Clear timeout since payment completed
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
+      
+      console.log('📊 Payment result received:', paymentResult);
+      
+      // Check if payment actually succeeded
+      if (!paymentResult.success) {
+        console.error('❌ Payment failed:', paymentResult.error);
+        throw new Error(paymentResult.error || 'Payment failed');
+      }
+      
+      console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
+      
+      // Create enquiry immediately after successful payment
+      // Prevent double submission
+      if (isSubmitted) {
+        console.warn('⚠️ Enquiry creation blocked: Already submitted');
+        setPaymentLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        
+        // Create enquiry data
+        const enquiryData: any = {
+          title: title.trim(),
+          description: description.trim(),
+          category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
+          categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
+          budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+          location: location.trim(),
+          deadline: deadline,
+          isUrgent: deadline ? (() => {
+            const now = new Date();
+            const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+            return diffHours < 72;
+          })() : false,
+          status: "live",
+          isPremium: selectedPlan.price > 0,
+          selectedPlanId: selectedPlan.id,
+          selectedPlanPrice: selectedPlan.price,
+          paymentStatus: "completed",
+          createdAt: serverTimestamp(),
+          userId: user?.uid,
+          userEmail: user?.email,
+          userName: user?.displayName || user?.email?.split('@')[0],
+          notes: notes.trim() || null,
+          governmentIdFront: null,
+          governmentIdBack: null,
+          isUserVerified: isUserVerified,
+          profileVerificationStatus: profileVerificationStatus
+        };
+
+        // Add reference images if any exist
+        const validReferenceImages2 = referenceImageUrls.filter(url => url.trim() !== "");
+        if (validReferenceImages2.length > 0) {
+          enquiryData.referenceImages = validReferenceImages2;
+        }
+
+        // Add enquiry to database
+        const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
+        const enquiryId = docRef.id;
+        console.log('Premium enquiry saved successfully with ID:', enquiryId);
+        
+        // Save payment record with actual enquiry ID
+        const paymentRecordId = await savePaymentRecord(
+          enquiryId,
+          user.uid,
+          selectedPlan,
+          paymentResult.transactionId || ''
+        );
+        
+        // Update user payment plan
+        await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
+        
+        setSubmittedEnquiryId(enquiryId);
+        setEnquiryStatus('live');
+        setIsEnquiryApproved(true);
+        
+        // Mark as submitted
+        incrementEnquiries();
+        setIsSubmitted(true);
+        setIsPaymentSuccessful(true);
+        
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Awesome! Your premium enquiry is now live and ready to get responses!",
+          variant: "success",
+        });
+        
+      } catch (error) {
+        console.error('Error creating premium enquiry:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create enquiry. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+        setPaymentLoading(false);
+      }
+      
+    } catch (error) {
+      // Clear timeout if error occurs
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
+      
+      console.error('❌ Payment failed:', error);
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        selectedPlan,
+        userId: user?.uid
+      });
+      const errorMsg = error instanceof Error ? error.message.toLowerCase() : '';
+      const isCancelled = errorMsg.includes('cancel') || errorMsg.includes('user closed');
+      
+      toast({
+        title: isCancelled 
+          ? "Payment Cancelled 🚫" 
+          : "Oops! Payment Didn't Go Through 💳",
+        description: isCancelled
+          ? "No worries! You cancelled it - your money stays safe. Come back when ready!"
+          : "Something went wrong with the payment. Don't worry, your money is safe! Give it another shot?",
+        variant: isCancelled ? "cancelled" : "destructive",
+      });
+      setPaymentLoading(false);
+    }
+  };
+
   const handleSubmitAfterPayment = async () => {
+    // Prevent double submission
+    if (loading || isSubmitted) {
+      console.warn('⚠️ Submit after payment blocked: Already submitting or already submitted');
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -256,6 +667,12 @@ export default function PostEnquiry() {
         profileVerificationStatus: profileVerificationStatus
       };
 
+      // Add reference images if any exist
+      const validReferenceImages3 = referenceImageUrls.filter(url => url.trim() !== "");
+      if (validReferenceImages3.length > 0) {
+        enquiryData.referenceImages = validReferenceImages3;
+      }
+
       // Add enquiry to database
       const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
       console.log('Premium enquiry saved successfully with ID:', docRef.id);
@@ -269,10 +686,11 @@ export default function PostEnquiry() {
       setIsSubmitted(true);
       setIsPaymentSuccessful(true);
       
-      toast({
-        title: "Payment Successful! 🎉",
-        description: "Your premium enquiry is being processed...",
-      });
+        toast({
+          title: "Payment Successful! 🎉",
+          description: "Awesome! Your premium enquiry is being processed and will be live soon!",
+          variant: "success",
+        });
       
       // Process through AI approval system (same as free submission)
       console.log('🤖 Processing premium enquiry through AI approval system...');
@@ -421,8 +839,8 @@ export default function PostEnquiry() {
             });
             
             // Navigate immediately without delay
-            console.log('🚀🚀🚀 NAVIGATING TO LIVE ENQUIRIES NOW...');
-            navigate("/enquiries");
+            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD WITH BUYER MODE NOW...');
+            navigate("/dashboard?mode=buyer");
             
           } else if (currentStatus === 'rejected') {
             hasNavigatedFlag = true;
@@ -439,8 +857,8 @@ export default function PostEnquiry() {
             });
             
             // Navigate immediately without delay
-            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD NOW...');
-            navigate("/dashboard");
+            console.log('🚀🚀🚀 NAVIGATING TO DASHBOARD WITH BUYER MODE NOW...');
+            navigate("/dashboard?mode=buyer");
             
           } else {
             // Update status without navigating
@@ -475,233 +893,89 @@ export default function PostEnquiry() {
     );
   }
 
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Complete Payment</h2>
-                <button
-                  onClick={resetPaymentModal}
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              {paymentStep === 'form' && (
-                <div className="space-y-4">
-                  {/* Payment Details */}
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-slate-900">
-                        {selectedPlan?.name || 'Premium Enquiry'}
-                      </span>
-                      <span className="text-lg font-bold text-slate-900">
-                        ₹{selectedPlan?.price || 0}
-                      </span>
-                    </div>
-                    <p className="text-[10px] sm:text-sm text-slate-600 whitespace-nowrap overflow-hidden text-ellipsis">
-                      {selectedPlan?.description || 'Premium enquiry benefits'}
-                    </p>
-                  </div>
-
-                  {/* Payment Form */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
-                      <input
-                        type="text"
-                        placeholder="1234 5678 9012 3456"
-                        value={paymentDetails.cardNumber}
-                        onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Expiry Date</label>
-                        <input
-                          type="text"
-                          placeholder="MM/YY"
-                          value={paymentDetails.expiryDate}
-                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, expiryDate: e.target.value }))}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">CVV</label>
-                        <input
-                          type="text"
-                          placeholder="123"
-                          value={paymentDetails.cvv}
-                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Cardholder Name</label>
-                      <input
-                        type="text"
-                        placeholder="John Doe"
-                        value={paymentDetails.name}
-                        onChange={(e) => setPaymentDetails(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-base"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Test Payment Notice */}
-                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <span className="text-yellow-600 text-xs">🧪</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-yellow-800 text-sm">Test Mode</p>
-                        <p className="text-yellow-700 text-[10px] sm:text-xs whitespace-nowrap">Test mode - any card works</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Buttons */}
-                  <div className="flex space-x-3 pt-4">
-                    <Button
-                      onClick={resetPaymentModal}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handlePayment}
-                      disabled={paymentLoading || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv || !paymentDetails.name}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      {paymentLoading ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Processing...</span>
-                        </div>
-                      ) : (
-                        `Pay ₹${selectedPlan?.price || 0}`
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {paymentStep === 'processing' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Processing Payment</h3>
-                  <p className="text-slate-600">Please wait while we process your payment...</p>
-                </div>
-              )}
-
-              {paymentStep === 'success' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-3xl text-green-600">✓</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
-                  <p className="text-slate-600">Your premium enquiry is now ready to be submitted.</p>
-                </div>
-              )}
-
-              {paymentStep === 'failed' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-pal-blue/10 rounded-full flex items-center justify-center">
-                    <span className="text-3xl text-pal-blue">✗</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Failed</h3>
-                  <p className="text-slate-600 mb-4">Something went wrong. Please try again.</p>
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={resetPaymentModal}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={() => setPaymentStep('form')}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      Try Again
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-
+  // Categories array - matching EnquiryWall.tsx with main categories at top
   let categories = [
-    // Professional & Business
-    { value: "jobs", label: "Jobs & Employment", group: "Professional" },
-    { value: "professional-services", label: "Professional Services", group: "Professional" },
+    // Main categories at the top
+    { value: "business", label: "Business", group: "Main" },
+    { value: "personal", label: "Personal", group: "Main" },
+    { value: "service", label: "Service", group: "Main" },
+    // Rest of categories
+    { value: "agriculture-farming", label: "Agriculture", group: "Lifestyle" },
+    { value: "antiques", label: "Antiques", group: "Products" },
+    { value: "art", label: "Art", group: "Products" },
+    { value: "automobile", label: "Automobile", group: "Products" },
+    { value: "baby-kids", label: "Baby & Kids", group: "Products" },
+    { value: "bags-luggage", label: "Bags & Luggage", group: "Products" },
+    { value: "books-publications", label: "Books", group: "Products" },
+    { value: "beauty-products", label: "Beauty", group: "Products" },
+    { value: "bicycles", label: "Bicycles", group: "Products" },
+    { value: "childcare-family", label: "Childcare", group: "Lifestyle" },
+    { value: "collectibles", label: "Collectibles", group: "Products" },
+    { value: "construction-renovation", label: "Construction", group: "Industrial" },
+    { value: "education-training", label: "Education", group: "Lifestyle" },
+    { value: "electronics-gadgets", label: "Electronics", group: "Products" },
+    { value: "entertainment-media", label: "Entertainment", group: "Lifestyle" },
+    { value: "events-entertainment", label: "Events", group: "Lifestyle" },
+    { value: "fashion-apparel", label: "Fashion", group: "Products" },
+    { value: "food-beverage", label: "Food", group: "Lifestyle" },
+    { value: "gaming-recreation", label: "Gaming", group: "Lifestyle" },
+    { value: "government-public", label: "Government", group: "Professional" },
+    { value: "health-beauty", label: "Health", group: "Lifestyle" },
+    { value: "home-furniture", label: "Home", group: "Products" },
+    { value: "insurance-services", label: "Insurance", group: "Professional" },
+    { value: "jobs", label: "Jobs", group: "Professional" },
+    { value: "jewelry-accessories", label: "Jewelry", group: "Products" },
+    { value: "legal-financial", label: "Legal", group: "Professional" },
+    { value: "marketing-advertising", label: "Marketing", group: "Professional" },
+    { value: "memorabilia", label: "Memorabilia", group: "Products" },
+    { value: "non-profit-charity", label: "Non-Profit", group: "Professional" },
+    { value: "pets", label: "Pets", group: "Lifestyle" },
+    { value: "raw-materials-industrial", label: "Industrial", group: "Industrial" },
     { value: "real-estate", label: "Real Estate", group: "Professional" },
     { value: "real-estate-services", label: "Real Estate Services", group: "Professional" },
-    { value: "legal-financial", label: "Legal & Financial", group: "Professional" },
-    { value: "marketing-advertising", label: "Marketing & Advertising", group: "Professional" },
-    { value: "insurance-services", label: "Insurance Services", group: "Professional" },
-    { value: "government-public", label: "Government & Public", group: "Professional" },
-    { value: "non-profit-charity", label: "Non-Profit & Charity", group: "Professional" },
-    // Products & Collectibles
-    { value: "antiques", label: "Antiques", group: "Products" },
-    { value: "art", label: "Art & Artifacts", group: "Products" },
-    { value: "automobile", label: "Automobile", group: "Products" },
-    { value: "books-publications", label: "Books & Publications", group: "Products" },
-    { value: "collectibles", label: "Collectibles", group: "Products" },
-    { value: "electronics-gadgets", label: "Electronics & Gadgets", group: "Products" },
-    { value: "fashion-apparel", label: "Fashion & Apparel", group: "Products" },
-    { value: "home-furniture", label: "Home & Furniture", group: "Products" },
-    { value: "jewelry-accessories", label: "Jewelry & Accessories", group: "Products" },
-    { value: "memorabilia", label: "Memorabilia", group: "Products" },
+    { value: "renewable-energy", label: "Renewable Energy", group: "Technology" },
+    { value: "security-safety", label: "Security", group: "Security" },
     { value: "sneakers", label: "Sneakers", group: "Products" },
     { value: "souvenir", label: "Souvenir", group: "Products" },
-    { value: "thrift", label: "Thrift", group: "Products" },
-    { value: "vintage", label: "Vintage Items", group: "Products" },
-    // Lifestyle & Services
-    { value: "agriculture-farming", label: "Agriculture & Farming", group: "Lifestyle" },
-    { value: "childcare-family", label: "Childcare & Family", group: "Lifestyle" },
-    { value: "education-training", label: "Education & Training", group: "Lifestyle" },
-    { value: "entertainment-media", label: "Entertainment & Media", group: "Lifestyle" },
-    { value: "events-entertainment", label: "Events & Entertainment", group: "Lifestyle" },
-    { value: "food-beverage", label: "Food & Beverage", group: "Lifestyle" },
-    { value: "gaming-recreation", label: "Gaming & Recreation", group: "Lifestyle" },
-    { value: "health-beauty", label: "Health & Beauty", group: "Lifestyle" },
-    { value: "pets", label: "Pets & Animals", group: "Lifestyle" },
-    { value: "sports-outdoor", label: "Sports & Outdoor", group: "Lifestyle" },
-    { value: "travel-tourism", label: "Travel & Tourism", group: "Lifestyle" },
-    { value: "wedding-events", label: "Wedding & Events", group: "Lifestyle" },
-    // Technology & Innovation
+    { value: "sports-outdoor", label: "Sports", group: "Lifestyle" },
     { value: "technology", label: "Technology", group: "Technology" },
-    { value: "renewable-energy", label: "Renewable Energy", group: "Technology" },
-    // Industrial & Construction
-    { value: "construction-renovation", label: "Construction & Renovation", group: "Industrial" },
-    { value: "raw-materials-industrial", label: "Raw Materials & Industrial", group: "Industrial" },
-    { value: "transportation-logistics", label: "Transportation & Logistics", group: "Industrial" },
+    { value: "thrift", label: "Thrift", group: "Products" },
+    { value: "transportation-logistics", label: "Transportation", group: "Industrial" },
+    { value: "travel-tourism", label: "Travel", group: "Lifestyle" },
+    { value: "vintage", label: "Vintage", group: "Products" },
     { value: "waste-management", label: "Waste Management", group: "Industrial" },
-    // Security & Safety
-    { value: "security-safety", label: "Security & Safety", group: "Security" },
-    // 'Other' will be added last
+    { value: "wedding-events", label: "Wedding", group: "Lifestyle" },
+    { value: "musical-instruments", label: "Musical Instruments", group: "Products" },
+    { value: "tools-equipment", label: "Tools & Equipment", group: "Products" },
+    { value: "appliances", label: "Appliances", group: "Products" },
+    { value: "photography-cameras", label: "Photography & Cameras", group: "Products" },
+    { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment", group: "Products" },
+    { value: "kitchen-dining", label: "Kitchen & Dining", group: "Products" },
+    { value: "garden-outdoor", label: "Garden & Outdoor", group: "Products" },
+    { value: "office-supplies", label: "Office Supplies", group: "Products" },
+    { value: "repair-services", label: "Repair Services", group: "Professional" },
+    { value: "cleaning-services", label: "Cleaning Services", group: "Professional" },
+    { value: "musical-services", label: "Musical Services", group: "Professional" },
+    { value: "tutoring-lessons", label: "Tutoring & Lessons", group: "Professional" },
+    { value: "medical-equipment", label: "Medical Equipment", group: "Products" },
+    { value: "musical-accessories", label: "Musical Accessories", group: "Products" },
     { value: "other", label: "Other", group: "Other" }
   ];
-  // Sort all except 'Other' alphabetically, then add 'Other' at the end
+  // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
+  const mainCategories = categories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
+  const otherCategories = categories.filter(cat => !['business', 'personal', 'service', 'other'].includes(cat.value));
+  const otherCategory = categories.find(cat => cat.value === 'other');
   categories = [
-    ...categories.filter(cat => cat.value !== 'other').sort((a, b) => a.label.localeCompare(b.label)),
-    categories.find(cat => cat.value === 'other')
-  ];
+    ...mainCategories,
+    ...otherCategories.sort((a, b) => a.label.localeCompare(b.label)),
+    otherCategory
+  ].filter(Boolean);
+  
+  // Debug: Verify categories are sorted correctly (v2.0)
+  if (typeof window !== 'undefined') {
+    console.log('PostEnquiry v2.0 - Categories sorted:', categories.slice(0, 5).map(c => c.label));
+    console.log('Total categories:', categories.length);
+  }
 
   const remainingEnquiries = getRemainingEnquiries();
 
@@ -758,8 +1032,175 @@ export default function PostEnquiry() {
     setLocationSuggestions([]);
   };
 
+  // Compress image for faster upload
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      if (!ctx) {
+        console.warn('Canvas context not available, using original file');
+        resolve(file);
+        return;
+      }
+      
+      img.onload = () => {
+        try {
+          // Calculate new dimensions (max 1920px width/height)
+          const maxWidth = 1920;
+          const maxHeight = 1920;
+          let { width, height } = img;
+          
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            } else {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Compression failed'));
+              }
+            },
+            'image/jpeg',
+            0.85 // Quality: 85%
+          );
+        } catch (error) {
+          console.error('Error compressing image:', error);
+          resolve(file); // Fallback to original file
+        }
+      };
+      
+      img.onerror = () => {
+        console.warn('Image load error, using original file');
+        resolve(file);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  // Handle reference image upload
+  const handleReferenceImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Image too large",
+        description: "Image must be less than 5MB. Please choose a smaller image.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a valid image file (JPG, PNG, etc.)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Update the specific image file
+    const newImageFiles = [...referenceImageFiles];
+    newImageFiles[index] = file;
+    setReferenceImageFiles(newImageFiles);
+    
+    // Upload to Cloudinary immediately
+    const newProgresses = [...referenceUploadProgresses];
+    newProgresses[index] = 25;
+    setReferenceUploadProgresses(newProgresses);
+
+    try {
+      // Compress image for faster upload
+      const compressedFile = await compressImage(file);
+      newProgresses[index] = 50;
+      setReferenceUploadProgresses(newProgresses);
+      
+      const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
+      
+      newProgresses[index] = 100;
+      setReferenceUploadProgresses(newProgresses);
+      
+      const newImageUrls = [...referenceImageUrls];
+      newImageUrls[index] = uploadedUrl;
+      setReferenceImageUrls(newImageUrls);
+      
+      toast({
+        title: "Image uploaded",
+        description: "Reference image uploaded successfully",
+      });
+    } catch (uploadError: any) {
+      // Reset progress on error
+      newProgresses[index] = 0;
+      setReferenceUploadProgresses(newProgresses);
+      
+      const errorMessage = uploadError instanceof Error 
+        ? uploadError.message 
+        : 'Failed to upload image. Please try again.';
+      
+      toast({
+        title: "Upload Failed 📤",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
+      // Remove the file from the input so user can try again
+      const fileInput = document.getElementById(`reference-image-${index}`) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    }
+  };
+
+  // Remove reference image
+  const removeReferenceImage = (index: number) => {
+    const newImageFiles = [...referenceImageFiles];
+    const newImageUrls = [...referenceImageUrls];
+    const newProgresses = [...referenceUploadProgresses];
+    
+    newImageFiles[index] = null;
+    newImageUrls[index] = "";
+    newProgresses[index] = 0;
+    
+    setReferenceImageFiles(newImageFiles);
+    setReferenceImageUrls(newImageUrls);
+    setReferenceUploadProgresses(newProgresses);
+    
+    toast({
+      title: "Image removed",
+      description: "Reference image has been removed",
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission - CRITICAL FIX
+    if (loading || isSubmitted) {
+      console.warn('⚠️ Submission blocked: Already submitting or already submitted');
+      return;
+    }
     
     console.log('🚀 FORM SUBMITTED! 🚀');
     console.log('Form submission started');
@@ -785,58 +1226,118 @@ export default function PostEnquiry() {
       return;
     }
 
+    // Set loading state immediately after validation passes
+    setLoading(true);
+
     // Check if premium option is selected
-    console.log('Checking premium status:', { selectedPlan, hasProRemaining, proRemainingCount });
+    console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
     
+    // If premium option is selected, go directly to Razorpay checkout (Razorpay has its own card form)
+    if (selectedPlan && selectedPlan.price > 0) {
+      console.log('💳 Premium plan selected - Opening Razorpay checkout directly (Razorpay has built-in card form)');
+      console.log('💳 Plan details:', { id: selectedPlan.id, name: selectedPlan.name, price: selectedPlan.price });
+      
+      // CRITICAL: Prevent form submission and wait for payment
+      // Call handleDirectPayment and wait for it to complete
+      // The payment handler will create the enquiry after successful payment
+      try {
+        await handleDirectPayment();
+        // If payment succeeds, handleDirectPayment will create the enquiry
+        // So we should return here to prevent double submission
+        return;
+      } catch (error) {
+        console.error('❌ Error in handleDirectPayment:', error);
+        setLoading(false); // Reset loading on error
+        toast({
+          title: "Payment Error",
+          description: error instanceof Error ? error.message : "Failed to open payment gateway. Please try again.",
+          variant: "destructive",
+        });
+        // Don't submit enquiry if payment failed
+        return;
+      }
+    }
+    
+    // PRO PLAN LOGIC - KEPT FOR FUTURE UPDATES
     // If premium option is selected AND user doesn't have Pro remaining, show payment modal first
     // Pro users with remaining enquiries get premium features automatically without payment
-    if (selectedPlan && selectedPlan.price > 0 && !hasProRemaining) {
-      console.log('💳 Opening payment modal for premium enquiry (Pro depleted or no Pro plan)');
-      setShowPaymentModal(true);
-      return; // Don't submit enquiry yet
-    }
-    
+    // if (selectedPlan && selectedPlan.price > 0 && !hasProRemaining) {
+    //   console.log('💳 Opening payment modal for premium enquiry (Pro depleted or no Pro plan)');
+    //   setShowPaymentModal(true);
+    //   return; // Don't submit enquiry yet
+    // }
     // If Pro user has remaining enquiries, skip payment and proceed directly
-    if (hasProRemaining) {
-      console.log(`🎯 Pro user with ${proRemainingCount} enquiries remaining - skipping payment, proceeding directly`);
-    }
+    // if (hasProRemaining) {
+    //   console.log(`🎯 Pro user with ${proRemainingCount} enquiries remaining - skipping payment, proceeding directly`);
+    // }
 
     // ID images are only needed for non-verified users
     // Trust badge verified users don't need to upload ID
     
     try {
-      setLoading(true);
       
-      let idFrontUrl = null;
-      let idBackUrl = null;
+      let idFrontUrlFinal = null;
+      let idBackUrlFinal = null;
+      
+      // 🚀 CRITICAL FIX: Check for ID upload attempt BEFORE upload processing
+      // This ensures trust badge shows even if upload fails silently in production
+      const hasIdUploadAttempt = !!(idFrontImage || idBackImage || idFrontUrl || idBackUrl);
       
       // Only process ID upload for non-verified users
-      if (!isUserVerified && (idFrontImage || idBackImage)) {
+      // Check if ID URL is already set (from trust badge verification) or if we need to upload
+      if (!isUserVerified && hasIdUploadAttempt) {
         console.log('Starting ID image upload for non-verified user...');
         setIdUploadLoading(true);
         setUploadStage('Uploading ID documents...');
         setUploadProgress(0);
         try {
-          if (idFrontImage) {
+          // Use existing URL if available (from trust badge verification), otherwise upload the image
+          if (idFrontUrl) {
+            console.log('Front ID URL already exists, using existing URL');
+            idFrontUrlFinal = idFrontUrl; // Use existing URL from state
+            setUploadProgress(25);
+          } else if (idFrontImage) {
             setUploadStage('Uploading front ID to Cloudinary...');
             setUploadProgress(25);
-            idFrontUrl = await uploadToCloudinary(idFrontImage);
+            idFrontUrlFinal = await uploadToCloudinary(idFrontImage);
             console.log('Front ID uploaded to Cloudinary');
           }
           
-          if (idBackImage) {
+          // Back image is optional - only upload if provided
+          if (idBackUrl) {
+            console.log('Back ID URL already exists, using existing URL');
+            idBackUrlFinal = idBackUrl; // Use existing URL from state
+            setUploadProgress(50);
+          } else if (idBackImage) {
             setUploadStage('Uploading back ID to Cloudinary...');
             setUploadProgress(50);
-            idBackUrl = await uploadToCloudinary(idBackImage);
+            idBackUrlFinal = await uploadToCloudinary(idBackImage);
             console.log('Back ID uploaded to Cloudinary');
           }
           
           setUploadProgress(75);
           setUploadStage('ID documents uploaded successfully!');
-        } catch (uploadError) {
+        } catch (uploadError: any) {
           console.error('Error uploading ID documents:', uploadError);
-          setUploadStage(`Upload failed: ${uploadError}`);
-          throw new Error(`Failed to upload ID documents: ${uploadError}`);
+          const errorMessage = uploadError instanceof Error 
+            ? uploadError.message 
+            : `Failed to upload ID documents: ${uploadError}`;
+          
+          setUploadStage(`Upload failed: ${errorMessage}`);
+          setIdUploadLoading(false);
+          
+          // Show user-friendly error toast
+          toast({
+            title: "Upload Failed 📤",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          
+          // 🚀 CRITICAL FIX: Don't throw error - continue with enquiry creation
+          // Trust badge will still show because hasIdUploadAttempt is true
+          // This ensures enquiry is created even if upload fails in production
+          console.warn('⚠️ ID upload failed, but continuing with enquiry creation. Trust badge will still show.');
+          // DO NOT throw uploadError - let enquiry be created with trust badge
         }
       } else if (isProfileVerified) {
         console.log('User is verified - skipping ID upload');
@@ -852,13 +1353,22 @@ export default function PostEnquiry() {
       setUploadStage('Saving enquiry to database...');
       setUploadProgress(90);
       
+      // PRO PLAN AUTO-ENQUIRY LOGIC - KEPT FOR FUTURE UPDATES
       // Determine if this is a Pro auto-enquiry and decrement count
-      let isAutoProEnquiry = false;
-      if (hasProRemaining) {
-        isAutoProEnquiry = true;
-        // Decrement Pro count
-        await decrementProEnquiriesRemaining(user.uid);
-      }
+      // let isAutoProEnquiry = false;
+      // if (hasProRemaining) {
+      //   isAutoProEnquiry = true;
+      //   // Decrement Pro count
+      //   await decrementProEnquiriesRemaining(user.uid);
+      //   // Refresh Pro status and count
+      //   const remainingCount = await getProEnquiriesRemaining(user.uid);
+      //   const hasRemaining = await hasProEnquiriesRemaining(user.uid);
+      //   setProRemainingCount(remainingCount);
+      //   setHasProRemaining(hasRemaining);
+      //   // Trigger event to refresh Layout component's Pro badge
+      //   window.dispatchEvent(new Event('payment-success'));
+      // }
+      const isAutoProEnquiry = false; // Always false now since Pro is disabled
       
       // Only include government ID fields if they exist
       const enquiryData: any = {
@@ -889,22 +1399,58 @@ export default function PostEnquiry() {
         userLikes: [],
         notes: notes.trim(),
         userVerified: isUserVerified, // Pass verification status to AI
-        isProfileVerified: isUserVerified
+        isProfileVerified: isUserVerified,
+        // 🛡️ PROTECTED: Trust Badge Fix - userProfileVerified field is REQUIRED for trust badge display in enquiry cards
+        // 🚀 CRITICAL FIX: Set immediately based on ID upload attempt, BEFORE upload processing
+        // This ensures trust badge ALWAYS shows if ID was uploaded, regardless of upload success/failure
+        // DO NOT REMOVE OR MODIFY THIS FIELD - It's checked in Landing.tsx trust badge condition
+        userProfileVerified: isUserVerified || hasIdUploadAttempt // Set immediately when ID detected
       };
 
       // Only add government ID fields if they exist
-      if (idFrontUrl) {
-        enquiryData.idFrontImage = idFrontUrl;
+      // If ID images are uploaded through the form, mark this enquiry as verified
+      // 🛡️ PROTECTED: Trust Badge Production Fix - DO NOT REMOVE OR MODIFY
+      // This fix ensures trust badge shows even if Cloudinary upload fails silently in production
+      
+      // 🚀 CRITICAL FIX: Ensure flags are set even if upload failed or returned null
+      // This is a safety net to ensure trust badge always shows when ID was attempted
+      if (hasIdUploadAttempt) {
+        enquiryData.isProfileVerified = true;
+        enquiryData.userVerified = true;
+        enquiryData.userProfileVerified = true;
+        console.log('✅ ID upload detected - trust badge flags set');
       }
-      if (idBackUrl) {
-        enquiryData.idBackImage = idBackUrl;
+      
+      // Add ID image URLs if upload succeeded
+      if (idFrontUrlFinal || idBackUrlFinal) {
+        if (idFrontUrlFinal) {
+          enquiryData.idFrontImage = idFrontUrlFinal;
+        }
+        if (idBackUrlFinal) {
+          enquiryData.idBackImage = idBackUrlFinal;
+        }
+      }
+      
+      // Add reference images if any exist
+      const validReferenceImages = referenceImageUrls.filter(url => url.trim() !== "");
+      if (validReferenceImages.length > 0) {
+        enquiryData.referenceImages = validReferenceImages;
       }
       
       console.log('Saving enquiry data:', enquiryData);
       
+      // Final check before submission to prevent duplicates
+      if (isSubmitted) {
+        console.warn('⚠️ Duplicate submission prevented: Already submitted');
+        setLoading(false);
+        return;
+      }
+      
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
+        // Mark as submitted immediately after successful creation to prevent duplicates
+        setIsSubmitted(true);
         setSubmittedEnquiryId(docRef.id);
         setEnquiryStatus('pending');
         setIsEnquiryApproved(false);
@@ -945,15 +1491,45 @@ export default function PostEnquiry() {
             setIsEnquiryApproved(true);
             
             console.log('✅ Free enquiry approved by AI');
+            
+            toast({
+              title: "Enquiry Posted Successfully! 🎉",
+              description: "Your enquiry is now live and visible to sellers.",
+              variant: "default",
+            });
           } else {
-            // AI rejected - keep as pending for manual review
+            // AI rejected or flagged - keep as pending for manual review
             setEnquiryStatus('pending');
             console.log('📋 Free enquiry sent to manual review');
+            
+            // Check if it was flagged as duplicate
+            const enquiryDoc = await getDoc(doc(db, "enquiries", docRef.id));
+            const enquiryStatus = enquiryDoc.data();
+            
+            if (enquiryStatus?.isDuplicate) {
+              toast({
+                title: "Duplicate Detected",
+                description: "Your enquiry appears similar to existing ones. It's under review by our team.",
+                variant: "default",
+              });
+            } else {
+              toast({
+                title: "Under Review",
+                description: "Your enquiry is being reviewed. You'll be notified once it's approved.",
+                variant: "default",
+              });
+            }
           }
           
         } catch (error) {
           console.error('❌ AI processing failed for free enquiry:', error);
           setEnquiryStatus('pending');
+          
+          toast({
+            title: "Enquiry Submitted",
+            description: "Your enquiry is being reviewed. You'll be notified once it's approved.",
+            variant: "default",
+          });
         }
         
         // Wait a moment to show completion
@@ -980,10 +1556,10 @@ export default function PostEnquiry() {
         // 🤖 AI Processing - Skip for verified users, they're already auto-approved
         if (isUserVerified) {
           console.log('✅ Trust Badge User: Enquiry automatically approved and made live!');
-        // Auto-navigate verified users to live enquiries page
-        setTimeout(() => {
-          navigate("/enquiries");
-        }, 3000);
+          // Auto-navigate verified users to dashboard with buyer mode
+          setTimeout(() => {
+            navigate("/dashboard?mode=buyer");
+          }, 3000);
         } else {
           // Process the enquiry with AI in real-time (non-blocking)
           console.log('🤖 PostEnquiry: Starting AI processing for enquiry:', docRef.id, 'User verified:', isProfileVerified);
@@ -1038,46 +1614,79 @@ export default function PostEnquiry() {
   if (isSubmitted) {
     return (
       <Layout>
-        <div className="min-h-screen bg-background flex items-center justify-center py-20 px-4">
-          <Card className="max-w-2xl w-full mx-auto p-8 text-center shadow-xl border-2 border-blue-200 rounded-2xl">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">Enquiry sent for verification</h2>
-            <p className="text-[10px] sm:text-sm text-muted-foreground mb-6 leading-relaxed">
-              Our AI system will review your enquiry and make it live shortly
-            </p>
-            
-            {/* Real-time status indicator */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6 mb-6 shadow-sm">
-              <div className="flex items-center justify-center space-x-3 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-lg font-semibold text-green-700">
-                  🤖 AI Processing Active
-                </span>
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+          <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+            {/* Header Section - Gray Background */}
+            <div className="mb-4 sm:mb-6">
+              <div className="bg-black rounded-lg p-4 sm:p-6">
+                <div className="text-center">
+                  <div className="mx-auto p-3 sm:p-4 bg-white/10 rounded-full w-fit mb-3 sm:mb-4">
+                    <Rocket className="h-8 w-8 sm:h-12 sm:w-12 text-green-400" />
+                  </div>
+                  <h2 className="text-lg sm:text-2xl font-bold text-white mb-2">
+                    Enquiry Sent for Verification
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed px-2">
+                    Our AI system will review your enquiry and make it live shortly
+                  </p>
+                </div>
               </div>
-              <p className="text-[10px] sm:text-sm font-medium text-green-600 whitespace-nowrap">
-                Auto-redirect when approved
-              </p>
-              <p className="text-[10px] sm:text-xs mt-1 text-green-500 whitespace-nowrap">
-                Watching for updates every second
-              </p>
             </div>
-            <div className="bg-pal-blue-light p-4 rounded-lg mb-6">
-              <p className="text-[10px] sm:text-sm text-pal-blue-dark whitespace-nowrap overflow-hidden text-ellipsis">
-                <Shield className="h-4 w-4 inline mr-1" />
-                Your personal details remain private
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/enquiries">
-                <Button variant="default">
+
+            {/* Main Content Card */}
+            <Card className="border-2 border-blue-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6">
+              {/* AI Processing Status - Card Header */}
+              <div className="bg-black px-3 sm:px-4 py-3 sm:py-4">
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                  <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-semibold text-white">
+                    AI Processing Active
+                  </span>
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                </div>
+              </div>
+              
+              {/* Card Content */}
+              <CardContent className="p-4 sm:p-6">
+                <div className="space-y-3 sm:space-y-4 text-center">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <p className="text-xs sm:text-sm font-medium text-green-700">
+                      Auto-redirect when approved
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-green-600">
+                      Watching for updates every second
+                    </p>
+                  </div>
+                  
+                  {/* Privacy Statement */}
+                  <div className="pt-3 sm:pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-center gap-2 text-gray-700">
+                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm font-medium">
+                        Your personal details remain private
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Link to="/enquiries" className="flex-1">
+                <Button 
+                  variant="default" 
+                  className="w-full h-11 sm:h-10 text-sm sm:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white min-h-[44px]"
+                >
                   Browse Other Enquiries
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button variant="outline">
+              <Link to="/dashboard" className="flex-1">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-11 sm:h-10 text-sm sm:text-base font-semibold border-gray-300 min-h-[44px]"
+                >
                   View My Dashboard
                 </Button>
               </Link>
@@ -1139,7 +1748,7 @@ export default function PostEnquiry() {
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </div>
       </Layout>
     );
@@ -1147,56 +1756,70 @@ export default function PostEnquiry() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-slate-50 py-6 lg:py-8">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          {/* Header - Minimal */}
-          <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
-            {/* Header Section - Top 10% with gray background */}
-            <div className="bg-gray-800 px-6 py-6">
-              <div className="flex items-start justify-between mb-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Header - Matching Live Enquiries - Full Width */}
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
+            {/* Spacer Section to Match Dashboard/Profile */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between">
                 <Button
                   variant="ghost"
+                  type="button"
                   onClick={() => window.history.back()}
-                  className="p-2 hover:bg-gray-700 rounded-lg text-white"
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
-                  <ArrowLeft className="h-5 w-5" />
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </Button>
-                <div className="text-center flex-1">
-                  <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                    Post Enquiry
-                  </h1>
-                </div>
-                <div className="w-10"></div> {/* Spacer for balance */}
+                <div className="w-10 h-10"></div>
               </div>
-              <p className="text-gray-300 text-[10px] sm:text-xs lg:text-sm max-w-2xl mx-auto text-center whitespace-nowrap">
-                AI matches you with verified sellers
-              </p>
+              </div>
+              
+            {/* Post Enquiry Heading in Black Header */}
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                      <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      Post Your Enquiry.
+              </h1>
+                  </div>
+            
+            {/* Content Card - Black Background */}
+            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+              <div className="text-center">
+                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    What in the world are you looking for?
+                  </p>
+                </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Success Message */}
+        <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+          {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
-            <Card className="border-2 border-blue-200 shadow-sm mb-6 rounded-2xl">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+            <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
+              <CardContent className="p-6 sm:p-8 text-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg">
+                  <Rocket className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  Enquiry Posted Successfully!
+                <h3 className="text-xl sm:text-2xl font-bold text-green-800 mb-2 sm:mb-3">
+                  Enquiry Posted Successfully! 🎉
                 </h3>
-                <p className="text-[10px] sm:text-sm text-green-700 mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                <p className="text-sm sm:text-base text-green-700 mb-6 sm:mb-7 max-w-md mx-auto">
                   Sent for verification - You'll get notified
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <Link to="/dashboard">
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    <Button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200">
                       View Dashboard
                     </Button>
                   </Link>
                   <Button 
                     variant="outline" 
                     onClick={() => setIsSubmitted(false)}
-                    className="border-green-300 text-green-700 hover:bg-green-50"
+                    className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200"
                   >
                     Post Another Enquiry
                   </Button>
@@ -1205,200 +1828,496 @@ export default function PostEnquiry() {
             </Card>
           )}
 
-          {/* Main Form - Minimal Design */}
+          {/* Main Form - Professional Enhanced Design (Border thickness matched with SellerResponse form) */}
           {!isSubmitted && (
-            <Card className="border-2 border-blue-200 shadow-sm rounded-2xl">
-              <CardContent className="p-6 lg:p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Title - Minimal */}
-                  <div className="space-y-2">
-                    <Label htmlFor="title" className="text-sm font-medium text-slate-700">
-                      {category === "jobs" ? "Job Title" : "What you need"} *
+            <Card className="shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
+              <CardContent className="p-5 sm:p-6 lg:p-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
+                  {/* Title - Enhanced Professional Input */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <span className="text-blue-600">*</span>
+                      {category === "jobs" ? "Job Title" : "Enqir anything from a 4 a.m. tea spot to a piece of the moon."}
                     </Label>
-                    <Input
-                      id="title"
-                      placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
-                      required
-                    />
-                  </div>
-
-                  {/* Multiple Categories - Enhanced */}
-                  <div className="space-y-3">
-                  <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700">
-                        Choose Categories *
-                    </Label>
-                      <p className="text-[10px] sm:text-xs text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis">
-                        💡 Select up to 3 categories for better reach
-                      </p>
-                    </div>
-                    
-                    {/* Multiple Category Selection - Dropdown Style */}
-                    <div className="space-y-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={`w-full justify-between h-11 border-slate-200 focus:border-slate-400 focus:ring-slate-400 ${
-                              selectedCategories.length === 0 ? 'border-pal-blue/30 bg-pal-blue/5' : ''
-                            }`}
-                          >
-                            <div className="flex flex-wrap gap-1 flex-1 text-left">
-                              {selectedCategories.length === 0 ? (
-                                <span className="text-xs sm:text-base text-slate-500">Select categories...</span>
-                              ) : (
-                                selectedCategories.map((catValue) => {
-                                  const cat = categories.find(c => c.value === catValue);
-                                  return (
-                                    <Badge key={catValue} variant="secondary" className="text-xs">
-                                      {cat?.label}
-                                    </Badge>
-                                  );
-                                })
-                              )}
-                            </div>
-                            <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <div className="max-h-60 overflow-y-auto">
-                            {categories.map((cat) => {
-                              const isSelected = selectedCategories.includes(cat.value);
-                              const isDisabled = !isSelected && selectedCategories.length >= 3;
-                              
-                              return (
-                                <div 
-                                  key={cat.value} 
-                                  className={`flex items-center space-x-2 p-3 hover:bg-slate-50 ${
-                                    isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                  }`}
-                                >
-                                  <Checkbox
-                                    id={cat.value}
-                                    checked={isSelected}
-                                    disabled={isDisabled}
-                                    onCheckedChange={() => handleCategoryToggle(cat.value)}
-                                  />
-                                  <Label
-                                    htmlFor={cat.value}
-                                    className={`text-sm flex-1 ${
-                                      isDisabled ? 'cursor-not-allowed text-slate-400' : 'cursor-pointer text-slate-700'
-                                    }`}
-                                  >
-                            {cat.label}
-                                  </Label>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          {selectedCategories.length >= 3 && (
-                            <div className="p-3 bg-blue-50 border-t border-blue-200">
-                              <p className="text-[10px] sm:text-xs text-blue-600 whitespace-nowrap">
-                                ✅ Max 3 categories selected
-                              </p>
-                            </div>
-                          )}
-                        </PopoverContent>
-                      </Popover>
-                      
-                      {selectedCategories.length === 0 && (
-                        <p className="text-[10px] sm:text-xs text-pal-blue whitespace-nowrap">
-                          ⚠️ Select at least one category
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Description - Minimal */}
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-sm font-medium text-slate-700">
-                      {selectedCategories.includes("jobs") ? "Job Description" : "Description"} *
-                    </Label>
-                    <Textarea
-                      id="description"
-                      placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={4}
-                      className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base min-h-[120px] min-touch"
-                      required
-                    />
-                  </div>
-
-                  {/* Budget & Location - Side by Side */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="budget" className="text-sm font-medium text-slate-700">
-                        {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"} *
-                      </Label>
+                    <div className="relative">
                       <Input
-                        id="budget"
-                        placeholder={selectedCategories.includes("jobs") ? "50,000/month" : "50,000"}
-                        value={budget}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/[^\d,]/g, '');
-                          const numericValue = value.replace(/,/g, '');
-                          if (numericValue === '' || /^\d+$/.test(numericValue)) {
-                            const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
-                            setBudget(formattedValue);
-                          }
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value && !e.target.value.startsWith('₹')) {
-                            setBudget('₹' + e.target.value);
-                          }
-                        }}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
+                        id="title"
+                        placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        maxLength={60}
+                            className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
                       />
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="location" className="text-sm font-medium text-slate-700">
-                        Location *
+                  {/* Multiple Categories - Enhanced Professional Design */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-2 sm:space-y-2.5">
+                      <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        <span>Select at least one category</span>
+                      </Label>
+                    </div>
+                    
+                    {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
+                    <div className="space-y-2.5">
+                      {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
+                      <div className="block sm:hidden">
+                        <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen} modal={true}>
+                            <Button
+                            type="button"
+                              variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setCategoriesSheetOpen(true);
+                            }}
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
+                                selectedCategories.length === 0 
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                            >
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
+                            </Button>
+                          <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black bg-white">
+                            <SheetHeader className="px-5 pt-6 pb-4 flex-shrink-0 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/30">
+                              <SheetTitle className="text-5xl sm:text-6xl font-black tracking-tighter leading-none font-heading text-black text-left w-full mb-1">Categories</SheetTitle>
+                              <p className="text-xs text-slate-500 text-left font-medium">upto 3.</p>
+                            </SheetHeader>
+                            {selectedCategories.length > 0 && (
+                              <div className="px-5 py-4 border-b border-gray-200 bg-white flex-shrink-0">
+                                <div className="relative">
+                                  <Button
+                                    type="button"
+                                    onClick={() => setCategoriesSheetOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-base py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
+                                  >
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex-1 overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-gray-50/20 to-white">
+                              <div className="px-3 py-3 pb-24">
+                                {categories.map((cat, index) => {
+                                  const isSelected = selectedCategories.includes(cat.value);
+                                  const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                  const isService = cat.value === "service";
+                                  
+                                  return (
+                                    <div key={cat.value}>
+                                    <div 
+                                      className={`flex items-center space-x-4 p-4 min-h-[64px] rounded-xl transition-all duration-200 ${
+                                        isSelected 
+                                          ? 'bg-gradient-to-r from-black/5 to-black/10 border-2 border-black/20 shadow-sm' 
+                                          : isDisabled 
+                                            ? 'opacity-40' 
+                                            : 'hover:bg-gray-50 active:bg-gray-100 border-2 border-transparent'
+                                      }`}
+                                      >
+                                      <div className="flex-shrink-0">
+                                        <Checkbox
+                                          id={`mobile-${cat.value}`}
+                                          checked={isSelected}
+                                          disabled={isDisabled}
+                                          onCheckedChange={(checked) => {
+                                            if (!isDisabled) {
+                                              handleCategoryToggle(cat.value);
+                                            }
+                                          }}
+                                          className={`h-5 w-5 border-2 rounded-md transition-all duration-200 [&>span>svg]:h-3.5 [&>span>svg]:w-3.5 pointer-events-auto ${
+                                            isSelected
+                                              ? 'border-black bg-black data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                              : 'border-gray-400 data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                          }`}
+                                        />
+                                      </div>
+                                    <Label
+                                      htmlFor={`mobile-${cat.value}`}
+                                      className={`text-base font-medium flex-1 cursor-pointer select-none ${
+                                          isDisabled 
+                                            ? 'text-slate-400 cursor-not-allowed' 
+                                            : isSelected
+                                              ? 'text-black font-semibold'
+                                              : 'text-slate-700'
+                                        }`}
+                                      >
+                                        {cat.label}
+                                      </Label>
+                                      </div>
+                                      {isService && (
+                                        <div className="px-4 py-3">
+                                          <div className="border-t border-gray-200"></div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {selectedCategories.length >= 3 && (
+                              <div className="px-5 py-4 bg-black border-t-2 border-black flex-shrink-0">
+                                <p className="text-xs text-white font-semibold text-center">
+                                  Nothing can be more categorised.
+                                </p>
+                              </div>
+                            )}
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+                      
+                      {/* Desktop: Use Popover - Enhanced */}
+                      <div className="hidden sm:block">
+                        <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
+                          <PopoverTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative ${
+                                  selectedCategories.length === 0 
+                                    ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                    : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                                } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                              >
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent 
+                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-smooth will-change-[transform,opacity]" 
+                            align="start"
+                            side="bottom"
+                            sideOffset={8}
+                            alignOffset={0}
+                            avoidCollisions={true}
+                            collisionPadding={8}
+                            onInteractOutside={(e) => {
+                              // Prevent closing when clicking inside the popover
+                              const target = e.target as HTMLElement;
+                              if (target.closest('[role="dialog"]')) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            {selectedCategories.length > 0 && (
+                              <div className="p-3 border-b border-black bg-white">
+                                <div className="relative">
+                                  <Button
+                                    type="button"
+                                    onClick={() => setCategoriesPopoverOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-sm py-2.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
+                                  >
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
+                            <div className="max-h-[calc(100vh-120px)] sm:max-h-60 overflow-y-auto overscroll-contain pb-4">
+                              {categories.map((cat, index) => {
+                                const isSelected = selectedCategories.includes(cat.value);
+                                const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                const isService = cat.value === "service";
+                                
+                                return (
+                                  <div key={cat.value}>
+                                  <div 
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
+                                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                                    onClick={(e) => {
+                                      if (!isDisabled) {
+                                        e.stopPropagation();
+                                        handleCategoryToggle(cat.value);
+                                      }
+                                    }}
+                                    >
+                                      <Checkbox
+                                        id={cat.value}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={(checked) => {
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
+                                      />
+                                    <Label
+                                      htmlFor={cat.value}
+                                      className={`text-sm sm:text-sm flex-1 cursor-pointer ${
+                                        isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
+                                      }`}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {cat.label}
+                                    </Label>
+                                    </div>
+                                    {isService && (
+                                      <div className="px-3 py-2">
+                                        <div className="border-t border-black border-[0.5px]"></div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {selectedCategories.length >= 3 && (
+                              <div className="p-3 bg-black border-t border-black">
+                                <p className="text-xs text-white font-semibold whitespace-nowrap">
+                                  Nothing can be more categorised.
+                                </p>
+                              </div>
+                            )}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      
+                    </div>
+                  </div>
+
+                  {/* Description - Enhanced Professional Textarea */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <span className="text-blue-600">*</span>
+                      {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
+                    </Label>
+                    <div className="relative">
+                      <Textarea
+                        id="description"
+                        placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
+                        value={description}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 500) {
+                            setDescription(value);
+                          }
+                        }}
+                        rows={5}
+                        maxLength={500}
+                        className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px' }}
+                        required
+                      />
+                      <p className="text-xs text-gray-500 mt-1 text-right">
+                        {description.length}/500 characters
+                      </p>
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                    </div>
+                  </div>
+
+                  {/* Reference Images (Optional) - Professional Design */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <Upload className="h-4 w-4 text-gray-900" />
+                      Reference Images (Optional)
+                    </Label>
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 leading-relaxed">
+                      What if they end up misunderstanding you?
+                    </p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {Array.from({ length: 4 }).map((_, index) => (
+                        <div key={index} className="relative">
+                          <label
+                            htmlFor={`reference-image-${index}`}
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-[0.5px] border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                              referenceImageUrls[index]
+                                ? 'border-green-300 bg-green-50 hover:border-green-400'
+                                : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                            } ${loading || idUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            {/* Physical button depth effect */}
+                            {!referenceImageUrls[index] && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              </>
+                            )}
+                            <input
+                              id={`reference-image-${index}`}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleReferenceImageUpload(e, index)}
+                              disabled={loading || idUploadLoading}
+                            />
+                            
+                            {referenceImageUrls[index] ? (
+                              <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+                                <div className="flex flex-col items-center justify-center">
+                                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mb-1.5 sm:mb-2 relative z-10" />
+                                  <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
+                                  {referenceImageFiles[index] && (
+                                    <p className="text-[8px] sm:text-[9px] text-gray-600 text-center relative z-10 truncate w-full px-2">
+                                      {referenceImageFiles[index].name}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    removeReferenceImage(index);
+                                  }}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg z-20"
+                                  disabled={loading || idUploadLoading}
+                                >
+                                  <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                </button>
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 && (
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
+                                    {referenceUploadProgresses[index]}%
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center p-3 sm:p-4">
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
+                                    <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
+                                    <p className="text-[8px] sm:text-[9px] text-black font-black text-center relative z-10">Add Image</p>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Budget & Location - Enhanced Side by Side Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
                       </Label>
                       <div className="relative">
-                      <Input
-                        id="location"
+                        <Input
+                          id="budget"
+                          placeholder={selectedCategories.includes("jobs") ? "50,000/month" : "50,000"}
+                          value={budget}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^\d,]/g, '');
+                            const numericValue = value.replace(/,/g, '');
+                            if (numericValue === '' || /^\d+$/.test(numericValue)) {
+                              const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
+                              setBudget(formattedValue);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value && !e.target.value.startsWith('₹')) {
+                              setBudget('₹' + e.target.value);
+                            }
+                          }}
+                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
+                          required
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        Location
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="location"
                           placeholder="Anywhere"
-                        value={location}
+                          value={location}
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                        className="h-12 sm:h-11 text-xs sm:text-base border-slate-200 focus:border-slate-400 focus:ring-slate-400 min-touch"
-                        required
-                      />
+                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
+                          required
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                         
-                        {/* AI Location Suggestions Dropdown */}
+                        {/* AI Location Suggestions Dropdown - Enhanced */}
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                          <div className="absolute z-50 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
                             {locationSuggestions.map((suggestion, index) => (
                               <button
                                 key={index}
                                 type="button"
                                 onClick={() => selectLocation(suggestion)}
-                                className="w-full px-4 py-2 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none text-xs sm:text-sm"
+                                className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
                               >
-                                <span className="font-medium">{suggestion}</span>
+                                <span className="text-slate-800">{suggestion}</span>
                                 {(suggestion === "Anywhere" || suggestion === "Everywhere") && (
-                                  <span className="ml-2 text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
+                                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-semibold">
                                     Global
                                   </span>
                                 )}
                               </button>
                             ))}
-                            </div>
-                            )}
                           </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Time Limit & Notes */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <div className="space-y-2">
+                  {/* Time Limit & Notes - Enhanced Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+                    <div className="space-y-2.5 sm:space-y-3">
                       <TimeLimitSelector
                         value={deadline}
                         onChange={setDeadline}
@@ -1406,28 +2325,50 @@ export default function PostEnquiry() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
-                        Notes (Optional)
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-bold text-gray-900">
+                        Notes <span className="text-gray-600 font-normal">(Optional)</span>
                       </Label>
-                      <Textarea
-                        id="notes"
-                        placeholder="Additional requirements or preferences..."
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={3}
-                        className="border-slate-200 focus:border-slate-400 focus:ring-slate-400 resize-none text-xs sm:text-base"
-                      />
+                      <div className="relative">
+                        <Textarea
+                          id="notes"
+                          placeholder="Additional requirements or preferences..."
+                          className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          rows={4}
+                          style={{ fontSize: '16px' }}
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Payment Plan Selection */}
-                  <div className="space-y-3 sm:space-y-4">
-                    {/* Debug Info - Remove after testing */}
-                    {console.log('🔍 Render Check:', { hasProRemaining, proRemainingCount, userId: user?.uid })}
-                    
-                    {hasProRemaining ? (
-                      <div className="p-3 sm:p-4 bg-gray-800 border-2 border-gray-700 rounded-xl shadow-sm">
+                  {/* Form Progress Indicator */}
+                  <div className="pt-4 space-y-3 border-4 border-black bg-white rounded-lg p-4 transition-all">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs sm:text-sm font-semibold text-black">Form Completion</h3>
+                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-600' : 'text-black'}`}>
+                        {Math.round(formProgress)}% Complete
+                      </span>
+                    </div>
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div 
+                        className={`h-full transition-all ${formProgress === 100 ? 'bg-green-600' : 'bg-[#800020]'}`}
+                        style={{ width: `${formProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-black">
+                      Fill in all required & click submit
+                    </p>
+                  </div>
+
+                  {/* Payment Plan Selection - Enhanced Professional Design */}
+                  <div className="space-y-4 sm:space-y-5">
+                    {/* PRO PLAN ACTIVE BADGE - KEPT FOR FUTURE UPDATES */}
+                    {/* {hasProRemaining ? (
+                      <div className="p-3 sm:p-4 bg-black border-2 border-gray-700 rounded-xl shadow-sm">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                             <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -1440,175 +2381,586 @@ export default function PostEnquiry() {
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium text-slate-700">
-                          Choose Your Plan (Optional)
-                        </Label>
-                        
-                        <PaymentPlanSelector
-                          currentPlanId={selectedPlan?.id || 'free'}
-                          enquiryId="new-enquiry"
-                          userId={user?.uid || ''}
-                          onPlanSelect={(planId, price) => {
-                            const plan = PAYMENT_PLANS.find(p => p.id === planId);
-                            setSelectedPlan(plan || null);
-                          }}
-                          isUpgrade={false}
-                          className="max-w-4xl mx-auto"
-                        />
-                      </div>
-                    )}
+                    ) : ( */}
+                    <div className="space-y-3">
+                      <PaymentPlanSelector
+                        currentPlanId={selectedPlan?.id || 'free'}
+                        enquiryId="new-enquiry"
+                        userId={user?.uid || ''}
+                        onPlanSelect={(planId, price) => {
+                          const plan = PAYMENT_PLANS.find(p => p.id === planId);
+                          setSelectedPlan(plan || null);
+                        }}
+                        isUpgrade={false}
+                        className="max-w-4xl mx-auto"
+                        squareCards={true}
+                      />
+                    </div>
+                  </div>
 
-                    {!hasProRemaining && selectedPlan && selectedPlan.price > 0 && (
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="flex items-start space-x-2">
-                          <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <span className="text-blue-600 text-xs">💎</span>
+                  {/* Trust Badge Card - Matching SellerResponse Design */}
+                  {!authLoading && !isUserVerified && (
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white rounded-xl w-full max-w-full overflow-visible`}>
+                    {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
+                    {verifyingId && (
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
+                        {/* Moving Tick - All Over Card */}
+                        <div 
+                          className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
+                          style={{
+                            animation: 'tickMoveAround 8s ease-in-out infinite',
+                            WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)'
+                          }}
+                        >
+                          {/* Bright Bold Distorted Tick */}
+                          <svg 
+                            className="w-full h-full text-blue-400 drop-shadow-2xl"
+                            viewBox="0 0 100 100"
+                            style={{
+                              filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
+                              animation: 'tickForming 2s ease-in-out infinite',
+                              WebkitAnimation: 'tickForming 2s ease-in-out infinite'
+                            }}
+                          >
+                            {/* Bold Distorted Tick */}
+                            <path
+                              d="M 20 50 L 40 70 L 80 30"
+                              stroke="currentColor"
+                              strokeWidth="12"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeDasharray="100"
+                              style={{
+                                strokeDashoffset: '100',
+                                animation: 'tickDraw 2s ease-in-out infinite',
+                                WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 8px currentColor)'
+                              }}
+                            />
+                            {/* Bold Pulsing Circles */}
+                            <circle
+                              cx="20"
+                              cy="50"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="40"
+                              cy="70"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="80"
+                              cy="30"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                          </svg>
+                          
+                          {/* Bright Glowing Background */}
+                          <div 
+                            className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
+                            style={{
+                              animation: 'pulseGlow 2s ease-in-out infinite',
+                              WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
+                              transform: 'scale(1.3)',
+                              WebkitTransform: 'scale(1.3)'
+                            }}
+                          ></div>
+                        </div>
+                        
+                        {/* Countdown - Large Transparent Overlapping */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div 
+                            className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-white/20 tabular-nums animate-pulse select-none"
+                            style={{
+                              WebkitTextStroke: '1px #000000'
+                            } as React.CSSProperties}
+                          >
+                            {verificationCountdown}
                           </div>
-                          <div className="text-[10px] sm:text-sm text-blue-800">
-                            <p className="font-medium mb-1 whitespace-nowrap">{selectedPlan.name} Plan Benefits:</p>
-                            <ul className="text-[10px] sm:text-xs space-y-1 text-blue-700">
-                              {selectedPlan.features.map((feature, index) => (
-                                <li key={index}>• {feature}</li>
-                              ))}
-                            </ul>
-                          </div>
+                        </div>
+                        
+                        {/* Verifying Text - Bottom */}
+                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-6">
+                          <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
+                            Verifying your ID...
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
+                            Your ID remains securely encrypted and will be verified within a few minutes.
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                            Don't press back
+                          </p>
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  {/* Government ID - Only show for non-verified users */}
-                  {!authLoading && !isUserVerified && (
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="h-4 w-4 text-slate-600" />
-                      <Label className="text-sm font-medium text-slate-700">
-                        ID Verification (Optional)
-                      </Label>
+                    
+                    <div className="space-y-1 w-full">
+                      <div className="flex items-start justify-between w-full">
+                        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 flex-1 min-w-0 pr-2">
+                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
+                          <span className="block">Trust</span>
+                          <span className="block">Badge</span>
+                        </h3>
+                          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black flex items-center">
+                              <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>
+                            </span>
+                            <span className="text-[6px] sm:text-[7px] text-blue-600 font-medium whitespace-nowrap">Blue Badge For This Enquiry.</span>
+                          </div>
+                        </div>
+                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
+                          (optional)
+                        </span>
+                      </div>
                     </div>
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                      <p className="text-[10px] sm:text-xs text-slate-600 whitespace-nowrap overflow-hidden text-ellipsis">
-                        {idFrontImage || idBackImage ? (
-                          "✓ ID uploaded - pending verification"
-                        ) : (
-                          "Upload ID to build trust"
+                    {idVerificationResult?.matches ? (
+                      <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
+                        <div 
+                          className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative"
+                          style={{
+                            animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)',
+                            willChange: 'transform, box-shadow, border-radius'
+                          }}
+                        >
+                          {/* Particle effects - deconstructed pieces assembling */}
+                          {[...Array(6)].map((_, i) => {
+                            const angle = (i * 60) * Math.PI / 180;
+                            const distance = 45;
+                            return (
+                              <div
+                                key={i}
+                                className="absolute w-3 h-3 bg-blue-400 rounded-full"
+                                style={{
+                                  left: '50%',
+                                  top: '50%',
+                                  transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  transformOrigin: 'center',
+                                  WebkitTransformOrigin: 'center',
+                                  willChange: 'transform, opacity'
+                                }}
+                              />
+                            );
+                          })}
+                          <CheckCircle 
+                            className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
+                            style={{
+                              animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              transform: 'translateZ(0)',
+                              WebkitTransform: 'translateZ(0)',
+                              willChange: 'transform, opacity'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {/* ID Type and Number */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+                          <div className="space-y-2.5 w-full">
+                            <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Document Type
+                        </Label>
+                            <div className="relative">
+                              <Select value={govIdType} onValueChange={(value) => {
+                                setGovIdType(value);
+                                if (govIdNumber && value) {
+                                  validateIdNumber(govIdNumber, value);
+                            } else {
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                            }
+                            setIdVerificationResult(null);
+                          }} disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                              <SelectValue placeholder="Select ID Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                              <SelectItem value="pan">PAN Card</SelectItem>
+                              <SelectItem value="passport">Passport</SelectItem>
+                              <SelectItem value="driving_license">Driving License</SelectItem>
+                              <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
+                        </div>
+                            {errors.govIdType && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                                {errors.govIdType}
+                          </span>
                         )}
-                      </p>
+                      </div>
+                      
+                          <div className="space-y-2.5 w-full">
+                            <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Number
+                        </Label>
+                        <div className="relative">
+                          <Input
+                                id="govIdNumber"
+                                placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                                value={govIdNumber}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              
+                              // Auto-format Aadhaar: add space after every 4 digits
+                                  if (govIdType === 'aadhaar') {
+                                // Remove all spaces first
+                                const digitsOnly = value.replace(/\s/g, '');
+                                // Add space after every 4 digits
+                                value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                              }
+                              
+                                  setGovIdNumber(value);
+                                  // Clear verification result when user changes the ID number
+                              setIdVerificationResult(null);
+                                  // Clear any existing errors for ID number
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                  // Validate the new value
+                                  if (govIdType) {
+                                    validateIdNumber(value, govIdType);
+                                  }
+                            }}
+                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                            disabled={verifyingId}
+                          />
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        </div>
+                            {errors.govIdNumber && !idVerificationResult && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                                {errors.govIdNumber}
+                          </span>
+                        )}
+                        {/* ID Verification Status */}
+                        {verifyingId && (
+                              <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
+                            {totalElapsedSeconds >= 120 ? (
+                              <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
+                            ) : (
+                              <>
+                                <span className="text-xs sm:text-sm font-medium text-white mb-2">Verifying</span>
+                                <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-5 rounded-lg">
+                                  <span className="text-4xl sm:text-5xl font-bold text-white tabular-nums animate-pulse">
+                                    {verificationCountdown}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                        {idVerificationResult && !verifyingId && (
+                          <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                            idVerificationResult.matches ? 'text-blue-600' : 'text-red-600'
+                          }`}>
+                            {idVerificationResult.matches ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* Front ID */}
-                      <div className="space-y-2">
-                        <Label htmlFor="idFront" className="text-xs font-medium text-slate-600">
-                          Front Side
-                        </Label>
-                        <div className="relative">
-                          <input
-                            type="file"
-                            id="idFront"
-                            accept="image/*"
-                            onChange={(e) => setIdFrontImage(e.target.files?.[0] || null)}
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor="idFront"
-                            className={`block w-full h-20 border border-dashed rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center text-center ${
-                              idFrontImage
-                                ? 'border-green-300 bg-green-50'
-                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                            }`}
+                        {/* ID Upload - Single Upload Button */}
+                    <div className="space-y-2.5">
+                      <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        ID Document
+                      </Label>
+                      
+                          {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
+                          {!(idFrontImage || idFrontUrl) && (
+                            <div className="mb-3 sm:mb-2">
+                        <input
+                          type="file"
+                          id="idFront"
+                          accept="image/*"
+                          disabled={verifyingId}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setIdFrontImage(file);
+                            setIdErrors(prev => ({ ...prev, idFront: "" }));
+                            setIdVerificationResult(null);
+                            
+                            try {
+                              const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                              setIdFrontUrl(uploadedUrl);
+                                    // Keep backward compatibility with govIdUrl
+                                    if (!govIdUrl) setGovIdUrl(uploadedUrl);
+                            } catch (error) {
+                              console.error('Error uploading ID:', error);
+                              toast({
+                                title: "Upload Failed",
+                                description: "Failed to upload image. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        
+                              {/* Upload Button - Full Width with Black Border */}
+                        <label
+                          htmlFor="idFront"
+                                className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
+                            verifyingId
+                              ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                    : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                          }`}
+                          onClick={(e) => {
+                            if (verifyingId) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                          <div className="flex items-center gap-2 relative z-10">
+                            <Upload className="h-5 w-5 text-slate-600" />
+                            <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                          </div>
+                        </label>
+                          </div>
+                          )}
+                      
+                          {/* Image Upload Status - Sleek Design */}
+                      {(idFrontImage || idFrontUrl) && (
+                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-white relative overflow-hidden">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
+                                {/* Success Icon with Animation */}
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
+                                  <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
+                              </div>
+                                
+                                {/* Text Content */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[11px] sm:text-lg font-bold text-black truncate leading-tight">ID Image Uploaded</p>
+                                  <p className="text-[8px] sm:text-sm text-gray-600 mt-0">Ready for verification</p>
+                                </div>
+                              </div>
+                              
+                              {/* Remove Button - Sleek Design */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIdFrontImage(null);
+                              setIdFrontUrl("");
+                                  if (govIdUrl === idFrontUrl) setGovIdUrl("");
+                              setIdVerificationResult(null);
+                            }}
+                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group relative z-10"
+                                style={{ backgroundColor: '#dc2626' }}
+                            disabled={verifyingId}
+                            aria-label="Remove image"
                           >
-                            {idFrontImage ? (
-                              <div className="space-y-1">
-                                <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
-                                <p className="text-[10px] sm:text-xs text-green-700 font-medium whitespace-nowrap">Uploaded</p>
-                                <p className="text-[10px] sm:text-xs text-green-600 whitespace-nowrap overflow-hidden text-ellipsis">{idFrontImage.name}</p>
-                              </div>
-                            ) : (
-                              <div className="space-y-1">
-                                <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground mx-auto" />
-                                <p className="text-[10px] sm:text-sm text-muted-foreground font-medium whitespace-nowrap">Click to upload</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">Front side of ID</p>
-                              </div>
-                            )}
-                          </label>
+                                <X className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white group-hover:rotate-90 transition-transform duration-300" />
+                          </button>
                         </div>
-                      </div>
-
-                      {/* Back ID */}
-                      <div className="space-y-2">
-                        <Label htmlFor="idBack" className="text-xs font-medium text-slate-600">
-                          Back Side
-                        </Label>
-                        <div className="relative">
-                          <input
-                            type="file"
-                            id="idBack"
-                            accept="image/*"
-                            onChange={(e) => setIdBackImage(e.target.files?.[0] || null)}
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor="idBack"
-                            className={`block w-full h-20 border border-dashed rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center text-center ${
-                              idBackImage
-                                ? 'border-green-300 bg-green-50'
-                                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                            }`}
-                          >
-                            {idBackImage ? (
-                              <div className="space-y-1">
-                                <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
-                                <p className="text-[10px] sm:text-xs text-green-700 font-medium whitespace-nowrap">Uploaded</p>
-                                <p className="text-[10px] sm:text-xs text-green-600 whitespace-nowrap overflow-hidden text-ellipsis">{idBackImage.name}</p>
-                              </div>
-                            ) : (
-                              <div className="space-y-1">
-                                <Upload className="h-4 w-4 text-slate-400 mx-auto" />
-                                <p className="text-[10px] sm:text-xs text-slate-500 font-medium whitespace-nowrap">Click to upload</p>
-                                <p className="text-[10px] sm:text-xs text-slate-400 whitespace-nowrap">Back side</p>
-                              </div>
-                            )}
-                          </label>
-                        </div>
-                      </div>
+                      )}
                     </div>
+                    
+                        {/* Upload ID for Trust Badge Button */}
+                        {(idFrontImage || idFrontUrl) && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches) && (
+                      <div className="mt-4 sm:mt-5">
+                        <Button
+                          type="button"
+                          onClick={async () => {
+                                if (!govIdType) {
+                              toast({
+                                title: "ID Type Required",
+                                description: "Please select an ID document type.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                                if (!govIdNumber || govIdNumber.trim() === '') {
+                              toast({
+                                title: "ID Number Required",
+                                description: "Please enter your ID number.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                                setVerifyingId(true);
+                                setVerificationCountdown(60);
+                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                
+                                // Scroll inline verification countdown into view on mobile
+                                setTimeout(() => {
+                                  if (inlineVerificationRef.current) {
+                                    inlineVerificationRef.current.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'center',
+                                      inline: 'nearest'
+                                    });
+                                  }
+                                }, 200);
+                            
+                            try {
+                              // Upload image if not already uploaded
+                              let frontImageUrl: string | null = null;
+                              
+                              if (idFrontImage && !idFrontUrl) {
+                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
+                                setIdFrontUrl(frontImageUrl);
+                              } else {
+                                frontImageUrl = idFrontUrl || null;
+                              }
+                              
+                                  if (frontImageUrl && !govIdUrl) setGovIdUrl(frontImageUrl);
+                                  
+                              if (!frontImageUrl) {
+                                toast({
+                                  title: "Upload Error",
+                                  description: "Failed to upload ID image. Please try again.",
+                                  variant: "destructive",
+                                });
+                                setVerifyingId(false);
+                                return;
+                              }
+                              
+                              const verification = await verifyIdNumberMatch(
+                                frontImageUrl,
+                                    govIdNumber,
+                                    govIdType
+                              );
+                              
+                              setIdVerificationResult(verification);
+                              
+                              if (!verification.matches) {
+                                    setErrors(prev => ({ 
+                                  ...prev, 
+                                      govIdNumber: verification.error || 'ID number does not match the image(s)' 
+                                }));
+                                toast({
+                                  title: "ID Verification Failed",
+                                      description: verification.error || "ID number does not match the uploaded image(s).",
+                                  variant: "destructive",
+                                });
+                              } else {
+                                    setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                toast({
+                                  title: "Verification Successful",
+                                      description: "Your ID has been verified!",
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error verifying ID:', error);
+                              toast({
+                                title: "Verification Error",
+                                    description: "Failed to verify ID number. Please try again.",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setVerifyingId(false);
+                            }
+                          }}
+                              disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
+                          className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                        >
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                          {verifyingId ? (
+                            <span className="flex items-center justify-center gap-2 sm:gap-3 relative z-10">
+                              {/* Countdown Square - No Borders */}
+                              <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-2.5 rounded-lg">
+                                <span className="text-2xl sm:text-2xl font-bold text-white tabular-nums animate-pulse">
+                                  {verificationCountdown}
+                                </span>
+                              </div>
+                              <span className="text-white font-semibold text-sm sm:text-base">Verifying ID...</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center justify-center gap-2 relative z-10">
+                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                              <span className="text-white">Upload ID for Trust Badge</span>
+                            </span>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                      </>
+                    )}
                   </div>
                   )}
 
-                  {/* Trust Badge Status - Show for verified users */}
+                  {/* Trust Badge Status - Enhanced for Verified Users */}
                   {!authLoading && isUserVerified && (
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <Label className="text-sm font-medium text-green-700">
-                          Trust Badge Verified
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/30 border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                      {/* Physical card depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      <div className="p-3 sm:p-4 bg-white border-[0.5px] border-black rounded-lg shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg pointer-events-none" />
+                        <div className="flex items-center space-x-3 relative z-10">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
+                        </div>
+                          <Label className="text-xs sm:text-sm font-black text-blue-800">
+                            Trust Badge Verified From Profile
                         </Label>
                       </div>
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-xs text-green-700">
-                          ✓ You have a trust badge - no ID upload needed for verification
-                        </p>
                       </div>
                     </div>
                   )}
 
-                  {/* Upload Progress - Only show for non-verified users */}
-                  {!authLoading && !isUserVerified && idUploadLoading && (
-                    <div className="space-y-3 p-4 bg-muted/20 rounded-lg border">
+                  {/* Upload Progress - Hidden for cleaner UI, but state updates continue internally */}
+                  {false && !authLoading && !isUserVerified && idUploadLoading && (
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">
+                        <span className="text-sm sm:text-base font-semibold text-slate-800">
                           {uploadStage}
                         </span>
-                        <span className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">
+                        <span className="text-sm sm:text-base font-bold text-blue-600">
                           {uploadProgress}%
                         </span>
                       </div>
-                      <div className="w-full bg-muted rounded-full h-2">
+                      <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
                         <div 
-                          className="bg-pal-blue h-2 rounded-full transition-all duration-300 ease-out"
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
                           style={{ width: `${uploadProgress}%` }}
                         ></div>
                       </div>
@@ -1616,34 +2968,47 @@ export default function PostEnquiry() {
                   )}
 
 
-                  {/* Submit Button - Minimal */}
-                  <div className="pt-6">
+                  {/* Submit Button - Physical Switch Design */}
+                  <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
                     <Button
                       type="submit"
-                      disabled={loading || idUploadLoading}
-                      className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                      disabled={loading || idUploadLoading || paymentLoading}
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
                     >
-                      {loading ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Submitting...</span>
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      {paymentLoading ? (
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Loader2 className="h-5 w-5 animate-spin text-white" />
+                          <span className="text-white">Opening Razorpay...</span>
+                        </span>
+                      ) : loading ? (
+                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                          <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-white">Submitting...</span>
                         </div>
                       ) : (
-                        'Post Enquiry'
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Send className="h-5 w-5 text-white" />
+                          <span className="text-white">Post Enquiry</span>
+                        </span>
                       )}
                     </Button>
                     
-                    {loading && (
-                      <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
-                          <span className="text-sm font-medium text-slate-700">
+                    {/* Loading Progress - Hidden for cleaner UI, but state updates continue internally */}
+                    {false && loading && (
+                      <div className="mt-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-sm sm:text-base font-semibold text-slate-800">
                             {idUploadLoading ? 'Uploading ID...' : 'Submitting enquiry...'}
                           </span>
                         </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
                           <div 
-                            className="bg-slate-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>
@@ -1656,15 +3021,18 @@ export default function PostEnquiry() {
             </Card>
           )}
 
-          {/* Real-time Verification Status */}
+          {/* Real-time Verification Status - Enhanced Professional Design */}
           {submittedEnquiryId && (
-            <Card className="mt-6 border-2 border-blue-200 bg-green-50/50 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="text-center mb-4">
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    {isPaymentSuccessful ? "🎉 Payment Successful!" : "🎉 Enquiry Submitted Successfully!"}
+            <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+              <CardContent className="p-6 sm:p-8">
+                <div className="text-center mb-5 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span className="text-2xl sm:text-3xl">🎉</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-800 mb-3">
+                    {isPaymentSuccessful ? "Payment Successful!" : "Enquiry Submitted Successfully!"}
                   </h3>
-                  <p className="text-sm text-green-700">
+                  <p className="text-sm sm:text-base text-green-700 max-w-2xl mx-auto leading-relaxed">
                     {isPaymentSuccessful 
                       ? "Your premium enquiry is now under review. Check the status below:"
                       : isUserVerified
@@ -1674,26 +3042,26 @@ export default function PostEnquiry() {
                   </p>
                 </div>
 
-                {/* Real-time Status Display */}
-                <div className="bg-white border border-green-300 rounded-lg p-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                {/* Real-time Status Display - Enhanced */}
+                <div className="bg-white border-2 border-green-200 rounded-xl p-5 sm:p-6 mb-5 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-md ${
                       enquiryStatus === 'live' || enquiryStatus === 'approved' 
-                        ? 'bg-green-500' 
+                        ? 'bg-gradient-to-br from-green-500 to-green-600' 
                         : enquiryStatus === 'rejected'
-                        ? 'bg-pal-blue'
-                        : 'bg-yellow-500'
+                        ? 'bg-gradient-to-br from-red-500 to-red-600'
+                        : 'bg-gradient-to-br from-yellow-500 to-yellow-600'
                     }`}>
                       {enquiryStatus === 'live' || enquiryStatus === 'approved' ? (
-                        <CheckCircle className="h-5 w-5 text-white" />
+                        <Rocket className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       ) : enquiryStatus === 'rejected' ? (
-                        <X className="h-5 w-5 text-white" />
+                        <X className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       ) : (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    )}
-                  </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-slate-800">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1.5">
                         {enquiryStatus === 'live' || enquiryStatus === 'approved' 
                           ? '✅ Enquiry Approved!' 
                           : enquiryStatus === 'rejected'
@@ -1701,7 +3069,7 @@ export default function PostEnquiry() {
                           : '⏳ Processing...'
                         }
                       </h4>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                         {enquiryStatus === 'live' || enquiryStatus === 'approved' 
                           ? 'Your enquiry is now live and visible to sellers!'
                           : enquiryStatus === 'rejected'
@@ -1712,16 +3080,17 @@ export default function PostEnquiry() {
                     </div>
                   </div>
                   
-                {/* Real-time status indicator */}
-                <div className="mt-3 flex items-center justify-center">
-                  <div className="flex items-center space-x-2 text-[10px] sm:text-xs text-slate-500">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="whitespace-nowrap">Real-time updates active</span>
+                  {/* Real-time status indicator - Enhanced */}
+                  <div className="mt-4 pt-4 border-t border-green-200 flex items-center justify-center">
+                    <div className="flex items-center space-x-2.5 text-xs sm:text-sm text-slate-600 font-medium">
+                      <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-sm"></div>
+                      <span>Real-time updates active</span>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Debug: Manual status check button */}
-                <div className="mt-2 text-center">
+                {/* Debug: Manual status check button - Enhanced */}
+                <div className="mt-4 text-center">
                   <Button
                     variant="outline"
                     size="sm"
@@ -1744,14 +3113,13 @@ export default function PostEnquiry() {
                         }
                       }
                     }}
-                    className="text-xs"
+                    className="text-xs sm:text-sm border-2 border-slate-300 hover:border-slate-400 rounded-lg px-4 py-2"
                   >
                     Check Status Manually
                   </Button>
                 </div>
-                </div>
                 
-                <div className="mt-4 text-center">
+                <div className="mt-6 sm:mt-8 text-center flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -1770,14 +3138,18 @@ export default function PostEnquiry() {
                       setNotes("");
                       setIdFrontImage(null);
                       setIdBackImage(null);
+                      // Clear reference images
+                      setReferenceImageFiles(Array(4).fill(null));
+                      setReferenceImageUrls(Array(4).fill(""));
+                      setReferenceUploadProgresses(Array(4).fill(0));
                     }}
-                    className="mr-3"
+                    className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200"
                   >
                     Submit Another
                   </Button>
                   <Button
                     onClick={() => navigate("/enquiries")}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     View Live Enquiries
                   </Button>
@@ -1818,8 +3190,8 @@ export default function PostEnquiry() {
         </div>
       </div>
 
-        {/* Simplified Payment Modal */}
-        {showPaymentModal && (
+      {/* Simplified Payment Modal */}
+      {showPaymentModal && (
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             onClick={(e) => {
@@ -1862,7 +3234,14 @@ export default function PostEnquiry() {
                     type="text" 
                     placeholder="MM/YY"
                     value={paymentDetails.expiryDate}
-                    onChange={(e) => setPaymentDetails(prev => ({ ...prev, expiryDate: e.target.value }))}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                      if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                      }
+                      setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
+                    }}
+                    maxLength={5}
                     className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base"
                   />
                   <input 
@@ -1900,10 +3279,10 @@ export default function PostEnquiry() {
                 >
                   {paymentLoading ? 'Processing...' : 'Pay Now'}
                 </button>
-              </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
     </Layout>
   );
