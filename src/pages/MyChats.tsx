@@ -371,6 +371,16 @@ export default function MyChats() {
     // Mark chat as read when opening
     markChatAsRead(chat);
     
+    // Handle sell listing chats
+    if (chat.enquiryId.startsWith('sell_listing_')) {
+      const listingId = chat.enquiryId.replace('sell_listing_', '');
+      // Determine who the buyer is: if current user is the listing owner (seller), the other person is the buyer (sellerId field)
+      // If current user is the buyer, use sellerId as buyerId
+      const buyerId = chat.isBuyerChat ? chat.sellerId : (chat as any).senderId || chat.sellerId;
+      navigate(`/sell/listing/${listingId}/chat/${buyerId}`);
+      return;
+    }
+    
     if (chat.sellerId) {
       navigate(`/enquiry/${chat.enquiryId}/responses?sellerId=${chat.sellerId}`);
     } else {
