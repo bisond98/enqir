@@ -13,6 +13,7 @@ import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { LogIn, UserPlus } from 'lucide-react';
 import {
   AlignLeft,
   Armchair,
@@ -79,6 +80,41 @@ export default function CreateListing() {
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+
+  if (!user) {
+    return (
+      <SellShell title="Sell">
+        <Card className="border-[0.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] overflow-hidden">
+          <CardContent className="py-10 sm:py-14 flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-slate-100 border-2 border-black flex items-center justify-center shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+              <LogIn className="h-8 w-8 text-black" />
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">Sign in to Create a Listing</h2>
+            <p className="text-xs sm:text-sm text-gray-600 max-w-xs leading-relaxed">
+              You need an account to publish listings and manage your items.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full max-w-xs mt-2">
+              <Button
+                onClick={() => navigate('/signin')}
+                className="flex-1 h-12 bg-black hover:bg-gray-900 text-white border border-black font-black text-sm rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/signin', { state: { mode: 'signup' } })}
+                className="flex-1 h-12 border-2 border-black font-black text-sm rounded-xl bg-white hover:bg-gray-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Create Account
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </SellShell>
+    );
+  }
 
   const totalSteps = STEPS.length;
   const progressPct = ((step + 1) / totalSteps) * 100;
