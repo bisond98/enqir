@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
 import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { getListing } from '../services/sellDb';
+import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
 
 interface ChatMessage {
@@ -32,18 +32,28 @@ export default function ListingChat() {
   const [listing, setListing] = useState<SellListing | null>(null);
   const [buyerProfile, setBuyerProfile] = useState<any>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [responses, setResponses] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load listing
+  // Load listing and responses
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    getListing(id).then(l => {
-      setListing(l);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    const load = async () => {
+      try {
+        const l = await getListing(id);
+        setListing(l);
+        if (l) {
+          const r = await listResponsesForListing(l.id);
+          setResponses(r);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [id]);
 
   // Load buyer profile
@@ -127,6 +137,13 @@ export default function ListingChat() {
     );
   }
 
+  // Find buyer's response index and offered price
+  const buyerResponse = useMemo(() => {
+    const idx = responses.findIndex(r => r.buyerId === buyerId);
+    const resp = responses.find(r => r.buyerId === buyerId);
+    return { number: idx >= 0 ? idx + 1 : null, offeredPrice: resp?.offeredPrice };
+  }, [responses, buyerId]);
+
   return (
     <Layout showNavigation={false}>
       <div className="max-w-2xl mx-auto px-3 sm:px-4 pt-4 pb-20 min-h-screen flex flex-col">
@@ -141,12 +158,24 @@ export default function ListingChat() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0 border border-black">
-              <User className="h-4 w-4 text-slate-500" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0 border border-black">
+              <User className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-bold text-black truncate">{buyerProfile?.fullName || 'Buyer'}</h2>
-              <p className="text-[10px] text-gray-500 truncate">{listing?.title || 'Listing'}</p>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h2 className="text-sm sm:text-base font-bold text-black truncate">{buyerProfile?.fullName || 'Buyer'}</h2>
+                {buyerResponse.number && (
+                  <span className="inline-flex items-center bg-black text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0">#{buyerResponse.number}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-gray-500 truncate">{listing?.title || 'Listing'}</p>
+                {buyerResponse.offeredPrice != null && (
+                  <span className="inline-flex items-center gap-0.5 text-[10px] sm:text-[11px] font-black text-green-700 bg-green-50 px-1.5 py-0.5 rounded-md border border-green-200 flex-shrink-0">
+                    <IndianRupee className="h-2.5 w-2.5" />{buyerResponse.offeredPrice.toLocaleString('en-IN')}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
