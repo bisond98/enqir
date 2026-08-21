@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, Reply, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -546,232 +546,35 @@ export default function MyChats() {
                   </p>
                 </div>
             
-                  {/* Toggle - Creative Rotating Dial Design */}
-                  <div className="flex flex-col justify-center items-center mt-4 sm:mt-5 relative">
-                    {/* Arrow Indicator */}
-                    <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                      className="mb-2 sm:mb-3 flex items-center gap-1 sm:gap-1.5"
-                    >
-                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-gray-400" />
-                    </motion.div>
-                    {/* Labels and Toggle Container */}
-                    <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
-                      {/* Buy Label with Animation */}
-                    <motion.div 
-                        animate={{
-                          scale: viewMode === 'buyer' ? 1.1 : 1,
-                          opacity: viewMode === 'buyer' ? 1 : 0.5,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
-                          viewMode === 'buyer' ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          Buy
-                        </span>
-                      </motion.div>
-                      
-                      {/* Creative Rotating Dial Toggle */}
-                      <div className="relative inline-flex items-center">
-                        {/* Track Background with Animated Gradient */}
-                      <motion.div 
-                          className="w-20 h-8 sm:w-28 sm:h-10 lg:w-32 lg:h-12 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full relative cursor-pointer overflow-hidden"
-                          animate={{
-                            background: viewMode === 'buyer' 
-                              ? 'linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd)' 
-                              : 'linear-gradient(to right, #10b981, #34d399, #6ee7b7)',
-                          }}
-                          transition={{ duration: 0.5 }}
-                          onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const trackWidth = rect.width;
-                            const isLeftSide = clickX < trackWidth / 2;
-                            
-                            if (isLeftSide && viewMode !== 'buyer') {
-                              handleToggleView('buyer');
-                            } else if (!isLeftSide && viewMode !== 'seller') {
-                              handleToggleView('seller');
-                            }
-                          }}
-                      >
-                          {/* Animated Background Overlay */}
-                          <motion.div
-                            className="absolute inset-0 rounded-full"
-                            animate={{
-                              background: viewMode === 'buyer'
-                                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 197, 253, 0.2))'
-                                : 'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(110, 231, 183, 0.2))',
-                            }}
-                            transition={{ duration: 0.5 }}
-                          />
-                      
-                          {/* Rotating Dial Knob */}
-                      <motion.button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                              handleToggleView(viewMode === 'buyer' ? 'seller' : 'buyer');
-                        }}
-                            className="absolute top-1/2 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full cursor-pointer z-10"
-                            animate={{
-                              left: viewMode === 'buyer' ? '-8px' : 'calc(100% - 32px)',
-                              rotate: viewMode === 'buyer' ? [0, -15, 15, 0] : [0, 15, -15, 0],
-                            }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 400,
-                              damping: 25,
-                              rotate: { duration: 0.6 }
-                            }}
-                            whileHover={{ scale: 1.15, rotate: viewMode === 'buyer' ? -10 : 10 }}
-                            whileTap={{ scale: 0.85 }}
-                            style={{
-                              transform: 'translateY(-50%)',
-                            }}
-                      >
-                            {/* Outer Ring - Rotating */}
-                        <motion.div 
-                              className="absolute inset-0 rounded-full border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                              animate={{
-                                rotate: viewMode === 'buyer' ? 0 : 360,
-                              }}
-                              transition={{
-                                duration: 0.8,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              {/* Gear Notches */}
-                              {[...Array(12)].map((_, i) => (
-                                <div
-                                  key={i}
-                                  className="absolute top-0 left-1/2 w-0.5 h-2 sm:h-2.5 lg:h-3 bg-gray-400 rounded-full origin-bottom"
-                                  style={{
-                                    transform: `translateX(-50%) rotate(${i * 30}deg)`,
-                                  }}
-                                />
-                              ))}
-                            </motion.div>
-                            
-                            {/* Inner Circle with 3D Effect */}
-                            <div className="absolute inset-1 sm:inset-1.5 lg:inset-2 rounded-full bg-gradient-to-br from-white via-gray-50 to-gray-100 border-2 border-gray-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_2px_8px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                              {/* Center Dot */}
-                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 shadow-inner"></div>
-                              
-                              {/* Arrow Icons - Left and Right */}
-                              <div className="absolute inset-0 flex items-center justify-between px-1.5 sm:px-2 lg:px-2.5">
-                                <ChevronLeft className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
-                                <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 text-gray-700 flex-shrink-0" />
-                              </div>
-                              
-                              {/* Text Label - Rotating */}
-                              <motion.div
-                                className="absolute inset-0 flex items-center justify-center"
-                                animate={{
-                                  rotate: viewMode === 'buyer' ? 0 : 180,
-                                }}
-                                transition={{ duration: 0.6 }}
-                              >
-                                <span className="text-[7px] sm:text-[9px] lg:text-[11px] font-black text-gray-800 absolute">
-                                  {viewMode === 'buyer' ? 'B' : 'S'}
-                                </span>
-                              </motion.div>
-                            </div>
-                            
-                            {/* Shine Effect */}
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent pointer-events-none"
-                              animate={{
-                                rotate: [0, 360],
-                              }}
-                              transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "linear"
-                              }}
-                            />
-                            
-                            {/* Unread Badge - Buyer */}
-                            {viewMode === 'buyer' && buyerUnreadCount > 0 && (
-                            <motion.span 
-                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
-                              animate={{
-                                  scale: [1, 1.3, 1],
-                                  rotate: [0, 15, -15, 0]
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              {buyerUnreadCount > 9 ? '9+' : buyerUnreadCount}
-                            </motion.span>
+                  {/* Toggle - Dashboard Style Pill */}
+                  <div className="flex justify-center mt-4 sm:mt-5">
+                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                      {([
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]', unread: buyerUnreadCount },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]', unread: sellerUnreadCount },
+                      ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
+                        <motion.button
+                          key={key}
+                          type="button"
+                          onClick={() => handleToggleView(key)}
+                          className={`relative flex items-center gap-2 px-5 sm:px-5 lg:px-6 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-bold transition-all duration-200 whitespace-nowrap ${
+                            viewMode === key
+                              ? activeColor
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                          whileTap={{ scale: 0.95 }}
+                          animate={viewMode === key ? { scale: 1.05 } : { scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span>{label}</span>
+                          {unread > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm">
+                              {unread > 9 ? '9+' : unread}
+                            </span>
                           )}
-                            
-                            {/* Unread Badge - Seller */}
-                            {viewMode === 'seller' && sellerUnreadCount > 0 && (
-                            <motion.span 
-                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-[7px] sm:text-[8px] font-black rounded-full min-w-[14px] h-[14px] sm:min-w-[16px] sm:h-[16px] flex items-center justify-center z-50 border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] px-1"
-                              animate={{
-                                  scale: [1, 1.3, 1],
-                                  rotate: [0, 15, -15, 0]
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              {sellerUnreadCount > 9 ? '9+' : sellerUnreadCount}
-                            </motion.span>
-                          )}
-                      </motion.button>
-                          
-                          {/* Animated Particles on Toggle */}
-                          {[...Array(3)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="absolute w-1 h-1 bg-white rounded-full opacity-60"
-                              animate={{
-                                x: viewMode === 'buyer' ? [0, 20, 0] : [0, -20, 0],
-                                y: [0, Math.sin(i) * 10, 0],
-                                opacity: [0.6, 0, 0.6],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 0.3,
-                                ease: "easeInOut"
-                              }}
-                              style={{
-                                left: '50%',
-                                top: '50%',
-                              }}
-                            />
-                          ))}
-                    </motion.div>
-                      </div>
-                      
-                      {/* Sell Label with Animation */}
-                      <motion.div
-                        animate={{
-                          scale: viewMode === 'seller' ? 1.1 : 1,
-                          opacity: viewMode === 'seller' ? 1 : 0.5,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <span className={`text-[9px] sm:text-[10px] lg:text-xs font-bold transition-colors duration-300 whitespace-nowrap ${
-                          viewMode === 'seller' ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          Sell
-                        </span>
-                      </motion.div>
+                        </motion.button>
+                      ))}
                     </div>
                   </div>
                 </div>
