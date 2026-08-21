@@ -70,29 +70,34 @@ export default function MyChats() {
     return 'buyer';
   });
   
-  // Check if a chat has unread messages based on last viewed time
-  const hasUnreadMessages = useCallback((chat: ChatThread) => {
+  // Check if a chat has unread messages or is recently active (live)
+  const hasNotification = useCallback((chat: ChatThread) => {
     if (!chat.enquiryId || !chat.sellerId || !user?.uid || chat.isDisabled) return false;
+    // Check unread: last message newer than last viewed
     const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
     const readKey = `chat_read_${user.uid}_${threadKey}`;
     const lastViewed = localStorage.getItem(readKey);
-    if (!lastViewed) return true; // Never viewed = unread
-    const lastViewedTime = parseInt(lastViewed, 10);
     const chatTime = chat.updatedAt?.toDate ? chat.updatedAt.toDate().getTime() : (chat.updatedAt ? new Date(chat.updatedAt).getTime() : 0);
-    return chatTime > lastViewedTime;
+    if (!lastViewed) return true; // Never viewed = notification
+    const lastViewedTime = parseInt(lastViewed, 10);
+    if (chatTime > lastViewedTime) return true; // Unread = notification
+    // Also show notification if chat was active in last 24 hours
+    const hoursSinceActive = (Date.now() - chatTime) / (1000 * 60 * 60);
+    if (hoursSinceActive < 24) return true; // Live chat = notification
+    return false;
   }, [user?.uid]);
 
-  // Calculate unread counts
+  // Calculate notification counts (unread + live chats)
   const buyerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === true && !chat.isSellListingChat && hasUnreadMessages(chat))
+    .filter(chat => chat.isBuyerChat === true && !chat.isSellListingChat && hasNotification(chat))
     .length;
   
   const sellerUnreadCount = allChats
-    .filter(chat => chat.isBuyerChat === false && !chat.isSellListingChat && hasUnreadMessages(chat))
+    .filter(chat => chat.isBuyerChat === false && !chat.isSellListingChat && hasNotification(chat))
     .length;
 
   const listingsUnreadCount = allChats
-    .filter(chat => chat.isSellListingChat === true && hasUnreadMessages(chat))
+    .filter(chat => chat.isSellListingChat === true && hasNotification(chat))
     .length;
 
   const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
