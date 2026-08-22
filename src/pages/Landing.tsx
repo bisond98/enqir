@@ -3302,21 +3302,17 @@ const Landing = () => {
                 <text x="0" y="25" textAnchor="end" fontSize="15" fill="#6B7280" className="sm:text-xl lg:text-base font-bold">→ Close deals — anonymous and safe.</text>
               </g>
             </svg>
-            
-            {/* 🛡️ PROTECTED: Learn More Button - DO NOT REVERT OR MODIFY WITHOUT PERMISSION */}
-            {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
-            <div className="text-center mt-4 sm:mt-6 sm:block relative">
-              {/* Desktop: Centered */}
-              <Link to="/help-guide" className="inline-flex items-center justify-center group">
-                <button
-                  className="w-10 h-10 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                  <Plus className="h-3 w-3 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
-                </button>
-              </Link>
-            </div>
+          </div>
+          {/* Help Guide Button - Below the card, outside 3D transform */}
+          <div className="text-center mt-4 sm:mt-6">
+            <Link to="/help-guide" className="inline-flex items-center justify-center group">
+              <button
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-[2px] border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
+              </button>
+            </Link>
           </div>
         </div>
       </section>
