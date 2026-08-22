@@ -2022,7 +2022,7 @@ const Landing = () => {
             {filteredEnquiries.length > 0 ? (
               <>
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-8 sm:mb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl" style={{ 
+              <div className="relative mb-3 sm:mb-4 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl" style={{ 
                 backgroundColor: '#ffffff',
                 background: '#ffffff',
                 // Creative: Add subtle elevation effect when cards are touched
