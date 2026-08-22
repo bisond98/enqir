@@ -24,7 +24,6 @@ export default function SellShell({
                     className="p-2 hover:bg-white/10 rounded-xl text-white border border-white/20"
                   >
                     <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span className="ml-1">Home</span>
                   </Button>
                 </Link>
                 <div className="w-10 h-10" />
@@ -68,19 +67,19 @@ export default function SellShell({
           </div>
           <div className="sm:hidden grid grid-cols-3 gap-2 mb-4">
             <Link to="/sell/new">
-              <Button size="sm" className="w-full bg-black text-white border border-black">
+              <Button size="sm" className="w-full bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
                 <Plus className="h-4 w-4 mr-1" />
                 Create
               </Button>
             </Link>
             <Link to="/sell/marketplace">
-              <Button variant="outline" size="sm" className="w-full border border-black">
+              <Button variant="outline" size="sm" className="w-full border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
                 <Store className="h-4 w-4 mr-1" />
                 Shop
               </Button>
             </Link>
             <Link to="/sell/dashboard">
-              <Button variant="outline" size="sm" className="w-full border border-black">
+              <Button variant="outline" size="sm" className="w-full border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
                 <LayoutDashboard className="h-4 w-4 mr-1" />
                 Panel
               </Button>

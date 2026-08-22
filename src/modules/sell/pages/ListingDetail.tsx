@@ -15,8 +15,9 @@ import { suggestEnquiriesForListing } from '../services/aiMatching';
 
 
 function formatPrice(l: SellListing) {
-  if (l.priceType === 'range') return `₹${l.priceMin ?? ''} – ₹${l.priceMax ?? ''}`;
-  return l.price ? `₹${l.price}` : '₹—';
+  const fmt = (n: number) => n.toLocaleString('en-IN');
+  if (l.priceType === 'range') return `₹${fmt(l.priceMin ?? 0)} – ₹${fmt(l.priceMax ?? 0)}`;
+  return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
 
 export default function ListingDetail() {

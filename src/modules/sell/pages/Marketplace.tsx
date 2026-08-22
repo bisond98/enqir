@@ -11,8 +11,9 @@ import type { SellListing } from '../types';
 import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X } from 'lucide-react';
 
 function formatPrice(l: SellListing) {
-  if (l.priceType === 'range') return `₹${l.priceMin ?? ''} - ₹${l.priceMax ?? ''}`;
-  return l.price ? `₹${l.price}` : '₹—';
+  const fmt = (n: number) => n.toLocaleString('en-IN');
+  if (l.priceType === 'range') return `₹${fmt(l.priceMin ?? 0)} - ₹${fmt(l.priceMax ?? 0)}`;
+  return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
 
 export default function Marketplace() {
@@ -62,7 +63,7 @@ export default function Marketplace() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
             placeholder="Search listings…"
-            className="pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black rounded-none focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px]"
+            className="pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border-2 border-black rounded-xl focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all placeholder:text-slate-400 placeholder:text-[10px]"
           />
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
@@ -75,7 +76,7 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black rounded-none focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black rounded-xl focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
                 <SelectValue placeholder="Categories" />
               </SelectTrigger>
@@ -89,7 +90,7 @@ export default function Marketplace() {
           </div>
           <div className="flex-1">
             <Select value={location} onValueChange={(v) => { setLocation(v); }}>
-              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black rounded-none focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black rounded-xl focus:border-2 focus:border-black focus:ring-black bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
                 <MapPin className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
                 <SelectValue placeholder="Locations" />
               </SelectTrigger>
@@ -114,7 +115,7 @@ export default function Marketplace() {
             </button>
           )}
           <Button
-            className="flex-1 h-10 bg-black text-white border border-black rounded-xl font-black text-sm shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+            className="flex-1 h-10 bg-black text-white border-2 border-black rounded-xl font-black text-sm shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
             onClick={load}
             disabled={!canSearch || loading}
           >
@@ -123,11 +124,12 @@ export default function Marketplace() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {listings.map((l) => (
-          <Link key={l.id} to={`/sell/listing/${l.id}`} className="block">
-            <Card className="border border-black rounded-2xl overflow-hidden hover:shadow-[0_8px_0_0_rgba(0,0,0,0.25)] transition-shadow bg-white">
-              <div className="relative aspect-square sm:aspect-[4/3] bg-gray-100">
+          <Link key={l.id} to={`/sell/listing/${l.id}`} className="block group">
+            <Card className="border-2 border-black rounded-2xl overflow-hidden group-hover:shadow-[0_8px_0_0_rgba(0,0,0,0.25)] group-active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] group-active:translate-y-1 transition-all duration-200 bg-white">
+              {/* Image */}
+              <div className="relative aspect-square bg-gray-100">
                 {l.images?.[0] ? (
                   <img
                     src={l.images[0]}
@@ -136,43 +138,43 @@ export default function Marketplace() {
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    <ImageOff className="h-5 w-5 mr-2" />
-                    <span className="text-xs font-medium">No image</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-1">
+                    <ImageOff className="h-6 w-6" />
+                    <span className="text-[10px] font-medium">No image</span>
                   </div>
                 )}
-                <div className="absolute top-2 left-2 bg-black/85 text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide">
-                  {l.condition}
+                {/* Badges */}
+                <div className="absolute top-2 left-2 flex items-center gap-1">
+                  <span className="bg-black text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    {l.condition}
+                  </span>
                 </div>
-                <div className="absolute top-2 right-2 bg-white/95 text-black text-[10px] px-2 py-1 rounded-full font-bold">
-                  {l.category}
+                <div className="absolute top-2 right-2">
+                  <span className="bg-white text-black text-[9px] px-2 py-0.5 rounded-full font-bold border border-black/10">
+                    {l.category}
+                  </span>
                 </div>
               </div>
 
-              <CardHeader className="pb-2 px-3 pt-3 sm:px-6 sm:pt-6">
-                <div className="flex items-center gap-1 text-sm sm:text-lg text-black font-black">
-                  <IndianRupee className="h-4 w-4" />
-                  <span>{formatPrice(l)}</span>
+              {/* Info */}
+              <div className="px-3 py-3 sm:px-4 sm:py-4 space-y-1.5">
+                {/* Price */}
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base sm:text-lg font-black text-black">{formatPrice(l)}</span>
                 </div>
-                <h3 className="font-black text-black text-xs sm:text-base leading-snug line-clamp-2">{l.title}</h3>
-              </CardHeader>
 
-              <CardContent className="space-y-2 pt-0 px-3 pb-3 sm:px-6 sm:pb-6">
-                <div className="flex items-center gap-2 text-[11px] sm:text-xs text-gray-700">
-                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                {/* Title */}
+                <h3 className="font-bold text-black text-[11px] sm:text-sm leading-snug line-clamp-1">{l.title}</h3>
+
+                {/* Location */}
+                <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-gray-500">
+                  <MapPin className="h-3 w-3 shrink-0" />
                   <span className="truncate">{l.location}</span>
                 </div>
 
-                {l.tags?.length > 0 && (
-                  <div className="hidden sm:flex items-center gap-2 text-xs text-gray-700">
-                    <Tag className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{l.tags.slice(0, 3).join(' • ')}</span>
-                  </div>
-                )}
-
-                <p className="hidden sm:block text-xs text-gray-700 line-clamp-2">{l.description}</p>
-                <p className="text-[10px] sm:text-[11px] font-bold text-black pt-1">View details</p>
-              </CardContent>
+                {/* View details link */}
+                <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider pt-0.5">View details →</p>
+              </div>
             </Card>
           </Link>
         ))}
