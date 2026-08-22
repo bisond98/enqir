@@ -2686,7 +2686,7 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-red-500 text-black hover:border-red-600 hover:bg-white transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(239,68,68,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(239,68,68,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(239,68,68,0.3),inset_0_1px_2px_rgba(239,68,68,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden bg-white"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2942,7 +2942,7 @@ const Landing = () => {
                       </AnimatePresence>
                     </div>
                     <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-8 sm:h-9 px-4 border-[0.5px] border-red-500 bg-white hover:bg-white text-black text-[10px] sm:text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(239,68,68,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(239,68,68,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(239,68,68,0.3),inset_0_1px_2px_rgba(239,68,68,0.2)] relative overflow-hidden">
+                      <button className="h-8 sm:h-9 px-4 border-[0.5px] border-black bg-white hover:bg-white text-black text-[10px] sm:text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                         <span className="relative z-10">Show All</span>
