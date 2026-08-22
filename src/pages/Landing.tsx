@@ -2682,7 +2682,7 @@ const Landing = () => {
             )}
 
             {/* Show All Enquiries Button */}
-            <div className="text-center mt-4">
+            <div className="text-center mt-3">
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
