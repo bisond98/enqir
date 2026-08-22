@@ -2785,22 +2785,24 @@ const Landing = () => {
                   Stay Encrypted and Anonymous — let everyone be surprised!
                 </p>
 
-                {/* Mobile only: For Sale cards with enquiry-card style deck + shuffle */}
-                {windowWidth < 640 && shuffledSellListings.length > 0 && (
+                {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
+                {shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="text-xs font-black text-black mb-3">For Sale</p>
+                    <p className="text-xs sm:text-sm font-black text-black mb-3">For Sale</p>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
-                        width: "180px",
-                        height: "320px",
-                        minHeight: "320px",
-                        overflow: "visible",
+                        width: windowWidth >= 1024 ? '320px' : (windowWidth >= 640 ? '280px' : '180px'),
+                        height: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                        minHeight: windowWidth >= 1024 ? '450px' : (windowWidth >= 640 ? '400px' : '320px'),
+                        overflow: 'visible',
                       }}
                     >
                       <AnimatePresence mode="wait">
                         {shuffledSellListings.slice(0, 3).map((listing, index) => {
-                          const cardWidth = 180;
+                          const isMobile = windowWidth < 640;
+                          const isTablet = windowWidth >= 640 && windowWidth < 1024;
+                          const cardWidth = isMobile ? 180 : (isTablet ? 280 : 320);
                           const shiftAmount = cardWidth * 0.5;
                           const cardCenterOffset = cardWidth / 2;
                           const baseLeft = `calc(50% - ${cardCenterOffset}px - ${shiftAmount}px + ${index * shiftAmount}px)`;
@@ -2810,86 +2812,131 @@ const Landing = () => {
                           const imageUrl = listing.images?.[0];
                           const priceText =
                             listing.priceType === "range"
-                              ? `₹${listing.priceMin ?? ""} - ₹${listing.priceMax ?? ""}`
+                              ? `₹${Number(listing.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(listing.priceMax ?? 0).toLocaleString('en-IN')}`
                               : listing.price
-                                ? `₹${listing.price}`
+                                ? `₹${Number(listing.price).toLocaleString('en-IN')}`
                                 : "₹—";
+                          const cardHeight = isMobile ? 320 : (isTablet ? 400 : 450);
+                          const imgHeight = isMobile ? 108 : (isTablet ? 160 : 180);
 
                           return (
                             <motion.div
                               key={listing.id}
-                              initial={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              initial={{ opacity: 0, x: isMobile ? 8 : (isTablet ? 12 : 25), scale: 0.88, y: isMobile ? 6 : (isTablet ? 10 : 18), rotateZ: isMobile ? 0 : -6, rotateY: isMobile ? 0 : 12 }}
                               animate={
                                 isShufflingSell
-                                  ? { opacity: 0, scale: 0.92, y: 10 }
+                                  ? { opacity: 0, scale: 0.92, y: 10, rotateZ: 0, rotateY: 0 }
                                   : isHovered && isAnyCardHovered
-                                    ? { opacity: 1, scale: 1.05, y: -5 }
-                                    : { opacity: 1, scale: 1, y: 0 }
+                                    ? { opacity: 1, scale: 1.05, y: -5, rotateZ: 0, rotateY: 0 }
+                                    : { opacity: 1, scale: 1, y: 0, rotateZ: 0, rotateY: 0 }
                               }
-                              exit={{ opacity: 0, x: 8, scale: 0.88, y: 6 }}
+                              exit={{ opacity: 0, x: isMobile ? 8 : (isTablet ? 12 : 25), scale: 0.88, y: isMobile ? 6 : (isTablet ? 10 : 18), rotateZ: isMobile ? 0 : 6, rotateY: isMobile ? 0 : -12 }}
                               transition={{
                                 type: isShufflingSell ? "tween" : "spring",
                                 duration: isShufflingSell ? 0.4 : undefined,
-                                stiffness: 100,
-                                damping: 20,
-                                mass: 0.4,
+                                stiffness: isShufflingSell ? undefined : (isMobile ? 100 : 80),
+                                damping: isShufflingSell ? undefined : (isMobile ? 20 : 16),
+                                mass: isShufflingSell ? undefined : (isMobile ? 0.4 : 0.6),
                                 delay: isShufflingSell ? index * 0.06 : 0,
                               }}
                               className="absolute w-full"
                               style={{
                                 left: baseLeft,
-                                width: "180px",
-                                height: "320px",
+                                width: `${cardWidth}px`,
+                                height: `${cardHeight}px`,
                                 zIndex,
+                                perspective: '1000px',
+                              }}
+                              onMouseEnter={() => {
+                                if (windowWidth >= 1024) setExpandedSellCardId(listing.id);
+                              }}
+                              onMouseLeave={() => {
+                                if (windowWidth >= 1024) setExpandedSellCardId(null);
                               }}
                               onTouchStart={() => {
                                 setExpandedSellCardId(expandedSellCardId === listing.id ? null : listing.id);
                               }}
                             >
                               <Link to={`/sell/listing/${listing.id}`} className="block h-full">
-                                <div className="bg-gray-100 rounded-xl border-2 border-black flex flex-col h-full overflow-hidden">
-                                  <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 px-2 py-1.5 min-h-[36px] flex items-center justify-between">
-                                    <span className="text-[8px] text-white font-medium">For Sale</span>
-                                    <span className="text-[8px] text-white/90 font-semibold truncate max-w-[72px]">
-                                      {listing.category || "Other"}
-                                    </span>
-                                  </div>
-                                  <div className="flex-1 flex flex-col px-2.5 pt-2.5 pb-2">
-                                    <div className="w-full h-[108px] rounded-lg border border-black bg-white overflow-hidden mb-2">
-                                      {imageUrl ? (
-                                        <img src={imageUrl} alt={listing.title || "Listing"} className="w-full h-full object-cover" />
-                                      ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
-                                      )}
+                                <motion.div
+                                  className="bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black flex flex-col h-full overflow-hidden group"
+                                  animate={{
+                                    rotateX: isHovered ? 2 : 0,
+                                    rotateY: isHovered ? -2 : 0,
+                                    z: isHovered ? 20 : 0,
+                                    scale: isHovered ? 1.02 : 1,
+                                  }}
+                                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], type: 'spring', stiffness: 300, damping: 30 }}
+                                  style={{
+                                    transformStyle: 'preserve-3d',
+                                    perspective: '1000px',
+                                    filter: isHovered ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+                                    boxShadow: isHovered
+                                      ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
+                                      : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                                    transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
+                                  }}
+                                >
+                                  {/* Subtle glow effect */}
+                                  <motion.div
+                                    className="absolute inset-0 rounded-xl sm:rounded-2xl lg:rounded-3xl pointer-events-none z-0"
+                                    animate={{
+                                      opacity: [0.2, 0.3, 0.2],
+                                      background: [
+                                        "radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.06) 0%, transparent 70%)",
+                                        "radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 70%)",
+                                        "radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.06) 0%, transparent 70%)",
+                                      ]
+                                    }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", repeatType: "reverse" }}
+                                  />
+                                  <div className="relative z-10 flex flex-col h-full overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl">
+                                    {/* Card Header */}
+                                    <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 lg:px-3.5 lg:py-2.5 min-h-[36px] sm:min-h-[40px] lg:min-h-[44px] flex items-center justify-between flex-shrink-0 relative">
+                                      <span className="text-[8px] sm:text-[9px] lg:text-xs text-white font-medium">For Sale</span>
+                                      <span className="text-[8px] sm:text-[9px] lg:text-xs text-white/90 font-semibold truncate max-w-[72px] sm:max-w-[100px] lg:max-w-[140px]">
+                                        {listing.category || "Other"}
+                                      </span>
                                     </div>
-                                    <h3 className="text-xs font-semibold leading-tight line-clamp-2 text-gray-900 mb-2">
-                                      {listing.title}
-                                    </h3>
-                                    <div className="w-full mb-2">
-                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 h-9 min-h-[36px]">
-                                        <span className="text-[7px] text-gray-500">Price -</span>
-                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{priceText}</span>
+                                    {/* Card Content */}
+                                    <div className="flex-1 flex flex-col px-2.5 pt-2.5 pb-2 sm:px-3 sm:pt-3 sm:pb-0 lg:px-3.5 lg:pt-3.5 lg:pb-0 overflow-hidden min-h-0">
+                                      <div className={`w-full rounded-lg border border-black bg-white overflow-hidden mb-2 sm:mb-2.5`} style={{ height: `${imgHeight}px` }}>
+                                        {imageUrl ? (
+                                          <img src={imageUrl} alt={listing.title || "Listing"} className="w-full h-full object-cover" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
+                                        )}
                                       </div>
-                                    </div>
-                                    <div className="w-full mb-2">
-                                      <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 min-h-[32px]">
-                                        <span className="text-[7px] text-gray-500">at</span>
-                                        <span className="text-[10px] font-semibold text-gray-900 truncate">{listing.location || "N/A"}</span>
+                                      <h3 className="text-xs sm:text-sm font-semibold leading-tight line-clamp-2 text-gray-900 mb-2 sm:mb-2.5">
+                                        {listing.title}
+                                      </h3>
+                                      <div className="w-full mb-2 sm:mb-2.5">
+                                        <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 sm:px-2 sm:py-1 h-9 min-h-[36px]">
+                                          <span className="text-[7px] sm:text-[8px] text-gray-500">Price -</span>
+                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{priceText}</span>
+                                        </div>
                                       </div>
+                                      <div className="w-full mb-2 sm:mb-2.5">
+                                        <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 sm:px-2 sm:py-1 min-h-[32px]">
+                                          <span className="text-[7px] sm:text-[8px] text-gray-500">at</span>
+                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{listing.location || "N/A"}</span>
+                                        </div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          navigate(`/sell/listing/${listing.id}`);
+                                        }}
+                                        className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-black rounded-t-lg rounded-b-xl border border-black min-h-[36px] shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                        <span className="relative z-10">View Product</span>
+                                      </button>
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        navigate(`/sell/listing/${listing.id}`);
-                                      }}
-                                      className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black min-h-[36px]"
-                                    >
-                                      View Product
-                                    </button>
                                   </div>
-                                </div>
+                                </motion.div>
                               </Link>
                             </motion.div>
                           );
@@ -2897,7 +2944,7 @@ const Landing = () => {
                       </AnimatePresence>
                     </div>
                     <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-8 px-4 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[10px] font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                      <button className="h-8 sm:h-9 px-4 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[10px] sm:text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                         <span className="relative z-10">Show All</span>
