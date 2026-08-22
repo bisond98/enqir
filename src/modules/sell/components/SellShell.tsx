@@ -1,5 +1,5 @@
 import Layout from '@/components/Layout';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
 
@@ -10,6 +10,11 @@ export default function SellShell({
   title: string;
   children: React.ReactNode;
 }) {
+  const location = useLocation();
+  const path = location.pathname;
+  const isCreate = path === '/sell/new';
+  const isShop = path === '/sell/marketplace';
+  const isPanel = path === '/sell/dashboard';
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
@@ -67,19 +72,19 @@ export default function SellShell({
           </div>
           <div className="sm:hidden grid grid-cols-3 gap-2 mb-4">
             <Link to="/sell/new">
-              <Button size="sm" className="w-full bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+              <Button size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isCreate ? '!bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
                 <Plus className="h-4 w-4 mr-1" />
                 Create
               </Button>
             </Link>
             <Link to="/sell/marketplace">
-              <Button variant="outline" size="sm" className="w-full border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+              <Button variant="outline" size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isShop ? '!bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
                 <Store className="h-4 w-4 mr-1" />
                 Shop
               </Button>
             </Link>
             <Link to="/sell/dashboard">
-              <Button variant="outline" size="sm" className="w-full border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+              <Button variant="outline" size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isPanel ? '!bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
                 <LayoutDashboard className="h-4 w-4 mr-1" />
                 Panel
               </Button>
