@@ -15,7 +15,8 @@ import {
   ArrowRight,
   X,
   Search,
-  Bot
+  Bot,
+  Package
 } from "lucide-react";
 
 const HelpGuide = () => {
@@ -1006,6 +1007,115 @@ const HelpGuide = () => {
                     <p className="text-xs sm:text-sm font-black text-gray-900 mb-1.5 group-hover/step:text-black transition-colors">Close the Sale</p>
                     <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Finalize terms with buyers and complete the sale.</p>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Overview - Listing for Sale */}
+          <Card className="group border-[0.5px] border-black bg-white shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-2xl mb-6 sm:mb-8 overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+            <CardHeader className="bg-black text-white rounded-t-2xl relative z-10">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-white">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
+                </div>
+                <CardTitle className="text-sm sm:text-base font-black text-white">
+                  Listing Products for Sale - How It Works
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                  <div className="flex items-start gap-3 mb-2 relative z-10">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    1
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Go to Sell Dashboard</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Tap 'Sell' in the bottom nav, then 'Panel' to open your Seller Dashboard.</p>
+                </div>
+              </div>
+              <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                <div className="flex items-start gap-3 mb-2 relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    2
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Create New Listing</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Click 'Create New Listing', add product title, description, category, location, and price.</p>
+                </div>
+              </div>
+              <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                <div className="flex items-start gap-3 mb-2 relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    3
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Upload Product Images</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Add clear photos of your product — front, back, and any details. Good images get more buyers.</p>
+                </div>
+              </div>
+              <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                <div className="flex items-start gap-3 mb-2 relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    4
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Publish Your Listing</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Hit 'Publish' — your listing goes live on the Marketplace for buyers to discover.</p>
+                </div>
+              </div>
+              <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                <div className="flex items-start gap-3 mb-2 relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    5
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Buyers Contact You</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Buyers will message you with their offers. Check responses in your Seller Dashboard.</p>
+                </div>
+              </div>
+              <div className="group/step flex flex-col p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-gray-50 via-white to-gray-50/80 border-2 border-gray-200 shadow-[0_4px_6px_rgba(0,0,0,0.1),0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] transition-all duration-300 hover:border-gray-300 hover:-translate-y-1 hover:scale-[1.02] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/40 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/step:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
+                <div className="flex items-start gap-3 mb-2 relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center font-black text-sm sm:text-base shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(0,0,0,0.2)] group-hover/step:scale-110 group-hover/step:rotate-3 transition-all duration-300">
+                    6
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm sm:text-base font-black text-gray-900 mb-1 group-hover/step:text-black transition-colors">Chat & Close the Sale</p>
+                  </div>
+                </div>
+                <div className="relative z-10 pl-0">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover/step:text-gray-700 transition-colors">Open the buyer's response to start a chat. Answer questions, share details, and close the deal.</p>
                 </div>
               </div>
             </CardContent>
