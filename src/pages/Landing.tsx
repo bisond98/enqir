@@ -2784,6 +2784,9 @@ const Landing = () => {
                 <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mt-3 sm:mt-4 leading-tight">
                   Stay Encrypted and Anonymous — let everyone be surprised!
                 </p>
+              </div>
+            </div>
+          )}
 
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
                 {shuffledSellListings.length > 0 && (
@@ -2953,9 +2956,6 @@ const Landing = () => {
                     </Link>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
 
           {/* Categories Preview - Professional & Engaging */}
           <div className="mb-12 sm:mb-20 animate-slide-up" style={{ animationDelay: '1.2s' }}>
