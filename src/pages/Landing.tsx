@@ -3069,7 +3069,7 @@ const Landing = () => {
 
           {/* Animated SVG Flow - Compact Layout with 3D Border */}
           <div 
-            className="bg-white p-4 sm:p-14 rounded-xl sm:rounded-3xl border-[0.5px] border-black shadow-md sm:shadow-lg relative"
+            className="bg-white p-2 sm:p-8 rounded-xl sm:rounded-3xl border-[0.5px] border-black shadow-md sm:shadow-lg relative"
             style={{
               transformStyle: 'preserve-3d',
               perspective: '1000px',
@@ -3111,7 +3111,7 @@ const Landing = () => {
             <div className="text-center mb-8 sm:mb-4 lg:mb-6">
               <p className="text-[8px] sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
             </div>
-            <svg viewBox="0 0 1200 600" className="w-full h-[400px] sm:h-[650px]">
+            <svg viewBox="0 0 1200 600" className="w-full h-[250px] sm:h-[400px]">
               {/* Step 1: Larger Animated Human Character */}
               <g transform="translate(120, 150)">
                 {/* Extra Large Head with Continuous Bounce */}
@@ -3306,26 +3306,12 @@ const Landing = () => {
             {/* 🛡️ PROTECTED: Learn More Button - DO NOT REVERT OR MODIFY WITHOUT PERMISSION */}
             {/* Help Guide Button - Inside How It Works card - Round with Plus icon */}
             <div className="text-center mt-4 sm:mt-6 sm:block relative">
-              {/* Mobile: Bottom left, bigger - PROTECTED: w-24 h-24, bottom-6 left-6 */}
-              <Link to="/help-guide" className="sm:hidden fixed bottom-6 left-6 z-50 group">
-                <button
-                  className="w-16 h-16 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                  <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
-                </button>
-              </Link>
               {/* Desktop: Centered */}
-              <Link to="/help-guide" className="hidden sm:inline-flex items-center justify-center group">
+              <Link to="/help-guide" className="inline-flex items-center justify-center group">
                 <button
                   className="w-10 h-10 rounded-full border-3 border-black bg-white text-black font-black flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden"
                 >
-                  {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                  {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
                   <Plus className="h-3 w-3 group-hover:rotate-90 transition-transform duration-200 relative z-10" />
                 </button>
