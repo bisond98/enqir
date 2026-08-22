@@ -2015,13 +2015,8 @@ const Landing = () => {
                 - onSnapshot for real-time updates
                 - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries Count */}
-            <div className="text-center mb-4 sm:mb-8">
-              <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
-                <div className="w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
-                  {liveEnquiriesCount} real buyers waiting for the right seller {/* 🛡️ PROTECTED TEXT - DO NOT MODIFY */}
-                </span>
-              </div>
+            <div className="text-center mb-4 sm:mb-4">
+              <p className="text-xs sm:text-sm font-black text-black mb-3">Enquiries</p>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
