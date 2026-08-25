@@ -60,7 +60,7 @@ export default function SellShell({
             <Link to="/sell/new">
               <Button size="sm" className="bg-black text-white border border-black">
                 <Plus className="h-4 w-4 mr-1" />
-                Create
+                Sell
               </Button>
             </Link>
             <Link to="/sell/dashboard">
@@ -74,7 +74,7 @@ export default function SellShell({
             <Link to="/sell/new">
               <Button size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isCreate ? '!bg-none !bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-none !bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
                 <Plus className="h-4 w-4 mr-1" />
-                Create
+                Sell
               </Button>
             </Link>
             <Link to="/sell/marketplace">

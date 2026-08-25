@@ -2474,7 +2474,7 @@ const Landing = () => {
                             })()
                           ) : (
                             <button 
-                              className="w-full h-9 bg-gray-100 hover:bg-gray-200 text-black text-[10px] font-black rounded-t-lg rounded-b-xl border border-black hover:border-black transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.25)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-blue-700 hover:border-blue-800 transition-all duration-200 shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] hover:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
                               onClick={() => navigate('/signin')}
                             >
                               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
@@ -2566,7 +2566,7 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 hover:bg-gray-200 text-black ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black hover:border-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-blue-600 hover:bg-blue-700 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-blue-700 hover:border-blue-800 transition-all duration-200 shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)] hover:shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
                             onClick={() => navigate('/signin')}
                           >
                             {/* Physical button depth effect */}
@@ -2686,7 +2686,7 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black bg-black text-white hover:bg-gray-900 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden"
+                  className="h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black !bg-black !bg-none !text-white hover:!bg-gray-900 transition-all duration-200 rounded-xl hover:scale-105 active:scale-95 !shadow-none"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2927,7 +2927,7 @@ const Landing = () => {
                                           e.stopPropagation();
                                           navigate(`/sell/listing/${listing.id}`);
                                         }}
-                                        className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 text-white text-[10px] sm:text-xs font-black rounded-t-lg rounded-b-xl border border-black min-h-[36px] shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden"
+                                        className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-xs font-black rounded-t-lg rounded-b-xl border border-blue-700 hover:border-blue-800 min-h-[36px] shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] hover:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden"
                                       >
                                         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
                                         <span className="relative z-10">View Product</span>
@@ -2942,7 +2942,7 @@ const Landing = () => {
                       </AnimatePresence>
                     </div>
                     <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-8 sm:h-9 px-4 border-[0.5px] border-black bg-black hover:bg-gray-900 text-white text-[10px] sm:text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
+                      <button className="h-8 sm:h-9 px-4 border-[0.5px] border-black !bg-black !bg-none !text-white hover:!bg-gray-900 text-[10px] sm:text-xs font-black rounded-xl inline-flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 !shadow-none">
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                         <span className="relative z-10">Show All</span>

@@ -211,43 +211,74 @@ export default function ListingChat() {
   return (
     <Layout showNavigation={false}>
       <div className="h-[100dvh] flex flex-col bg-gray-50 overflow-hidden">
-        {/* Top Bar */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-white border-b border-black/10 flex-shrink-0 safe-area-top">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 w-8 p-0 flex-shrink-0 rounded-full">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0 border border-black/20">
-            <User className="h-4 w-4 text-slate-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-xs sm:text-sm font-bold text-black truncate">Buyer #{buyerResponse.number || buyerIdShort}</h2>
-              {buyerResponse.offeredPrice != null && (
-                <span className="inline-flex items-center gap-0.5 text-[9px] sm:text-[10px] font-black text-green-700 bg-green-50 px-1.5 py-0.5 rounded-md border border-green-200 flex-shrink-0">
-                  <IndianRupee className="h-2 w-2" />{buyerResponse.offeredPrice.toLocaleString('en-IN')}
-                </span>
+        {/* Black Header with Product Info */}
+        <div className="bg-black text-white py-6 px-4 flex-shrink-0 safe-area-top">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 w-8 p-0 flex-shrink-0 rounded-md text-white hover:text-white hover:bg-white/10 mb-4">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="text-center">
+              <h1 className="text-base sm:text-lg font-bold text-white flex items-center justify-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Chat.
+              </h1>
+              {listing && (
+                <p className="text-base font-bold text-white mt-2">{listing.title}</p>
               )}
+              {listing && (
+                <p className="text-xs text-gray-400 mt-1">{listing.category}</p>
+              )}
+              <div className="flex items-center justify-between mt-4 px-2">
+                <div>
+                  <p className="text-[11px] font-medium text-gray-400">Buyer's Budget</p>
+                  <p className="text-sm font-bold text-white">{listing ? `₹${listing.price.toLocaleString('en-IN')}` : 'N/A'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] font-medium text-gray-400">Location</p>
+                  <p className="text-sm font-bold text-white">{listing?.location || 'N/A'}</p>
+                </div>
+              </div>
             </div>
-            {listing && (
-              <p className="text-[9px] sm:text-[10px] text-gray-400 truncate">{listing.title}</p>
-            )}
           </div>
-          {listing && (
-            <Link to={`/sell/listing/${listing.id}`}>
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-[10px] font-bold text-gray-500 hover:text-black flex-shrink-0">
-                View Listing
-              </Button>
-            </Link>
-          )}
         </div>
 
-        {/* Chat Area */}
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-3 py-3 min-h-0">
+        {/* Chat Card */}
+        <div className="flex-1 flex flex-col min-h-0 p-3">
+          <div className="flex-1 flex flex-col border border-black/20 rounded-2xl overflow-hidden bg-white shadow-sm">
+            {/* Green Header */}
+            <div className="bg-green-950 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center border border-black/20">
+                  <MessageSquare className="h-5 w-5 text-black" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-white">Chat with Buyer #{buyerResponse.number || buyerIdShort}</h2>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[9px] font-bold text-green-300 bg-green-900 px-2 py-0.5 rounded border border-green-700">
+                      #{buyerResponse.number || '1'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Offer Bar */}
+            {buyerResponse.offeredPrice != null && (
+              <div className="bg-green-900 px-4 py-2 text-center border-t border-green-800">
+                <span className="text-xs font-bold text-white">Offer - ₹{buyerResponse.offeredPrice.toLocaleString('en-IN')}</span>
+              </div>
+            )}
+
+            {/* Chat Area */}
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-3 py-3 min-h-0 bg-white">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center px-4">
-                <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <MessageSquare className="h-7 w-7 text-slate-400" />
+                <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-green-200">
+                  <MessageSquare className="h-7 w-7 text-green-600" />
                 </div>
                 <h4 className="text-sm font-bold text-black mb-1">Start chatting</h4>
                 <p className="text-[11px] text-gray-400 max-w-[200px] mx-auto leading-relaxed">
@@ -273,7 +304,7 @@ export default function ListingChat() {
                   <div key={msg.id || index} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] px-3 py-2 rounded-2xl ${
                       isOwn
-                        ? 'bg-black text-white rounded-br-md'
+                        ? 'bg-green-950 text-white rounded-br-md'
                         : 'bg-white text-black border border-black/10 rounded-bl-md shadow-sm'
                     }`}>
                       {isVoice && msg.attachments?.[0]?.base64 ? (
@@ -330,8 +361,11 @@ export default function ListingChat() {
           </div>
         )}
 
+          </div>
+        </div>
+
         {/* Bottom Area - Suggestions + Input */}
-        <div className="flex-shrink-0 bg-white border-t border-black/5 pb-20 sm:pb-2">
+        <div className="flex-shrink-0 bg-white border-t border-gray-100 pb-20 sm:pb-2">
           {/* Suggestions */}
           {!isRecording && !audioBlob && (
             <div className="px-3 pt-2">
@@ -340,7 +374,7 @@ export default function ListingChat() {
                   <button
                     key={s.label}
                     onClick={() => setNewMessage(s.text)}
-                    className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border border-black/20 rounded-full font-medium transition-all active:scale-95"
+                    className="flex-shrink-0 px-3 py-1.5 text-[10px] sm:text-[11px] bg-green-950 hover:bg-green-900 text-white border border-green-800 rounded-full font-medium transition-all active:scale-95"
                   >
                     {s.label}
                   </button>
@@ -354,10 +388,10 @@ export default function ListingChat() {
             <div className="px-3">
               <div className="flex gap-2 items-center">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={startRecording}
-                  className="h-10 w-10 p-0 rounded-full flex-shrink-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="h-10 w-10 p-0 rounded-full flex-shrink-0 text-gray-600 hover:text-red-500 hover:bg-red-50 transition-colors border border-black bg-white"
                 >
                   <Mic className="h-5 w-5" />
                 </Button>
@@ -366,12 +400,12 @@ export default function ListingChat() {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                   placeholder="Type a message…"
-                  className="flex-1 h-10 bg-gray-100 border-0 focus:border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm rounded-full px-4"
+                  className="flex-1 h-10 bg-white border border-black focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm rounded-full px-4"
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={!newMessage.trim() || sending}
-                  className="h-10 w-10 p-0 bg-black text-white border-0 rounded-full hover:bg-gray-800 transition-all flex-shrink-0 disabled:opacity-30"
+                  className="h-10 w-10 p-0 bg-green-950 hover:bg-green-900 text-white border border-green-800 rounded-full transition-all flex-shrink-0 disabled:opacity-30"
                 >
                   <Send className="h-4 w-4" />
                 </Button>

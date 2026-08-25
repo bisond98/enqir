@@ -301,39 +301,7 @@ export default function ListingDetail() {
           </div>
         )}
 
-        {/* AI Suggestions */}
-        <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-          <div className="bg-black p-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-white" />
-              <h3 className="text-sm font-bold text-white">AI Suggestions</h3>
-            </div>
-          </div>
-          <div className="p-4 space-y-2">
-            <p className="text-[10px] text-gray-400">Matching enquiries — read only.</p>
-            {loadingMatches && (
-              <div className="flex items-center gap-2 py-6 justify-center">
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs text-gray-500">Finding matches…</p>
-              </div>
-            )}
-            {!loadingMatches && (!matches || matches.length === 0) && (
-              <p className="text-xs text-gray-400 text-center py-6">No strong matches yet.</p>
-            )}
-            {!loadingMatches && matches?.map((m) => (
-              <Link key={m.enquiry.id} to={`/enquiry/${m.enquiry.id}`} className="block">
-                <div className="border border-black/10 rounded-xl p-3 hover:bg-gray-50 transition-colors">
-                  <p className="text-xs font-bold text-black line-clamp-1">{m.enquiry.title ?? 'Enquiry'}</p>
-                  <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5">{m.enquiry.description ?? ''}</p>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-[9px] font-bold text-gray-400">Match: {Math.round(m.score * 100)}%</span>
-                    <span className="text-[9px] font-bold text-black">View →</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+
       </div>
 
       {/* Full-screen image viewer */}
