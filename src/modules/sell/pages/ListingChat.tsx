@@ -29,6 +29,8 @@ export default function ListingChat() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [listing, setListing] = useState<SellListing | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -115,19 +117,22 @@ export default function ListingChat() {
     if (!audioBlob || !id || !buyerId || !user?.uid) return;
     setSendingVoice(true);
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        await addDoc(collection(db, 'chatMessages'), {
-          enquiryId: `sell_listing_${id}`, sellerId: buyerId, senderId: user.uid,
-          senderName: user.displayName || 'User', recipientId: buyerId,
-          message: '🎤 Voice message', timestamp: serverTimestamp(), isSystemMessage: false,
-          attachments: [{ name: 'voice.webm', type: 'audio/webm', base64: reader.result }],
-        });
-        setAudioBlob(null);
-        setRecordingTime(0);
-      };
-      reader.readAsDataURL(audioBlob);
-    } catch {
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(audioBlob);
+      });
+      await addDoc(collection(db, 'chatMessages'), {
+        enquiryId: `sell_listing_${id}`, sellerId: buyerId, senderId: user.uid,
+        senderName: user.displayName || 'User', recipientId: buyerId,
+        senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
+        message: '🎤 Voice message', timestamp: serverTimestamp(), isSystemMessage: false,
+        attachments: [{ name: `voice-${Date.now()}.webm`, type: 'audio/webm', size: audioBlob.size, base64 }],
+      });
+      setAudioBlob(null);
+      setRecordingTime(0);
+    } catch (err) {
+      console.error('Voice send error:', err);
       toast({ title: 'Failed', description: 'Could not send voice.', variant: 'destructive' });
     } finally {
       setSendingVoice(false);
@@ -440,47 +445,75 @@ export default function ListingChat() {
                       </div>
                     )}
 
-                    {/* Input Bar */}
-                    <div className="flex gap-2 items-center">
-                      <Button variant="ghost" size="sm" onClick={startRecording} className="h-10 w-10 sm:h-11 sm:w-11 p-0 rounded-full flex-shrink-0 text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors">
-                        <Mic className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
-                      </Button>
-                      <div className="relative">
-                        <Button variant="ghost" size="sm" onClick={() => setShowAttachmentOptions(!showAttachmentOptions)} className="h-10 w-10 sm:h-11 sm:w-11 p-0 text-slate-600 hover:text-blue-600 hover:bg-blue-50">
-                          <Paperclip className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
-                        </Button>
-                        {showAttachmentOptions && (
-                          <div className="absolute bottom-full left-0 mb-2 bg-white border border-slate-200 rounded-lg shadow-lg p-1.5 z-10">
-                            <div className="flex flex-col space-y-1">
-                              <label className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
-                                <Image className="h-4 w-4 text-green-600" />
-                                <span>Image</span>
-                                <input type="file" accept="image/*" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); }} className="hidden" />
-                              </label>
-                              <label className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
-                                <File className="h-4 w-4 text-slate-600" />
-                                <span>File</span>
-                                <input type="file" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); }} className="hidden" />
-                              </label>
-                            </div>
+                    {/* Voice Recording UI (shown when recording or audioBlob exists) */}
+                    {(isRecording || audioBlob) && (
+                      <div className="mb-2 sm:mb-2.5 lg:mb-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {isRecording && (
+                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                            )}
+                            <span className="text-sm font-medium text-red-700">
+                              {isRecording ? `Recording ${formatTime(recordingTime)}` : 'Voice message ready'}
+                            </span>
                           </div>
-                        )}
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" onClick={cancelRecording} className="text-red-600 hover:text-red-700 hover:bg-red-100 text-xs h-8 px-3">
+                              Cancel
+                            </Button>
+                            {audioBlob && (
+                              <Button onClick={sendVoiceMessage} disabled={sendingVoice} className="bg-green-950 hover:bg-green-900 text-white text-xs h-8 px-3 rounded-lg">
+                                {sendingVoice ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Send'}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 relative">
-                        <Input
-                          placeholder="Type a message..."
-                          value={newMessage}
-                          onChange={(e) => setNewMessage(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                          className="resize-none border border-gray-800 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg sm:rounded-xl px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500"
-                        />
+                    )}
+
+                    {/* Input Bar */}
+                    {!isRecording && !audioBlob && (
+                      <div className="flex gap-2 items-center">
+                        <Button variant="ghost" size="sm" onClick={startRecording} className="h-10 w-10 sm:h-11 sm:w-11 p-0 rounded-full flex-shrink-0 text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors">
+                          <Mic className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
+                        </Button>
+                        <div className="relative">
+                          <Button variant="ghost" size="sm" onClick={() => setShowAttachmentOptions(!showAttachmentOptions)} className="h-10 w-10 sm:h-11 sm:w-11 p-0 text-slate-600 hover:text-blue-600 hover:bg-blue-50">
+                            <Paperclip className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
+                          </Button>
+                          {showAttachmentOptions && (
+                            <div className="absolute bottom-full left-0 mb-2 bg-white border border-slate-200 rounded-lg shadow-lg p-1.5 z-10">
+                              <div className="flex flex-col space-y-1">
+                                <button onClick={() => { imageInputRef.current?.click(); }} className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
+                                  <Image className="h-4 w-4 text-green-600" />
+                                  <span>Image</span>
+                                </button>
+                                <button onClick={() => { fileInputRef.current?.click(); }} className="flex items-center space-x-2 px-2 py-1.5 text-sm hover:bg-slate-50 rounded cursor-pointer">
+                                  <File className="h-4 w-4 text-slate-600" />
+                                  <span>File</span>
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                          <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); if (imageInputRef.current) imageInputRef.current.value = ''; }} className="hidden" />
+                          <input ref={fileInputRef} type="file" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="hidden" />
+                        </div>
+                        <div className="flex-1 relative">
+                          <Input
+                            placeholder="Type a message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                            className="resize-none border border-gray-800 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg sm:rounded-xl px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 lg:py-2.5 pr-12 sm:pr-14 lg:pr-16 text-base sm:text-base lg:text-lg min-touch placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-500"
+                          />
+                        </div>
+                        <Button onClick={sendMessage} disabled={(!newMessage.trim() && attachments.length === 0) || sending} className="h-10 w-10 sm:h-11 sm:w-11 p-0 bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl transition-all flex-shrink-0 disabled:opacity-30 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/sendbtn">
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sendbtn:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                          <Send className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 relative z-10" />
+                        </Button>
                       </div>
-                      <Button onClick={sendMessage} disabled={(!newMessage.trim() && attachments.length === 0) || sending} className="h-10 w-10 sm:h-11 sm:w-11 p-0 bg-green-950 hover:bg-green-900 text-white border-[0.5px] border-black rounded-xl transition-all flex-shrink-0 disabled:opacity-30 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/sendbtn">
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sendbtn:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                        <Send className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 relative z-10" />
-                      </Button>
-                    </div>
+                    )}
                   </div>
                 </div>
               </Card>
