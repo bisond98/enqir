@@ -114,16 +114,32 @@ export default function ListingChat() {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks: BlobPart[] = [];
-      recorder.ondataavailable = (e) => chunks.push(e.data);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+      const recorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setAudioBlob(blob);
         stream.getTracks().forEach(t => t.stop());
       };
-      recorder.start();
+      recorder.onerror = (event) => {
+        console.error('Recording error:', event);
+        setIsRecording(false);
+        stream.getTracks().forEach(t => t.stop());
+        toast({ title: 'Error', description: 'Recording failed', variant: 'destructive' });
+      };
+      recorder.start(100);
       setMediaRecorder(recorder);
       setIsRecording(true);
       setRecordingTime(0);
@@ -469,36 +485,45 @@ export default function ListingChat() {
                       </div>
                     )}
 
-                    {/* Voice Recording UI (shown when recording or audioBlob exists) */}
-                    {(isRecording || audioBlob) && (
+                    {/* Voice Recording UI (shown when audioBlob exists after recording) */}
+                    {audioBlob && !isRecording && (
                       <div className="mb-2 sm:mb-2.5 lg:mb-3 p-3 bg-red-50 rounded-lg border border-red-200">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            {isRecording && (
-                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                            )}
                             <span className="text-sm font-medium text-red-700">
-                              {isRecording ? `Recording ${formatTime(recordingTime)}` : 'Voice message ready'}
+                              Voice message ({formatTime(recordingTime)})
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Button variant="ghost" size="sm" onClick={cancelRecording} className="text-red-600 hover:text-red-700 hover:bg-red-100 text-xs h-8 px-3">
                               Cancel
                             </Button>
-                            {audioBlob && (
-                              <Button onClick={sendVoiceMessage} disabled={sendingVoice} className="bg-green-950 hover:bg-green-900 text-white text-xs h-8 px-3 rounded-lg">
-                                {sendingVoice ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Send'}
-                              </Button>
-                            )}
+                            <Button onClick={sendVoiceMessage} disabled={sendingVoice} className="bg-green-950 hover:bg-green-900 text-white text-xs h-8 px-3 rounded-lg">
+                              {sendingVoice ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Send'}
+                            </Button>
                           </div>
                         </div>
                       </div>
                     )}
 
+                    {/* Recording indicator */}
+                    {isRecording && (
+                      <div className="flex items-center gap-2 mb-2 p-2 bg-red-50 rounded-lg border border-red-200">
+                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                        <span className="text-sm font-medium text-red-700">Recording {formatTime(recordingTime)}</span>
+                        <Button variant="ghost" size="sm" onClick={stopRecording} className="ml-auto text-red-600 text-xs h-6 px-2">Stop</Button>
+                      </div>
+                    )}
+
                     {/* Input Bar */}
-                    {!isRecording && !audioBlob && (
+                    {!audioBlob && !isRecording && (
                       <div className="flex gap-2 items-center">
-                        <Button variant="ghost" size="sm" onClick={startRecording} className="h-10 w-10 sm:h-11 sm:w-11 p-0 rounded-full flex-shrink-0 text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={startRecording}
+                          className="h-10 w-10 sm:h-11 sm:w-11 p-0 rounded-full flex-shrink-0 text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-150"
+                        >
                           <Mic className="h-5 w-5 sm:h-5.5 sm:w-5.5" />
                         </Button>
                         <div className="relative">
