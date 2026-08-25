@@ -47,6 +47,37 @@ export default function ListingChat() {
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
 
+  const compressImage = (file: File, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const img = document.createElement('img');
+      img.onload = () => {
+        const maxSize = 800;
+        let { width, height } = img;
+        if (width > height && width > maxSize) {
+          height = (height * maxSize) / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = (width * maxSize) / height;
+          height = maxSize;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = Object.assign(blob, { name: file.name, lastModified: Date.now() }) as File;
+            resolve(compressedFile);
+          } else {
+            resolve(file);
+          }
+        }, 'image/jpeg', quality);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -156,11 +187,15 @@ export default function ListingChat() {
     setSending(true);
     try {
       const attachmentData = attachments.length > 0 ? await Promise.all(attachments.map(async (file) => {
+        let processedFile = file;
+        if (file.type.startsWith('image/')) {
+          processedFile = await compressImage(file);
+        }
         return new Promise<{ name: string; type: string; base64: string } | null>((resolve) => {
           const reader = new FileReader();
-          reader.onload = () => resolve({ name: file.name, type: file.type, base64: reader.result as string });
+          reader.onload = () => resolve({ name: processedFile.name, type: processedFile.type, base64: reader.result as string });
           reader.onerror = () => resolve(null);
-          reader.readAsDataURL(file);
+          reader.readAsDataURL(processedFile);
         });
       })) : [];
       const validAttachments = attachmentData.filter(a => a !== null);
