@@ -155,36 +155,25 @@ export default function ListingChat() {
     if (!user || !id || !buyerId || (!newMessage.trim() && attachments.length === 0)) return;
     setSending(true);
     try {
-      const attachmentData: { name: string; type: string; base64: string }[] = [];
-      if (attachments.length > 0) {
-        for (const file of attachments) {
-          // Skip files over 3MB
-          if (file.size > 3 * 1024 * 1024) {
-            toast({ title: 'File too large', description: `${file.name} exceeds 3MB limit.`, variant: 'destructive' });
-            continue;
-          }
-          const result = await new Promise<{ name: string; type: string; base64: string } | null>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({ name: file.name, type: file.type, base64: reader.result as string });
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(file);
-          });
-          if (result) attachmentData.push(result);
-        }
-      }
+      const attachmentData = attachments.length > 0 ? await Promise.all(attachments.map(async (file) => {
+        return new Promise<{ name: string; type: string; base64: string } | null>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ name: file.name, type: file.type, base64: reader.result as string });
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(file);
+        });
+      })) : [];
+      const validAttachments = attachmentData.filter(a => a !== null);
 
-      const msgData: Record<string, unknown> = {
+      await addDoc(collection(db, 'chatMessages'), {
         enquiryId: `sell_listing_${id}`, sellerId: buyerId, senderId: user.uid,
         senderName: user.displayName || 'User', recipientId: buyerId,
         senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
-        message: newMessage.trim() || (attachmentData.length > 0 ? '📎' : ''),
+        message: newMessage.trim() || (validAttachments.length > 0 ? '📎' : ''),
         timestamp: serverTimestamp(), isSystemMessage: false,
-      };
-      if (attachmentData.length > 0) {
-        msgData.attachments = attachmentData;
-      }
+        attachments: validAttachments,
+      });
 
-      await addDoc(collection(db, 'chatMessages'), msgData);
       setNewMessage('');
       setAttachments([]);
     } catch (err) {
@@ -384,10 +373,10 @@ export default function ListingChat() {
                                   ))}
                                 </div>
                               )}
-                              {msg.message ? (
+                              {msg.message && msg.message !== '📎' ? (
                                 <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-black font-medium">{msg.message}</p>
                               ) : msg.attachments && msg.attachments.length > 0 ? (
-                                <p className="text-xs text-gray-400 text-right">✓ Delivered</p>
+                                <p className="text-xs text-gray-400 text-right">✓</p>
                               ) : null}
                             </div>
                           </div>
