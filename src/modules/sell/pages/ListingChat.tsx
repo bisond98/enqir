@@ -108,7 +108,7 @@ export default function ListingChat() {
     const q = query(collection(db, 'chatMessages'), where('enquiryId', '==', `sell_listing_${id}`));
     const unsub = onSnapshot(q, (snap) => {
       const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ChatMessage))
-        .filter(m => (m.sellerId === buyerId || m.recipientId === buyerId))
+        .filter(m => (m.senderId === buyerId || m.senderId === listing?.sellerId))
         .sort((a, b) => {
           const tA = a.timestamp?.toDate?.() || new Date(0);
           const tB = b.timestamp?.toDate?.() || new Date(0);
