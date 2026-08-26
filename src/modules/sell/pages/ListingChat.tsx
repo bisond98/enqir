@@ -105,14 +105,11 @@ export default function ListingChat() {
 
   useEffect(() => {
     if (!id || !buyerId) return;
-    // Query with recipientId to only get messages for this specific buyer
-    const q = query(
-      collection(db, 'chatMessages'),
-      where('enquiryId', '==', `sell_listing_${id}`),
-      where('recipientId', '==', buyerId)
-    );
+    const q = query(collection(db, 'chatMessages'), where('enquiryId', '==', `sell_listing_${id}`));
     const unsub = onSnapshot(q, (snap) => {
-      const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ChatMessage))
+      const msgs = snap.docs
+        .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
+        .filter(m => m.recipientId === buyerId)
         .sort((a, b) => {
           const tA = a.timestamp?.toDate?.() || new Date(0);
           const tB = b.timestamp?.toDate?.() || new Date(0);
