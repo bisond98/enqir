@@ -15,7 +15,7 @@ import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phon
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, onSnapshot, updateDoc, doc as firestoreDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
@@ -23,13 +23,16 @@ import type { SellListing } from '../types';
 interface ChatMessage {
   id: string;
   enquiryId: string;
+  chatId?: string;
   sellerId: string;
   senderId: string;
   senderName?: string;
+  recipientId?: string;
   message: string;
   timestamp: any;
   isSystemMessage?: boolean;
   attachments?: Array<{ name: string; type: string; size?: number; base64?: string }>;
+  voiceMessage?: string;
 }
 
 export default function ListingChat() {
@@ -105,13 +108,30 @@ export default function ListingChat() {
 
   useEffect(() => {
     if (!id || !buyerId) return;
+    const chatId = `sell_${id}_${buyerId}`;
+    const listingEnquiryId = `sell_listing_${id}`;
+    // Query by sellerId only (single field — no composite index needed)
     const q = query(
       collection(db, 'chatMessages'),
-      where('enquiryId', '==', `sell_listing_${id}`),
       where('sellerId', '==', buyerId)
     );
     const unsub = onSnapshot(q, (snap) => {
-      const msgs = snap.docs
+      const docs = snap.docs.filter(d => {
+        const data = d.data() as any;
+        // Only messages for THIS listing
+        if (data.enquiryId !== listingEnquiryId) return false;
+        // If chatId exists, use it for precise match
+        if (data.chatId) return data.chatId === chatId;
+        return true;
+      });
+      // One-time migration: backfill chatId on old messages
+      docs.forEach((d) => {
+        const data = d.data() as any;
+        if (!data.chatId) {
+          updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId }).catch(() => {});
+        }
+      });
+      const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
         .sort((a, b) => {
           const tA = a.timestamp?.toDate?.() || new Date(0);
@@ -183,13 +203,16 @@ export default function ListingChat() {
         reader.onload = () => resolve(reader.result as string);
         reader.readAsDataURL(audioBlob);
       });
-      await addDoc(collection(db, 'chatMessages'), {
-        enquiryId: `sell_listing_${id}`, sellerId: buyerId, senderId: user.uid,
-        senderName: user.displayName || 'User', recipientId: buyerId,
-        senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
-        message: '🎤 Voice message', timestamp: serverTimestamp(), isSystemMessage: false,
-        attachments: [{ name: `voice-${Date.now()}.webm`, type: 'audio/webm', size: audioBlob.size, base64 }],
-      });
+        const chatId = `sell_${id}_${buyerId}`;
+        await addDoc(collection(db, 'chatMessages'), {
+          enquiryId: `sell_listing_${id}`, chatId,
+          senderId: user.uid, senderName: user.displayName || 'User',
+          recipientId: user.uid === listing?.sellerId ? buyerId : listing?.sellerId || '',
+          sellerId: buyerId,
+          senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
+          message: '🎤 Voice message', timestamp: serverTimestamp(), isSystemMessage: false,
+          attachments: [{ name: `voice-${Date.now()}.webm`, type: 'audio/webm', size: audioBlob.size, base64 }],
+        });
       setAudioBlob(null);
       setRecordingTime(0);
     } catch (err) {
@@ -230,9 +253,12 @@ export default function ListingChat() {
       })) : [];
       const validAttachments = attachmentData.filter(a => a !== null);
 
+      const chatId = `sell_${id}_${buyerId}`;
       await addDoc(collection(db, 'chatMessages'), {
-        enquiryId: `sell_listing_${id}`, sellerId: buyerId, senderId: user.uid,
-        senderName: user.displayName || 'User', recipientId: buyerId,
+        enquiryId: `sell_listing_${id}`, chatId,
+        senderId: user.uid, senderName: user.displayName || 'User',
+        recipientId: user.uid === listing?.sellerId ? buyerId : listing?.sellerId || '',
+        sellerId: buyerId,
         senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
         message: newMessage.trim() || (validAttachments.length > 0 ? '📎' : ''),
         timestamp: serverTimestamp(), isSystemMessage: false,
@@ -418,7 +444,7 @@ export default function ListingChat() {
                 </CardHeader>
 
                 {/* Offer Bar */}
-                {buyerResponse.offeredPrice != null && (
+                {buyerResponse.offeredPrice != null && !isNaN(buyerResponse.offeredPrice) && (
                   <div className="bg-green-900 px-4 py-2.5 text-center" style={{ borderTop: '0.5px solid rgba(0,0,0,0.2)' }}>
                     <span className="text-xs sm:text-sm font-bold text-white">Offer - ₹{buyerResponse.offeredPrice.toLocaleString('en-IN')}</span>
                   </div>
