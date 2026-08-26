@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardHeader } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState as useStateTooltip } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle } from 'lucide-react';
@@ -46,6 +54,7 @@ export default function ListingChat() {
   const [sendingVoice, setSendingVoice] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
+  const [showCallTooltip, setShowCallTooltip] = useState(false);
 
 
   const compressImage = (file: File, quality: number = 0.8): Promise<File> => {
@@ -353,12 +362,50 @@ export default function ListingChat() {
                     <span className="text-[9px] sm:text-[10px] font-bold text-black bg-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                       #Response {buyerResponse.number || '1'}
                     </span>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0">
-                      <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0">
-                      <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-                    </Button>
+                    <div className="relative" style={{ zIndex: showCallTooltip ? 10000 : 'auto' }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowCallTooltip(!showCallTooltip)}
+                        onMouseLeave={() => setShowCallTooltip(false)}
+                        className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 relative z-10 cursor-pointer"
+                      >
+                        <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                      </Button>
+                      {showCallTooltip && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ zIndex: 10000 }}>
+                          <div className="bg-black text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative" style={{ width: 'max-content', maxWidth: '160px' }}>
+                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
+                            <div className="flex items-center gap-1.5 whitespace-nowrap">
+                              <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
+                              <span>Call Feature Coming Soon</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 cursor-pointer">
+                          <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40 sm:w-48 bg-white border-2 border-black rounded-md shadow-lg p-1.5">
+                        <DropdownMenuItem
+                          onClick={() => navigate(-1)}
+                          className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md transition-all duration-200 cursor-pointer text-slate-600 hover:text-orange-700 hover:bg-orange-50"
+                        >
+                          End Chat
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="my-1 bg-gray-300" />
+                        <DropdownMenuItem
+                          onClick={() => navigate(-1)}
+                          className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md transition-all duration-200 cursor-pointer text-slate-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          Block User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </CardHeader>
 
