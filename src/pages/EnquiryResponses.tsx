@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
+import { ArrowLeft, Eye, MessageSquare, Shield, ImageIcon, Send, CheckCircle, Clock, AlertTriangle, User, X, Paperclip, Image, Mic, File, MicOff, Square, Crown, Lock, Phone, PhoneOff, PhoneCall, Tag, MapPin, Briefcase, Sparkles, Settings, MessageCircle, ChevronLeft, ChevronRight, Play, Pause, Package, Users } from "lucide-react";
 import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -2778,6 +2778,7 @@ const EnquiryResponses = () => {
                 <div className="space-y-2.5 sm:space-y-3">
                   {/* Title Row - Mobile Optimized */}
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 text-white/70 flex-shrink-0" />
                     <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight px-1 text-center">
                         {enquiry.title}
                       </h3>
@@ -2799,7 +2800,7 @@ const EnquiryResponses = () => {
                       </div>
                       {/* Only show response count to enquiry owner - under category */}
                       {user && user.uid === enquiry.userId && (
-                        <span className="text-[10px] sm:text-[12px] text-white font-medium">Total Responses - {approvedResponses.length}</span>
+                        <span className="text-[10px] sm:text-[12px] text-white font-medium inline-flex items-center gap-1.5"><Users className="w-3 h-3 text-white/70" />Total Responses - {approvedResponses.length}</span>
                       )}
                     </div>
                     
@@ -2818,7 +2819,7 @@ const EnquiryResponses = () => {
                       <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0 justify-end">
                         <MapPin className="hidden sm:block h-4 w-4 text-white flex-shrink-0" />
                         <div className="text-right min-w-0 flex-1">
-                          <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Location</div>
+                          <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5 inline-flex items-center gap-1"><MapPin className="w-2.5 h-2.5 text-white/70" />Location</div>
                           <div className="text-[10px] sm:text-sm font-bold text-white truncate">{enquiry.location}</div>
                           </div>
                         </div>
