@@ -610,8 +610,8 @@ export default function ListingChat() {
           </div>
         </div>
 
-        {/* Approved Responses - Below Chat (matches enquiry responses design) */}
-        {responses.length > 0 && (
+        {/* Approved Responses - Below Chat (only visible to seller) */}
+        {responses.length > 0 && user?.uid === listing?.sellerId && (
           <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 pb-4 sm:pb-6">
             <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black text-center mb-3 sm:mb-4">
               Approved Responses{' '}
