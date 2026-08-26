@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
@@ -46,7 +46,7 @@ export default function ListingChat() {
   const [sendingVoice, setSendingVoice] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
-  const [showBuyerList, setShowBuyerList] = useState(false);
+
 
   const compressImage = (file: File, quality: number = 0.8): Promise<File> => {
     return new Promise((resolve) => {
@@ -344,10 +344,7 @@ export default function ListingChat() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-0 sm:gap-2 flex-nowrap">
-                          <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat</h2>
-                          <span className="text-xs sm:text-sm text-white font-medium whitespace-nowrap ml-0.5 sm:ml-0">with</span>
-                          <span className="text-xs sm:text-sm lg:text-base font-bold text-white whitespace-nowrap">Buyer</span>
-                          <span className="text-xs sm:text-sm text-white font-medium">#{buyerResponse.number || '1'}</span>
+                          <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat#Response {buyerResponse.number || '1'} with Seller</h2>
                         </div>
                       </div>
                     </div>
@@ -566,65 +563,55 @@ export default function ListingChat() {
           </div>
         </div>
 
-        {/* Buyer Response Selector - Below Chat */}
-        {responses.length > 1 && (
+        {/* Approved Responses - Below Chat (matches enquiry responses design) */}
+        {responses.length > 0 && (
           <div className="max-w-[98vw] sm:max-w-[98vw] lg:max-w-[98vw] xl:max-w-[99vw] mx-auto px-0.5 sm:px-1 lg:px-4 pb-4 sm:pb-6">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 className="text-sm sm:text-base font-bold text-black inline-flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-black" />
-                Buyer Responses ({responses.length})
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowBuyerList(!showBuyerList)}
-                className="text-xs sm:text-sm font-bold text-black hover:bg-gray-100"
-              >
-                {showBuyerList ? 'Hide' : 'Show All'}
-              </Button>
-            </div>
-            {showBuyerList && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-                {responses.map((resp, idx) => {
-                  const isActive = resp.buyerId === buyerId;
-                  return (
-                    <Link
-                      key={resp.id || idx}
-                      to={`/sell/listing/${id}/chat/${resp.buyerId}`}
-                      className={`block rounded-xl p-3 sm:p-4 transition-all duration-200 border-[1.5px] ${
-                        isActive
-                          ? 'bg-green-950 text-white border-black ring-2 ring-black ring-offset-2'
-                          : 'bg-white text-black border-gray-200 hover:border-black hover:shadow-md'
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-black text-center mb-3 sm:mb-4">
+              Approved Responses{' '}
+              <span className="text-xs sm:text-sm text-gray-500 font-serif italic font-normal">(select to chat)</span>
+            </h3>
+            <div className="space-y-3 sm:space-y-4">
+              {responses.map((resp, idx) => {
+                const isActive = resp.buyerId === buyerId;
+                return (
+                  <Link
+                    key={resp.id || idx}
+                    to={`/sell/listing/${id}/chat/${resp.buyerId}`}
+                  >
+                    <div
+                      className={`cursor-pointer transition-all duration-300 min-touch rounded-lg sm:rounded-xl bg-green-950 relative overflow-visible ${
+                        isActive ? 'ring-4 ring-black ring-offset-2' : ''
                       }`}
+                      style={{ border: isActive ? '2px solid black' : '1.5px solid black' }}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs sm:text-sm font-bold ${isActive ? 'text-white' : 'text-black'}`}>
-                            Buyer #{idx + 1}
-                          </span>
-                          {isActive && (
-                            <span className="text-[8px] sm:text-[9px] font-bold bg-white text-green-950 px-1.5 py-0.5 rounded-md">
-                              Active
-                            </span>
-                          )}
+                      <div className="w-full h-full transition-all duration-300 rounded-lg sm:rounded-xl bg-green-950 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98]"
+                        style={{ border: 'none' }}
+                      >
+                        <div className="p-2 sm:p-2.5 lg:p-3 pointer-events-none relative z-10 bg-transparent">
+                          <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 lg:top-3 lg:left-3 z-20">
+                            <div className="border-[0.5px] border-black bg-white hover:bg-gray-50 text-black text-[8px] sm:text-xs font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl whitespace-nowrap flex-shrink-0 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              <span className="relative z-10">Response #{idx + 1}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-center mb-2.5 sm:mb-3 lg:mb-3.5">
+                            <h4 className="font-bold text-white text-[10px] sm:text-xs lg:text-sm text-center w-full">
+                              {resp.message ? resp.message.substring(0, 30) + (resp.message.length > 30 ? '...' : '') : 'No message'}
+                            </h4>
+                          </div>
+                          <p className="text-white font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{resp.buyerId?.slice(0, 8) || 'Buyer'}</p>
+                          <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-white font-medium">
+                            {resp.offeredPrice != null && !isNaN(resp.offeredPrice) && (
+                              <span className="font-semibold text-white">₹{Number(resp.offeredPrice).toLocaleString('en-IN')}</span>
+                            )}
+                          </div>
                         </div>
-                        <ChevronRight className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[10px] sm:text-xs ${isActive ? 'text-white/80' : 'text-gray-500'}`}>
-                          {resp.message ? resp.message.substring(0, 40) + (resp.message.length > 40 ? '...' : '') : 'No message'}
-                        </span>
-                      </div>
-                      {resp.offeredPrice != null && resp.offeredPrice !== undefined && !isNaN(resp.offeredPrice) && (
-                        <div className={`mt-1.5 text-xs sm:text-sm font-bold ${isActive ? 'text-white' : 'text-green-700'}`}>
-                          ₹{Number(resp.offeredPrice).toLocaleString('en-IN')}
-                        </div>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
