@@ -108,7 +108,11 @@ export default function ListingChat() {
     const q = query(collection(db, 'chatMessages'), where('enquiryId', '==', `sell_listing_${id}`));
     const unsub = onSnapshot(q, (snap) => {
       const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ChatMessage))
-        .filter(m => (m.senderId === buyerId || m.senderId === listing?.sellerId))
+        .filter(m => {
+          const isBuyerMessage = m.senderId === buyerId;
+          const isSellerMessageToThisBuyer = m.senderId === listing?.sellerId && m.sellerId === buyerId;
+          return isBuyerMessage || isSellerMessageToThisBuyer;
+        })
         .sort((a, b) => {
           const tA = a.timestamp?.toDate?.() || new Date(0);
           const tB = b.timestamp?.toDate?.() || new Date(0);
@@ -318,7 +322,9 @@ export default function ListingChat() {
                     </h3>
                   </div>
                   <div className="flex flex-col items-center gap-2 sm:gap-2.5">
-                    <p className="text-[10px] sm:text-[12px] text-white font-medium inline-flex items-center gap-1.5"><Users className="w-3 h-3 text-white/70" />Total Responses - {responses.length}</p>
+                    {user?.uid === listing?.sellerId && (
+                      <p className="text-[10px] sm:text-[12px] text-white font-medium inline-flex items-center gap-1.5"><Users className="w-3 h-3 text-white/70" />Total Responses - {responses.length}</p>
+                    )}
                   </div>
                   <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 pt-2 border-t-2 border-black">
                     <div className="flex items-center gap-1 sm:gap-1.5 flex-1 min-w-0 justify-end">
