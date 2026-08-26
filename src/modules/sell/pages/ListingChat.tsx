@@ -353,15 +353,17 @@ export default function ListingChat() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-0 sm:gap-2 flex-nowrap">
-                          <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">Chat#Response {buyerResponse.number || '1'} with Seller</h2>
+                          <h2 className="text-xs sm:text-sm lg:text-base font-bold text-white">{user?.uid === listing?.sellerId ? `Chat#Response ${buyerResponse.number || '1'} with Seller` : 'Chat with Seller'}</h2>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-2 sm:mt-2 lg:mt-2.5">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-black bg-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                      #Response {buyerResponse.number || '1'}
-                    </span>
+                    {user?.uid === listing?.sellerId && (
+                      <span className="text-[9px] sm:text-[10px] font-bold text-black bg-white px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                        #Response {buyerResponse.number || '1'}
+                      </span>
+                    )}
                     <div className="relative" style={{ zIndex: showCallTooltip ? 10000 : 'auto' }}>
                       <Button
                         variant="ghost"
