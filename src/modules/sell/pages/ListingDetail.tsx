@@ -184,34 +184,42 @@ export default function ListingDetail() {
         )}
 
         {/* Listing Info Card */}
-        <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-          <div className="p-4 sm:p-5 space-y-3">
-            <h2 className="text-base sm:text-lg font-black text-black leading-tight">{listing.title}</h2>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 bg-black text-white text-xs font-black px-2.5 py-1 rounded-lg">
-                <IndianRupee className="h-3 w-3" />{formatPrice(listing)}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[10px] text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded-lg">
-                <MapPin className="h-2.5 w-2.5" />{listing.location}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[10px] text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded-lg">
+        <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+          <div className="p-4 sm:p-5">
+            {/* Title + Price */}
+            <div className="mb-3">
+              <h2 className="text-lg sm:text-xl font-black text-black leading-tight mb-1.5">{listing.title}</h2>
+              <p className="text-xl sm:text-2xl font-black text-black">{formatPrice(listing)}</p>
+            </div>
+
+            {/* Info Chips */}
+            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+              {listing.condition && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md uppercase">
+                  {listing.condition}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
                 <Tag className="h-2.5 w-2.5" />{listing.category}
               </span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                <MapPin className="h-2.5 w-2.5" />{listing.location}
+              </span>
             </div>
-            <div className="border-t border-black/5 pt-3">
-              <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
-            </div>
+
+            {/* Description */}
+            {listing.description && (
+              <div className="border-t border-gray-100 pt-3 mb-3">
+                <p className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
+              </div>
+            )}
+
+            {/* Tags */}
             {listing.tags && listing.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {listing.tags.map((tag) => (
-                  <span key={tag} className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>
+                  <span key={tag} className="text-[10px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{tag}</span>
                 ))}
-              </div>
-            )}
-            {listing.condition && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase">Condition:</span>
-                <span className="text-[10px] font-bold text-black capitalize">{listing.condition}</span>
               </div>
             )}
           </div>
