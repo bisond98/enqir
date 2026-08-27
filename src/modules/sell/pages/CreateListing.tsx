@@ -219,11 +219,13 @@ export default function CreateListing() {
     if (!canAdvanceFromStep(step)) return;
     setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goBack = () => {
     setAnimDir('down');
     setStep((prev) => Math.max(prev - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const publish = async () => {
