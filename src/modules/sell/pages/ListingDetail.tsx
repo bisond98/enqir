@@ -239,7 +239,7 @@ export default function ListingDetail() {
               <div>
                 <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Offered Price (optional)</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
                   <Input
                     value={offeredPrice ? Number(offeredPrice).toLocaleString("en-IN") : ""}
                     onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
