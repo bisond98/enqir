@@ -1093,7 +1093,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/post-enquiry");
                 }
               }}
-              className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
             >
               <span className="text-sm font-black text-white">Buy</span>
             </button>
@@ -1106,7 +1106,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
             >
               <span className="text-sm font-black text-white">Sell</span>
             </button>
