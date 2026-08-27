@@ -1024,6 +1024,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               }
 
               return (
+                <>
                 {item.iconOnly ? (
                   <div
                     key={item.path}
@@ -1053,6 +1054,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                   </Link>
                 )}
+                </>
               );
             })}
             <div
