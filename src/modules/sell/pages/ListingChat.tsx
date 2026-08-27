@@ -110,15 +110,14 @@ export default function ListingChat() {
     if (!id || !buyerId) return;
     const chatId = `sell_${id}_${buyerId}`;
     const listingEnquiryId = `sell_listing_${id}`;
-    // Use composite index (enquiryId + sellerId) to filter at database level
-    // sellerId field = buyerId from URL when message was created
+    // Query by enquiryId only (single field, no composite index needed)
+    // Filter client-side by sellerId to isolate buyer conversations
     const q = query(
       collection(db, 'chatMessages'),
-      where('enquiryId', '==', listingEnquiryId),
-      where('sellerId', '==', buyerId)
+      where('enquiryId', '==', listingEnquiryId)
     );
     const unsub = onSnapshot(q, (snap) => {
-      const docs = snap.docs;
+      const docs = snap.docs.filter(d => d.data().sellerId === buyerId);
       const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
         .sort((a, b) => {
