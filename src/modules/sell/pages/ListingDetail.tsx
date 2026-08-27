@@ -188,8 +188,11 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-lg sm:text-xl font-black text-black leading-tight mb-1.5">{listing.title}</h2>
-              <p className="text-xl sm:text-2xl font-black text-black">{formatPrice(listing)}</p>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-black leading-snug tracking-tight">{listing.title}</h2>
+              <div className="flex items-baseline gap-1 mt-2">
+                <IndianRupee className="h-4 w-4 text-black" />
+                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.price ? listing.price.toLocaleString("en-IN") : "—"}</span>
+              </div>
             </div>
 
             {/* Info Chips */}
@@ -203,7 +206,7 @@ export default function ListingDetail() {
                 <Tag className="h-2.5 w-2.5" />{listing.category}
               </span>
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
-                <MapPin className="h-2.5 w-2.5" />{listing.location}
+                <MapPin className="h-3 w-3 text-red-500 fill-red-500" />{listing.location}
               </span>
             </div>
 
