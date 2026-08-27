@@ -66,6 +66,7 @@ export default function CreateListing() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [animDir, setAnimDir] = useState<'up' | 'down'>('up');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
@@ -216,10 +217,14 @@ export default function CreateListing() {
 
   const goNext = () => {
     if (!canAdvanceFromStep(step)) return;
+    setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
   };
 
-  const goBack = () => setStep((prev) => Math.max(prev - 1, 0));
+  const goBack = () => {
+    setAnimDir('down');
+    setStep((prev) => Math.max(prev - 1, 0));
+  };
 
   const publish = async () => {
     if (!user) return;
@@ -329,7 +334,7 @@ export default function CreateListing() {
             <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
           </div>
 
-          <div className="flex-1 space-y-4">
+          <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (
               <div className="max-w-2xl mx-auto w-full">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
