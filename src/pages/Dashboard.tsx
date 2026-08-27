@@ -2697,7 +2697,7 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-          )}          )}
+          )}
         </div>
 
         {/* Listings View - Seller Dashboard Data */}
