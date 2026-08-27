@@ -1083,7 +1083,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
       {showActionMenu && (
         <>
           <div className="fixed inset-0 z-[49]" onClick={() => setShowActionMenu(false)} />
-          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex gap-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-end gap-6">
             <button
               onClick={() => {
                 setShowActionMenu(false);
@@ -1093,7 +1093,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/post-enquiry");
                 }
               }}
-              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center active:scale-95"
+              style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}
             >
               <span className="text-sm font-black text-white">Buy</span>
             </button>
@@ -1106,7 +1107,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+              className="w-20 h-20 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center active:scale-95"
+              style={{ animation: 'popupRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards' }}
             >
               <span className="text-sm font-black text-white">Sell</span>
             </button>

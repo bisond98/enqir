@@ -2265,3 +2265,35 @@ html.razorpay-open {
 body {
   touch-action: pan-y pinch-zoom;
 }
+
+
+/* Action menu popup animations */
+@keyframes popupLeft {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateX(20px) translateY(20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateX(-2px) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0) translateY(0);
+  }
+}
+
+@keyframes popupRight {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateX(-20px) translateY(20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateX(2px) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0) translateY(0);
+  }
+}
