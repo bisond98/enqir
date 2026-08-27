@@ -110,26 +110,26 @@ export default function ListingChat() {
     if (!id || !buyerId) return;
     const chatId = `sell_${id}_${buyerId}`;
     const listingEnquiryId = `sell_listing_${id}`;
-    // Query by sellerId only (single field — no composite index needed)
+    // Query by enquiryId (single field — no composite index needed)
     const q = query(
       collection(db, 'chatMessages'),
-      where('sellerId', '==', buyerId)
+      where('enquiryId', '==', listingEnquiryId)
     );
     const unsub = onSnapshot(q, (snap) => {
       const docs = snap.docs.filter(d => {
         const data = d.data() as any;
-        // Only messages for THIS listing
         if (data.enquiryId !== listingEnquiryId) return false;
-        // If chatId exists, use it for precise match
-        if (data.chatId) return data.chatId === chatId;
-        return true;
-      });
-      // One-time migration: backfill chatId on old messages
-      docs.forEach((d) => {
-        const data = d.data() as any;
-        if (!data.chatId) {
-          updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId }).catch(() => {});
+        const senderId = data.senderId as string;
+        const isSeller = listing && senderId === listing.sellerId;
+        // Determine the correct buyerId for this message's conversation
+        const correctBuyerId = isSeller ? data.recipientId : senderId;
+        if (!correctBuyerId) return false;
+        const correctChatId = `sell_${id}_${correctBuyerId}`;
+        // Backfill if chatId is wrong or missing
+        if (data.chatId !== correctChatId) {
+          updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId: correctChatId }).catch(() => {});
         }
+        return correctChatId === chatId;
       });
       const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
@@ -142,7 +142,7 @@ export default function ListingChat() {
       setTimeout(() => chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight }), 100);
     });
     return () => unsub();
-  }, [id, buyerId]);
+  }, [id, buyerId, listing?.sellerId]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
