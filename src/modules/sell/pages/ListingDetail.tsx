@@ -231,7 +231,7 @@ export default function ListingDetail() {
                 <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Offered Price (optional)</Label>
                 <Input
                   value={offeredPrice}
-                  onChange={(e) => setOfferedPrice(e.target.value)}
+                  onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="e.g., 15000"
                   inputMode="numeric"
                   className="h-10 sm:h-11 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px]"
