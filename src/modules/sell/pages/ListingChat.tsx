@@ -117,7 +117,13 @@ export default function ListingChat() {
       where('enquiryId', '==', listingEnquiryId)
     );
     const unsub = onSnapshot(q, (snap) => {
-      const docs = snap.docs.filter(d => d.data().sellerId === buyerId);
+      const docs = snap.docs.filter(d => {
+        const data = d.data();
+        // Show messages where this buyer is either sender or recipient
+        if (data.senderId === buyerId) return true;
+        if (data.recipientId === buyerId) return true;
+        return false;
+      });
       const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
         .sort((a, b) => {
