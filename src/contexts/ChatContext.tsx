@@ -175,11 +175,17 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const buyerId = isSellListing ? threadInfo.senderId : enquiryData.userId;
         const { sellerId, senderId, messageData } = threadInfo;
         
+        // For sell listings, the listing seller is enquiryData.userId
+        const listingSellerId = isSellListing ? enquiryData.userId : null;
+        const isUserTheSeller = isSellListing && listingSellerId === user.uid;
+        
         // User is involved if they're the buyer OR the seller OR the sender
-        const isUserInvolved = (buyerId === user.uid) || (sellerId === user.uid) || (senderId === user.uid);
+        const isUserInvolved = isSellListing
+          ? (isUserTheSeller || (sellerId === user.uid) || (senderId === user.uid))
+          : ((buyerId === user.uid) || (sellerId === user.uid) || (senderId === user.uid));
         
         if (isUserInvolved) {
-          const isBuyerChat = isSellListing ? (senderId === user.uid) : (buyerId === user.uid);
+          const isBuyerChat = isSellListing ? !isUserTheSeller : (buyerId === user.uid);
           
           if (!chatThreadMap.has(threadKey)) {
             chatThreadMap.set(threadKey, {

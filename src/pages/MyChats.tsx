@@ -399,9 +399,19 @@ export default function MyChats() {
     // Handle sell listing chats
     if (chat.enquiryId.startsWith('sell_listing_')) {
       const listingId = chat.enquiryId.replace('sell_listing_', '');
-      // Determine who the buyer is: if current user is the listing owner (seller), the other person is the buyer (sellerId field)
-      // If current user is the buyer, use sellerId as buyerId
-      const buyerId = chat.isBuyerChat ? chat.sellerId : (chat as any).senderId || chat.sellerId;
+      // Determine buyer ID: if user is the listing seller, find the buyer from chat data
+      // If user is the buyer, use their own UID
+      const listingSellerId = chat.enquiryData?.sellerId;
+      let buyerId: string;
+      if (user?.uid === listingSellerId) {
+        // Seller viewing: the buyer is the other person in the conversation
+        // Use last message sender if it's not the seller, otherwise fall back to chat.sellerId
+        const lastSender = typeof chat.lastMessage === 'object' ? chat.lastMessage?.senderId : null;
+        buyerId = (lastSender && lastSender !== user.uid) ? lastSender : chat.sellerId;
+      } else {
+        // Buyer viewing: always use their own UID
+        buyerId = user?.uid || chat.sellerId;
+      }
       navigate(`/sell/listing/${listingId}/chat/${buyerId}`);
       return;
     }

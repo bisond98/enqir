@@ -119,7 +119,7 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
     const chatEnquiryId = `sell_listing_${input.listingId}`;
     await addDoc(collection(db, 'chatMessages'), {
       enquiryId: chatEnquiryId,
-      sellerId: input.sellerId,
+      sellerId: input.buyerId,
       senderId: input.buyerId,
       senderName: input.buyerName || 'Buyer',
       senderType: 'buyer',
