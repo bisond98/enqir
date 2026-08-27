@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import SellShell from '../components/SellShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ function formatPrice(l: SellListing) {
 
 export default function ListingDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [listing, setListing] = useState<SellListing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,8 +78,8 @@ export default function ListingDetail() {
       toast({ title: 'Sent', description: 'Your message was sent to the seller.' });
       setMessage('');
       setOfferedPrice('');
-      const r = await listResponsesForListing(listing.id);
-      setResponses(r);
+      // Redirect to the chat with the seller
+      navigate(`/sell/listing/${listing.id}/chat/${user.uid}`);
     } catch (err: any) {
       console.error('❌ Failed to send listing response:', err.code, err.message);
       toast({ title: 'Failed', description: err.message || 'Could not send your message.', variant: 'destructive' });
@@ -188,8 +189,8 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-xl sm:text-2xl font-extrabold text-black leading-snug tracking-tight">{listing.title}</h2>
-              <div className="flex items-baseline gap-1 mt-2">
+              <h2 className="text-base sm:text-lg font-bold text-black leading-snug text-center">{listing.title}</h2>
+              <div className="flex items-baseline justify-center gap-1 mt-1.5">
                 <IndianRupee className="h-4 w-4 text-black" />
                 <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.price ? listing.price.toLocaleString("en-IN") : "—"}</span>
               </div>
@@ -240,7 +241,7 @@ export default function ListingDetail() {
             </div>
             <div className="p-4 space-y-3">
               <div>
-                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Offered Price (optional)</Label>
+                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Offered Price (optional)</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
                   <Input
@@ -253,7 +254,7 @@ export default function ListingDetail() {
                 </div>
               </div>
               <div>
-                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Your Message (optional)</Label>
+                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Message (optional)</Label>
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}

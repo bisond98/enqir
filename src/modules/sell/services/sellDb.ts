@@ -124,7 +124,7 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
       senderName: input.buyerName || 'Buyer',
       senderType: 'buyer',
       recipientId: input.sellerId,
-      message: input.message,
+      message: input.offeredPrice ? `₹${Number(input.offeredPrice).toLocaleString("en-IN")}${input.message ? " - " + input.message : ""}` : input.message,
       timestamp: serverTimestamp(),
       offeringPrice: input.offeredPrice || null,
     });
