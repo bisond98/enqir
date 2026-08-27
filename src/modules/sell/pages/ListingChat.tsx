@@ -119,17 +119,20 @@ export default function ListingChat() {
       const docs = snap.docs.filter(d => {
         const data = d.data() as any;
         if (data.enquiryId !== listingEnquiryId) return false;
-        const senderId = data.senderId as string;
-        const isSeller = listing && senderId === listing.sellerId;
-        // Determine the correct buyerId for this message's conversation
-        const correctBuyerId = isSeller ? data.recipientId : senderId;
-        if (!correctBuyerId) return false;
-        const correctChatId = `sell_${id}_${correctBuyerId}`;
-        // Backfill if chatId is wrong or missing
-        if (data.chatId !== correctChatId) {
-          updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId: correctChatId }).catch(() => {});
+        // Fast path: correct chatId → include immediately
+        if (data.chatId === chatId) return true;
+        // Messages from this buyer to anyone → always show
+        if (data.senderId === buyerId) return true;
+        // If listing loaded, seller messages to this buyer → show
+        if (listing && data.senderId === listing.sellerId && data.recipientId === buyerId) {
+          // Backfill correct chatId
+          const correctChatId = `sell_${id}_${buyerId}`;
+          if (data.chatId !== correctChatId) {
+            updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId: correctChatId }).catch(() => {});
+          }
+          return true;
         }
-        return correctChatId === chatId;
+        return false;
       });
       const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
