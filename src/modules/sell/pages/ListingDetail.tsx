@@ -232,6 +232,7 @@ export default function ListingDetail() {
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-white" />
                 <h3 className="text-sm font-bold text-white">Message Seller</h3>
+                <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
               </div>
             </div>
             <div className="p-4 space-y-3">
