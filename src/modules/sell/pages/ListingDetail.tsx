@@ -58,8 +58,8 @@ export default function ListingDetail() {
       toast({ title: 'Sign in required', description: 'Please sign in to message the seller.', variant: 'destructive' });
       return;
     }
-    if (!message.trim()) {
-      toast({ title: 'Message required', description: 'Write a short message to the seller.', variant: 'destructive' });
+    if (!message.trim() && !offeredPrice.trim()) {
+      toast({ title: "Input required", description: "Enter a message or offered price.", variant: "destructive" });
       return;
     }
     setSending(true);
@@ -229,16 +229,19 @@ export default function ListingDetail() {
             <div className="p-4 space-y-3">
               <div>
                 <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Offered Price (optional)</Label>
-                <Input
-                  value={offeredPrice}
-                  onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
-                  placeholder="e.g., 15000"
-                  inputMode="numeric"
-                  className="h-10 sm:h-11 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px]"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500">₹</span>
+                  <Input
+                    value={offeredPrice ? Number(offeredPrice).toLocaleString("en-IN") : ""}
+                    onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="e.g., 15,000"
+                    inputMode="numeric"
+                    className="h-10 sm:h-11 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
+                  />
+                </div>
               </div>
               <div>
-                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Your Message</Label>
+                <Label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Your Message (optional)</Label>
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
