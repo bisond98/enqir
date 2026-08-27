@@ -49,6 +49,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [showActionMenu, setShowActionMenu] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -1023,18 +1024,35 @@ export default function Layout({ children, showNavigation = true }: { children: 
               }
 
               return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 ${
-                    isActive(item.path)
-                      ? "text-pal-blue bg-pal-blue/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  <Icon className={`${(item as any).iconOnly ? 'h-7 w-7' : 'h-5 w-5'}`} />
-                  {!(item as any).iconOnly && <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>}
-                </Link>
+                {item.iconOnly ? (
+                  <div
+                    key={item.path}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowActionMenu(!showActionMenu);
+                    }}
+                    className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
+                      showActionMenu
+                        ? "text-pal-blue bg-pal-blue/10"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Icon className="h-8 w-8" />
+                  </div>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 ${
+                      isActive(item.path)
+                        ? "text-pal-blue bg-pal-blue/10"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                  </Link>
+                )}
               );
             })}
             <div
@@ -1059,6 +1077,46 @@ export default function Layout({ children, showNavigation = true }: { children: 
         </div>
       )}
 
+      {/* Action Menu Popup */}
+      {showActionMenu && (
+        <>
+          <div className="fixed inset-0 z-[49]" onClick={() => setShowActionMenu(false)} />
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex gap-4 animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => {
+                setShowActionMenu(false);
+                if (!user) {
+                  navigate("/signin");
+                } else {
+                  navigate("/post-enquiry");
+                }
+              }}
+              className="flex flex-col items-center gap-1.5"
+            >
+              <div className="w-14 h-14 bg-white rounded-full shadow-lg border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95">
+                <span className="text-2xl font-black text-black">₹</span>
+              </div>
+              <span className="text-[11px] font-bold text-black bg-white px-2 py-0.5 rounded-full shadow-md border border-black">Buy</span>
+            </button>
+            <button
+              onClick={() => {
+                setShowActionMenu(false);
+                if (!user) {
+                  navigate("/signin");
+                } else {
+                  navigate("/sell/new");
+                }
+              }}
+              className="flex flex-col items-center gap-1.5"
+            >
+              <div className="w-14 h-14 bg-white rounded-full shadow-lg border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95">
+                <span className="text-2xl font-black text-black">₹</span>
+              </div>
+              <span className="text-[11px] font-bold text-black bg-white px-2 py-0.5 rounded-full shadow-md border border-black">Sell</span>
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Footer */}
       <Footer />
