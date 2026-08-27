@@ -71,6 +71,8 @@ export default function CreateListing() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
   const [location, setLocation] = useState<string>('Other');
+  const [locationSearch, setLocationSearch] = useState('');
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   const [condition, setCondition] = useState<ListingCondition>('used');
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
@@ -407,27 +409,80 @@ export default function CreateListing() {
             )}
 
             {step === 3 && (
-              <div className="max-w-xl mx-auto w-full">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {SELL_LOCATIONS.map((loc) => {
-                    const selected = location === loc;
-                    return (
-                      <button
-                        key={loc}
-                        type="button"
-                        onClick={() => setLocation(loc)}
-                        className={cn(
-                          'flex items-center justify-center gap-2 rounded-xl border-2 px-2 py-3 text-xs sm:text-sm font-bold transition-all',
-                          selected
-                            ? 'border-black bg-black text-white'
-                            : 'border-black/20 bg-white text-black hover:border-black'
-                        )}
-                      >
-                        <MapPin className="h-3.5 w-3.5 shrink-0 opacity-80" />
-                        {loc}
-                      </button>
-                    );
-                  })}
+              <div className="max-w-xl mx-auto w-full space-y-3">
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                    <MapPin className="h-5 w-5 text-red-500 fill-red-500" />
+                  </div>
+                  <Input
+                    id="listing-location"
+                    value={locationSearch}
+                    onChange={(e) => {
+                      setLocationSearch(e.target.value);
+                      setLocationDropdownOpen(true);
+                      if (e.target.value === '') setLocation('');
+                    }}
+                    onFocus={() => setLocationDropdownOpen(true)}
+                    onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
+                    placeholder="Search location..."
+                    className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-10 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 relative z-10"
+                    style={{ fontSize: '16px' }}
+                  />
+                  {locationDropdownOpen && locationSearch.length === 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-black rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto">
+                      {SELL_LOCATIONS.filter(loc => loc !== 'Other').map((loc) => (
+                        <button
+                          key={loc}
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setLocation(loc);
+                            setLocationSearch(loc);
+                            setLocationDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                        >
+                          <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
+                          {loc}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {locationDropdownOpen && locationSearch.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-black rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto">
+                      {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
+                        SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
+                          <button
+                            key={loc}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setLocation(loc);
+                              setLocationSearch(loc);
+                              setLocationDropdownOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                          >
+                            <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
+                            {loc}
+                          </button>
+                        ))
+                      ) : (
+                        <button
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setLocation(locationSearch);
+                            setLocationDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                        >
+                          <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
+                          {locationSearch}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
