@@ -2297,3 +2297,9 @@ body {
     transform: scale(1) translateY(0);
   }
 }
+
+/* Footer nav icons - filled black */
+.fixed.bottom-0 svg path {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
