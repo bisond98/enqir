@@ -637,8 +637,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
 
   const navigationItems = [
     { path: "/enquiries", label: "Sell", icon: Search },
-    { path: "/post-enquiry", label: "Post Enquiry", icon: Plus },
     { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
+    { path: "/post-enquiry", label: "Post Enquiry", icon: Plus },
     { path: "/profile", label: "Profile", icon: User },
   ];
 
