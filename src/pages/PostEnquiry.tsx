@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -961,6 +961,74 @@ export default function PostEnquiry() {
     { value: "musical-accessories", label: "Musical Accessories", group: "Products" },
     { value: "other", label: "Other", group: "Other" }
   ];
+  
+  // Category icon mapping
+  const categoryIcons: Record<string, any> = {
+    "business": Briefcase,
+    "personal": User,
+    "service": Wrench,
+    "agriculture-farming": Tractor,
+    "antiques": Landmark,
+    "art": Palette,
+    "automobile": Car,
+    "baby-kids": Baby,
+    "bags-luggage": Briefcase,
+    "books-publications": BookOpen,
+    "beauty-products": Flower2,
+    "bicycles": Bike,
+    "childcare-family": Users,
+    "collectibles": Trophy,
+    "construction-renovation": HardHat,
+    "education-training": GraduationCap,
+    "electronics-gadgets": Monitor,
+    "entertainment-media": Film,
+    "events-entertainment": PartyPopper,
+    "fashion-apparel": Shirt,
+    "food-beverage": UtensilsCrossed,
+    "gaming-recreation": Gamepad2,
+    "government-public": Building2,
+    "health-beauty": HeartPulse,
+    "home-furniture": Sofa,
+    "insurance-services": ShieldCheck,
+    "jobs": Briefcase,
+    "jewelry-accessories": Gem,
+    "legal-financial": Scale,
+    "marketing-advertising": Megaphone,
+    "memorabilia": Stamp,
+    "non-profit-charity": HandHeart,
+    "pets": PawPrint,
+    "raw-materials-industrial": Factory,
+    "real-estate": Home,
+    "real-estate-services": Home,
+    "renewable-energy": Zap,
+    "security-safety": Lock,
+    "sneakers": Gem,
+    "souvenir": MapPin,
+    "sports-outdoor": Dumbbell,
+    "technology": Monitor,
+    "thrift": Shirt,
+    "transportation-logistics": Truck,
+    "travel-tourism": MapPin,
+    "vintage": Landmark,
+    "waste-management": Factory,
+    "wedding-events": PartyPopper,
+    "musical-instruments": Mic,
+    "tools-equipment": Wrench,
+    "appliances": Sofa,
+    "photography-cameras": Camera,
+    "fitness-gym-equipment": Dumbbell,
+    "kitchen-dining": UtensilsCrossed,
+    "garden-outdoor": TreePine,
+    "office-supplies": FileText,
+    "repair-services": Wrench,
+    "cleaning-services": Sparkles,
+    "musical-services": Mic,
+    "tutoring-lessons": GraduationCap,
+    "medical-equipment": HeartPulse,
+    "musical-accessories": Music,
+    "other": MoreHorizontal,
+  };
+
   // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
   const mainCategories = categories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
   const otherCategories = categories.filter(cat => !['business', 'personal', 'service', 'other'].includes(cat.value));
@@ -1833,6 +1901,26 @@ export default function PostEnquiry() {
             <Card className="shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
               <CardContent className="p-5 sm:p-6 lg:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
+
+                  {/* Form Progress Indicator */}
+                  <div className="pt-4 space-y-3 border-4 border-black bg-white rounded-lg p-4 transition-all">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs sm:text-sm font-semibold text-black">Form Completion</h3>
+                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-600' : 'text-black'}`}>
+                        {Math.round(formProgress)}% Complete
+                      </span>
+                    </div>
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div 
+                        className={`h-full transition-all ${formProgress === 100 ? 'bg-green-600' : 'bg-[#800020]'}`}
+                        style={{ width: `${formProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-black">
+                      Fill in all required & click submit
+                    </p>
+                  </div>
+
                   {/* Title - Enhanced Professional Input */}
                   <div className="space-y-2.5 sm:space-y-3">
                     <Label htmlFor="title" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
@@ -1846,12 +1934,12 @@ export default function PostEnquiry() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         maxLength={60}
-                            className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                            className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
                         required
                       />
                       {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                     </div>
                   </div>
 
@@ -1877,7 +1965,7 @@ export default function PostEnquiry() {
                               e.stopPropagation();
                               setCategoriesSheetOpen(true);
                             }}
-                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-2 rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
                                 selectedCategories.length === 0 
                                   ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                   : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -1936,7 +2024,7 @@ export default function PostEnquiry() {
                                     <div 
                                       className={`flex items-center space-x-4 p-4 min-h-[64px] rounded-xl transition-all duration-200 ${
                                         isSelected 
-                                          ? 'bg-gradient-to-r from-black/5 to-black/10 border-2 border-black/20 shadow-sm' 
+                                          ? 'bg-white border-[5px] border-black shadow-lg' 
                                           : isDisabled 
                                             ? 'opacity-40' 
                                             : 'hover:bg-gray-50 active:bg-gray-100 border-2 border-transparent'
@@ -1952,25 +2040,28 @@ export default function PostEnquiry() {
                                               handleCategoryToggle(cat.value);
                                             }
                                           }}
-                                          className={`h-5 w-5 border-2 rounded-md transition-all duration-200 [&>span>svg]:h-3.5 [&>span>svg]:w-3.5 pointer-events-auto ${
+                                          className={`h-7 w-7 border-[3px] rounded-md transition-all duration-200 [&>span>svg]:h-4.5 [&>span>svg]:w-4.5 pointer-events-auto ${
                                             isSelected
                                               ? 'border-black bg-black data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
                                               : 'border-gray-400 data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
                                           }`}
                                         />
                                       </div>
-                                    <Label
-                                      htmlFor={`mobile-${cat.value}`}
-                                      className={`text-base font-medium flex-1 cursor-pointer select-none ${
-                                          isDisabled 
-                                            ? 'text-slate-400 cursor-not-allowed' 
-                                            : isSelected
-                                              ? 'text-black font-semibold'
-                                              : 'text-slate-700'
-                                        }`}
-                                      >
-                                        {cat.label}
-                                      </Label>
+                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`mobile-${cat.value}`}
+                                        className={`text-base font-medium flex-1 cursor-pointer select-none ${
+                                            isDisabled 
+                                              ? 'text-slate-400 cursor-not-allowed' 
+                                              : isSelected
+                                                ? 'text-black font-semibold'
+                                                : 'text-slate-700'
+                                          }`}
+                                        >
+                                          {cat.label}
+                                        </Label>
+                                        {(() => { const Icon = categoryIcons[cat.value]; return Icon ? <Icon className="h-5 w-5 flex-shrink-0 [&>path]:fill-black [&>path]:stroke-black" style={{color:'black'}} /> : null; })()}
+                                      </div>
                                       </div>
                                       {isService && (
                                         <div className="px-4 py-3">
@@ -2000,7 +2091,7 @@ export default function PostEnquiry() {
                               <Button
                                 type="button"
                                 variant="outline"
-                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border rounded-xl transition-all duration-200 font-medium relative ${
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-2 rounded-xl transition-all duration-200 font-medium relative ${
                                   selectedCategories.length === 0 
                                     ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
                                     : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
@@ -2066,9 +2157,11 @@ export default function PostEnquiry() {
                                 return (
                                   <div key={cat.value}>
                                   <div 
-                                    className={`flex items-center space-x-2 p-3 sm:p-3 hover:bg-slate-50 min-h-[44px] touch-manipulation ${
-                                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 min-h-[44px] touch-manipulation ${
+                                      isSelected 
+                                        ? 'bg-white border-[5px] border-black rounded-xl shadow-lg' 
+                                        : 'hover:bg-slate-50 border-2 border-transparent rounded-xl'
+                                    } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={(e) => {
                                       if (!isDisabled) {
                                         e.stopPropagation();
@@ -2085,17 +2178,20 @@ export default function PostEnquiry() {
                                             handleCategoryToggle(cat.value);
                                           }
                                         }}
-                                      className="h-3 w-3 border-2 border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
+                                      className="h-4 w-4 border-[2.5px] border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
                                       />
-                                    <Label
-                                      htmlFor={cat.value}
-                                      className={`text-sm sm:text-sm flex-1 cursor-pointer ${
-                                        isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
-                                      }`}
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {cat.label}
-                                    </Label>
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={cat.value}
+                                        className={`text-sm sm:text-sm flex-1 cursor-pointer ${
+                                          isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
+                                        }`}
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        {cat.label}
+                                      </Label>
+                                      {(() => { const Icon = categoryIcons[cat.value]; return Icon ? <Icon className="h-3.5 w-3.5 flex-shrink-0 [&>path]:fill-black [&>path]:stroke-black" style={{color:'black'}} /> : null; })()}
+                                    </div>
                                     </div>
                                     {isService && (
                                       <div className="px-3 py-2">
@@ -2139,7 +2235,7 @@ export default function PostEnquiry() {
                         }}
                         rows={5}
                         maxLength={500}
-                        className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        className="border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                         style={{ fontSize: '16px' }}
                         required
                       />
@@ -2147,7 +2243,7 @@ export default function PostEnquiry() {
                         {description.length}/500 characters
                       </p>
                       {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                     </div>
                   </div>
 
@@ -2166,7 +2262,7 @@ export default function PostEnquiry() {
                         <div key={index} className="relative">
                           <label
                             htmlFor={`reference-image-${index}`}
-                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-[0.5px] border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
                               referenceImageUrls[index]
                                 ? 'border-green-300 bg-green-50 hover:border-green-400'
                                 : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
@@ -2262,12 +2358,12 @@ export default function PostEnquiry() {
                               setBudget('₹' + e.target.value);
                             }
                           }}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
 
@@ -2284,12 +2380,12 @@ export default function PostEnquiry() {
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                         
                         {/* AI Location Suggestions Dropdown - Enhanced */}
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
@@ -2333,37 +2429,17 @@ export default function PostEnquiry() {
                         <Textarea
                           id="notes"
                           placeholder="Additional requirements or preferences..."
-                          className="border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          className="border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           value={notes}
                           onChange={(e) => setNotes(e.target.value)}
                           rows={4}
                           style={{ fontSize: '16px' }}
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
                   </div>
-
-                  {/* Form Progress Indicator */}
-                  <div className="pt-4 space-y-3 border-4 border-black bg-white rounded-lg p-4 transition-all">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xs sm:text-sm font-semibold text-black">Form Completion</h3>
-                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-600' : 'text-black'}`}>
-                        {Math.round(formProgress)}% Complete
-                      </span>
-                    </div>
-                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
-                      <div 
-                        className={`h-full transition-all ${formProgress === 100 ? 'bg-green-600' : 'bg-[#800020]'}`}
-                        style={{ width: `${formProgress}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] sm:text-xs text-black">
-                      Fill in all required & click submit
-                    </p>
-                  </div>
-
                   {/* Payment Plan Selection - Enhanced Professional Design */}
                   <div className="space-y-4 sm:space-y-5">
                     {/* PRO PLAN ACTIVE BADGE - KEPT FOR FUTURE UPDATES */}
@@ -2598,7 +2674,7 @@ export default function PostEnquiry() {
                             }
                             setIdVerificationResult(null);
                           }} disabled={verifyingId}>
-                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
                               <SelectValue placeholder="Select ID Type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -2650,11 +2726,11 @@ export default function PostEnquiry() {
                                     validateIdNumber(value, govIdType);
                                   }
                             }}
-                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                                className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
                             disabled={verifyingId}
                           />
                           {/* Physical button depth effect */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                         </div>
                             {errors.govIdNumber && !idVerificationResult && (
                           <span className="text-xs text-red-500 flex items-center">
