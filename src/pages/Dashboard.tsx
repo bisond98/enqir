@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -108,6 +108,7 @@ const Dashboard = () => {
   const [sellListings, setSellListings] = useState<SellListing[]>([]);
   const [sellResponses, setSellResponses] = useState<SellListingResponse[]>([]);
   const [sellListingsReady, setSellListingsReady] = useState(false);
+  const [interestListings, setInterestListings] = useState<SellListing[]>([]);
   const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1005,6 +1006,52 @@ const Dashboard = () => {
       }
     };
     load();
+    return () => { cancelled = true; };
+  }, [user?.uid]);
+
+  // Fetch listings the user has messaged about (interest listings)
+  useEffect(() => {
+    if (!user?.uid) return;
+    let cancelled = false;
+    const loadInterestListings = async () => {
+      try {
+        // Get all chat messages where user is the buyer (senderId = user.uid and enquiryId starts with sell_listing_)
+        const chatQuery = query(
+          collection(db, "chatMessages"),
+          where("senderId", "==", user.uid)
+        );
+        const chatSnap = await getDocs(chatQuery);
+        
+        // Extract unique listing IDs from sell_listing_ chats
+        const listingIds = new Set<string>();
+        chatSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.enquiryId && data.enquiryId.startsWith("sell_listing_")) {
+            const listingId = data.enquiryId.replace("sell_listing_", "");
+            listingIds.add(listingId);
+          }
+        });
+        
+        if (listingIds.size === 0) {
+          if (!cancelled) setInterestListings([]);
+          return;
+        }
+        
+        // Fetch listing details for each unique ID
+        const listings: SellListing[] = [];
+        for (const lid of listingIds) {
+          const listingDoc = await getDoc(doc(db, "sell_listings", lid));
+          if (listingDoc.exists() && listingDoc.data().status === "live") {
+            listings.push({ id: listingDoc.id, ...listingDoc.data() } as SellListing);
+          }
+        }
+        
+        if (!cancelled) setInterestListings(listings);
+      } catch (err) {
+        console.error("Failed to load interest listings:", err);
+      }
+    };
+    loadInterestListings();
     return () => { cancelled = true; };
   }, [user?.uid]);
 
@@ -2589,58 +2636,68 @@ const Dashboard = () => {
           </Card>
           )}
 
-          {/* Quick Actions Card - Hidden in Listings view */}
-          {viewMode !== 'listings' && (
+          {/* Interest Listings Card - Only in buyer view */}
+          {viewMode === 'buyer' && interestListings.length > 0 && (
           <Card className="border-[0.5px] border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
-            {/* Header Section - Matching Dashboard Header */}
             <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
               <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
-                {/* Header Section with Title - Centered */}
                 <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
                   <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                    <Activity className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                    Quick Actions
+                    <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                    Your Interests
                   </h2>
                 </div>
-                
-                {/* Content Card - Black Background */}
                 <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                   <div className="text-center">
                     <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
-                      in case you changed your mind
+                      Products you messaged the seller about
                     </p>
                   </div>
                 </div>
               </div>
             </div>
             
-            <CardContent className="p-6 sm:p-8 lg:p-6">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-4 items-stretch sm:items-stretch justify-center max-w-4xl mx-auto">
-                <Link to="/post-enquiry" className="group flex-1 w-full">
-                  <button className="w-full h-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-black" />
-                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10 text-black">Make a wish</span>
-                  </button>
-                </Link>
-                
-                <Link to="/enquiries" className="group flex-1 w-full">
-                  <button className="w-full h-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white font-black py-3.5 sm:py-4 lg:py-4 px-4 sm:px-5 lg:px-5 rounded-xl sm:rounded-2xl lg:rounded-xl flex items-center justify-center gap-2 sm:gap-2.5 lg:gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-700 hover:to-blue-800 min-h-[48px] lg:min-h-[52px] relative overflow-hidden">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl lg:rounded-xl pointer-events-none" />
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 lg:h-5 lg:w-5 flex-shrink-0 group-hover:scale-110 transition-transform relative z-10 text-white" />
-                    <span className="text-sm sm:text-base lg:text-sm font-black tracking-tight whitespace-nowrap relative z-10">Be the well paid genie</span>
-                  </button>
-                </Link>
+            <CardContent className="p-4 sm:p-6 lg:p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {interestListings.map((listing) => (
+                  <Link
+                    key={listing.id}
+                    to={`/sell/listing/${listing.id}`}
+                    className="block border border-black/10 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                  >
+                    {listing.images && listing.images[0] && (
+                      <div className="h-32 sm:h-36 overflow-hidden bg-gray-100">
+                        <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-black truncate">{listing.title}</h3>
+                          <p className="text-xs font-bold text-black mt-1">
+                            {listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
+                          </p>
+                        </div>
+                        <Link
+                          to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                        >
+                          <MessageSquare className="h-3.5 w-3.5 text-white" />
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-1 mt-1.5">
+                        <span className="text-[10px] text-gray-500 flex items-center gap-0.5">
+                          <MapPin className="h-2.5 w-2.5" />{listing.location}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </CardContent>
           </Card>
-          )}
+          )}          )}
         </div>
 
         {/* Listings View - Seller Dashboard Data */}
