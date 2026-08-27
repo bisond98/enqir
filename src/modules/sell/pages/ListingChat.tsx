@@ -15,7 +15,7 @@ import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phon
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, onSnapshot, updateDoc, doc as firestoreDoc } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
@@ -119,20 +119,7 @@ export default function ListingChat() {
       const docs = snap.docs.filter(d => {
         const data = d.data() as any;
         if (data.enquiryId !== listingEnquiryId) return false;
-        // Fast path: correct chatId → include immediately
-        if (data.chatId === chatId) return true;
-        // Messages from this buyer to anyone → always show
-        if (data.senderId === buyerId) return true;
-        // If listing loaded, seller messages to this buyer → show
-        if (listing && data.senderId === listing.sellerId && data.recipientId === buyerId) {
-          // Backfill correct chatId
-          const correctChatId = `sell_${id}_${buyerId}`;
-          if (data.chatId !== correctChatId) {
-            updateDoc(firestoreDoc(db, 'chatMessages', d.id), { chatId: correctChatId }).catch(() => {});
-          }
-          return true;
-        }
-        return false;
+        return data.sellerId === buyerId;
       });
       const msgs = docs
         .map(d => ({ id: d.id, ...d.data() } as ChatMessage))
@@ -145,7 +132,7 @@ export default function ListingChat() {
       setTimeout(() => chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight }), 100);
     });
     return () => unsub();
-  }, [id, buyerId, listing?.sellerId]);
+  }, [id, buyerId]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
