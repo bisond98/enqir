@@ -1014,7 +1014,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                       isActive(item.path)
                         ? "text-pal-blue bg-pal-blue/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -1035,7 +1035,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                       showActionMenu
                         ? "text-pal-blue bg-pal-blue/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
                     <Icon className="h-8 w-8" />
@@ -1047,7 +1047,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 ${
                       isActive(item.path)
                         ? "text-pal-blue bg-pal-blue/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -1069,7 +1069,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
                 isActive("/settings")
                   ? "text-pal-blue bg-pal-blue/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  : "text-gray-900 hover:text-black hover:bg-gray-100"
               }`}
             >
               <Settings className="h-5 w-5" />
