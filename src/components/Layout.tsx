@@ -1083,7 +1083,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
       {showActionMenu && (
         <>
           <div className="fixed inset-0 z-[49]" onClick={() => setShowActionMenu(false)} />
-          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex gap-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex gap-6 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => {
                 setShowActionMenu(false);
@@ -1093,12 +1093,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/post-enquiry");
                 }
               }}
-              className="flex flex-col items-center gap-1.5"
+              className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
             >
-              <div className="w-14 h-14 bg-white rounded-full shadow-lg border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95">
-                <span className="text-2xl font-black text-black">₹</span>
-              </div>
-              <span className="text-[11px] font-bold text-black bg-white px-2 py-0.5 rounded-full shadow-md border border-black">Buy</span>
+              <span className="text-sm font-black text-white">Buy</span>
             </button>
             <button
               onClick={() => {
@@ -1109,12 +1106,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="flex flex-col items-center gap-1.5"
+              className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-full shadow-xl border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
             >
-              <div className="w-14 h-14 bg-white rounded-full shadow-lg border-2 border-black flex items-center justify-center hover:scale-110 transition-transform active:scale-95">
-                <span className="text-2xl font-black text-black">₹</span>
-              </div>
-              <span className="text-[11px] font-bold text-black bg-white px-2 py-0.5 rounded-full shadow-md border border-black">Sell</span>
+              <span className="text-sm font-black text-white">Sell</span>
             </button>
           </div>
         </>
