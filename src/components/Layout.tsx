@@ -638,7 +638,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const navigationItems = [
     { path: "/enquiries", label: "Sell", icon: Search },
     { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
-    { path: "/post-enquiry", label: "Post Enquiry", icon: Plus },
+    { path: "/post-enquiry", label: "Post Enquiry", icon: Plus, iconOnly: true },
     { path: "/profile", label: "Profile", icon: User },
   ];
 
@@ -1026,14 +1026,14 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 ${
+                  className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 ${
                     isActive(item.path)
                       ? "text-pal-blue bg-pal-blue/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                  <Icon className={`${(item as any).iconOnly ? 'h-7 w-7' : 'h-5 w-5'}`} />
+                  {!(item as any).iconOnly && <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>}
                 </Link>
               );
             })}
