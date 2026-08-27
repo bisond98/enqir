@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.freebuff.preview</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>export PATH="/usr/local/bin:$PATH" && cd "/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7" && exec /usr/local/bin/node node_modules/.bin/vite --host localhost --port 8083</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7</string>
+    <key>StandardOutPath</key>
+    <string>/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/.freebuff/preview-440511bb-2df7-4ce9-afa6-a71846395b07.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/.freebuff/preview-440511bb-2df7-4ce9-afa6-a71846395b07.log</string>
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>

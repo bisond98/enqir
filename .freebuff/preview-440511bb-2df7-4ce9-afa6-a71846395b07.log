@@ -1,0 +1,12 @@
+Forced re-optimization of dependencies
+Port 8083 is in use, trying another one...
+
+  VITE v5.4.19  ready in 89 ms
+
+  ➜  Local:   http://localhost:8084/
+Browserslist: browsers data (caniuse-lite) is 22 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+warn - The class `ease-[cubic-bezier(0.16,1,0.3,1)]` is ambiguous and matches multiple utilities.
+warn - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.16,1,0.3,1)&rsqb;` to silence this warning.
