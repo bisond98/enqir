@@ -851,7 +851,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     </motion.div>
                   );
                 })}
-                {/* Sell for Sale button */}
+                {/* For Sale button */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -866,7 +866,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     }`}
                   >
                     <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                    <span className="truncate">Sell for Sale</span>
+                    <span className="truncate">For Sale</span>
                   </Link>
                 </motion.div>
               </nav>

@@ -231,17 +231,32 @@ export default function CreateListing() {
     }
   };
 
+  const scrollToInput = () => {
+    requestAnimationFrame(() => {
+      const card = document.querySelector('[class*="CardContent"]') || document.querySelector('.min-h-\\[320px\\]');
+      if (!card) return;
+      const input = card.querySelector('input:not([type=file]), textarea');
+      if (input) {
+        const rect = input.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + rect.top - 60, behavior: 'smooth' });
+      } else {
+        const title = document.getElementById('step-title');
+        if (title) title.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  };
+
   const goNext = () => {
     if (!canAdvanceFromStep(step)) return;
     setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    scrollToInput();
   };
 
   const goBack = () => {
     setAnimDir('down');
     setStep((prev) => Math.max(prev - 1, 0));
-    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    scrollToInput();
   };
 
   const publish = async () => {
@@ -347,7 +362,7 @@ export default function CreateListing() {
         <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
           <StepIcon active />
 
-          <div className="text-center mb-6">
+          <div id="step-title" className="text-center mb-6">
             <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
           </div>
