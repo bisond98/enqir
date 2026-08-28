@@ -272,13 +272,17 @@ export default function Marketplace() {
                 </div>
                 <p className="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{l.description}</p>
                 <div className="flex items-center gap-2 mt-1.5">
+                  {l.condition && (
+                    <span className="text-[9px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                      {l.condition}
+                    </span>
+                  )}
                   <span className="text-[9px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
                     {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                   </span>
                   <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
                     <MapPin className="h-2.5 w-2.5" />{l.location}
                   </span>
-
                 </div>
                 {l.tags?.length > 0 && (
                   <div className="flex items-center gap-1 mt-1 flex-wrap">

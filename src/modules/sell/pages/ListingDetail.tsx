@@ -44,8 +44,7 @@ export default function ListingDetail() {
         const l = await getListing(id);
         setListing(l);
         if (l) {
-          const r = await listResponsesForListing(l.id);
-          setResponses(r);
+          listResponsesForListing(l.id).then(setResponses);
         }
       } finally {
         setLoading(false);
@@ -189,25 +188,10 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-lg sm:text-xl font-bold text-black leading-snug">{listing.title}</h2>
-              <div className="flex items-center gap-1.5 mt-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price ? listing.price.toLocaleString("en-IN") : "—"}</span>
+              <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left">{listing.title}</h2>
+              <div className="w-full text-center mt-2">
+                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               </div>
-            </div>
-
-            {/* Info Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 mb-3">
-              {listing.condition && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md uppercase">
-                  {listing.condition}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
-                <Tag className="h-2.5 w-2.5" />{listing.category}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
-                <MapPin className="h-3 w-3 text-red-500 fill-red-500" />{listing.location}
-              </span>
             </div>
 
             {/* Description */}
@@ -217,15 +201,29 @@ export default function ListingDetail() {
               </div>
             )}
 
-            {/* Tags */}
-            {listing.tags && listing.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {listing.tags.map((tag) => (
-                  <span key={tag} className="text-[10px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{tag}</span>
-                ))}
-              </div>
-            )}
           </div>
+        </div>
+
+        {/* Info Chips - above Message Seller */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {listing.condition && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md uppercase">
+              {listing.condition}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+            <Tag className="h-2.5 w-2.5" />{listing.category}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+            <MapPin className="h-3 w-3" />{listing.location}
+          </span>
+          {listing.tags && listing.tags.length > 0 && (
+            listing.tags.map((tag) => (
+              <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+                {tag}
+              </span>
+            ))
+          )}
         </div>
 
         {/* Message Seller Card */}
