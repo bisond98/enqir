@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
-import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun } from "lucide-react";
+import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Footer from "./Footer";
 import AIChatbot from "./AIChatbot";
@@ -860,6 +860,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <>
                   {/* Desktop-only buttons */}
                   <div className="hidden md:flex items-center gap-1 md:gap-1.5 flex-shrink-0 overflow-hidden">
+                  <Link to="/sell/new">
+                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
+                      <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
+                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Sell</span>
+                    </Button>
+                  </Link>
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
                       <div className="relative">
