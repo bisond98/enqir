@@ -233,15 +233,11 @@ export default function CreateListing() {
 
   const scrollToInput = () => {
     requestAnimationFrame(() => {
-      const card = document.querySelector('[class*="CardContent"]') || document.querySelector('.min-h-\\[320px\\]');
-      if (!card) return;
-      const input = card.querySelector('input:not([type=file]), textarea');
-      if (input) {
-        const rect = input.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + rect.top - 60, behavior: 'smooth' });
+      const title = document.getElementById('step-title');
+      if (title) {
+        title.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
-        const title = document.getElementById('step-title');
-        if (title) title.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   };
