@@ -412,7 +412,7 @@ export default function CreateListing() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
-                  className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                  className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
                   maxLength={120}
                   autoFocus
                 />
@@ -430,7 +430,7 @@ export default function CreateListing() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Condition, accessories, warranty, reason for selling…"
-                  className="min-h-[160px] sm:min-h-[180px] text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 resize-y"
+                  className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                   autoFocus
                 />
               </div>
@@ -453,7 +453,7 @@ export default function CreateListing() {
                     onFocus={() => setLocationDropdownOpen(true)}
                     onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
                     placeholder="Search location..."
-                    className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-10 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 relative z-10"
+                    className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
                     style={{ fontSize: '16px' }}
                   />
                   {locationDropdownOpen && locationSearch.length === 0 && (
@@ -592,7 +592,7 @@ export default function CreateListing() {
                         onChange={(e) => setPrice(formatPriceInput(e.target.value))}
                         placeholder="25,000"
                         inputMode="decimal"
-                        className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-8 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
+                        className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                         autoFocus
                       />
                     </div>
@@ -608,7 +608,7 @@ export default function CreateListing() {
                           onChange={(e) => setPriceMin(formatPriceInput(e.target.value))}
                           placeholder="20,000"
                           inputMode="decimal"
-                          className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-7 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
+                          className="rounded-2xl h-12 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-7 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
                           autoFocus
                         />
                       </div>
@@ -622,7 +622,7 @@ export default function CreateListing() {
                           onChange={(e) => setPriceMax(formatPriceInput(e.target.value))}
                           placeholder="30,000"
                           inputMode="decimal"
-                          className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-7 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
+                          className="rounded-2xl h-12 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-7 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
                         />
                       </div>
                     </div>
@@ -642,7 +642,7 @@ export default function CreateListing() {
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                     placeholder="apple, warranty, charger…"
-                    className="h-11 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    className="rounded-2xl h-11 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
                   />
                   {parsedTags.length > 0 && (
                     <p className="text-[11px] text-slate-600">
