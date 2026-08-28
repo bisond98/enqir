@@ -233,9 +233,10 @@ export default function CreateListing() {
 
   const scrollToInput = () => {
     requestAnimationFrame(() => {
-      const title = document.getElementById('step-title');
-      if (title) {
-        title.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const el = document.getElementById('step-top');
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + rect.top - 20, behavior: 'smooth' });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -356,7 +357,9 @@ export default function CreateListing() {
         </CardHeader>
 
         <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
-          <StepIcon active />
+          <div id="step-top">
+            <StepIcon active />
+          </div>
 
           <div id="step-title" className="text-center mb-6">
             <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
