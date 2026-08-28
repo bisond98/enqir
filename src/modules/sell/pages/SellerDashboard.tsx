@@ -9,7 +9,9 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard } from 'lucide-react';
+import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned } from 'lucide-react';
+import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
+import type { ListingCondition, ListingPriceType } from '../types';
 
 export default function SellerDashboard() {
   const { user } = useAuth();
@@ -21,6 +23,16 @@ export default function SellerDashboard() {
   const [editDescription, setEditDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'listings' | 'responses'>('listings');
+  const [editCategory, setEditCategory] = useState('');
+  const [editLocation, setEditLocation] = useState('');
+  const [editCondition, setEditCondition] = useState<ListingCondition>('used');
+  const [editPriceType, setEditPriceType] = useState<ListingPriceType>('fixed');
+  const [editPrice, setEditPrice] = useState('');
+  const [editPriceMin, setEditPriceMin] = useState('');
+  const [editPriceMax, setEditPriceMax] = useState('');
+  const [editTags, setEditTags] = useState('');
+  const [locationSearch, setLocationSearch] = useState('');
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
 
   const load = async () => {
     if (!user) return;
@@ -42,14 +54,35 @@ export default function SellerDashboard() {
     setEditingId(l.id);
     setEditTitle(l.title ?? '');
     setEditDescription(l.description ?? '');
+    setEditCategory(l.category ?? 'other');
+    setEditLocation(l.location ?? '');
+    setEditCondition(l.condition ?? 'used');
+    setEditPriceType(l.priceType ?? 'fixed');
+    setEditPrice(l.price != null ? String(l.price) : '');
+    setEditPriceMin(l.priceMin != null ? String(l.priceMin) : '');
+    setEditPriceMax(l.priceMax != null ? String(l.priceMax) : '');
+    setEditTags(l.tags?.join(', ') ?? '');
+    setLocationSearch(l.location ?? '');
+    setLocationDropdownOpen(false);
   };
 
   const saveEdit = async () => {
     if (!editingId) return;
     setSaving(true);
     try {
-      await updateListing(editingId, { title: editTitle.trim(), description: editDescription.trim() } as any);
-      toast({ title: 'Saved', description: 'Listing updated.' });
+      await updateListing(editingId, {
+        title: editTitle.trim(),
+        description: editDescription.trim(),
+        category: editCategory,
+        location: editLocation.trim(),
+        condition: editCondition,
+        priceType: editPriceType,
+        price: editPrice ? Number(editPrice.replace(/[^0-9]/g, '')) : null,
+        priceMin: editPriceType === 'range' && editPriceMin ? Number(editPriceMin.replace(/[^0-9]/g, '')) : null,
+        priceMax: editPriceType === 'range' && editPriceMax ? Number(editPriceMax.replace(/[^0-9]/g, '')) : null,
+        tags: editTags.split(',').map(t => t.trim()).filter(Boolean).slice(0, 15),
+      } as any);
+      toast({ title: 'Saved', description: 'Listing updated.', variant: 'success' });
       setEditingId(null);
       await load();
     } catch {
@@ -63,7 +96,7 @@ export default function SellerDashboard() {
     if (!confirm('Delete this listing?')) return;
     try {
       await softDeleteListing(id);
-      toast({ title: 'Deleted', description: 'Listing removed.' });
+      toast({ title: 'Deleted', description: 'Listing removed.', variant: 'success' });
       await load();
     } catch {
       toast({ title: 'Failed', description: 'Could not delete listing.', variant: 'destructive' });
@@ -160,18 +193,183 @@ export default function SellerDashboard() {
           {!loading && listings.map((l) => (
             <div key={l.id} className="border border-black rounded-2xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
               {editingId === l.id ? (
-                <div className="p-4 space-y-3">
-                  <Input
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="h-10 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)]"
-                  />
-                  <Textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    className="text-sm border border-black rounded-none min-h-[80px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)]"
-                  />
-                  <div className="flex gap-2">
+                <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
+                  {/* Title */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Title</label>
+                    <Input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className="h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                    />
+                  </div>
+                  {/* Description */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Description</label>
+                    <Textarea
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      className="text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl min-h-[80px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                    />
+                  </div>
+                  {/* Category */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Category</label>
+                    <select
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      className="w-full h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-white px-3 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-300"
+                    >
+                      {SELL_CATEGORIES.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Location */}
+                  <div className="relative">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Location</label>
+                    <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                      <span className="flex items-center justify-center pl-3 text-black"><MapPin className="h-4 w-4" /></span>
+                      <input
+                        type="text"
+                        value={locationSearch}
+                        onChange={(e) => {
+                          setLocationSearch(e.target.value);
+                          setLocationDropdownOpen(true);
+                          setEditLocation(e.target.value);
+                        }}
+                        onFocus={() => setLocationDropdownOpen(true)}
+                        placeholder="Search location..."
+                        className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none placeholder:text-gray-400"
+                      />
+                    </div>
+                    {locationDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.15)] max-h-48 overflow-y-auto">
+                        {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
+                          SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
+                            <button
+                              key={loc}
+                              onClick={() => {
+                                setEditLocation(loc);
+                                setLocationSearch(loc);
+                                setLocationDropdownOpen(false);
+                              }}
+                              className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors"
+                            >
+                              {loc}
+                            </button>
+                          ))
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setEditLocation(locationSearch);
+                              setLocationDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors text-gray-500 italic"
+                          >
+                            Use "{locationSearch}"
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* Condition */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Condition</label>
+                    <div className="flex gap-2">
+                      {(['new', 'used'] as ListingCondition[]).map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setEditCondition(c)}
+                          className={`flex-1 h-10 text-xs font-bold border-2 rounded-xl transition-all ${
+                            editCondition === c
+                              ? 'border-[4px] border-black bg-black text-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]'
+                              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                          }`}
+                        >
+                          {c === 'new' ? 'New' : 'Used'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Price Type */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price Type</label>
+                    <div className="flex gap-2">
+                      {(['fixed', 'range'] as ListingPriceType[]).map((pt) => (
+                        <button
+                          key={pt}
+                          onClick={() => setEditPriceType(pt)}
+                          className={`flex-1 h-10 text-xs font-bold border-2 rounded-xl transition-all ${
+                            editPriceType === pt
+                              ? 'border-[4px] border-black bg-black text-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]'
+                              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                          }`}
+                        >
+                          {pt === 'fixed' ? 'Fixed Price' : 'Price Range'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Price */}
+                  {editPriceType === 'fixed' ? (
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price (₹)</label>
+                      <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                        <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={editPrice}
+                          onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
+                          placeholder="0"
+                          className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Min (₹)</label>
+                        <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                          <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={editPriceMin}
+                            onChange={(e) => setEditPriceMin(e.target.value.replace(/[^0-9]/g, ''))}
+                            placeholder="0"
+                            className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Max (₹)</label>
+                        <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                          <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={editPriceMax}
+                            onChange={(e) => setEditPriceMax(e.target.value.replace(/[^0-9]/g, ''))}
+                            placeholder="0"
+                            className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Tags */}
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Tags (comma separated)</label>                        <Input
+                          value={editTags}
+                          onChange={(e) => setEditTags(e.target.value)}
+                          placeholder="e.g. urgent, wholesale, negotiable"
+                          className="h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                        />
+                  </div>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-1">
                     <Button className="flex-1 bg-black text-white border border-black font-black text-xs rounded-xl shadow-[0_3px_0_0_rgba(0,0,0,0.2)]" onClick={saveEdit} disabled={saving}>
                       <Save className="h-3 w-3 mr-1.5" />{saving ? 'Saving…' : 'Save'}
                     </Button>

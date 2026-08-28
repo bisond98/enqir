@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SellShell from '../components/SellShell';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -91,6 +91,14 @@ export default function CreateListing() {
       .filter(Boolean)
       .slice(0, 15);
   }, [tags]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    if (isPublished) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [isPublished]);
 
   if (!user) {
     return (
@@ -227,13 +235,13 @@ export default function CreateListing() {
     if (!canAdvanceFromStep(step)) return;
     setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
   };
 
   const goBack = () => {
     setAnimDir('down');
     setStep((prev) => Math.max(prev - 1, 0));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
   };
 
   const publish = async () => {
@@ -613,8 +621,7 @@ export default function CreateListing() {
               <div className="max-w-lg mx-auto w-full space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="tags" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
-                    <Tag className="h-3.5 w-3.5" />
-                    Tags (comma separated)
+                    <Tag className="h-3.5 w-3.5" />                     Tags
                   </Label>
                   <Input
                     id="tags"

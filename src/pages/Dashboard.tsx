@@ -2793,7 +2793,7 @@ const Dashboard = () => {
                                   <span className="text-[10px] sm:text-xs font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-200">{listingResponses.length} response{listingResponses.length !== 1 ? 's' : ''}</span>
                                 )}
                                 {listing.category && (
-                                  <span className="text-[10px] sm:text-xs font-bold text-violet-700 bg-violet-50 px-3 py-1 rounded-full border border-violet-200 capitalize">{listing.category}</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-black bg-white px-3 py-1 rounded-full border border-black capitalize">{listing.category}</span>
                                 )}
                                 <span className={`text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full capitalize ${
                                   listing.status === 'live' ? 'text-green-700 bg-green-50 border border-green-200' : 'text-gray-500 bg-gray-50 border border-gray-200'
