@@ -21,22 +21,28 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const returnTo = sessionStorage.getItem('returnAfterSignIn');
   
   // STRICT: Redirect if user is already signed in AND verified - check both AuthContext and Firebase directly
   useEffect(() => {
+    const redirectTo = returnTo || '/dashboard';
     // Check AuthContext user first - only redirect if email is verified
     if (user && !authLoading && user.emailVerified) {
-      console.log('✅ SignIn: User already authenticated and verified, redirecting to dashboard');
-      navigate('/dashboard', { replace: true });
+      console.log('✅ SignIn: User already authenticated and verified, redirecting to', redirectTo);
+      sessionStorage.removeItem('returnAfterSignIn');
+      navigate(redirectTo, { replace: true });
       return;
     }
     
     // Also check Firebase auth state directly for immediate detection on refresh
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       // Only redirect if user is verified
+      const savedReturnTo = sessionStorage.getItem('returnAfterSignIn');
+      const dest = savedReturnTo || redirectTo;
       if (firebaseUser && firebaseUser.emailVerified && !authLoading) {
-        console.log('✅ SignIn: Firebase user detected and verified, redirecting to dashboard');
-        navigate('/dashboard', { replace: true });
+        console.log('✅ SignIn: Firebase user detected and verified, redirecting to', dest);
+        sessionStorage.removeItem('returnAfterSignIn');
+        navigate(dest, { replace: true });
       }
     });
     
@@ -188,7 +194,12 @@ const SignIn = () => {
       
       if (!result.error) {
         setLoading(false);
-        navigate("/");
+        const savedReturn = sessionStorage.getItem('returnAfterSignIn');
+        if (savedReturn) {
+          sessionStorage.removeItem('returnAfterSignIn');
+          window.location.href = savedReturn;
+          return;
+        }
       } else {
         // Use friendly error message instead of raw Firebase error
         const friendlyMessage = getFriendlyErrorMessage(result.error);

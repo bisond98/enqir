@@ -189,10 +189,9 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-base sm:text-lg font-bold text-black leading-snug text-center">{listing.title}</h2>
-              <div className="flex items-baseline justify-center gap-1 mt-1.5">
-                <IndianRupee className="h-4 w-4 text-black" />
-                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.price ? listing.price.toLocaleString("en-IN") : "—"}</span>
+              <h2 className="text-lg sm:text-xl font-bold text-black leading-snug">{listing.title}</h2>
+              <div className="flex items-center gap-1.5 mt-2">
+                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price ? listing.price.toLocaleString("en-IN") : "—"}</span>
               </div>
             </div>
 
@@ -231,7 +230,7 @@ export default function ListingDetail() {
 
         {/* Message Seller Card */}
         {!isOwner && (
-          <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+          <div id="message-seller" className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
             <div className="bg-black p-3">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-white" />
@@ -241,7 +240,7 @@ export default function ListingDetail() {
             </div>
             <div className="p-4 space-y-3">
               <div>
-                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Offered Price (optional)</Label>
+                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
                   <Input
@@ -249,33 +248,28 @@ export default function ListingDetail() {
                     onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="e.g., 15,000"
                     inputMode="numeric"
-                    className="h-10 sm:h-11 text-sm border border-black rounded-none bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
+                    className="h-10 sm:h-11 text-sm border-[1.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Message (optional)</Label>
+                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Chat with Seller</Label>
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Write your message to the seller…"
                   rows={3}
-                  className="text-sm border border-black rounded-none min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-2 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
+                  className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
                 />
               </div>
               <Button
-                className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-50"
-                onClick={submitResponse}
-                disabled={!user || sending}
+                className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+                onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
+                disabled={sending}
               >
                 <Send className="h-4 w-4 mr-2" />
                 {user ? (sending ? 'Sending…' : 'Send Message') : 'Sign in to message'}
               </Button>
-              {!user && (
-                <p className="text-[10px] text-gray-400 text-center">
-                  <Link to="/signin" className="underline font-bold text-black">Sign in</Link> to contact the seller.
-                </p>
-              )}
             </div>
           </div>
         )}
