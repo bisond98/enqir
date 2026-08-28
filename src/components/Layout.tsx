@@ -851,6 +851,24 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     </motion.div>
                   );
                 })}
+                {/* Sell for Sale button */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex-shrink-0"
+                >
+                  <Link
+                    to="/sell/new"
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 min-h-[40px] whitespace-nowrap border border-black ${
+                      isActive("/sell/new")
+                        ? "bg-gradient-to-r from-pal-blue to-blue-600 text-white shadow-md border-black"
+                        : "text-black hover:text-black hover:bg-gray-100 hover:shadow-sm"
+                    }`}
+                  >
+                    <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="truncate">Sell for Sale</span>
+                  </Link>
+                </motion.div>
               </nav>
             )}
 
@@ -860,12 +878,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <>
                   {/* Desktop-only buttons */}
                   <div className="hidden md:flex items-center gap-1 md:gap-1.5 flex-shrink-0 overflow-hidden">
-                  <Link to="/sell/new">
-                    <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black">
-                      <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
-                      <span className="hidden lg:inline text-xs sm:text-sm truncate">Sell</span>
-                    </Button>
-                  </Link>
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
                       <div className="relative">
