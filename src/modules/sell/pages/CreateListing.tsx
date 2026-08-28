@@ -84,6 +84,14 @@ export default function CreateListing() {
   const [publishing, setPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
+  const parsedTags = useMemo(() => {
+    return tags
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 15);
+  }, [tags]);
+
   if (!user) {
     return (
       <SellShell title="Sell">
@@ -122,14 +130,6 @@ export default function CreateListing() {
   const totalSteps = STEPS.length;
   const progressPct = ((step + 1) / totalSteps) * 100;
 
-  const parsedTags = useMemo(() => {
-    return tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .slice(0, 15);
-  }, [tags]);
-
   const onAddImages = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     if (images.length >= 5) {
@@ -154,6 +154,12 @@ export default function CreateListing() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const formatPriceInput = (value: string): string => {
+    const digits = value.replace(/[^\d]/g, '');
+    if (!digits) return '';
+    return parseInt(digits).toLocaleString('en-IN');
   };
 
   const validatePriceFields = (): boolean => {
@@ -556,38 +562,47 @@ export default function CreateListing() {
                       <IndianRupee className="h-3.5 w-3.5" />
                       Your price (INR)
                     </Label>
-                    <Input
-                      id="price-fixed"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      placeholder="e.g., 25000"
-                      inputMode="decimal"
-                      className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
-                      autoFocus
-                    />
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
+                      <Input
+                        id="price-fixed"
+                        value={price}
+                        onChange={(e) => setPrice(formatPriceInput(e.target.value))}
+                        placeholder="25,000"
+                        inputMode="decimal"
+                        className="h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-8 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
+                        autoFocus
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label className="text-[10px] sm:text-xs font-bold">Min (INR)</Label>
-                      <Input
-                        value={priceMin}
-                        onChange={(e) => setPriceMin(e.target.value)}
-                        placeholder="20000"
-                        inputMode="decimal"
-                        className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
-                        autoFocus
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
+                        <Input
+                          value={priceMin}
+                          onChange={(e) => setPriceMin(formatPriceInput(e.target.value))}
+                          placeholder="20,000"
+                          inputMode="decimal"
+                          className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-7 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
+                          autoFocus
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] sm:text-xs font-bold">Max (INR)</Label>
-                      <Input
-                        value={priceMax}
-                        onChange={(e) => setPriceMax(e.target.value)}
-                        placeholder="30000"
-                        inputMode="decimal"
-                        className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
+                        <Input
+                          value={priceMax}
+                          onChange={(e) => setPriceMax(formatPriceInput(e.target.value))}
+                          placeholder="30,000"
+                          inputMode="decimal"
+                          className="h-12 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-7 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
