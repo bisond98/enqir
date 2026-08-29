@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
 // Trigger Vercel deployment
@@ -24,6 +25,9 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 const Profile = () => {
   const { user: authUser } = useAuth();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const returnTo = searchParams.get('returnTo');
   const notificationContext = useContext(NotificationContext);
   const createNotification = notificationContext?.createNotification || (async () => {
     console.warn('NotificationContext not available');
@@ -620,6 +624,10 @@ const Profile = () => {
               actionUrl: '/profile',
               actionText: 'View Profile'
             });
+            // Redirect back to listing creation if coming from there
+            if (returnTo) {
+              setTimeout(() => navigate(returnTo), 1500);
+            }
           } else if (result.action === 'flagged') {
             console.log('⏳ AI: Profile flagged for manual review');
             // Create notification for manual review
@@ -630,6 +638,10 @@ const Profile = () => {
               actionUrl: '/profile',
               actionText: 'View Profile'
             });
+            // Redirect back to listing creation if coming from there
+            if (returnTo) {
+              setTimeout(() => navigate(returnTo), 1500);
+            }
           } else {
             console.log('❌ AI: Profile auto-rejected');
             // Create notification for rejection
@@ -640,6 +652,10 @@ const Profile = () => {
               actionUrl: '/profile',
               actionText: 'Try Again'
             });
+            // Redirect back to listing creation if coming from there
+            if (returnTo) {
+              setTimeout(() => navigate(returnTo), 1500);
+            }
           }
         })
         .catch((error) => {
@@ -652,6 +668,10 @@ const Profile = () => {
             actionUrl: '/profile',
             actionText: 'Try Again'
           });
+          // Redirect back even on error
+          if (returnTo) {
+            setTimeout(() => navigate(returnTo), 1500);
+          }
         });
 
       // Update local state
@@ -663,6 +683,11 @@ const Profile = () => {
         title: "ID Upload Successful!",
         description: "Your ID has been uploaded and is pending admin review. You'll get a verified badge once approved.",
       });
+
+      // Redirect back to listing creation immediately after upload
+      if (returnTo) {
+        setTimeout(() => navigate(returnTo), 1500);
+      }
 
       // Reset form
       setIdFront(null);
@@ -701,7 +726,7 @@ const Profile = () => {
                 <Button
                   variant="ghost"
                   type="button"
-                  onClick={() => window.history.back()}
+                  onClick={() => returnTo ? navigate(returnTo) : window.history.back()}
                   className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />

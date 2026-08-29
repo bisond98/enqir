@@ -10,7 +10,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle } from 'lucide-react';
+import { db } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
 
 
@@ -35,6 +37,14 @@ export default function ListingDetail() {
 
 
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
+  const [sellerProfile, setSellerProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!listing?.sellerId) return;
+    getDoc(doc(db, 'userProfiles', listing.sellerId)).then(snap => {
+      if (snap.exists()) setSellerProfile(snap.data());
+    }).catch(() => {});
+  }, [listing?.sellerId]);
 
   useEffect(() => {
     const run = async () => {
@@ -188,7 +198,12 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left">{listing.title}</h2>
+              <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left flex items-center gap-1.5">
+                {listing.title}
+                {sellerProfile?.isProfileVerified && (
+                  <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" /></span>
+                )}
+              </h2>
               <div className="w-full text-center mt-2">
                 <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               </div>
@@ -232,7 +247,11 @@ export default function ListingDetail() {
             <div className="bg-black p-3">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-white" />
-                <h3 className="text-sm font-bold text-white">Message Seller</h3>
+                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Message Seller
+                  {sellerProfile?.isProfileVerified && (
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
+                  )}
+                </h3>
                 <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
               </div>
             </div>

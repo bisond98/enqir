@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
 import {
   AlignLeft,
@@ -36,6 +36,8 @@ import {
   Type,
   Upload,
   Wrench,
+  ShieldCheck,
+  BadgeCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
@@ -57,15 +59,25 @@ const STEPS = [
   { key: 'title', label: 'Title', description: 'Name your listing' },
   { key: 'description', label: 'Description', description: 'Tell buyers more' },
   { key: 'location', label: 'Location', description: 'Where is the item?' },
-  { key: 'details', label: 'Condition & pricing', description: 'How you want to sell' },
+  { key: 'details', label: 'Condition', description: 'How you want to sell' },
   { key: 'price', label: 'Price', description: 'Set your numbers' },
   { key: 'extras', label: 'Tags & photos', description: 'Finish strong' },
 ] as const;
 
 export default function CreateListing() {
-  const { user } = useAuth();
+  const { user, isProfileVerified } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
+
+  const STORAGE_KEY = 'sell_listing_draft';
+
+  const [step, setStep] = useState(() => {
+    // If returning from profile verification, jump to last step
+    const draft = localStorage.getItem(STORAGE_KEY);
+    if (draft) return STEPS.length - 1;
+    return 0;
+  });
   const [animDir, setAnimDir] = useState<'up' | 'down'>('up');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -92,9 +104,33 @@ export default function CreateListing() {
       .slice(0, 15);
   }, [tags]);
 
+  // Restore form from localStorage if returning from profile verification
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const draft = localStorage.getItem(STORAGE_KEY);
+    if (draft) {
+      try {
+        const d = JSON.parse(draft);
+        if (d.title) setTitle(d.title);
+        if (d.description) setDescription(d.description);
+        if (d.category) setCategory(d.category);
+        if (d.location) setLocation(d.location);
+        if (d.condition) setCondition(d.condition);
+        if (d.priceType) setPriceType(d.priceType);
+        if (d.price) setPrice(d.price);
+        if (d.priceMin) setPriceMin(d.priceMin);
+        if (d.priceMax) setPriceMax(d.priceMax);
+        if (d.tags) setTags(d.tags);
+        if (d.images?.length) setImages(d.images);
+      } catch {}
+      localStorage.removeItem(STORAGE_KEY);
+      // Scroll down to publish listing button after restoring
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 300);
+    }
   }, []);
+
+  const isVerifiedOrPending = isProfileVerified;
 
   useEffect(() => {
     if (isPublished) window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -413,7 +449,7 @@ export default function CreateListing() {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
                   className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
-                  maxLength={120}
+                  maxLength={15}
                   autoFocus
                 />
                 <p className="text-[11px] text-slate-500">Keep it specific. Mention brand, model, or size if it helps.</p>
@@ -430,6 +466,7 @@ export default function CreateListing() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Condition, accessories, warranty, reason for selling…"
+                  maxLength={250}
                   className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                   autoFocus
                 />
@@ -546,88 +583,31 @@ export default function CreateListing() {
                     </button>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold">Price type</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setPriceType('fixed')}
-                      className={cn(
-                        'flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all',
-                        priceType === 'fixed' ? 'border-black bg-slate-100 shadow-[0_4px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 hover:border-black/40'
-                      )}
-                    >
-                      <IndianRupee className="h-7 w-7" />
-                      <span className="font-black text-sm">Fixed price</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPriceType('range')}
-                      className={cn(
-                        'flex flex-col items-center gap-1 rounded-xl border-2 p-4 transition-all',
-                        priceType === 'range' ? 'border-black bg-slate-100 shadow-[0_4px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 hover:border-black/40'
-                      )}
-                    >
-                      <span className="flex items-center gap-0.5 font-black text-lg leading-none">₹–₹</span>
-                      <span className="font-black text-sm mt-1">Price range</span>
-                    </button>
-                  </div>
-                </div>
+
               </div>
             )}
 
             {step === 5 && (
               <div className="max-w-md mx-auto w-full space-y-4">
-                {priceType === 'fixed' ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="price-fixed" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
-                      <IndianRupee className="h-3.5 w-3.5" />
-                      Your price (INR)
-                    </Label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
-                      <Input
-                        id="price-fixed"
-                        value={price}
-                        onChange={(e) => setPrice(formatPriceInput(e.target.value))}
-                        placeholder="25,000"
-                        inputMode="decimal"
-                        className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
-                        autoFocus
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price-fixed" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
+                    <IndianRupee className="h-3.5 w-3.5" />
+                    Your price (INR)
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
+                    <Input
+                      id="price-fixed"
+                      value={price}
+                      onChange={(e) => setPrice(formatPriceInput(e.target.value))}
+                      placeholder="25,000"
+                      inputMode="decimal"
+                      maxLength={10}
+                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                      autoFocus
+                    />
                   </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] sm:text-xs font-bold">Min (INR)</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
-                        <Input
-                          value={priceMin}
-                          onChange={(e) => setPriceMin(formatPriceInput(e.target.value))}
-                          placeholder="20,000"
-                          inputMode="decimal"
-                          className="rounded-2xl h-12 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-7 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
-                          autoFocus
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] sm:text-xs font-bold">Max (INR)</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
-                        <Input
-                          value={priceMax}
-                          onChange={(e) => setPriceMax(formatPriceInput(e.target.value))}
-                          placeholder="30,000"
-                          inputMode="decimal"
-                          className="rounded-2xl h-12 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-7 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -667,29 +647,66 @@ export default function CreateListing() {
                     <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
                   </div>
                 </div>
-                <div className="rounded-xl border border-black/15 bg-slate-50 p-3 text-[11px] text-slate-700 space-y-1">
-                  <p>
-                    <span className="font-bold">Title:</span> {title || '—'}
-                  </p>
-                  <p>
-                    <span className="font-bold">Category:</span>{' '}
-                    {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
-                  </p>
-                  <p>
-                    <span className="font-bold">Location:</span> {location}
-                  </p>
-                  <p>
-                    <span className="font-bold">Price:</span>{' '}
-                    {priceType === 'fixed'
-                      ? price
-                        ? `₹${price}`
-                        : '—'
-                      : `${priceMin || '—'} – ${priceMax || '—'}`}
-                  </p>
+                <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
+                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
+                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
+                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location}</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Price</span>
+                    <span className="text-sm sm:text-base font-black text-black">{price ? `₹${price}` : '—'}</span>
+                  </div>
                 </div>
               </div>
             )}
           </div>
+
+          {/* Verify Profile Button */}
+          {step === totalSteps - 1 && user && !isProfileVerified && (
+            <div className="mt-4 mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    title, description, category, location, condition,
+                    priceType, price, priceMin, priceMax, tags, images
+                  }));
+                  navigate('/profile?returnTo=/sell/new');
+                }}
+                className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all group shadow-[0_4px_0_0_rgba(37,99,235,0.4)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4)] active:translate-y-0.5"
+              >
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-blue-200 font-normal">(Optional)</span></p>
+                  <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
+              </button>
+            </div>
+          )}
+          {step === totalSteps - 1 && user && isProfileVerified && (
+            <div className="mt-4 mb-2">
+              <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <BadgeCheck className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-xs sm:text-sm font-bold text-white">Profile Verified ✓</p>
+                  <p className="text-[10px] sm:text-[11px] text-blue-100">Your listing will show a trust badge.</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mt-8 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
             <Button

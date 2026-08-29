@@ -2921,8 +2921,11 @@ const Landing = () => {
                                           <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
                                         )}
                                       </div>
-                                      <h3 className="text-xs sm:text-sm font-semibold leading-tight line-clamp-2 text-gray-900 mb-2 sm:mb-2.5">
+                                      <h3 className="text-xs sm:text-sm font-semibold leading-tight line-clamp-2 text-gray-900 mb-2 sm:mb-2.5 flex items-center gap-1">
                                         {listing.title}
+                                        {userProfiles[listing.sellerId]?.isProfileVerified && (
+                                          <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2 w-2 text-white" /></span>
+                                        )}
                                       </h3>
                                       <div className="w-full mb-2 sm:mb-2.5">
                                         <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 sm:px-2 sm:py-1 h-9 min-h-[36px]">

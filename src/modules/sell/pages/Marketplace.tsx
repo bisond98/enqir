@@ -8,13 +8,15 @@ import { Link } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle } from 'lucide-react';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
+import { db } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 function formatPrice(l: SellListing) {
   const fmt = (n: number) => n.toLocaleString('en-IN');
-  if (l.priceType === 'range') return `₹${fmt(l.priceMin ?? 0)} - ₹${fmt(l.priceMax ?? 0)}`;
+  if (l.priceType === 'range') return `₹${fmt(l.priceMax ?? l.priceMin ?? 0)}`;
   return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
 
@@ -26,10 +28,39 @@ export default function Marketplace() {
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [page, setPage] = useState(0);
   const [shuffledListings, setShuffledListings] = useState<SellListing[]>([]);
+
+  // Scroll to top on page change
+  const prevPage = useRef(page);
+  useEffect(() => {
+    if (page !== prevPage.current) {
+      prevPage.current = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [page]);
 
   // Auto-shuffle listings every 5 seconds when no filters/search
   const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all';
+
+  // Seller profiles for trust badge
+  const [sellerProfiles, setSellerProfiles] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    if (listings.length === 0) return;
+    const uniqueIds = Array.from(new Set(listings.map(l => l.sellerId).filter(Boolean)));
+    const fetchProfiles = async () => {
+      const profiles: Record<string, any> = {};
+      await Promise.all(uniqueIds.map(async (id) => {
+        try {
+          const snap = await getDoc(doc(db, 'userProfiles', id));
+          if (snap.exists()) profiles[id] = snap.data();
+        } catch {}
+      }));
+      setSellerProfiles(profiles);
+    };
+    fetchProfiles();
+  }, [listings]);
 
   // Location popup
   const [locPopupOpen, setLocPopupOpen] = useState(false);
@@ -56,6 +87,7 @@ export default function Marketplace() {
   }, [search, category, location]);
 
   useEffect(() => {
+    setPage(0);
     load();
   }, [search, category, location]);
 
@@ -74,7 +106,7 @@ export default function Marketplace() {
       return a;
     };
     setShuffledListings(shuffle(listings));
-    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 5000);
+    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 15000);
     return () => clearInterval(timer);
   }, [listings, noFiltersActive]);
 
@@ -122,6 +154,9 @@ export default function Marketplace() {
 
   const activeLocationLabel = location === 'all' ? 'Locations' : location;
   const displayListings = noFiltersActive ? shuffledListings : listings;
+  const perPage = viewMode === 'grid' ? 12 : 10;
+  const totalPages = Math.ceil(displayListings.length / perPage);
+  const pagedListings = displayListings.slice(page * perPage, (page + 1) * perPage);
 
   return (
     <SellShell title="Marketplace">
@@ -270,13 +305,13 @@ export default function Marketplace() {
           {/* View Toggle */}
           <div className="flex border-2 border-black rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => { setViewMode('list'); setPage(0); }}
               className={`h-10 px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
               <List className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => { setViewMode('grid'); setPage(0); }}
               className={`h-10 px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
               <LayoutGrid className="h-4 w-4" />
@@ -310,19 +345,24 @@ export default function Marketplace() {
         )}
 
         {/* LIST VIEW */}
-        {!loading && !error && viewMode === 'list' && displayListings.map((l) => (
+        {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
           <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
                 <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 border border-black/10" />
               ) : (
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black/10">
-                  <ImageOff className="h-5 w-5 text-gray-300" />
+                  <span className="text-[10px] font-bold text-gray-400">No Image</span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-black text-black text-sm truncate">{l.title}</h3>
+                  <h3 className="font-black text-black text-sm truncate flex items-center gap-1">
+                    {l.title}
+                    {sellerProfiles[l.sellerId]?.isProfileVerified && (
+                      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
+                    )}
+                  </h3>
                   {l.price != null && (
                     <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
                       {formatPrice(l)}
@@ -336,10 +376,10 @@ export default function Marketplace() {
                       {l.condition}
                     </span>
                   )}
-                  <span className="text-[9px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                  <span className="text-[9px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
                     {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                   </span>
-                  <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
+                  <span className="text-[9px] font-bold text-black flex items-center gap-0.5">
                     <MapPin className="h-2.5 w-2.5" />{l.location}
                   </span>
                 </div>
@@ -360,18 +400,23 @@ export default function Marketplace() {
         {/* GRID VIEW */}
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {displayListings.map((l) => (
+            {pagedListings.map((l) => (
               <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
                 ) : (
                   <div className="w-full aspect-square bg-gray-100 flex items-center justify-center border-b border-black/10">
-                    <ImageOff className="h-8 w-8 text-gray-300" />
+                    <span className="text-xs font-bold text-gray-400">No Image</span>
                   </div>
                 )}
                 <div className="p-2.5">
                   <div className="flex items-start justify-between gap-1">
-                    <h3 className="font-black text-black text-xs truncate flex-1">{l.title}</h3>
+                    <h3 className="font-black text-black text-xs truncate flex-1 flex items-center gap-1">
+                      {l.title}
+                      {sellerProfiles[l.sellerId]?.isProfileVerified && (
+                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2 w-2 text-white" /></span>
+                      )}
+                    </h3>
                     {l.price != null && (
                       <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
                         {formatPrice(l)}
@@ -384,16 +429,28 @@ export default function Marketplace() {
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                    <span className="text-[8px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
                       {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                     </span>
                   </div>
-                  <span className="text-[8px] text-gray-400 flex items-center gap-0.5 mt-1">
+                  <span className="text-[8px] font-bold text-black flex items-center gap-0.5 mt-1">
                     <MapPin className="h-2 w-2" />{l.location}
                   </span>
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Pagination Next button */}
+        {!loading && !error && displayListings.length > perPage && page < totalPages - 1 && (
+          <div className="flex justify-center pt-2 pb-4">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+            >
+              Next →
+            </button>
           </div>
         )}
       </div>
