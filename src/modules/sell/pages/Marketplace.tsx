@@ -26,6 +26,10 @@ export default function Marketplace() {
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [shuffledListings, setShuffledListings] = useState<SellListing[]>([]);
+
+  // Auto-shuffle listings every 5 seconds when no filters/search
+  const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all';
 
   // Location popup
   const [locPopupOpen, setLocPopupOpen] = useState(false);
@@ -54,6 +58,25 @@ export default function Marketplace() {
   useEffect(() => {
     load();
   }, [search, category, location]);
+
+  // Shuffle effect: every 5 seconds when no filters/search active
+  useEffect(() => {
+    if (!noFiltersActive || listings.length <= 1) {
+      setShuffledListings(listings);
+      return;
+    }
+    const shuffle = (arr: SellListing[]) => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+    setShuffledListings(shuffle(listings));
+    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 5000);
+    return () => clearInterval(timer);
+  }, [listings, noFiltersActive]);
 
   // Auto-detect category from search term
   const detectedCategory = useMemo(() => {
@@ -98,6 +121,7 @@ export default function Marketplace() {
   }, [locSearch]);
 
   const activeLocationLabel = location === 'all' ? 'Locations' : location;
+  const displayListings = noFiltersActive ? shuffledListings : listings;
 
   return (
     <SellShell title="Marketplace">
@@ -286,7 +310,7 @@ export default function Marketplace() {
         )}
 
         {/* LIST VIEW */}
-        {!loading && !error && viewMode === 'list' && listings.map((l) => (
+        {!loading && !error && viewMode === 'list' && displayListings.map((l) => (
           <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
@@ -336,7 +360,7 @@ export default function Marketplace() {
         {/* GRID VIEW */}
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {listings.map((l) => (
+            {displayListings.map((l) => (
               <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
