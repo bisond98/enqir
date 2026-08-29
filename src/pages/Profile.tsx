@@ -763,95 +763,6 @@ const Profile = () => {
 
         {/* Profile Form - Inside Container */}
         <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        {/* Profile Form */}
-        <Card className="mt-6 sm:mt-8 border-[0.5px] border-black lg:min-h-[200px]">
-          <CardHeader className="p-4 sm:p-6 lg:p-5 lg:pb-4">
-            <CardTitle className="text-base sm:text-lg">Profile Information</CardTitle>
-            <CardDescription className="text-[10px] sm:text-xs">It's better to know you better if you're here to scam others</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 lg:p-5 lg:pt-4">
-            {/* Profile Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
-              <div className="space-y-1 sm:space-y-2">
-                <Label htmlFor="fullName" className="text-xs sm:text-sm">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Enter your full name"
-                  className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
-                  disabled={!isEditingProfile}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700">Phone Number *</Label>
-                <div className="flex gap-1 sm:gap-2">
-                  <Select value={countryCode} onValueChange={setCountryCode} disabled={!isEditingProfile}>
-                    <SelectTrigger className="w-14 sm:w-16 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={!isEditingProfile}>
-                      <SelectValue placeholder="Code">
-                        {countryCode && (
-                          <span className="flex items-center gap-0.5 sm:gap-1">
-                            <span className="text-[10px] sm:text-xs">{countryCodes.find(c => c.code === countryCode)?.flag}</span>
-                            <span className="font-medium text-[10px] sm:text-xs">{countryCode}</span>
-                          </span>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countryCodes.map((country) => (
-                        <SelectItem key={country.code} value={country.code}>
-                          <span className="flex items-center gap-1 sm:gap-2">
-                            <span className="text-xs sm:text-sm">{country.flag}</span>
-                            <span className="font-medium text-xs sm:text-sm">{country.code}</span>
-                            <span className="text-[10px] sm:text-xs text-slate-500">{country.country}</span>
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter phone number"
-                    className="flex-1 h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
-                    disabled={!isEditingProfile}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-1 sm:space-x-2">
-              {isEditingProfile ? (
-                <Button 
-                  onClick={handleProfileSave}
-                  disabled={!fullName.trim() || !phone.trim()}
-                  variant="outline"
-                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 !bg-white !text-black !border-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black active:!bg-white disabled:!bg-gray-100 disabled:!text-gray-400"
-                >
-                  <Save className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black" />
-                  Save Changes
-                </Button>
-              ) : null}
-              {!isEditingProfile ? (
-                <Button 
-                  onClick={handleEditProfile}
-                  variant="outline"
-                  className="h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4 border-[0.5px] border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/edit rounded-lg sm:rounded-xl"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/edit:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                  <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-black relative z-10" />
-                  <span className="relative z-10">Edit</span>
-                </Button>
-              ) : null}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
         <Card className={`mt-4 sm:mt-6 ${verifyingId ? '' : 'border-[0.5px] border-black'} shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]`}>
@@ -859,7 +770,7 @@ const Profile = () => {
           <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 lg:px-5 lg:py-4 rounded-t-3xl sm:rounded-t-2xl">
             <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
               <Shield className="h-4 w-4 sm:h-4 sm:w-4" />
-              Trust Badge (Optional)
+              Profile Verification
             </h2>
             <p className="text-[10px] sm:text-xs text-gray-300 mt-1.5">
               Make all enquires and responses verified.
@@ -1112,6 +1023,17 @@ const Profile = () => {
              !(idVerificationResult && idVerificationResult.matches && !verifyingId) &&
              (!verificationStatus || verificationStatus === 'rejected') ? (
               <>
+                <div className="space-y-1 sm:space-y-2">
+                  <Label htmlFor="fullName" className="text-xs sm:text-sm">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                    required
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label>
@@ -1124,7 +1046,7 @@ const Profile = () => {
                           }
                           setIdVerificationResult(null);
                         }} disabled={verifyingId || isUploading}>
-                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
+                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                         <SelectContent>
@@ -1159,7 +1081,7 @@ const Profile = () => {
                         setIdVerificationResult(null);
                       }}
                       placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-none transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
                       disabled={verifyingId || isUploading}
                     />
                     {idErrors.idNumber && !idVerificationResult && (
