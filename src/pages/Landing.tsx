@@ -22,7 +22,7 @@ const Landing = () => {
     {
       icon: Search,
       title: "AI-Powered Discovery",
-      description: "We do not exploit unpaid interns"
+      description: "No scams = more deal closures"
     },
     {
       icon: Zap,
@@ -31,8 +31,8 @@ const Landing = () => {
     },
     {
       icon: Users,
-      title: "Simple & Safe",
-      description: "We don't need your data; we already have a revenue model"
+      title: "Deal Closure",
+      description: "To Every action paid = only serious users"
     }
   ];
 
@@ -1939,7 +1939,7 @@ const Landing = () => {
                     }}
                     onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus:border-black focus:ring-2 sm:focus:ring-4 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                     style={{ 
                       lineHeight: '1.5',
                       paddingTop: '0.75rem',
@@ -1973,16 +1973,16 @@ const Landing = () => {
 
           {/* Mobile: All cards in one container for equal spacing and centering */}
           <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
-          {/* Simple & Safe card - Mobile only, desktop shows in features grid */}
+          {/* Deal Closure card - Mobile only, desktop shows in features grid */}
             <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
-            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl">
+            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-2 border-black rounded-xl sm:rounded-2xl">
               <div className="relative">
                 <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
                 <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
               </div>
-              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Simple & Safe</h3>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Deal Closure</h3>
               <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
-                We don't need your data; we already have a revenue model
+                To Every action paid = only serious users
               </p>
             </Card>
           </div>
@@ -1990,7 +1990,7 @@ const Landing = () => {
           {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-[0.5px] border-black rounded-xl sm:rounded-2xl ${feature.title === "Simple & Safe" ? "hidden md:block" : ""}`}>
+              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-2 border-black rounded-xl sm:rounded-2xl ${feature.title === "Deal Closure" ? "hidden md:block" : ""}`}>
                 <div className="relative">
                   <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
                   <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
@@ -2740,7 +2740,7 @@ const Landing = () => {
                         }}
                         onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                         onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus:border-black focus:ring-2 focus:ring-black/20 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
                         style={{ 
                           lineHeight: '1.5',
                           paddingTop: '0.75rem',

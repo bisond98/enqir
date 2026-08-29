@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List } from 'lucide-react';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 
@@ -25,6 +25,7 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   // Location popup
   const [locPopupOpen, setLocPopupOpen] = useState(false);
@@ -52,7 +53,7 @@ export default function Marketplace() {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [search, category, location]);
 
   const canSearch = useMemo(() => search.trim().length === 0 || search.trim().length >= 2, [search]);
   const hasFilters = category !== 'all' || location !== 'all';
@@ -207,11 +208,11 @@ export default function Marketplace() {
           </div>
         </div>
 
-        {/* Active Filters + Search Button */}
+        {/* Active Filters + Search Button + View Toggle */}
         <div className="flex items-center gap-2">
           {hasFilters && (
             <button
-              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); load(); }}
+              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); }}
               className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 transition-colors flex-shrink-0"
             >
               <X className="h-3 w-3" />Clear filters
@@ -224,6 +225,21 @@ export default function Marketplace() {
           >
             <Search className="h-4 w-4 mr-1.5" />Search
           </Button>
+          {/* View Toggle */}
+          <div className="flex border-2 border-black rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`h-10 px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            >
+              <List className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`h-10 px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -251,7 +267,8 @@ export default function Marketplace() {
           </div>
         )}
 
-        {!loading && !error && listings.map((l) => (
+        {/* LIST VIEW */}
+        {!loading && !error && viewMode === 'list' && listings.map((l) => (
           <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
@@ -297,6 +314,46 @@ export default function Marketplace() {
             </div>
           </Link>
         ))}
+
+        {/* GRID VIEW */}
+        {!loading && !error && viewMode === 'grid' && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {listings.map((l) => (
+              <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
+                {l.images?.[0] ? (
+                  <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
+                ) : (
+                  <div className="w-full aspect-square bg-gray-100 flex items-center justify-center border-b border-black/10">
+                    <ImageOff className="h-8 w-8 text-gray-300" />
+                  </div>
+                )}
+                <div className="p-2.5">
+                  <div className="flex items-start justify-between gap-1">
+                    <h3 className="font-black text-black text-xs truncate flex-1">{l.title}</h3>
+                    {l.price != null && (
+                      <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
+                        {formatPrice(l)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    {l.condition && (
+                      <span className="text-[8px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                        {l.condition}
+                      </span>
+                    )}
+                    <span className="text-[8px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                      {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
+                    </span>
+                  </div>
+                  <span className="text-[8px] text-gray-400 flex items-center gap-0.5 mt-1">
+                    <MapPin className="h-2 w-2" />{l.location}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </SellShell>
   );
