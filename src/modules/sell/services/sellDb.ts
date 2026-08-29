@@ -83,7 +83,7 @@ export async function listMarketplace(params: {
   const s = (params.search ?? '').trim().toLowerCase();
   if (s) {
     listings = listings.filter((l) => {
-      const hay = `${l.title ?? ''} ${l.description ?? ''} ${(l.tags ?? []).join(' ')}`.toLowerCase();
+      const hay = `${l.title ?? ''} ${l.description ?? ''} ${(l.tags ?? []).join(' ')} ${l.category ?? ''}`.toLowerCase();
       return hay.includes(s);
     });
   }

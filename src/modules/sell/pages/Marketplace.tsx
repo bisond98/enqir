@@ -55,7 +55,17 @@ export default function Marketplace() {
     load();
   }, [search, category, location]);
 
-  const canSearch = useMemo(() => search.trim().length === 0 || search.trim().length >= 2, [search]);
+  // Auto-detect category from search term
+  const detectedCategory = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q || q.length < 2) return null;
+    return SELL_CATEGORIES.find(c => c.label.toLowerCase().includes(q) || q.includes(c.label.toLowerCase()))?.value ?? null;
+  }, [search]);
+
+  // Suggested category badge shown when search matches a category but filter isn't set
+  const showCategorySuggestion = detectedCategory && category !== detectedCategory;
+
+  const canSearch = search.trim().length === 0 || search.trim().length >= 2;
   const hasFilters = category !== 'all' || location !== 'all';
 
 
@@ -116,6 +126,19 @@ export default function Marketplace() {
             </button>
           )}
         </div>
+
+        {/* Auto-detected category suggestion */}
+        {showCategorySuggestion && (
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-gray-400">Did you mean:</span>
+            <button
+              onClick={() => { setCategory(detectedCategory!); }}
+              className="text-[10px] font-bold text-black bg-gray-100 border border-black/20 rounded-full px-2.5 py-1 hover:bg-gray-200 transition-colors"
+            >
+              {SELL_CATEGORIES.find(c => c.value === detectedCategory)?.label}
+            </button>
+          </div>
+        )}
 
         {/* Filter Row */}
         <div className="flex gap-2">
@@ -186,11 +209,6 @@ export default function Marketplace() {
                         className={`w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors flex items-center justify-between ${location === loc ? 'font-bold bg-gray-50' : ''}`}
                       >
                         <span>{loc}</span>
-                        {userCoords && CITY_COORDS[loc] && (
-                          <span className="text-[10px] text-gray-400">
-                            {Math.round(haversineDistance(userCoords[0], userCoords[1], CITY_COORDS[loc][0], CITY_COORDS[loc][1]))} km
-                          </span>
-                        )}
                       </button>
                     ))}
                     {!SELL_LOCATIONS.some(l => l.toLowerCase() === locSearch.toLowerCase()) && (
