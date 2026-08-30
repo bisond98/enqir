@@ -705,23 +705,24 @@ const EnquiryDetail = () => {
               </div>
               </div>
               
-            {/* Enquiry Title Heading in Black Header */}
-            <div className="flex flex-col items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 dashboard-header-no-emoji">
-                {/* Trust Badge Icon - Before Title */}
-                {((userProfile?.isProfileVerified || 
-                   userProfile?.isVerified || 
-                   userProfile?.trustBadge || 
-                   userProfile?.isIdentityVerified) || 
-                  enquiry.idFrontImage || 
-                  enquiry.idBackImage ||
-                  enquiry.isProfileVerified ||
-                  enquiry.userProfileVerified ||
-                  (enquiry as any).userVerified) && (
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 text-blue-400 flex-shrink-0" />
-                )}
+            {/* Enquiry Title Heading in Black Header */}            <div className="flex flex-col items-center mb-4 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full mb-2 sm:mb-3 dashboard-header-no-emoji">
                 <span>{enquiry.title}.</span>
               </h1>
+              {/* Trust Badge - Center bottom of header */}
+              {((userProfile?.isProfileVerified || 
+                 userProfile?.isVerified || 
+                 userProfile?.trustBadge || 
+                 userProfile?.isIdentityVerified) || 
+                enquiry.idFrontImage || 
+                enquiry.idBackImage ||
+                enquiry.isProfileVerified || 
+                enquiry.userProfileVerified ||
+                (enquiry as any).userVerified) && (
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-blue-400" />
+                </div>
+              )}
               
               {/* Deadline Date and Countdown - In Header */}
               {enquiry.deadline && (
@@ -767,7 +768,7 @@ const EnquiryDetail = () => {
         {/* Content - Inside Container */}
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           {/* Enquiry Card - Professional Design */}
-          <Card className="border-[0.5px] border-black shadow-lg rounded-none overflow-hidden bg-white mb-5 sm:mb-6 w-full">
+          <Card className="border-[0.5px] border-black shadow-lg rounded-2xl overflow-hidden bg-white mb-5 sm:mb-6 w-full">
               {/* Card Content - Enhanced White Background */}
               <CardContent className="p-5 sm:p-5 lg:p-6">
                 <div className="space-y-4 sm:space-y-4">
@@ -820,9 +821,9 @@ const EnquiryDetail = () => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="border border-black shadow-lg rounded-none bg-white">
+              <Card className="border border-black shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
-                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-none">
+                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-2xl">
                   <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
                     <Tag className="h-4 w-4 sm:h-4 sm:w-4" />
                     Enquiry Details
@@ -984,9 +985,9 @@ const EnquiryDetail = () => {
             {/* Sidebar */}
             <div className="space-y-4 sm:space-y-6">
               {/* Action Buttons - Professional Design */}
-              <Card className="border border-black shadow-lg rounded-none bg-white">
+              <Card className="border border-black shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
-                <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-none">
+                <div className="bg-black px-5 sm:px-4 py-4 sm:py-4 rounded-t-2xl">
                   <h3 className="text-sm sm:text-sm md:text-base font-bold text-white">
                     {user && enquiry.userId === user.uid ? 'Your Enquiry' : 'Ready to Respond?'}
                   </h3>

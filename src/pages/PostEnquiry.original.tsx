@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,10 +10,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useUsage } from "@/contexts/UsageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
@@ -36,23 +36,9 @@ import { useToast } from "@/components/ui/use-toast";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
-const STEPS = [
-  { key: 'title', label: 'What are you looking for?' },
-  { key: 'category', label: 'What Are You Looking For?', description: 'Pick what fits best' },
-  { key: 'description', label: 'Description', description: 'Tell sellers more' },
-  { key: 'location', label: 'Location', description: 'Where do you need it?' },
-  { key: 'budget', label: 'Budget', description: 'Set your numbers' },
-  { key: 'deadline', label: 'Deadline & Notes', description: 'When do you need it?' },
-  { key: 'extras', label: 'Photos & Verify', description: 'Finish strong' },
-] as const;
-
-const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
-
 export default function PostEnquiry() {
-  // Version: 3.0 - Multi-step wizard (matching sell listing flow)
+  // Version: 2.1 - Categories updated with Business, Personal, Service at top (Deployed: ${new Date().toISOString()})
   const { user, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
-  const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get('returnTo');
   
   // Force component remount on version change
   useEffect(() => {
@@ -119,17 +105,6 @@ export default function PostEnquiry() {
   const { canPostEnquiry, incrementEnquiries, getRemainingEnquiries } = useUsage();
   const { createNotification } = useNotifications();
   const navigate = useNavigate();
-  const totalSteps = STEPS.length;
-  const [step, setStep] = useState(() => {
-    // If returning from profile verification, jump to last step
-    const draft = localStorage.getItem(ENQUIRY_STORAGE_KEY);
-    if (draft) return STEPS.length - 1;
-    return 0;
-  });
-  const [animDir, setAnimDir] = useState<'up' | 'down'>('up');
-  const [catPage, setCatPage] = useState(0);
-  const [catSearch, setCatSearch] = useState('');
-  const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -257,97 +232,6 @@ export default function PostEnquiry() {
     const progress = (completed / requiredFields.length) * 100;
     setFormProgress(progress);
   }, [title, description, selectedCategories, category, budget, location, deadline]);
-
-  // Restore form from localStorage if returning from profile verification
-  useEffect(() => {
-    const draft = localStorage.getItem(ENQUIRY_STORAGE_KEY);
-    if (draft) {
-      try {
-        const d = JSON.parse(draft);
-        if (d.title) setTitle(d.title);
-        if (d.description) setDescription(d.description);
-        if (d.selectedCategories) setSelectedCategories(d.selectedCategories);
-        if (d.budget) setBudget(d.budget);
-        if (d.location) setLocation(d.location);
-        if (d.deadline) setDeadline(new Date(d.deadline));
-        if (d.notes) setNotes(d.notes);
-        if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
-        if (d.selectedPlanId) {
-          const plan = PAYMENT_PLANS.find(p => p.id === d.selectedPlanId);
-          if (plan) setSelectedPlan(plan);
-        }
-      } catch {}
-      localStorage.removeItem(ENQUIRY_STORAGE_KEY);
-      // Scroll down to publish button after restoring
-      setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }, 300);
-    }
-  }, []);
-
-  // Scroll to top on step change
-  const scrollToInput = () => {
-    requestAnimationFrame(() => {
-      const el = document.getElementById('step-top');
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + rect.top - 20, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
-  };
-
-  // Step validation
-  const canAdvanceFromStep = (s: number): boolean => {
-     switch (s) {
-       case 0:
-         if (!title.trim()) {
-           toast({ title: 'Add a title', description: 'Buyers need a clear name.', variant: 'destructive' as any });
-           return false;
-         }
-         return true;
-       case 1:
-         if (selectedCategories.length === 0) {
-           toast({ title: 'Select a category', description: 'Pick at least one category.', variant: 'destructive' as any });
-           return false;
-         }
-         return true;
-      case 2:
-        if (!description.trim()) {
-          toast({ title: 'Add a description', description: 'A few sentences help sellers decide.', variant: 'destructive' as any });
-          return false;
-        }
-        return true;
-      case 3:
-        if (!location.trim()) {
-          toast({ title: 'Add a location', description: 'Where do you need this?', variant: 'destructive' as any });
-          return false;
-        }
-        return true;
-      case 4:
-        if (!budget.trim()) {
-          toast({ title: 'Add a budget', description: 'Set your budget in INR.', variant: 'destructive' as any });
-          return false;
-        }
-        return true;
-      default:
-        return true;
-    }
-  };
-
-  const goNext = () => {
-    if (!canAdvanceFromStep(step)) return;
-    setAnimDir('up');
-    setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    scrollToInput();
-  };
-
-  const goBack = () => {
-    setAnimDir('down');
-    setStep((prev) => Math.max(prev - 1, 0));
-    scrollToInput();
-  };
 
   // Real-time ID number validation
   const validateIdNumber = (value: string, type: string) => {
@@ -2012,234 +1896,500 @@ export default function PostEnquiry() {
             </Card>
           )}
 
-          {/* Main Form - Multi-step wizard (matching sell listing) */}
+          {/* Main Form - Professional Enhanced Design (Border thickness matched with SellerResponse form) */}
           {!isSubmitted && (
-            <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
-              <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
-                <Progress value={((step + 1) / totalSteps) * 100} className="h-2 rounded-full bg-slate-200" />
-              </div>
+            <Card className="shadow-xl rounded-2xl sm:rounded-3xl bg-white overflow-hidden">
+              <CardContent className="p-5 sm:p-6 lg:p-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7 lg:space-y-8">
 
-              <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
-                {/* Step Icon */}
-                <div id="step-top">
-                  <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-black text-white">
-                    {step === 0 ? <Search className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 1 ? <LayoutGrid className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 2 ? <AlignLeft className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 3 ? <MapPin className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 4 ? <IndianRupee className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 5 ? <CalendarIcon className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     <Upload className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} />}
+                  {/* Form Progress Indicator */}
+                  <div className="pt-4 space-y-3 border-4 border-black bg-white rounded-lg p-4 transition-all">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs sm:text-sm font-semibold text-black">Form Completion</h3>
+                      <span className={`text-[10px] sm:text-xs font-semibold ${formProgress === 100 ? 'text-green-600' : 'text-black'}`}>
+                        {Math.round(formProgress)}% Complete
+                      </span>
+                    </div>
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div 
+                        className={`h-full transition-all ${formProgress === 100 ? 'bg-green-600' : 'bg-[#800020]'}`}
+                        style={{ width: `${formProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-black">
+                      Fill in all required & click submit
+                    </p>
                   </div>
-                </div>
 
-                {/* Step Title */}
-                <div id="step-title" className="text-center mb-6">
-                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
-                </div>
-
-                {/* Step Content */}
-                <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
-
-                  {/* Step 0: Title */}
-                  {step === 0 && (
-                    <div className="space-y-2 max-w-lg mx-auto w-full">
-                      
+                  {/* Title - Enhanced Professional Input */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label htmlFor="title" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <span className="text-blue-600">*</span>
+                      {category === "jobs" ? "Job Title" : "Enqir anything from a 4 a.m. tea spot to a piece of the moon."}
+                    </Label>
+                    <div className="relative">
                       <Input
-                        id="enquiry-title"
+                        id="title"
+                        placeholder={category === "jobs" ? "e.g., Senior Web Developer" : "e.g., Vintage Toyota Car"}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="e.g., Land Cruiser Prado 70th Anniversary Edition"
-                        className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
-                        maxLength={50}
-                        autoFocus
+                        maxLength={60}
+                            className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif' }}
+                        required
                       />
-
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                     </div>
-                  )}
+                  </div>
 
-                  {/* Step 1: Category (swipeable horizontal pages) */}
-                  {step === 1 && (() => {
-                    const filteredCategories = catSearch.trim()
-                      ? categories.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
-                      : categories;
-                    const isSearching = catSearch.trim().length > 0;
-                    const totalPages = Math.ceil(filteredCategories.length / CATS_PER_PAGE);
-                    const pagedCategories = isSearching
-                      ? filteredCategories
-                      : filteredCategories.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
-                    return (
-                      <div className="max-w-2xl mx-auto w-full">
-                        {/* Search bar */}
-                        <div className="mb-4">
-                          <div className="relative overflow-hidden rounded-xl">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                              <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-5-5m0 0a7 7 0 10-9.9-9.9 7 7 0 009.9 9.9z" /></svg>
-                            </div>
-                            <input
-                              type="text"
-                              value={catSearch}
-                              onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
-                              placeholder="Search categories..."
-                              className="w-full h-10 sm:h-11 text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-400 transition-all"
-                              style={{ paddingLeft: '2.75rem', outline: 'none' }}
-                              onFocus={(e) => { e.currentTarget.style.borderColor = 'black'; e.currentTarget.style.boxShadow = '0 0 0 2px black'; }}
-                              onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = ''; }}
-                            />
-                            {catSearch && (
-                              <button
-                                type="button"
-                                onMouseDown={(e) => { e.preventDefault(); setCatSearch(''); }}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        {/* Category Grid */}
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                          {pagedCategories.map((cat) => {
-                            const Icon = categoryIcons[cat.value] ?? LayoutGrid;
-                            const selected = selectedCategories.includes(cat.value);
-                            const isDisabled = !selected && selectedCategories.length >= 3;
-                            return (
-                              <button
-                                key={cat.value}
-                                type="button"
-                                onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
-                                className={cn(
-                                  'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
-                                  selected
-                                    ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
-                                    : isDisabled
-                                      ? 'opacity-40 border-black/20 bg-white text-black'
-                                      : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
+                  {/* Multiple Categories - Enhanced Professional Design */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-2 sm:space-y-2.5">
+                      <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        <span>Select at least one category</span>
+                      </Label>
+                    </div>
+                    
+                    {/* Multiple Category Selection - Enhanced Mobile-Friendly Sheet */}
+                    <div className="space-y-2.5">
+                      {/* Mobile: Use Sheet (bottom drawer), Desktop: Use Popover */}
+                      <div className="block sm:hidden">
+                        <Sheet open={categoriesSheetOpen} onOpenChange={setCategoriesSheetOpen} modal={true}>
+                            <Button
+                            type="button"
+                              variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setCategoriesSheetOpen(true);
+                            }}
+                              className={`w-full justify-between min-h-[52px] h-auto py-3.5 px-4 border-2 rounded-xl transition-all duration-200 text-base font-medium relative overflow-hidden ${
+                                selectedCategories.length === 0 
+                                  ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                  : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                              } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                            >
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0 relative z-10">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2.5 py-1 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
                                 )}
-                              >
-                                <div className={cn(
-                                  'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
-                                  selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
-                                )}>
-                                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
-                                </div>
-                                <span className="text-[10px] sm:text-xs font-black leading-tight">{cat.label}</span>
-                                {selected && <Check className="h-4 w-4 shrink-0" />}
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        {/* No results message */}
-                        {isSearching && pagedCategories.length === 0 && (
-                          <div className="text-center py-6">
-                            <div className="flex flex-col items-center gap-2 mt-2">
-                              <span className="text-[11px] font-bold text-black">Please choose</span>
-                              {(() => {
-                                const Icon = categoryIcons['other'] ?? LayoutGrid;
-                                const selected = selectedCategories.includes('other');
-                                const isDisabled = !selected && selectedCategories.length >= 3;
-                                return (
-                                  <button
+                              </div>
+                              <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 relative z-10" />
+                            </Button>
+                          <SheetContent side="bottom" className="h-[85vh] max-h-[700px] p-0 flex flex-col border-2 border-black bg-white">
+                            <SheetHeader className="px-5 pt-6 pb-4 flex-shrink-0 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/30">
+                              <SheetTitle className="text-5xl sm:text-6xl font-black tracking-tighter leading-none font-heading text-black text-left w-full mb-1">Categories</SheetTitle>
+                              <p className="text-xs text-slate-500 text-left font-medium">upto 3.</p>
+                            </SheetHeader>
+                            {selectedCategories.length > 0 && (
+                              <div className="px-5 py-4 border-b border-gray-200 bg-white flex-shrink-0">
+                                <div className="relative">
+                                  <Button
                                     type="button"
-                                    onClick={() => !isDisabled && handleCategoryToggle('other')}
-                                    className={cn(
-                                      'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
-                                      selected
-                                        ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
-                                        : isDisabled
-                                          ? 'opacity-40 border-black/20 bg-white text-black'
-                                          : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
-                                    )}
+                                    onClick={() => setCategoriesSheetOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-base py-3.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
                                   >
-                                    <div className={cn(
-                                      'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
-                                      selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
-                                    )}>
-                                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex-1 overflow-y-auto overscroll-contain bg-gradient-to-b from-white via-gray-50/20 to-white">
+                              <div className="px-3 py-3 pb-24">
+                                {categories.map((cat, index) => {
+                                  const isSelected = selectedCategories.includes(cat.value);
+                                  const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                  const isService = cat.value === "service";
+                                  
+                                  return (
+                                    <div key={cat.value}>
+                                    <div 
+                                      className={`flex items-center space-x-4 p-4 min-h-[64px] rounded-xl transition-all duration-200 ${
+                                        isSelected 
+                                          ? 'bg-white border-[5px] border-black shadow-lg' 
+                                          : isDisabled 
+                                            ? 'opacity-40' 
+                                            : 'hover:bg-gray-50 active:bg-gray-100 border-2 border-transparent'
+                                      }`}
+                                      >
+                                      <div className="flex-shrink-0">
+                                        <Checkbox
+                                          id={`mobile-${cat.value}`}
+                                          checked={isSelected}
+                                          disabled={isDisabled}
+                                          onCheckedChange={(checked) => {
+                                            if (!isDisabled) {
+                                              handleCategoryToggle(cat.value);
+                                            }
+                                          }}
+                                          className={`h-7 w-7 border-[3px] rounded-md transition-all duration-200 [&>span>svg]:h-4.5 [&>span>svg]:w-4.5 pointer-events-auto ${
+                                            isSelected
+                                              ? 'border-black bg-black data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                              : 'border-gray-400 data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black'
+                                          }`}
+                                        />
+                                      </div>
+                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`mobile-${cat.value}`}
+                                        className={`text-base font-medium flex-1 cursor-pointer select-none ${
+                                            isDisabled 
+                                              ? 'text-slate-400 cursor-not-allowed' 
+                                              : isSelected
+                                                ? 'text-black font-semibold'
+                                                : 'text-slate-700'
+                                          }`}
+                                        >
+                                          {cat.label}
+                                        </Label>
+                                        {(() => { const Icon = categoryIcons[cat.value]; return Icon ? <Icon className="h-5 w-5 flex-shrink-0 [&>path]:fill-black [&>path]:stroke-black" style={{color:'black'}} /> : null; })()}
+                                      </div>
+                                      </div>
+                                      {isService && (
+                                        <div className="px-4 py-3">
+                                          <div className="border-t border-gray-200"></div>
+                                        </div>
+                                      )}
                                     </div>
-                                    <span className="text-[10px] sm:text-xs font-black leading-tight">Other</span>
-                                    {selected && <Check className="h-4 w-4 shrink-0" />}
-                                  </button>
-                                );
-                              })()}
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        )}
-
-                        {/* Swipe hint */}
-                        {!isSearching && totalPages > 1 && (
-                          <p className="text-[10px] text-slate-400 text-center mt-3">
-                            Swipe or tap arrows for more categories
-                          </p>
-                        )}                         {/* Pagination - prev/next text buttons */}
-                         {!isSearching && totalPages > 1 && (
-                           <div className="flex items-center justify-between mt-4">
-                             <button
-                               type="button"
-                               onClick={() => setCatPage(p => Math.max(0, p - 1))}
-                               disabled={catPage === 0}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-black rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black hover:text-white active:scale-95 transition-all"
-                             >
-                               <ChevronLeft className="h-3 w-3" />
-                               Prev
-                             </button>
-                             <span className="text-[11px] font-bold text-gray-500">
-                               {catPage + 1} / {totalPages}
-                             </span>
-                             <button
-                               type="button"
-                               onClick={() => setCatPage(p => Math.min(totalPages - 1, p + 1))}
-                               disabled={catPage === totalPages - 1}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-black rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black hover:text-white active:scale-95 transition-all"
-                             >
-                               Next
-                               <ChevronRight className="h-3 w-3" />
-                             </button>
-                           </div>
-                         )}
+                            {selectedCategories.length >= 3 && (
+                              <div className="px-5 py-4 bg-black border-t-2 border-black flex-shrink-0">
+                                <p className="text-xs text-white font-semibold text-center">
+                                  Nothing can be more categorised.
+                                </p>
+                              </div>
+                            )}
+                          </SheetContent>
+                        </Sheet>
                       </div>
-                    );
-                  })()}
+                      
+                      {/* Desktop: Use Popover - Enhanced */}
+                      <div className="hidden sm:block">
+                        <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
+                          <PopoverTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                              className={`w-full justify-between min-h-[48px] h-auto py-2.5 px-4 border-2 rounded-xl transition-all duration-200 font-medium relative ${
+                                  selectedCategories.length === 0 
+                                    ? 'border-black bg-blue-50/50 hover:bg-blue-50 hover:border-black focus:border-black focus:ring-2 focus:ring-black' 
+                                    : 'border-black bg-white hover:border-black focus:border-black focus:ring-2 focus:ring-black'
+                                } shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]`}
+                              >
+                              <div className="flex flex-wrap gap-1.5 flex-1 text-left items-center min-w-0">
+                                {selectedCategories.length === 0 ? (
+                                  <span className="text-[10px] text-slate-500">Select categories...</span>
+                                ) : (
+                                  selectedCategories.map((catValue) => {
+                                    const cat = categories.find(c => c.value === catValue);
+                                    return (
+                                      <Badge 
+                                        key={catValue} 
+                                        variant="secondary" 
+                                        className="text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0"
+                                      >
+                                        {cat?.label}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent 
+                            className="w-[var(--radix-popover-trigger-width)] max-w-[100vw] p-0 sm:max-w-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 transition-all duration-300 ease-smooth will-change-[transform,opacity]" 
+                            align="start"
+                            side="bottom"
+                            sideOffset={8}
+                            alignOffset={0}
+                            avoidCollisions={true}
+                            collisionPadding={8}
+                            onInteractOutside={(e) => {
+                              // Prevent closing when clicking inside the popover
+                              const target = e.target as HTMLElement;
+                              if (target.closest('[role="dialog"]')) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            {selectedCategories.length > 0 && (
+                              <div className="p-3 border-b border-black bg-white">
+                                <div className="relative">
+                                  <Button
+                                    type="button"
+                                    onClick={() => setCategoriesPopoverOpen(false)}
+                                    className="w-full bg-gradient-to-br from-black via-black to-gray-900 text-white hover:from-gray-900 hover:via-black hover:to-black font-black text-sm py-2.5 rounded-xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4)] active:translate-y-[4px] transition-all duration-200 relative z-10"
+                                  >
+                                    Done
+                                  </Button>
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none z-0" />
+                                </div>
+                              </div>
+                            )}
+                            <div className="max-h-[calc(100vh-120px)] sm:max-h-60 overflow-y-auto overscroll-contain pb-4">
+                              {categories.map((cat, index) => {
+                                const isSelected = selectedCategories.includes(cat.value);
+                                const isDisabled = !isSelected && selectedCategories.length >= 3;
+                                const isService = cat.value === "service";
+                                
+                                return (
+                                  <div key={cat.value}>
+                                  <div 
+                                    className={`flex items-center space-x-2 p-3 sm:p-3 min-h-[44px] touch-manipulation ${
+                                      isSelected 
+                                        ? 'bg-white border-[5px] border-black rounded-xl shadow-lg' 
+                                        : 'hover:bg-slate-50 border-2 border-transparent rounded-xl'
+                                    } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={(e) => {
+                                      if (!isDisabled) {
+                                        e.stopPropagation();
+                                        handleCategoryToggle(cat.value);
+                                      }
+                                    }}
+                                    >
+                                      <Checkbox
+                                        id={cat.value}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onCheckedChange={(checked) => {
+                                          if (!isDisabled) {
+                                            handleCategoryToggle(cat.value);
+                                          }
+                                        }}
+                                      className="h-4 w-4 border-[2.5px] border-black rounded-sm data-[state=checked]:bg-black data-[state=checked]:text-white data-[state=checked]:border-black transition-all duration-200 [&>span>svg]:h-2.5 [&>span>svg]:w-2.5 pointer-events-none"
+                                      />
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={cat.value}
+                                        className={`text-sm sm:text-sm flex-1 cursor-pointer ${
+                                          isDisabled ? 'cursor-not-allowed text-slate-400' : 'text-slate-700'
+                                        }`}
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        {cat.label}
+                                      </Label>
+                                      {(() => { const Icon = categoryIcons[cat.value]; return Icon ? <Icon className="h-3.5 w-3.5 flex-shrink-0 [&>path]:fill-black [&>path]:stroke-black" style={{color:'black'}} /> : null; })()}
+                                    </div>
+                                    </div>
+                                    {isService && (
+                                      <div className="px-3 py-2">
+                                        <div className="border-t border-black border-[0.5px]"></div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {selectedCategories.length >= 3 && (
+                              <div className="p-3 bg-black border-t border-black">
+                                <p className="text-xs text-white font-semibold whitespace-nowrap">
+                                  Nothing can be more categorised.
+                                </p>
+                              </div>
+                            )}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      
+                    </div>
+                  </div>
 
-                  {/* Step 2: Description */}
-                  {step === 2 && (
-                    <div className="space-y-2 max-w-lg mx-auto w-full">
-                      <Label htmlFor="enquiry-desc" className="text-[10px] sm:text-xs font-bold">Description</Label>
+                  {/* Description - Enhanced Professional Textarea */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label htmlFor="description" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <span className="text-blue-600">*</span>
+                      {selectedCategories.includes("jobs") ? "Job Description" : "Description"}
+                    </Label>
+                    <div className="relative">
                       <Textarea
-                        id="enquiry-desc"
+                        id="description"
+                        placeholder={selectedCategories.includes("jobs") ? "Job responsibilities, requirements, experience needed..." : "Specifications, requirements, timeline..."}
                         value={description}
                         onChange={(e) => {
-                          if (e.target.value.length <= 500) setDescription(e.target.value);
+                          const value = e.target.value;
+                          if (value.length <= 500) {
+                            setDescription(value);
+                          }
                         }}
-                        placeholder="Specifications, requirements, timeline..."
+                        rows={5}
                         maxLength={500}
-                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                        autoFocus
+                        className="border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base min-h-[140px] sm:min-h-[150px] rounded-xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                        style={{ fontSize: '16px' }}
+                        required
                       />
-                      <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
+                      <p className="text-xs text-gray-500 mt-1 text-right">
+                        {description.length}/500 characters
+                      </p>
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                     </div>
-                  )}
+                  </div>
 
-                  {/* Step 3: Location */}
-                  {step === 3 && (
-                    <div className="max-w-xl mx-auto w-full space-y-3">
-                      <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                          <MapPin className="h-5 w-5 text-red-500" />
+                  {/* Reference Images (Optional) - Professional Design */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <Label className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <Upload className="h-4 w-4 text-gray-900" />
+                      Reference Images (Optional)
+                    </Label>
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 leading-relaxed">
+                      What if they end up misunderstanding you?
+                    </p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {Array.from({ length: 4 }).map((_, index) => (
+                        <div key={index} className="relative">
+                          <label
+                            htmlFor={`reference-image-${index}`}
+                            className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-2 border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
+                              referenceImageUrls[index]
+                                ? 'border-green-300 bg-green-50 hover:border-green-400'
+                                : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
+                            } ${loading || idUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            {/* Physical button depth effect */}
+                            {!referenceImageUrls[index] && (
+                              <>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                              </>
+                            )}
+                            <input
+                              id={`reference-image-${index}`}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleReferenceImageUpload(e, index)}
+                              disabled={loading || idUploadLoading}
+                            />
+                            
+                            {referenceImageUrls[index] ? (
+                              <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+                                <div className="flex flex-col items-center justify-center">
+                                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mb-1.5 sm:mb-2 relative z-10" />
+                                  <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
+                                  {referenceImageFiles[index] && (
+                                    <p className="text-[8px] sm:text-[9px] text-gray-600 text-center relative z-10 truncate w-full px-2">
+                                      {referenceImageFiles[index].name}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    removeReferenceImage(index);
+                                  }}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg z-20"
+                                  disabled={loading || idUploadLoading}
+                                >
+                                  <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                </button>
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 && (
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
+                                    {referenceUploadProgresses[index]}%
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center p-3 sm:p-4">
+                                {referenceUploadProgresses[index] > 0 && referenceUploadProgresses[index] < 100 ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
+                                    <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
+                                    <p className="text-[8px] sm:text-[9px] text-black font-black text-center relative z-10">Add Image</p>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </label>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Budget & Location - Enhanced Side by Side Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="budget" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        {selectedCategories.includes("jobs") ? "Salary (₹)" : "Budget (₹)"}
+                      </Label>
+                      <div className="relative">
                         <Input
+                          id="budget"
+                          placeholder={selectedCategories.includes("jobs") ? "50,000/month" : "50,000"}
+                          value={budget}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^\d,]/g, '');
+                            const numericValue = value.replace(/,/g, '');
+                            if (numericValue === '' || /^\d+$/.test(numericValue)) {
+                              const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
+                              setBudget(formattedValue);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value && !e.target.value.startsWith('₹')) {
+                              setBudget('₹' + e.target.value);
+                            }
+                          }}
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          style={{ fontSize: '16px' }}
+                          required
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="location" className="text-[10px] sm:text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span className="text-blue-600">*</span>
+                        Location
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="location"
+                          placeholder="Anywhere"
                           value={location}
                           onChange={handleLocationChange}
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          placeholder="Search location..."
-                          className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
+                          className="h-12 sm:h-14 text-base border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px' }}
+                          required
                         />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                        
+                        {/* AI Location Suggestions Dropdown - Enhanced */}
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                          <div className="absolute z-50 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
                             {locationSuggestions.map((suggestion, index) => (
                               <button
                                 key={index}
@@ -2248,230 +2398,706 @@ export default function PostEnquiry() {
                                 className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
                               >
                                 <span className="text-slate-800">{suggestion}</span>
+                                {(suggestion === "Anywhere" || suggestion === "Everywhere") && (
+                                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-semibold">
+                                    Global
+                                  </span>
+                                )}
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
                     </div>
-                  )}
+                  </div>
 
-                  {/* Step 4: Budget */}
-                  {step === 4 && (
-                    <div className="max-w-md mx-auto w-full space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="enquiry-budget" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
-                          <IndianRupee className="h-3.5 w-3.5" />
-                          Budget (INR)
-                        </Label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
-                          <Input
-                            id="enquiry-budget"
-                            value={budget}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/[^\d,]/g, '');
-                              const numericValue = value.replace(/,/g, '');
-                              if (numericValue === '' || /^\d+$/.test(numericValue)) {
-                                const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
-                                setBudget(formattedValue);
-                              }
+                  {/* Time Limit & Notes - Enhanced Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <TimeLimitSelector
+                        value={deadline}
+                        onChange={setDeadline}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="space-y-2.5 sm:space-y-3">
+                      <Label htmlFor="notes" className="text-[10px] sm:text-xs font-bold text-gray-900">
+                        Notes <span className="text-gray-600 font-normal">(Optional)</span>
+                      </Label>
+                      <div className="relative">
+                        <Textarea
+                          id="notes"
+                          placeholder="Additional requirements or preferences..."
+                          className="border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base rounded-xl transition-all duration-300 min-touch pl-4 pr-4 py-3 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          rows={4}
+                          style={{ fontSize: '16px' }}
+                        />
+                        {/* Physical button depth effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Payment Plan Selection - Enhanced Professional Design */}
+                  <div className="space-y-4 sm:space-y-5">
+                    {/* PRO PLAN ACTIVE BADGE - KEPT FOR FUTURE UPDATES */}
+                    {/* {hasProRemaining ? (
+                      <div className="p-3 sm:p-4 bg-black border-2 border-gray-700 rounded-xl shadow-sm">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-semibold text-white text-sm sm:text-base">Pro Plan Active</h3>
+                            <Badge className="bg-gray-700 text-white text-xs px-2 py-0.5">
+                              {proRemainingCount} Left
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    ) : ( */}
+                    <div className="space-y-3">
+                      <PaymentPlanSelector
+                        currentPlanId={selectedPlan?.id || 'free'}
+                        enquiryId="new-enquiry"
+                        userId={user?.uid || ''}
+                        onPlanSelect={(planId, price) => {
+                          const plan = PAYMENT_PLANS.find(p => p.id === planId);
+                          setSelectedPlan(plan || null);
+                        }}
+                        isUpgrade={false}
+                        className="max-w-4xl mx-auto"
+                        squareCards={true}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Trust Badge Card - Matching SellerResponse Design */}
+                  {!authLoading && !isUserVerified && (
+                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-3 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white rounded-xl w-full max-w-full overflow-visible`}>
+                    {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
+                    {verifyingId && (
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
+                        {/* Moving Tick - All Over Card */}
+                        <div 
+                          className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
+                          style={{
+                            animation: 'tickMoveAround 8s ease-in-out infinite',
+                            WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)'
+                          }}
+                        >
+                          {/* Bright Bold Distorted Tick */}
+                          <svg 
+                            className="w-full h-full text-blue-400 drop-shadow-2xl"
+                            viewBox="0 0 100 100"
+                            style={{
+                              filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
+                              animation: 'tickForming 2s ease-in-out infinite',
+                              WebkitAnimation: 'tickForming 2s ease-in-out infinite'
                             }}
-                            placeholder="50,000"
-                            inputMode="decimal"
-                            className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
-                            autoFocus
+                          >
+                            {/* Bold Distorted Tick */}
+                            <path
+                              d="M 20 50 L 40 70 L 80 30"
+                              stroke="currentColor"
+                              strokeWidth="12"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeDasharray="100"
+                              style={{
+                                strokeDashoffset: '100',
+                                animation: 'tickDraw 2s ease-in-out infinite',
+                                WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 8px currentColor)'
+                              }}
+                            />
+                            {/* Bold Pulsing Circles */}
+                            <circle
+                              cx="20"
+                              cy="50"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="40"
+                              cy="70"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                            <circle
+                              cx="80"
+                              cy="30"
+                              r="5"
+                              fill="currentColor"
+                              style={{
+                                animation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                                filter: 'drop-shadow(0 0 6px currentColor)'
+                              }}
+                            />
+                          </svg>
+                          
+                          {/* Bright Glowing Background */}
+                          <div 
+                            className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
+                            style={{
+                              animation: 'pulseGlow 2s ease-in-out infinite',
+                              WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
+                              transform: 'scale(1.3)',
+                              WebkitTransform: 'scale(1.3)'
+                            }}
+                          ></div>
+                        </div>
+                        
+                        {/* Countdown - Large Transparent Overlapping */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div 
+                            className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-white/20 tabular-nums animate-pulse select-none"
+                            style={{
+                              WebkitTextStroke: '1px #000000'
+                            } as React.CSSProperties}
+                          >
+                            {verificationCountdown}
+                          </div>
+                        </div>
+                        
+                        {/* Verifying Text - Bottom */}
+                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-6">
+                          <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
+                            Verifying your ID...
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
+                            Your ID remains securely encrypted and will be verified within a few minutes.
+                          </p>
+                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
+                            Don't press back
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-1 w-full">
+                      <div className="flex items-start justify-between w-full">
+                        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 flex-1 min-w-0 pr-2">
+                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
+                          <span className="block">Trust</span>
+                          <span className="block">Badge</span>
+                        </h3>
+                          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black flex items-center">
+                              <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>
+                            </span>
+                            <span className="text-[6px] sm:text-[7px] text-blue-600 font-medium whitespace-nowrap">Blue Badge For This Enquiry.</span>
+                          </div>
+                        </div>
+                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
+                          (optional)
+                        </span>
+                      </div>
+                    </div>
+                    {idVerificationResult?.matches ? (
+                      <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
+                        <div 
+                          className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative"
+                          style={{
+                            animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
+                            transform: 'translateZ(0)',
+                            WebkitTransform: 'translateZ(0)',
+                            willChange: 'transform, box-shadow, border-radius'
+                          }}
+                        >
+                          {/* Particle effects - deconstructed pieces assembling */}
+                          {[...Array(6)].map((_, i) => {
+                            const angle = (i * 60) * Math.PI / 180;
+                            const distance = 45;
+                            return (
+                              <div
+                                key={i}
+                                className="absolute w-3 h-3 bg-blue-400 rounded-full"
+                                style={{
+                                  left: '50%',
+                                  top: '50%',
+                                  transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
+                                  animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
+                                  transformOrigin: 'center',
+                                  WebkitTransformOrigin: 'center',
+                                  willChange: 'transform, opacity'
+                                }}
+                              />
+                            );
+                          })}
+                          <CheckCircle 
+                            className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
+                            style={{
+                              animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
+                              transform: 'translateZ(0)',
+                              WebkitTransform: 'translateZ(0)',
+                              willChange: 'transform, opacity'
+                            }}
                           />
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Step 5: Deadline & Notes */}
-                  {step === 5 && (
-                    <div className="max-w-lg mx-auto w-full space-y-6">
-                      <div className="space-y-2">
-                        <TimeLimitSelector value={deadline} onChange={setDeadline} className="w-full" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="enquiry-notes" className="text-[10px] sm:text-xs font-bold">
-                          Notes <span className="text-gray-600 font-normal">(Optional)</span>
+                    ) : (
+                      <>
+                        {/* ID Type and Number */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+                          <div className="space-y-2.5 w-full">
+                            <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Document Type
                         </Label>
-                        <Textarea
-                          id="enquiry-notes"
-                          value={notes}
-                          onChange={(e) => setNotes(e.target.value)}
-                          placeholder="Additional requirements or preferences..."
-                          className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 6: Photos & Verify */}
-                  {step === 6 && (
-                    <div className="max-w-lg mx-auto w-full space-y-6">
-                      {/* Reference Images */}
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold flex items-center gap-2">
-                          <Upload className="h-3.5 w-3.5" /> Reference Images (Optional)
-                        </Label>
-                        <p className="text-[10px] text-slate-500">What if they end up misunderstanding you?</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          {Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index} className="relative">
-                              <label
-                                htmlFor={`ref-img-${index}`}
-                                className={cn(
-                                  'flex flex-col items-center justify-center w-full h-24 sm:h-28 border-2 border-black rounded-xl cursor-pointer transition-all relative overflow-hidden group',
-                                  referenceImageUrls[index] ? 'border-green-300 bg-green-50' : 'bg-white hover:bg-gray-50'
-                                )}
-                              >
-                                <input
-                                  id={`ref-img-${index}`}
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => handleReferenceImageUpload(e, index)}
-                                  disabled={loading}
-                                />
-                                {referenceImageUrls[index] ? (
-                                  <div className="flex flex-col items-center justify-center p-2">
-                                    <Check className="h-5 w-5 text-green-600 mb-1" />
-                                    <p className="text-[9px] text-black font-black text-center">Uploaded</p>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeReferenceImage(index); }}
-                                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 z-20"
-                                    >
-                                      <X className="h-2.5 w-2.5" />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div className="flex flex-col items-center justify-center p-2">
-                                    <Upload className="h-5 w-5 text-black mb-1" />
-                                    <p className="text-[9px] text-black font-black text-center">Add Image</p>
-                                  </div>
-                                )}
-                              </label>
-                            </div>
-                          ))}
+                            <div className="relative">
+                              <Select value={govIdType} onValueChange={(value) => {
+                                setGovIdType(value);
+                                if (govIdNumber && value) {
+                                  validateIdNumber(govIdNumber, value);
+                            } else {
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                            }
+                            setIdVerificationResult(null);
+                          }} disabled={verifyingId}>
+                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-black focus:ring-black w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
+                              <SelectValue placeholder="Select ID Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
+                              <SelectItem value="pan">PAN Card</SelectItem>
+                              <SelectItem value="passport">Passport</SelectItem>
+                              <SelectItem value="driving_license">Driving License</SelectItem>
+                              <SelectItem value="voter_id">Voter ID Card</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
                         </div>
+                            {errors.govIdType && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                                {errors.govIdType}
+                          </span>
+                        )}
                       </div>
-
-                      {/* Payment Plan */}
-                      <div className="space-y-3">
-                        <PaymentPlanSelector
-                          currentPlanId={selectedPlan?.id || 'free'}
-                          enquiryId="new-enquiry"
-                          userId={user?.uid || ''}
-                          onPlanSelect={(planId) => {
-                            const plan = PAYMENT_PLANS.find(p => p.id === planId);
-                            setSelectedPlan(plan || null);
+                      
+                          <div className="space-y-2.5 w-full">
+                            <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
+                          ID Number
+                        </Label>
+                        <div className="relative">
+                          <Input
+                                id="govIdNumber"
+                                placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
+                                value={govIdNumber}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              
+                              // Auto-format Aadhaar: add space after every 4 digits
+                                  if (govIdType === 'aadhaar') {
+                                // Remove all spaces first
+                                const digitsOnly = value.replace(/\s/g, '');
+                                // Add space after every 4 digits
+                                value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
+                              }
+                              
+                                  setGovIdNumber(value);
+                                  // Clear verification result when user changes the ID number
+                              setIdVerificationResult(null);
+                                  // Clear any existing errors for ID number
+                                  setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                  // Validate the new value
+                                  if (govIdType) {
+                                    validateIdNumber(value, govIdType);
+                                  }
+                            }}
+                                className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
+                            disabled={verifyingId}
+                          />
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                        </div>
+                            {errors.govIdNumber && !idVerificationResult && (
+                          <span className="text-xs text-red-500 flex items-center">
+                            <X className="h-3 w-3 mr-1" />
+                                {errors.govIdNumber}
+                          </span>
+                        )}
+                        {/* ID Verification Status */}
+                        {verifyingId && (
+                              <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
+                            {totalElapsedSeconds >= 120 ? (
+                              <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
+                            ) : (
+                              <>
+                                <span className="text-xs sm:text-sm font-medium text-white mb-2">Verifying</span>
+                                <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-5 rounded-lg">
+                                  <span className="text-4xl sm:text-5xl font-bold text-white tabular-nums animate-pulse">
+                                    {verificationCountdown}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                        {idVerificationResult && !verifyingId && (
+                          <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
+                            idVerificationResult.matches ? 'text-blue-600' : 'text-red-600'
+                          }`}>
+                            {idVerificationResult.matches ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                        {/* ID Upload - Single Upload Button */}
+                    <div className="space-y-2.5">
+                      <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        ID Document
+                      </Label>
+                      
+                          {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
+                          {!(idFrontImage || idFrontUrl) && (
+                            <div className="mb-3 sm:mb-2">
+                        <input
+                          type="file"
+                          id="idFront"
+                          accept="image/*"
+                          disabled={verifyingId}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setIdFrontImage(file);
+                            setIdErrors(prev => ({ ...prev, idFront: "" }));
+                            setIdVerificationResult(null);
+                            
+                            try {
+                              const uploadedUrl = await uploadToCloudinaryUnsigned(file);
+                              setIdFrontUrl(uploadedUrl);
+                                    // Keep backward compatibility with govIdUrl
+                                    if (!govIdUrl) setGovIdUrl(uploadedUrl);
+                            } catch (error) {
+                              console.error('Error uploading ID:', error);
+                              toast({
+                                title: "Upload Failed",
+                                description: "Failed to upload image. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
                           }}
-                          isUpgrade={false}
-                          className="max-w-4xl mx-auto"
-                          squareCards={true}
+                          className="hidden"
                         />
-                      </div>
-
-                      {/* Profile Verification */}
-                      {!authLoading && !isUserVerified && (
-                        <div className="mt-4 mb-2">
+                        
+                              {/* Upload Button - Full Width with Black Border */}
+                        <label
+                          htmlFor="idFront"
+                                className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
+                            verifyingId
+                              ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
+                                    : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                          }`}
+                          onClick={(e) => {
+                            if (verifyingId) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                          <div className="flex items-center gap-2 relative z-10">
+                            <Upload className="h-5 w-5 text-slate-600" />
+                            <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                          </div>
+                        </label>
+                          </div>
+                          )}
+                      
+                          {/* Image Upload Status - Sleek Design */}
+                      {(idFrontImage || idFrontUrl) && (
+                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-white relative overflow-hidden">
+                              {/* Physical button depth effect */}
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
+                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
+                                {/* Success Icon with Animation */}
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
+                                  <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
+                              </div>
+                                
+                                {/* Text Content */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[11px] sm:text-lg font-bold text-black truncate leading-tight">ID Image Uploaded</p>
+                                  <p className="text-[8px] sm:text-sm text-gray-600 mt-0">Ready for verification</p>
+                                </div>
+                              </div>
+                              
+                              {/* Remove Button - Sleek Design */}
                           <button
                             type="button"
                             onClick={() => {
-                              localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, location,
-                                deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, selectedPlanId: selectedPlan?.id
-                              }));
-                              navigate('/profile?returnTo=/post-enquiry');
+                              setIdFrontImage(null);
+                              setIdFrontUrl("");
+                                  if (govIdUrl === idFrontUrl) setGovIdUrl("");
+                              setIdVerificationResult(null);
                             }}
-                            className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all group shadow-[0_4px_0_0_rgba(37,99,235,0.4)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4)] active:translate-y-0.5"
+                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group relative z-10"
+                                style={{ backgroundColor: '#dc2626' }}
+                            disabled={verifyingId}
+                            aria-label="Remove image"
                           >
-                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-                              <ShieldCheck className="h-5 w-5 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-blue-200 font-normal">(Optional)</span></p>
-                              <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge</p>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
+                                <X className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white group-hover:rotate-90 transition-transform duration-300" />
                           </button>
                         </div>
                       )}
-                      {!authLoading && isUserVerified && (
-                        <div className="mt-4 mb-2">
-                          <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600">
-                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                              <CheckCircle className="h-5 w-5 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <p className="text-xs sm:text-sm font-bold text-white">Profile Verified ✓</p>
-                              <p className="text-[10px] sm:text-[11px] text-blue-100">Your enquiry will show a trust badge.</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                    </div>
+                    
+                        {/* Upload ID for Trust Badge Button */}
+                        {(idFrontImage || idFrontUrl) && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches) && (
+                      <div className="mt-4 sm:mt-5">
+                        <Button
+                          type="button"
+                          onClick={async () => {
+                                if (!govIdType) {
+                              toast({
+                                title: "ID Type Required",
+                                description: "Please select an ID document type.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                                if (!govIdNumber || govIdNumber.trim() === '') {
+                              toast({
+                                title: "ID Number Required",
+                                description: "Please enter your ID number.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                                setVerifyingId(true);
+                                setVerificationCountdown(60);
+                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                
+                                // Scroll inline verification countdown into view on mobile
+                                setTimeout(() => {
+                                  if (inlineVerificationRef.current) {
+                                    inlineVerificationRef.current.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'center',
+                                      inline: 'nearest'
+                                    });
+                                  }
+                                }, 200);
+                            
+                            try {
+                              // Upload image if not already uploaded
+                              let frontImageUrl: string | null = null;
+                              
+                              if (idFrontImage && !idFrontUrl) {
+                                frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
+                                setIdFrontUrl(frontImageUrl);
+                              } else {
+                                frontImageUrl = idFrontUrl || null;
+                              }
+                              
+                                  if (frontImageUrl && !govIdUrl) setGovIdUrl(frontImageUrl);
+                                  
+                              if (!frontImageUrl) {
+                                toast({
+                                  title: "Upload Error",
+                                  description: "Failed to upload ID image. Please try again.",
+                                  variant: "destructive",
+                                });
+                                setVerifyingId(false);
+                                return;
+                              }
+                              
+                              const verification = await verifyIdNumberMatch(
+                                frontImageUrl,
+                                    govIdNumber,
+                                    govIdType
+                              );
+                              
+                              setIdVerificationResult(verification);
+                              
+                              if (!verification.matches) {
+                                    setErrors(prev => ({ 
+                                  ...prev, 
+                                      govIdNumber: verification.error || 'ID number does not match the image(s)' 
+                                }));
+                                toast({
+                                  title: "ID Verification Failed",
+                                      description: verification.error || "ID number does not match the uploaded image(s).",
+                                  variant: "destructive",
+                                });
+                              } else {
+                                    setErrors(prev => ({ ...prev, govIdNumber: "" }));
+                                toast({
+                                  title: "Verification Successful",
+                                      description: "Your ID has been verified!",
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Error verifying ID:', error);
+                              toast({
+                                title: "Verification Error",
+                                    description: "Failed to verify ID number. Please try again.",
+                                variant: "destructive",
+                              });
+                            } finally {
+                              setVerifyingId(false);
+                            }
+                          }}
+                              disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
+                          className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                        >
+                          {/* Physical button depth effect */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                          {verifyingId ? (
+                            <span className="flex items-center justify-center gap-2 sm:gap-3 relative z-10">
+                              {/* Countdown Square - No Borders */}
+                              <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-2.5 rounded-lg">
+                                <span className="text-2xl sm:text-2xl font-bold text-white tabular-nums animate-pulse">
+                                  {verificationCountdown}
+                                </span>
+                              </div>
+                              <span className="text-white font-semibold text-sm sm:text-base">Verifying ID...</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center justify-center gap-2 relative z-10">
+                              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                              <span className="text-white">Upload ID for Trust Badge</span>
+                            </span>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                      </>
+                    )}
+                  </div>
+                  )}
 
-                      {/* Enquiry Preview */}
-                      <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
+                  {/* Trust Badge Status - Enhanced for Verified Users */}
+                  {!authLoading && isUserVerified && (
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-blue-100/30 border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                      {/* Physical card depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                      <div className="p-3 sm:p-4 bg-white border-[0.5px] border-black rounded-lg shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.5)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-lg pointer-events-none" />
+                        <div className="flex items-center space-x-3 relative z-10">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-700" />
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
-                        </div>
-                        <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Budget</span>
-                          <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
-                        </div>
+                          <Label className="text-xs sm:text-sm font-black text-blue-800">
+                            Trust Badge Verified From Profile
+                        </Label>
+                      </div>
                       </div>
                     </div>
                   )}
-                </div>
 
-                {/* Navigation Buttons */}
-                <div className="mt-8 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={goBack}
-                    disabled={step === 0}
-                    className="border-2 border-black font-black rounded-xl h-11 sm:h-12"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Back
-                  </Button>
-                  {step < totalSteps - 1 ? (
-                    <Button type="button" onClick={goNext} className="bg-black text-white font-black rounded-xl h-11 sm:h-12 px-6">
-                      Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={() => handleSubmit(new Event('submit') as any)}
-                      disabled={loading || idUploadLoading || paymentLoading}
-                      className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
-                    >
-                      {paymentLoading ? 'Opening Razorpay…' : loading ? 'Submitting…' : 'Post Enquiry'}
-                    </Button>
+                  {/* Upload Progress - Hidden for cleaner UI, but state updates continue internally */}
+                  {false && !authLoading && !isUserVerified && idUploadLoading && (
+                    <div className="space-y-3 p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm sm:text-base font-semibold text-slate-800">
+                          {uploadStage}
+                        </span>
+                        <span className="text-sm sm:text-base font-bold text-blue-600">
+                          {uploadProgress}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   )}
-                </div>
 
+
+                  {/* Submit Button - Physical Switch Design */}
+                  <div className="pt-6 sm:pt-8 border-t-2 border-slate-100">
+                    <Button
+                      type="submit"
+                      disabled={loading || idUploadLoading || paymentLoading}
+                      className="w-full h-14 sm:h-16 bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg rounded-2xl border border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                    >
+                      {/* Physical button depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      {paymentLoading ? (
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Loader2 className="h-5 w-5 animate-spin text-white" />
+                          <span className="text-white">Opening Razorpay...</span>
+                        </span>
+                      ) : loading ? (
+                        <div className="flex items-center justify-center space-x-3 relative z-10">
+                          <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-white">Submitting...</span>
+                        </div>
+                      ) : (
+                        <span className="flex items-center justify-center gap-2 relative z-10">
+                          <Send className="h-5 w-5 text-white" />
+                          <span className="text-white">Post Enquiry</span>
+                        </span>
+                      )}
+                    </Button>
+                    
+                    {/* Loading Progress - Hidden for cleaner UI, but state updates continue internally */}
+                    {false && loading && (
+                      <div className="mt-5 p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-xl">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-sm sm:text-base font-semibold text-slate-800">
+                            {idUploadLoading ? 'Uploading ID...' : 'Submitting enquiry...'}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 shadow-inner">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 sm:h-3 rounded-full transition-all duration-300 shadow-sm"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                </form>
               </CardContent>
             </Card>
           )}
 
-          {/* Real-time Verification Status */}
+          {/* Real-time Verification Status - Enhanced Professional Design */}
           {submittedEnquiryId && (
             <Card className="mt-6 sm:mt-8 border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
               <CardContent className="p-6 sm:p-8">
