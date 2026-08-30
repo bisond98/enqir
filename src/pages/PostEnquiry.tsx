@@ -139,7 +139,7 @@ export default function PostEnquiry() {
   const [budget, setBudget] = useState("");
   const [location, setLocation] = useState("");
   const [deadline, setDeadline] = useState<Date | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -996,18 +996,17 @@ export default function PostEnquiry() {
   }, [submittedEnquiryId, navigate]); // Only depend on submittedEnquiryId and navigate
 
   // Show loading or redirect if not authenticated
-  if (!user) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pal-blue mx-auto mb-4"></div>
-            <p className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">Redirecting to sign in...</p>
-          </div>
+  const notAuth = !user ? (
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pal-blue mx-auto mb-4"></div>
+          <p className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">Redirecting to sign in...</p>
         </div>
-      </Layout>
-    );
-  }
+      </div>
+    </Layout>
+  ) : null;
+  if (!user) return notAuth;
 
   // Categories array - matching EnquiryWall.tsx with main categories at top
   let categories = [
@@ -1377,6 +1376,37 @@ export default function PostEnquiry() {
     });
   };
 
+  const handleManualStatusCheck = async () => {
+    console.log('🧪 MANUAL TEST: Checking enquiry status...');
+    try {
+      const enquiryRef = doc(db, "enquiries", submittedEnquiryId);
+      const docSnap = await getDoc(enquiryRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log('🧪 MANUAL TEST: Current status:', data.status);
+        console.log('🧪 MANUAL TEST: Full data:', data);
+        toast({
+          title: "Manual Check Complete",
+          description: `Status: ${data.status}`,
+        });
+      } else {
+        console.log('🧪 MANUAL TEST: Document not found');
+        toast({
+          title: "Document Not Found",
+          description: "Enquiry document not found in database",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('🧪 MANUAL TEST ERROR:', error);
+      toast({
+        title: "Check Failed",
+        description: "Error checking enquiry status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -1398,11 +1428,7 @@ export default function PostEnquiry() {
       return;
     }
     
-    if (!canPostEnquiry()) {
-      console.log('Cannot post enquiry - usage limit reached');
-      setShowUpgrade(true);
-      return;
-    }
+    // Payment required for all enquiries (no free tier)
 
     // Validate required fields
     if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !location.trim()) {
@@ -1895,36 +1921,7 @@ export default function PostEnquiry() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={async () => {
-                      console.log('🧪 MANUAL TEST: Checking enquiry status...');
-                      try {
-                        const enquiryRef = doc(db, "enquiries", submittedEnquiryId);
-                        const docSnap = await getDoc(enquiryRef);
-                        if (docSnap.exists()) {
-                          const data = docSnap.data();
-                          console.log('🧪 MANUAL TEST: Current status:', data.status);
-                          console.log('🧪 MANUAL TEST: Full data:', data);
-                          toast({
-                            title: "Manual Check Complete",
-                            description: `Status: ${data.status}`,
-                          });
-                        } else {
-                          console.log('🧪 MANUAL TEST: Document not found');
-                          toast({
-                            title: "Document Not Found",
-                            description: "Enquiry document not found in database",
-                            variant: "destructive",
-                          });
-                        }
-                      } catch (error) {
-                        console.error('🧪 MANUAL TEST ERROR:', error);
-                        toast({
-                          title: "Check Failed",
-                          description: "Error checking enquiry status",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
+                    onClick={handleManualStatusCheck}
                     className="w-full"
                   >
                     🧪 Manual Status Check
@@ -2016,7 +2013,15 @@ export default function PostEnquiry() {
           {!isSubmitted && (
             <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
               <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
-                <Progress value={((step + 1) / totalSteps) * 100} className="h-2 rounded-full bg-slate-200" />
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                      width: `${((step + 1) / totalSteps) * 100}%`,
+                      backgroundColor: ((step + 1) / totalSteps) < 0.5 ? '#ef4444' : ((step + 1) / totalSteps) < 0.8 ? '#22c55e' : '#15803d'
+                    }}
+                  />
+                </div>
               </div>
 
               <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
@@ -2316,7 +2321,6 @@ export default function PostEnquiry() {
                         <Label className="text-xs font-bold flex items-center gap-2">
                           <Upload className="h-3.5 w-3.5" /> Reference Images (Optional)
                         </Label>
-                        <p className="text-[10px] text-slate-500">What if they end up misunderstanding you?</p>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {Array.from({ length: 4 }).map((_, index) => (
                             <div key={index} className="relative">
@@ -2359,21 +2363,7 @@ export default function PostEnquiry() {
                         </div>
                       </div>
 
-                      {/* Payment Plan */}
-                      <div className="space-y-3">
-                        <PaymentPlanSelector
-                          currentPlanId={selectedPlan?.id || 'free'}
-                          enquiryId="new-enquiry"
-                          userId={user?.uid || ''}
-                          onPlanSelect={(planId) => {
-                            const plan = PAYMENT_PLANS.find(p => p.id === planId);
-                            setSelectedPlan(plan || null);
-                          }}
-                          isUpgrade={false}
-                          className="max-w-4xl mx-auto"
-                          squareCards={true}
-                        />
-                      </div>
+
 
                       {/* Profile Verification */}
                       {!authLoading && !isUserVerified && (
@@ -2403,7 +2393,7 @@ export default function PostEnquiry() {
                       )}
                       {!authLoading && isUserVerified && (
                         <div className="mt-4 mb-2">
-                          <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600">
+                          <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-[#1a2744]">
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                               <CheckCircle className="h-5 w-5 text-white" />
                             </div>
@@ -2438,6 +2428,16 @@ export default function PostEnquiry() {
                   )}
                 </div>
 
+                {/* Posting Fee */}
+                {step === totalSteps - 1 && (
+                  <div className="flex items-center justify-center gap-2 py-1">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5c0a0a]">
+                      <IndianRupee className="h-4 w-4 text-white" />
+                      <span className="text-xs font-bold text-white">We don't offer free listings to waste your time.</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Navigation Buttons */}
                 <div className="mt-8 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
                   <Button
@@ -2462,7 +2462,7 @@ export default function PostEnquiry() {
                       disabled={loading || idUploadLoading || paymentLoading}
                       className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
                     >
-                      {paymentLoading ? 'Opening Razorpay…' : loading ? 'Submitting…' : 'Post Enquiry'}
+                      {paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : 'Pay ₹10 & Post Enquiry'}
                     </Button>
                   )}
                 </div>
