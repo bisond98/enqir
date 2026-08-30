@@ -2367,7 +2367,7 @@ export default function PostEnquiry() {
 
                       {/* Profile Verification */}
                       {!authLoading && !isUserVerified && (
-                        <div className="mt-4 mb-2">
+                        <div>
                           <button
                             type="button"
                             onClick={() => {
@@ -2392,7 +2392,7 @@ export default function PostEnquiry() {
                         </div>
                       )}
                       {!authLoading && isUserVerified && (
-                        <div className="mt-4 mb-2">
+                        <div>
                           <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-[#1a2744]">
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                               <CheckCircle className="h-5 w-5 text-white" />
@@ -2462,7 +2462,7 @@ export default function PostEnquiry() {
                       disabled={loading || idUploadLoading || paymentLoading}
                       className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
                     >
-                      {paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : 'Pay ₹10 & Post Enquiry'}
+                      {paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : 'Post Enquiry'}
                     </Button>
                   )}
                 </div>

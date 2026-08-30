@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, MessageCircle, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity } from "lucide-react";
+import { ArrowLeft, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, MessageCircle, Edit, Trash2, Plus, Image as ImageIcon, Crown, X, ArrowRight, Zap, TrendingUp, Activity, CalendarIcon } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,6 +52,8 @@ const MyEnquiries = () => {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [enquiryResponses, setEnquiryResponses] = useState<{[key: string]: any[]}>({});
   const [selectedEnquiryForResponses, setSelectedEnquiryForResponses] = useState<Enquiry | null>(null);
+  const [cardPage, setCardPage] = useState(0);
+  const CARDS_PER_PAGE = 5;
   const [loading, setLoading] = useState(true);
   // Payment plan selector state
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
@@ -677,7 +679,11 @@ const MyEnquiries = () => {
             </motion.div>
           ) : (
             <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-              {enquiries.map((enquiry, index) => {
+              {(() => {
+                const totalPages = Math.ceil(enquiries.length / CARDS_PER_PAGE);
+                const safePage = Math.min(cardPage, Math.max(0, totalPages - 1));
+                const paged = enquiries.slice(safePage * CARDS_PER_PAGE, (safePage + 1) * CARDS_PER_PAGE);
+                return paged.map((enquiry, index) => {
                 const isExpired = (() => {
                   if (!enquiry.deadline) return false;
                   const d = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
@@ -693,7 +699,7 @@ const MyEnquiries = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  <Card className={`group relative rounded-xl overflow-visible transition-all duration-200 ${
+                  <Card className={`group relative rounded-3xl overflow-visible transition-all duration-200 ${
                     isExpired
                       ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
                       : 'bg-white border-[0.5px] border-black hover:bg-gray-50 cursor-pointer shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95'
@@ -706,7 +712,7 @@ const MyEnquiries = () => {
                       </>
                     )}
                     {/* Premium Header with Sophisticated Design */}
-                    <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${
+                    <div className={`relative bg-black rounded-t-3xl px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 ${
                       isExpired ? 'opacity-70' : ''
                     }`}>
                       {/* Elegant pattern overlay */}
@@ -746,27 +752,28 @@ const MyEnquiries = () => {
                         
                         {/* Right Side Badges - Properly Aligned */}
                         <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
-                          {/* Premium Plan Badge */}
-                          <Badge className={`flex items-center gap-0.5 sm:gap-1 lg:gap-0.5 xl:gap-1 px-1.5 sm:px-2 lg:px-1.5 xl:px-2 py-0.5 sm:py-0.5 lg:py-0.5 xl:py-0.5 rounded-md lg:rounded-sm xl:rounded-md shadow-sm border backdrop-blur-md ${
-                            enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                              ? 'bg-white/15 text-gray-100 border-white/20' 
-                              : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
-                          }`}>
-                            {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                              <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-yellow-300 drop-shadow-sm" />
-                            ) : null}
-                            <span className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-bold whitespace-nowrap tracking-wide">
-                              {enquiry.selectedPlanId ? (
-                                enquiry.selectedPlanId === 'free' ? 'Free Plan' :
-                                enquiry.selectedPlanId === 'basic' ? 'Basic Plan' :
-                                enquiry.selectedPlanId === 'standard' ? 'Standard Plan' :
-                                enquiry.selectedPlanId === 'premium' ? 'Premium Plan' :
-                                enquiry.selectedPlanId === 'pro' ? 'Pro Plan' : 'Paid Plan'
-                              ) : (
-                                enquiry.isPremium ? 'Premium Plan' : 'Free Plan'
-                              )}
-                            </span>
-                          </Badge>
+                          {/* Deadline Badge */}
+                          {enquiry.deadline && (() => {
+                            let deadlineDate: Date;
+                            try {
+                              if (typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+                                deadlineDate = (enquiry.deadline as any).toDate();
+                              } else {
+                                deadlineDate = new Date(enquiry.deadline as any);
+                              }
+                              if (isNaN(deadlineDate.getTime())) return null;
+                              return (
+                                <Badge className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 rounded-md shadow-sm border border-red-500 bg-red-500 text-white">
+                                  <CalendarIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                  <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
+                                    {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                  </span>
+                                </Badge>
+                              );
+                            } catch {
+                              return null;
+                            }
+                          })()}
                           
                           {/* Status Badge with Icon */}
                           <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
@@ -792,48 +799,6 @@ const MyEnquiries = () => {
                         </div>
                       )}
                       
-                      {/* Deadline Badge - Premium Design - Lowered to make space for Urgent */}
-                      {(() => {
-                        const deadline = enquiry.deadline;
-                        if (!deadline) return null;
-                        
-                        try {
-                          let deadlineDate: Date;
-                          
-                          if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
-                            deadlineDate = deadline.toDate();
-                          } else if (typeof deadline === 'string' || typeof deadline === 'number') {
-                            deadlineDate = new Date(deadline);
-                          } else if (deadline instanceof Date) {
-                            deadlineDate = deadline;
-                          } else {
-                            return null;
-                          }
-                          
-                          if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                            return null;
-                          }
-                          
-                          return (
-                            <div className={`absolute right-3 sm:right-4 lg:right-3 xl:right-3.5 flex items-center gap-1 lg:gap-1.5 bg-gradient-to-r from-red-50 to-red-100/80 border-2 border-red-200/60 rounded-md lg:rounded-lg px-2 lg:px-2.5 xl:px-2.5 py-1 lg:py-1.5 xl:py-1.5 shadow-lg z-20 backdrop-blur-sm max-w-[140px] sm:max-w-[160px] lg:max-w-[150px] xl:max-w-[160px] ${
-                              enquiry.isUrgent 
-                                ? 'top-12 sm:top-14 lg:top-12 xl:top-14' 
-                                : 'top-3 sm:top-4 lg:top-3 xl:top-3.5'
-                            }`}>
-                              <div className="flex items-center justify-center w-3 h-3 lg:w-3.5 lg:h-3.5 xl:w-3.5 xl:h-3.5 bg-red-500 rounded-full flex-shrink-0">
-                                <Clock className="h-1.5 w-1.5 lg:h-2 lg:w-2 xl:h-2 xl:w-2 text-white" />
-                              </div>
-                              <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
-                                {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                              </span>
-                            </div>
-                          );
-                        } catch (e) {
-                          console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
-                          return null;
-                        }
-                      })()}
-
                       <div className="relative space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                         {/* Enquiry Heading - Moved from header */}
                         <div className="mb-2 sm:mb-3 lg:mb-2 xl:mb-3">
@@ -894,67 +859,33 @@ const MyEnquiries = () => {
                         </div>
 
                         {/* Plan Information Group - Premium Design */}
-                        <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-[0.5px] border-gray-800 shadow-md">
-                          {/* Current Plan & Response Limit */}
-                          <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
-                            <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                                <Crown className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Plan</div>
-                                <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-black text-gray-900 whitespace-nowrap">
-                                  {enquiry.selectedPlanId ? (
-                                    enquiry.selectedPlanId === 'free' ? 'Free' :
-                                    enquiry.selectedPlanId === 'basic' ? 'Basic' :
-                                    enquiry.selectedPlanId === 'standard' ? 'Standard' :
-                                    enquiry.selectedPlanId === 'premium' ? 'Premium' :
-                                    enquiry.selectedPlanId === 'pro' ? 'Pro' : 'Paid'
-                                  ) : (
-                                    enquiry.isPremium ? 'Premium' : 'Free'
-                                  )}
+                        {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') && (
+                          <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-[0.5px] border-gray-800 shadow-md">
+                            <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
+                              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 lg:h-4.5 lg:w-4.5 xl:h-5 xl:w-5 text-white" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Plan</div>
+                                  <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] font-black text-gray-900 whitespace-nowrap">
+                                    {enquiry.selectedPlanId === 'premium' ? 'Premium' :
+                                     enquiry.selectedPlanId === 'pro' ? 'Pro' :
+                                     enquiry.selectedPlanId === 'basic' ? 'Basic' :
+                                     enquiry.selectedPlanId === 'standard' ? 'Standard' : 'Paid'}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
-                              {/* Physical depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0 relative z-10"></div>
-                              <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap relative z-10">
-                                {getResponseLimitText(enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free'))}
-                              </span>
+                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] flex-shrink-0 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-2 lg:h-2 xl:w-2.5 xl:h-2.5 bg-blue-600 rounded-full animate-pulse flex-shrink-0 relative z-10"></div>
+                                <span className="text-[9px] sm:text-xs lg:text-[9px] xl:text-[10px] font-bold text-blue-700 whitespace-nowrap relative z-10">
+                                  {getResponseLimitText(enquiry.selectedPlanId)}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                          
-                          {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
-                          {(() => {
-                            // Always use selectedPlanId - don't use isPremium flag
-                            const enquiryPlan = enquiry.selectedPlanId || 'free';
-                            // Don't show upgrade button for premium (top tier) or pro (hidden for future)
-                            if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return false;
-                            const upgradeOptions = getUpgradeOptions(
-                              enquiryPlan, 
-                              userPaymentPlan?.currentPlan,
-                              enquiry.createdAt,
-                              userPaymentPlan?.proActivationDate
-                            );
-                            return upgradeOptions.length > 0;
-                          })() && !isExpired && (
-                            <div className="pt-2 sm:pt-2.5 lg:pt-2 xl:pt-2.5">
-                              <button
-                                onClick={() => handleUpgradeClick(enquiry)}
-                                className="w-full border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden group/upgrade"
-                              >
-                                {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform duration-200 relative z-10" />
-                                <span className="whitespace-nowrap tracking-tight relative z-10">Upgrade to Premium</span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        )}
 
                         {/* Timestamps & Admin Notes Group */}
                         <div className="space-y-1 sm:space-y-1.5 lg:space-y-1 xl:space-y-1.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
@@ -1073,45 +1004,39 @@ const MyEnquiries = () => {
                     </div>
                   </Card>
                 </motion.div>
-              );})}
+              );});
+              })()}
+
+              {/* Pagination Controls */}
+              {(() => {
+                const totalPages = Math.ceil(enquiries.length / CARDS_PER_PAGE);
+                if (totalPages <= 1) return null;
+                const safePage = Math.min(cardPage, Math.max(0, totalPages - 1));
+                return (
+                  <div className="flex items-center justify-center gap-3 pt-2 pb-4">
+                    <button
+                      onClick={() => { setCardPage(p => Math.max(0, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={safePage === 0}
+                      className="flex items-center gap-1 px-4 py-2 rounded-full bg-black text-white text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                    >
+                      ← Prev
+                    </button>
+                    <span className="text-sm font-bold text-gray-500">{safePage + 1} / {totalPages}</span>
+                    <button
+                      onClick={() => { setCardPage(p => Math.min(totalPages - 1, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={safePage >= totalPages - 1}
+                      className="flex items-center gap-1 px-4 py-2 rounded-full bg-black text-white text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>
       </div>
-      {/* Payment Plan Selector Modal */}
-      {showPaymentSelector && selectedEnquiryForUpgrade && (
-        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
-            {/* Physical button depth effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
-            
-            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
-              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
-                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
-                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
-                </div>
-                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
-              </DialogTitle>
-              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
-                Upgrade to unlock more curated, verified sellers.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
-              <PaymentPlanSelector
-                currentPlanId={currentPlan}
-                enquiryId={selectedEnquiryForUpgrade.id}
-                userId={user?.uid || ''}
-                onPlanSelect={handlePlanSelect}
-                isUpgrade={true}
-                enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
-                className="max-w-4xl mx-auto w-full"
-                user={user}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+
 
       {/* Fullscreen Image Modal - Completely outside all dialogs */}
       {fullscreenImage && (

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -1792,6 +1792,29 @@ const Dashboard = () => {
                                     {planInfo.name}
                                   </span>
                                 </Badge>
+
+                                {/* Deadline Badge */}
+                                {enquiry.deadline && (() => {
+                                  let deadlineDate: Date;
+                                  try {
+                                    if (typeof enquiry.deadline === 'object' && 'toDate' in enquiry.deadline) {
+                                      deadlineDate = (enquiry.deadline as any).toDate();
+                                    } else {
+                                      deadlineDate = new Date(enquiry.deadline);
+                                    }
+                                    if (isNaN(deadlineDate.getTime())) return null;
+                                    return (
+                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md shadow-sm border border-red-500 bg-red-500 text-white flex-shrink-0">
+                                        <CalendarIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                        <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
+                                          {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                        </span>
+                                      </Badge>
+                                    );
+                                  } catch {
+                                    return null;
+                                  }
+                                })()}
                               </div>
                             </div>
                             
@@ -1811,45 +1834,6 @@ const Dashboard = () => {
                               
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
-                              {/* Deadline Badge - Premium Design */}
-                              {(() => {
-                                const deadline = enquiry.deadline;
-                                if (!deadline) return null;
-                                
-                                try {
-                                  let deadlineDate: Date;
-                                  
-                                  if (deadline && typeof deadline === 'object' && 'toDate' in deadline) {
-                                    deadlineDate = deadline.toDate();
-                                  } else if (typeof deadline === 'string' || typeof deadline === 'number') {
-                                    deadlineDate = new Date(deadline);
-                                  } else if (deadline instanceof Date) {
-                                    deadlineDate = deadline;
-                                  } else {
-                                    return null;
-                                  }
-                                  
-                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                                    return null;
-                                  }
-                                  
-                                  return (
-                                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-3 lg:right-3 xl:top-3.5 xl:right-3.5 flex items-center gap-1 lg:gap-1.5 bg-gradient-to-r from-red-50 to-red-100/80 border-2 border-red-200/60 rounded-md lg:rounded-lg px-2 lg:px-2.5 xl:px-2.5 py-1 lg:py-1.5 xl:py-1.5 shadow-lg z-20 backdrop-blur-sm max-w-[140px] sm:max-w-[160px] lg:max-w-[150px] xl:max-w-[160px]">
-                                      <div className="flex items-center justify-center w-3 h-3 lg:w-3.5 lg:h-3.5 xl:w-3.5 xl:h-3.5 bg-red-500 rounded-full flex-shrink-0">
-                                        <Clock className="h-1.5 w-1.5 lg:h-2 lg:w-2 xl:h-2 xl:w-2 text-white" />
-                                      </div>
-                                      <span className="text-[8px] sm:text-[9px] lg:text-[9px] xl:text-[10px] text-red-800 font-bold whitespace-nowrap tracking-tight truncate">
-                                        {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                              </span>
-                            </div>
-                                  );
-                                } catch (e) {
-                                  console.error('Error parsing deadline for enquiry:', enquiry.id, e, deadline);
-                                  return null;
-                                }
-                              })()}
-
-                                  
                               {/* Premium Upgrade Button - Desktop Only, Next to Responses */}
                                   <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
                                     {(() => {
@@ -2680,9 +2664,8 @@ const Dashboard = () => {
                         </div>
                         <Link
                           to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
-                        >
+                          onClick={(e) => e.stopPropagation()}className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors border-2 border-black"
+                          >
                           <MessageSquare className="h-3.5 w-3.5 text-white" />
                         </Link>
                       </div>
