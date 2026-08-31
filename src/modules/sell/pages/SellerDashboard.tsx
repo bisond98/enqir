@@ -9,11 +9,11 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned } from 'lucide-react';
+import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
 
-export default function SellerDashboard() {
+export default function SellerDashboard({ minimal = false }: { minimal?: boolean } = {}) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<SellListing[]>([]);
@@ -33,6 +33,9 @@ export default function SellerDashboard() {
   const [editTags, setEditTags] = useState('');
   const [locationSearch, setLocationSearch] = useState('');
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
+  const [listingsPage, setListingsPage] = useState(1);
+  const [responsesPage, setResponsesPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   const load = async () => {
     if (!user) return;
@@ -106,8 +109,21 @@ export default function SellerDashboard() {
   const liveCount = listings.filter(l => l.status === 'live').length;
   const draftCount = listings.filter(l => l.status === 'draft').length;
 
+  const listingsTotalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
+  const paginatedListings = listings.slice((listingsPage - 1) * ITEMS_PER_PAGE, listingsPage * ITEMS_PER_PAGE);
+  const responsesTotalPages = Math.ceil(responses.length / ITEMS_PER_PAGE);
+  const paginatedResponses = responses.slice((responsesPage - 1) * ITEMS_PER_PAGE, responsesPage * ITEMS_PER_PAGE);
+
   if (!user) {
     return (
+      minimal ? (
+        <div className="text-center py-20">
+          <p className="text-sm text-gray-500 mb-4">Sign in to view your seller dashboard.</p>
+          <Link to="/signin">
+            <Button className="bg-black text-white border border-black font-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Sign In</Button>
+          </Link>
+        </div>
+      ) : (
       <SellShell title="Seller Dashboard">
         <div className="text-center py-20">
           <p className="text-sm text-gray-500 mb-4">Sign in to view your seller dashboard.</p>
@@ -116,11 +132,12 @@ export default function SellerDashboard() {
           </Link>
         </div>
       </SellShell>
+      )
     );
   }
 
-  return (
-    <SellShell title="Seller Dashboard">
+  const shellContent = (
+      <>
       {/* Stats Row */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
         {[
@@ -140,26 +157,19 @@ export default function SellerDashboard() {
         ))}
       </div>
 
-      {/* Create Listing CTA */}
-      <Link to="/sell/new" className="block mb-4">
-        <Button className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
-          <Plus className="h-4 w-4 mr-2" />Create New Listing
-        </Button>
-      </Link>
-
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl">
+      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border border-black/10">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length },
           { key: 'responses' as const, label: 'Responses', count: responses.length },
         ]).map(({ key, label, count }) => (
           <button
             key={key}
-            onClick={() => setActiveTab(key)}
+            onClick={() => { setActiveTab(key); setListingsPage(1); setResponsesPage(1); }}
             className={`flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
               activeTab === key
-                ? 'bg-white text-black shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-[0_4px_0_0_rgba(37,99,235,0.3)]'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
             {label} ({count})
@@ -190,7 +200,7 @@ export default function SellerDashboard() {
             </div>
           )}
 
-          {!loading && listings.map((l) => (
+          {!loading && paginatedListings.map((l) => (
             <div key={l.id} className="border border-black rounded-2xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
@@ -379,46 +389,48 @@ export default function SellerDashboard() {
                   </div>
                 </div>
               ) : (
-                <Link to={`/sell/listing/${l.id}`} className="block">
-                  <div className="flex gap-3 p-3">
-                    {l.images?.[0] ? (
-                      <img src={l.images[0]} alt="" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0 border border-black/10" />
-                    ) : (
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black/10">
-                        <LayoutDashboard className="h-5 w-5 text-gray-300" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-black text-black text-sm truncate">{l.title}</h3>
-                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                          l.status === 'live' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 border border-gray-200'
-                        }`}>{l.status}</span>
-                      </div>
-                      <p className="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{l.description}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        {l.price != null && (
-                          <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full">
-                            <IndianRupee className="h-2 w-2 inline" />{l.price.toLocaleString('en-IN')}
+                <Link to={`/sell/listing/${l.id}`} className="block group/tile">
+                  <div className="p-4">
+                    <div className="flex gap-3.5">
+                      {l.images?.[0] ? (
+                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0" />
+                      ) : (
+                        <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <Package className="h-6 w-6 text-gray-300" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-[15px] text-gray-900 truncate leading-tight">{l.title}</h3>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md flex-shrink-0 ${
+                            l.status === 'live' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                          }`}>{l.status}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          {l.price != null && (
+                            <span className="text-[13px] font-bold text-gray-900">
+                              ₹{l.price.toLocaleString('en-IN')}
+                            </span>
+                          )}
+                          <span className="text-[11px] text-gray-400">•</span>
+                          <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />{l.location}
                           </span>
-                        )}
-                        <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
-                          <MapPin className="h-2.5 w-2.5" />{l.location}
-                        </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   {/* Action buttons */}
-                  <div className="flex border-t border-black/10">
+                  <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1.5 border-r border-black/10 transition-colors"
+                      className="flex-1 py-2.5 text-[11px] font-bold text-gray-800 hover:text-black border-2 border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.08)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.12)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.08)] active:translate-y-0.5 bg-white hover:bg-gray-50"
                     >
                       <Pencil className="h-3 w-3" />Edit
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-red-500 hover:bg-red-50 flex items-center justify-center gap-1.5 transition-colors"
+                      className="flex-1 py-2.5 text-[11px] font-bold text-red-600 border-2 border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(239,68,68,0.1)] hover:shadow-[0_3px_0_0_rgba(239,68,68,0.15)] active:shadow-[0_1px_0_0_rgba(239,68,68,0.1)] active:translate-y-0.5 bg-white hover:bg-red-50"
                     >
                       <Trash2 className="h-3 w-3" />Delete
                     </button>
@@ -427,6 +439,38 @@ export default function SellerDashboard() {
               )}
             </div>
           ))}
+
+          {/* Listings Pagination */}
+          {!loading && listingsTotalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={() => setListingsPage(p => Math.max(1, p - 1))}
+                disabled={listingsPage === 1}
+                className="flex items-center gap-1.5 text-sm font-black text-gray-700 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="h-5 w-5" />Prev
+              </button>
+              <span className="text-sm font-black text-black">
+                {listingsPage} / {listingsTotalPages}
+              </span>
+              <button
+                onClick={() => setListingsPage(p => Math.min(listingsTotalPages, p + 1))}
+                disabled={listingsPage === listingsTotalPages}
+                className="flex items-center gap-1.5 text-sm font-black text-gray-700 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Next<ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+
+          {/* Create Listing CTA */}
+          {!loading && listings.length > 0 && (
+            <Link to="/sell/new" className="block">
+              <Button className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+                <Plus className="h-4 w-4 mr-2" />Create New Listing
+              </Button>
+            </Link>
+          )}
         </div>
       )}
 
@@ -448,24 +492,69 @@ export default function SellerDashboard() {
             </div>
           )}
 
-          {!loading && responses.slice(0, 30).map((r) => {
+          {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
             return (
-              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border border-black/10 rounded-2xl p-4 hover:bg-slate-50 hover:border-black/20 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <p className="font-black text-black text-xs sm:text-sm truncate">{listing?.title ?? 'Listing'}</p>
-                  {r.offeredPrice != null && (
-                    <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
-                      <IndianRupee className="h-2 w-2 inline" />{r.offeredPrice.toLocaleString('en-IN')}
-                    </span>
-                  )}
+              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border-2 border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_3px_0_0_rgba(0,0,0,0.1)] group">
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">                          <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-black text-gray-900 text-sm truncate leading-tight">{listing?.title ?? 'Listing'}</p>
+                          <p className="text-[10px] text-gray-600 font-medium">Buyer inquiry</p>
+                        </div>
+                      </div>
+                      <p className="text-[13px] text-gray-900 whitespace-pre-wrap line-clamp-2 leading-relaxed pl-10">{r.message}</p>
+                    </div>
+                    {r.offeredPrice != null && (
+                      <div className="flex flex-col items-end flex-shrink-0">
+                        <span className="text-[11px] text-gray-600 font-medium mb-0.5">Offered</span>
+                        <span className="text-sm font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg border border-gray-200">
+                          ₹{r.offeredPrice.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-600 whitespace-pre-wrap line-clamp-2">{r.message}</p>
+                <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-gray-600 font-medium">View response details →</span>
+                    <MessageSquare className="h-3.5 w-3.5 text-green-500 group-hover:text-green-600 transition-colors" />
+                  </div>
+                </div>
               </Link>
             );
           })}
+
+          {/* Responses Pagination */}
+          {!loading && responsesTotalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={() => setResponsesPage(p => Math.max(1, p - 1))}
+                disabled={responsesPage === 1}
+                className="flex items-center gap-1.5 text-sm font-black text-gray-700 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="h-5 w-5" />Prev
+              </button>
+              <span className="text-sm font-black text-black">
+                {responsesPage} / {responsesTotalPages}
+              </span>
+              <button
+                onClick={() => setResponsesPage(p => Math.min(responsesTotalPages, p + 1))}
+                disabled={responsesPage === responsesTotalPages}
+                className="flex items-center gap-1.5 text-sm font-black text-gray-700 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Next<ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
         </div>
       )}
-    </SellShell>
+  </>
   );
+
+  return minimal ? shellContent : <SellShell title="Seller Dashboard">{shellContent}</SellShell>;
 }
