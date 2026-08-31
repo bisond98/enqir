@@ -2968,6 +2968,47 @@ const Landing = () => {
                         <ArrowRight className="h-3 w-3 relative z-10" />
                       </button>
                     </Link>
+
+                    {/* Product Search Bar */}
+                    <div className="w-full max-w-md mx-auto mt-4">
+                      <div className="flex gap-0">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black z-10 pointer-events-none" />
+                          <input
+                            type="text"
+                            placeholder="Search products for sale..."
+                            id="product-search-input"
+                            className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
+                            style={{
+                              lineHeight: '1.5',
+                              paddingTop: '0.75rem',
+                              paddingBottom: '0.75rem',
+                              textAlign: 'center',
+                              paddingLeft: '2.75rem'
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const val = (e.target as HTMLInputElement).value.trim();
+                                if (val) navigate(`/sell/marketplace?search=${encodeURIComponent(val)}`);
+                              }
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
+                        </div>
+                        <button
+                          onClick={() => {
+                            const input = document.getElementById('product-search-input') as HTMLInputElement;
+                            const val = input?.value.trim();
+                            if (val) navigate(`/sell/marketplace?search=${encodeURIComponent(val)}`);
+                          }}
+                          className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                          <Search className="h-3.5 w-3.5 relative z-10" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
 

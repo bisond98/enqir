@@ -262,6 +262,7 @@ export default function ListingDetail() {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
                   <Input
                     value={offeredPrice ? Number(offeredPrice).toLocaleString("en-IN") : ""}
+                    maxLength={13}
                     onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="e.g., 15,000"
                     inputMode="numeric"
@@ -275,12 +276,14 @@ export default function ListingDetail() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Write your message to the seller…"
+                  maxLength={250}
                   rows={3}
                   className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
                 />
               </div>
               <Button
-                className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+                variant="outline"
+                className="w-full h-11 !bg-green-600 hover:!bg-green-700 !text-white !border-green-700 font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(22,163,74,0.3)] hover:shadow-[0_6px_0_0_rgba(22,163,74,0.3)] active:shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:translate-y-0.5 transition-all"
                 onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
                 disabled={sending}
               >

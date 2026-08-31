@@ -1482,7 +1482,7 @@ const Dashboard = () => {
               </div>
               
             {/* Dashboard Heading in Black Header */}
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
+            <div className="flex justify-center items-center mb-4 sm:mb-6 pt-6 sm:pt-8">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white" />
                       Dashboard.
@@ -1779,20 +1779,6 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                                {/* Premium Plan Badge */}
-                                <Badge className={`flex items-center gap-1 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2 sm:px-4 lg:px-3 xl:px-4 py-1 sm:py-2 lg:py-1.5 xl:py-2 rounded-lg sm:rounded-xl shadow-lg border backdrop-blur-md ${
-                                  enquiry.selectedPlanId === 'free' || (!enquiry.selectedPlanId && !enquiry.isPremium) 
-                                    ? 'bg-white/15 text-gray-100 border-white/20' 
-                                    : 'bg-blue-500/30 text-blue-50 border-blue-400/40'
-                                } flex-shrink-0`}>
-                                  {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') || enquiry.isPremium ? (
-                                    <Crown className="h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-yellow-300 drop-shadow-sm" />
-                                  ) : null}
-                                  <span className="text-[8px] sm:text-xs lg:text-xs xl:text-xs font-bold whitespace-nowrap tracking-wide">
-                                    {planInfo.name}
-                                  </span>
-                                </Badge>
-
                                 {/* Deadline Badge */}
                                 {enquiry.deadline && (() => {
                                   let deadlineDate: Date;
@@ -1834,39 +1820,8 @@ const Dashboard = () => {
                               
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
-                              {/* Premium Upgrade Button - Desktop Only, Next to Responses */}
+                              {/* Delete Button - Desktop Only */}
                                   <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
-                                    {(() => {
-                                      const enquiryPlan = enquiry.selectedPlanId || 'free';
-                                      if (enquiryPlan !== 'premium' && enquiryPlan !== 'pro') {
-                                        const upgradeOptions = getUpgradeOptions(
-                                          enquiryPlan,
-                                          'free',
-                                          enquiry.createdAt,
-                                          null
-                                        );
-                                        if (upgradeOptions.length > 0) {
-                                          return (
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (!expiredFlag) {
-                                                  handleUpgradeClick(enquiry, e);
-                                                }
-                                              }}
-                                              disabled={expiredFlag}
-                                              className="flex-shrink-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-bold rounded-lg lg:rounded-md xl:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade border border-black hover:border-black items-center justify-center lg:min-w-[85px] xl:min-w-[90px]"
-                                            >
-                                              <Crown className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform drop-shadow-sm" />
-                                              <span className="tracking-tight whitespace-nowrap">Upgrade</span>
-                                            </Button>
-                                          );
-                                        }
-                                      }
-                                      return null;
-                                    })()}
                                     <Button 
                                       variant="destructive" 
                                       size="sm" 
@@ -1898,36 +1853,9 @@ const Dashboard = () => {
                               {/* Spacer to maintain card height */}
                               <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
 
-                              {/* Plan Notice - Show plan-specific seller limit, positioned above response button */}
+                              {/* Plan Notice - Hidden since all listings are now paid */}
                               {(() => {
-                                const planId = enquiry.selectedPlanId || (enquiry.isPremium ? 'premium' : 'free');
-                                let planText = '';
-                                
-                                switch (planId) {
-                                  case 'free':
-                                    planText = 'With Free Plan Meet Only 2 Different Sellers';
-                                    break;
-                                  case 'basic':
-                                    planText = 'With Basic Plan Meet Only 5 Different Sellers';
-                                    break;
-                                  case 'standard':
-                                    planText = 'With Standard Plan Meet Only 10 Different Sellers';
-                                    break;
-                                  case 'premium':
-                                  case 'pro':
-                                    planText = 'With Premium Plan Meet Unlimited Sellers';
-                                    break;
-                                  default:
-                                    planText = 'With Free Plan Meet Only 2 Different Sellers';
-                                }
-                                
-                                return (
-                                  <div className="relative z-10 mb-0.5 sm:mb-1 lg:mb-0.5 xl:mb-1">
-                                    <p className="text-[7px] sm:text-[8px] lg:text-[8px] xl:text-[9px] font-bold text-gray-700 text-center">
-                                      {planText}
-                                    </p>
-                                  </div>
-                                );
+                                return null;
                               })()}
 
                               {/* Premium Action Buttons - Perfectly Aligned */}
@@ -1968,43 +1896,8 @@ const Dashboard = () => {
                                   )}
                               </Button>
                               
-                                {/* Premium Upgrade Button - Mobile/Tablet Only (Desktop version is in Response Metrics) */}
+                                {/* Delete Button - Mobile/Tablet Only */}
                                 <div className="lg:hidden flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-                                  {(() => {
-                                    const enquiryPlan = enquiry.selectedPlanId || 'free';
-                                    if (enquiryPlan !== 'premium' && enquiryPlan !== 'pro') {
-                                      const upgradeOptions = getUpgradeOptions(
-                                        enquiryPlan,
-                                        'free',
-                                        enquiry.createdAt,
-                                        null
-                                      );
-                                      if (upgradeOptions.length > 0) {
-                                        return (
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              if (!expiredFlag) {
-                                                handleUpgradeClick(enquiry, e);
-                                              }
-                                            }}
-                                            disabled={expiredFlag}
-                                            className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-blue-600 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/upgrade flex items-center justify-center sm:min-w-[110px] relative overflow-hidden disabled:grayscale"
-                                          >
-                                            {/* Physical button depth effect */}
-                                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                            {/* Shimmer effect */}
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/upgrade:scale-110 transition-transform relative z-10" />
-                                            <span className="tracking-tight whitespace-nowrap relative z-10">Upgrade</span>
-                                          </Button>
-                                        );
-                                      }
-                                    }
-                                    return null;
-                                  })()}
                                   <Button 
                                     variant="destructive" 
                                     size="sm" 

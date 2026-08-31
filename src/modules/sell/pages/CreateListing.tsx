@@ -17,26 +17,66 @@ import { LogIn, UserPlus } from 'lucide-react';
 import {
   AlignLeft,
   Armchair,
+  Baby,
+  Bike,
+  BookOpen,
+  Briefcase,
+  Building2,
+  Camera,
   Car,
   Check,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Cpu,
+  Dumbbell,
+  Factory,
+  FileText,
+  Film,
+  Flower2,
+  Gamepad2,
+  Gem,
+  GraduationCap,
+  HandHeart,
+  HardHat,
+  HeartPulse,
   Home,
   IndianRupee,
+  Landmark,
   Laptop,
   LayoutGrid,
+  Lock,
   MapPin,
+  Megaphone,
+  Mic,
+  Monitor,
+  Music,
   Package,
+  PartyPopper,
+  Palette,
+  PawPrint,
+  Scale,
+  Search,
+  ShieldCheck,
   Shirt,
   Smartphone,
+  Sofa,
   Sparkles,
+  Stamp,
   Tag,
+  TreePine,
+  Tractor,
+  Truck,
+  Trophy,
   Type,
+  Umbrella,
   Upload,
+  User,
+  Users,
+  UtensilsCrossed,
   Wrench,
-  ShieldCheck,
+  Zap,
+  X,
   BadgeCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -51,6 +91,63 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   fashion: Shirt,
   vehicles: Car,
   services: Wrench,
+  'agriculture-farming': Tractor,
+  antiques: Landmark,
+  art: Palette,
+  'baby-kids': Baby,
+  'bags-luggage': Briefcase,
+  'beauty-products': Flower2,
+  bicycles: Bike,
+  'books-publications': BookOpen,
+  business: Briefcase,
+  'childcare-family': Users,
+  collectibles: Trophy,
+  'construction-renovation': HardHat,
+  'education-training': GraduationCap,
+  'entertainment-media': Film,
+  'events-entertainment': PartyPopper,
+  'food-beverage': UtensilsCrossed,
+  'gaming-recreation': Gamepad2,
+  'government-public': Building2,
+  'health-beauty': HeartPulse,
+  'insurance-services': ShieldCheck,
+  jobs: Briefcase,
+  'jewelry-accessories': Gem,
+  'legal-financial': Scale,
+  'marketing-advertising': Megaphone,
+  memorabilia: Stamp,
+  'musical-instruments': Mic,
+  'musical-accessories': Music,
+  'musical-services': Mic,
+  'non-profit-charity': HandHeart,
+  'office-supplies': FileText,
+  personal: User,
+  pets: PawPrint,
+  'photography-cameras': Camera,
+  'fitness-gym-equipment': Dumbbell,
+  'garden-outdoor': TreePine,
+  'kitchen-dining': UtensilsCrossed,
+  'raw-materials-industrial': Factory,
+  'real-estate': Home,
+  'real-estate-services': Home,
+  'renewable-energy': Zap,
+  'repair-services': Wrench,
+  'cleaning-services': Sparkles,
+  'security-safety': Lock,
+  sneakers: Gem,
+  souvenir: MapPin,
+  'sports-outdoor': Dumbbell,
+  technology: Monitor,
+  thrift: Shirt,
+  'tools-equipment': Wrench,
+  'transportation-logistics': Truck,
+  'travel-tourism': MapPin,
+  'tutoring-lessons': GraduationCap,
+  vintage: Landmark,
+  'waste-management': Factory,
+  'wedding-events': PartyPopper,
+  'medical-equipment': HeartPulse,
+  appliances: Armchair,
   other: LayoutGrid,
 };
 
@@ -79,6 +176,9 @@ export default function CreateListing() {
     return 0;
   });
   const [animDir, setAnimDir] = useState<'up' | 'down'>('up');
+  const [catSearch, setCatSearch] = useState('');
+  const [catPage, setCatPage] = useState(0);
+  const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
@@ -212,7 +312,7 @@ export default function CreateListing() {
         toast({ title: 'Missing price', description: 'Enter a price.', variant: 'destructive' });
         return false;
       }
-      const fixedPrice = Number(price);
+      const fixedPrice = Number(price.replace(/,/g, ""));
       if (!Number.isFinite(fixedPrice) || fixedPrice <= 0) {
         toast({ title: 'Invalid price', description: 'Enter a valid numeric price.', variant: 'destructive' });
         return false;
@@ -300,7 +400,7 @@ export default function CreateListing() {
     }
     if (!validatePriceFields()) return;
 
-    const fixedPrice = priceType === 'fixed' ? Number(price) : null;
+    const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
     const rangeMin = priceType === 'range' ? Number(priceMin) : null;
     const rangeMax = priceType === 'range' ? Number(priceMax) : null;
 
@@ -403,40 +503,129 @@ export default function CreateListing() {
           </div>
 
           <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
-            {step === 0 && (
-              <div className="max-w-2xl mx-auto w-full">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                  {SELL_CATEGORIES.map((c) => {
-                    const Icon = CATEGORY_ICON[c.value] ?? LayoutGrid;
-                    const selected = category === c.value;
-                    return (
+            {step === 0 && (() => {
+              const filteredCats = catSearch.trim()
+                ? SELL_CATEGORIES.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
+                : SELL_CATEGORIES;
+              const isSearching = catSearch.trim().length > 0;
+              const totalPages = Math.ceil(filteredCats.length / CATS_PER_PAGE);
+              const paginatedCats = isSearching
+                ? filteredCats
+                : filteredCats.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
+              return (
+                <div className="max-w-2xl mx-auto w-full">
+                  {/* Search bar */}
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={catSearch}
+                      onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
+                      placeholder="Search categories..."
+                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-200 bg-white text-sm font-medium text-black placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
+                    />
+                    {catSearch && (
                       <button
-                        key={c.value}
                         type="button"
-                        onClick={() => setCategory(c.value)}
-                        className={cn(
-                          'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
-                          selected
-                            ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
-                            : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
-                        )}
+                        onMouseDown={(e) => { e.preventDefault(); setCatSearch(''); setCatPage(0); }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-black transition-colors"
                       >
-                        <div
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Category grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                    {paginatedCats.map((c) => {
+                      const Icon = CATEGORY_ICON[c.value] ?? LayoutGrid;
+                      const selected = category === c.value;
+                      return (
+                        <button
+                          key={c.value}
+                          type="button"
+                          onClick={() => setCategory(c.value)}
                           className={cn(
-                            'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
-                            selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
+                            'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
+                            selected
+                              ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                              : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
                           )}
                         >
-                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
-                        </div>
-                        <span className="text-[10px] sm:text-xs font-black leading-tight">{c.label}</span>
-                        {selected && <Check className="h-4 w-4 shrink-0" />}
+                          <div
+                            className={cn(
+                              'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
+                              selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
+                            )}
+                          >
+                            <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+                          </div>
+                          <span className="text-[10px] sm:text-xs font-black leading-tight">{c.label}</span>
+                          {selected && <Check className="h-4 w-4 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* No results — show Other card like PostEnquiry */}
+                  {isSearching && filteredCats.length === 0 && (
+                    <div className="text-center py-6">
+                      <div className="flex flex-col items-center gap-2 mt-2">
+                        <span className="text-[11px] font-bold text-black">Please choose</span>
+                        {(() => {
+                          const Icon = CATEGORY_ICON['other'] ?? LayoutGrid;
+                          const selected = category === 'other';
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => setCategory('other')}
+                              className={cn(
+                                'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
+                                selected
+                                  ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                                  : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
+                              )}
+                            >
+                              <div className={cn(
+                                'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
+                                selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
+                              )}>
+                                <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+                              </div>
+                              <span className="text-[10px] sm:text-xs font-black leading-tight">Other</span>
+                              {selected && <Check className="h-4 w-4 shrink-0" />}
+                            </button>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {!isSearching && totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-3 mt-4">
+                      <button
+                        type="button"
+                        onClick={() => { setCatPage(p => Math.max(0, p - 1)); }}
+                        disabled={catPage === 0}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      >
+                        <ChevronLeft className="h-3.5 w-3.5" /> Prev
                       </button>
-                    );
-                  })}
+                      <span className="text-[11px] font-bold text-gray-500">{catPage + 1} / {totalPages}</span>
+                      <button
+                        type="button"
+                        onClick={() => { setCatPage(p => Math.min(totalPages - 1, p + 1)); }}
+                        disabled={catPage === totalPages - 1}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      >
+                        Next <ChevronRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {step === 1 && (
               <div className="space-y-2 max-w-lg mx-auto w-full">
@@ -602,7 +791,7 @@ export default function CreateListing() {
                       onChange={(e) => setPrice(formatPriceInput(e.target.value))}
                       placeholder="25,000"
                       inputMode="decimal"
-                      maxLength={10}
+                      maxLength={13}
                       className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                       autoFocus
                     />
@@ -613,23 +802,6 @@ export default function CreateListing() {
 
             {step === 6 && (
               <div className="max-w-lg mx-auto w-full space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="tags" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
-                    <Tag className="h-3.5 w-3.5" />                     Tags
-                  </Label>
-                  <Input
-                    id="tags"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    placeholder="apple, warranty, charger…"
-                    className="rounded-2xl h-11 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
-                  />
-                  {parsedTags.length > 0 && (
-                    <p className="text-[11px] text-slate-600">
-                      <span className="font-semibold">Preview:</span> {parsedTags.join(' · ')}
-                    </p>
-                  )}
-                </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold flex items-center gap-2">
                     <Upload className="h-3.5 w-3.5" />
@@ -664,6 +836,23 @@ export default function CreateListing() {
                     <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Price</span>
                     <span className="text-sm sm:text-base font-black text-black">{price ? `₹${price}` : '—'}</span>
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tags" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
+                    <Tag className="h-3.5 w-3.5" />                     Tags
+                  </Label>
+                  <Input
+                    id="tags"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    placeholder="apple, warranty, charger…"
+                    className="rounded-2xl h-11 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
+                  />
+                  {parsedTags.length > 0 && (
+                    <p className="text-[11px] text-slate-600">
+                      <span className="font-semibold">Preview:</span> {parsedTags.join(' · ')}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

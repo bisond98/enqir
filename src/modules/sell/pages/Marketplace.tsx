@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
@@ -21,7 +21,8 @@ function formatPrice(l: SellListing) {
 }
 
 export default function Marketplace() {
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [category, setCategory] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
   const [loading, setLoading] = useState(true);
