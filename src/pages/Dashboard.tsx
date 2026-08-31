@@ -1558,18 +1558,14 @@ const Dashboard = () => {
               {/* Professional Header - Matching Dashboard Style */}
               <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
                 <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
-                  {/* Header Section with Title - Centered */}
-                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      Your Enquiries
-                    </h2>
-                  </div>
-                  
-                  {/* Content Card - Black Background */}
-                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
+                  {/* Content Card - Black Background with Centered Title */}
+                  <div className="bg-black border border-black rounded-lg p-3 sm:p-5 lg:p-4 xl:p-5 w-full">
                     <div className="text-center">
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
+                      <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center justify-center gap-2 dashboard-header-no-emoji mb-1">
+                        <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                        Your Enquiries
+                      </h2>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-400 leading-snug">
                         Track your needs; We won't be tracking you.
                       </p>
                     </div>
@@ -1797,7 +1793,7 @@ const Dashboard = () => {
                                     if (isNaN(deadlineDate.getTime())) return null;
                                     return (
                                       <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md shadow-sm border border-red-500 bg-red-500 text-white flex-shrink-0">
-                                        <CalendarIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                         <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
                                           {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                                         </span>
@@ -1815,8 +1811,8 @@ const Dashboard = () => {
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
-                              {/* Enquiry Title - Moved from header to top left of card */}
-                              <div className="relative z-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5">
+                              {/* Enquiry Title - Centered in card */}
+                              <div className="relative z-10 mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5 text-center">
                                 <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-black leading-snug tracking-tight ${
                                   expiredFlag ? 'text-gray-500' : 'text-gray-900'
                                 }`}>
@@ -1914,7 +1910,7 @@ const Dashboard = () => {
                                       }
                                     }}
                                     disabled={expiredFlag}
-                                    className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                    className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-700 to-red-800 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-800 hover:to-red-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
                                   >
                                     {/* Physical button depth effect */}
                                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2263,7 +2259,7 @@ const Dashboard = () => {
                                     deleteResponse(submission.id);
                                   }
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-500 to-red-600 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-red-700 to-red-800 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:from-red-800 hover:to-red-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   {/* Physical button depth effect */}
