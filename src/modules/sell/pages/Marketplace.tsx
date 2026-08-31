@@ -349,7 +349,7 @@ export default function Marketplace() {
 
         {/* LIST VIEW */}
         {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
-          <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/10 rounded-2xl hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
+          <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/30 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
                 <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 border border-black/10" />
@@ -367,7 +367,7 @@ export default function Marketplace() {
                     )}
                   </h3>
                   {l.price != null && (
-                    <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
+                    <span className="text-sm font-black text-black bg-white border-2 border-black px-3.5 py-1.5 rounded-full flex-shrink-0">
                       {formatPrice(l)}
                     </span>
                   )}
@@ -383,7 +383,7 @@ export default function Marketplace() {
                     {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                   </span>
                   <span className="text-[9px] font-bold text-black flex items-center gap-0.5">
-                    <MapPin className="h-2.5 w-2.5" />{l.location}
+                    <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
                   </span>
                   <ShareButton listing={l} />
                 </div>
@@ -405,7 +405,7 @@ export default function Marketplace() {
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
-              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
+              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/30 rounded-2xl overflow-hidden hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
                 ) : (
@@ -422,7 +422,7 @@ export default function Marketplace() {
                       )}
                     </h3>
                     {l.price != null && (
-                      <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 rounded-full flex-shrink-0">
+                      <span className="text-[12px] font-black text-black bg-white border-2 border-black px-3 py-1 rounded-full flex-shrink-0">
                         {formatPrice(l)}
                       </span>
                     )}
@@ -439,7 +439,7 @@ export default function Marketplace() {
                     <ShareButton listing={l} />
                   </div>
                   <span className="text-[8px] font-bold text-black flex items-center gap-0.5 mt-1">
-                    <MapPin className="h-2 w-2" />{l.location}
+                    <MapPin className="h-2 w-2 text-red-500" />{l.location}
                   </span>
                 </div>
               </div>

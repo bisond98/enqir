@@ -234,7 +234,7 @@ export default function ListingDetail() {
             <Tag className="h-2.5 w-2.5" />{listing.category}
           </span>
           <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
-            <MapPin className="h-3 w-3" />{listing.location}
+            <MapPin className="h-3 w-3 text-red-500" />{listing.location}
           </span>
           {listing.tags && listing.tags.length > 0 && (
             listing.tags.map((tag) => (

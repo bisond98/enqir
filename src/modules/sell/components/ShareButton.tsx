@@ -17,15 +17,40 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
 
+  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
+
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Don't close if clicking inside the button or the portal menu
+      if (btnRef.current?.contains(target)) return;
+      if (target.closest('[data-share-menu]')) return;
+      setIsOpen(false);
+    };
+    // Use setTimeout to avoid catching the same click that opened the menu
+    const id = setTimeout(() => {
+      document.addEventListener('click', handleClick);
+    }, 0);
+    return () => {
+      clearTimeout(id);
+      document.removeEventListener('click', handleClick);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen && btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
+      const menuHeight = hasNativeShare ? 280 : 230;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUp = spaceBelow < menuHeight + 16;
       setMenuPos({
-        top: rect.bottom + 4,
+        top: openUp ? rect.top - menuHeight - 4 : rect.bottom + 4,
         left: Math.min(rect.left, window.innerWidth - 200)
       });
     }
-  }, [isOpen]);
+  }, [isOpen, hasNativeShare]);
 
   const handleShare = useCallback(async (platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native') => {
     setIsOpen(false);
@@ -45,10 +70,9 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
     }, 100);
   }, [listing]);
 
-  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
-
   const menu = isOpen ? createPortal(
     <div
+      data-share-menu
       className="fixed bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] min-w-[180px] py-1"
       style={{ zIndex: 9999, top: menuPos.top, left: menuPos.left }}
     >
