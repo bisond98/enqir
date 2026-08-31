@@ -905,7 +905,7 @@ const SignIn = () => {
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
@@ -916,7 +916,7 @@ const SignIn = () => {
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
                         
@@ -930,7 +930,7 @@ const SignIn = () => {
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -941,7 +941,7 @@ const SignIn = () => {
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
 
@@ -981,7 +981,7 @@ const SignIn = () => {
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
@@ -992,7 +992,7 @@ const SignIn = () => {
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
 
@@ -1006,7 +1006,7 @@ const SignIn = () => {
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 text-base border-2 border-black focus:border-4 focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                           style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
@@ -1017,7 +1017,7 @@ const SignIn = () => {
                           required
                         />
                         {/* Physical button depth effect */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       </div>
                     </div>
 

@@ -4,11 +4,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
 import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle } from 'lucide-react';
+import ShareButton from '../components/ShareButton';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { db } from '@/firebase';
@@ -29,6 +30,7 @@ export default function Marketplace() {
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [shuffledListings, setShuffledListings] = useState<SellListing[]>([]);
 
@@ -347,7 +349,7 @@ export default function Marketplace() {
 
         {/* LIST VIEW */}
         {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
-          <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
+          <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/10 rounded-2xl hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
                 <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 border border-black/10" />
@@ -383,6 +385,7 @@ export default function Marketplace() {
                   <span className="text-[9px] font-bold text-black flex items-center gap-0.5">
                     <MapPin className="h-2.5 w-2.5" />{l.location}
                   </span>
+                  <ShareButton listing={l} />
                 </div>
                 {l.tags?.length > 0 && (
                   <div className="flex items-center gap-1 mt-1 flex-wrap">
@@ -395,14 +398,14 @@ export default function Marketplace() {
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
 
         {/* GRID VIEW */}
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
-              <Link to={`/sell/listing/${l.id}`} key={l.id} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)]">
+              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/10 rounded-2xl overflow-hidden hover:border-black/30 hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
                 ) : (
@@ -433,12 +436,13 @@ export default function Marketplace() {
                     <span className="text-[8px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
                       {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                     </span>
+                    <ShareButton listing={l} />
                   </div>
                   <span className="text-[8px] font-bold text-black flex items-center gap-0.5 mt-1">
                     <MapPin className="h-2 w-2" />{l.location}
                   </span>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
