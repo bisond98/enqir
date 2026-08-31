@@ -2542,7 +2542,7 @@ const Dashboard = () => {
                   <Link
                     key={listing.id}
                     to={`/sell/listing/${listing.id}`}
-                    className="block border border-black/10 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                    className="block border-2 border-black rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
                   >
                     {listing.images && listing.images[0] && (
                       <div className="h-32 sm:h-36 overflow-hidden bg-gray-100">
