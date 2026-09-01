@@ -1,5 +1,5 @@
 import Layout from '@/components/Layout';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
 
@@ -11,6 +11,7 @@ export default function SellShell({
   children: React.ReactNode;
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const path = location.pathname;
   const isCreate = path === '/sell/new';
   const isShop = path === '/sell/marketplace';
@@ -22,15 +23,14 @@ export default function SellShell({
           <div className="max-w-5xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             <div className="mb-4 sm:mb-6">
               <div className="flex items-center justify-between">
-                <Link to="/">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 hover:bg-white/10 rounded-xl text-white border border-white/20"
-                  >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(-1)}
+                  className="p-2 hover:bg-white/10 rounded-xl text-white border border-white/20"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
                 <div className="w-10 h-10" />
               </div>
             </div>
