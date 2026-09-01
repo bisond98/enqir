@@ -35,6 +35,8 @@ export default function ListingDetail() {
   const [sending, setSending] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
+  const [responsePage, setResponsePage] = useState(0);
+  const RESPONSES_PER_PAGE = 5;
 
 
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
@@ -199,15 +201,12 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <div className="flex items-start justify-between gap-2">
-                <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left flex items-center gap-1.5 flex-1">
-                  {listing.title}
-                  {sellerProfile?.isProfileVerified && (
-                    <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" /></span>
-                  )}
-                </h2>
-                <ShareButton listing={listing} />
-              </div>
+              <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left flex items-center gap-1.5">
+                <span className="px-3 py-1 rounded-xl border-2 border-black">{listing.title}</span>
+                {sellerProfile?.isProfileVerified && (
+                  <span className="inline-flex items-center justify-center w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2 w-2 text-white" /></span>
+                )}
+              </h2>
               <div className="w-full text-center mt-2">
                 <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               </div>
@@ -220,29 +219,30 @@ export default function ListingDetail() {
               </div>
             )}
 
-          </div>
-        </div>
-
-        {/* Info Chips - above Message Seller */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          {listing.condition && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md uppercase">
-              {listing.condition}
-            </span>
-          )}
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
-            <Tag className="h-2.5 w-2.5" />{listing.category}
-          </span>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
-            <MapPin className="h-3 w-3 text-red-500" />{listing.location}
-          </span>
-          {listing.tags && listing.tags.length > 0 && (
-            listing.tags.map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
-                {tag}
+            {/* Info Chips + Share inside card */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {listing.condition && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md uppercase">
+                  {listing.condition}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+                <Tag className="h-2.5 w-2.5" />{listing.category}
               </span>
-            ))
-          )}
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+                <MapPin className="h-3 w-3 text-red-500" />{listing.location}
+              </span>
+              {listing.tags && listing.tags.length > 0 && (
+                listing.tags.map((tag) => (
+                  <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white px-2.5 py-1 rounded-md">
+                    {tag}
+                  </span>
+                ))
+              )}
+              <span className="ml-auto"><ShareButton listing={listing} /></span>
+            </div>
+
+          </div>
         </div>
 
         {/* Message Seller Card */}
@@ -253,7 +253,7 @@ export default function ListingDetail() {
                 <MessageSquare className="h-4 w-4 text-white" />
                 <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Message Seller
                   {sellerProfile?.isProfileVerified && (
-                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
+                    <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
                   )}
                 </h3>
                 <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
@@ -299,7 +299,10 @@ export default function ListingDetail() {
         )}
 
         {/* Buyer Responses (Owner Only) */}
-        {isOwner && (
+        {isOwner && (() => {
+          const totalPages = Math.ceil(responses.length / RESPONSES_PER_PAGE);
+          const pagedResponses = responses.slice(responsePage * RESPONSES_PER_PAGE, (responsePage + 1) * RESPONSES_PER_PAGE);
+          return (
           <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
             <div className="bg-black p-3">
               <div className="flex items-center gap-2">
@@ -311,7 +314,7 @@ export default function ListingDetail() {
               {responses.length === 0 && (
                 <p className="text-xs text-gray-400 text-center py-6">No responses yet.</p>
               )}
-              {responses.slice(0, 20).map((r) => (
+              {pagedResponses.map((r) => (
                 <Link
                   key={r.id}
                   to={`/sell/listing/${listing?.id}/chat/${r.buyerId}`}
@@ -327,16 +330,38 @@ export default function ListingDetail() {
                         </span>
                       )}
                     </div>
-                    <MessageSquare className="h-4 w-4 text-gray-300 flex-shrink-0 mt-1" />
+                    <span className="flex-shrink-0 mt-1 w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
                   </div>
                 </Link>
               ))}
+              {/* Prev / Next pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    onClick={() => setResponsePage(p => Math.max(0, p - 1))}
+                    disabled={responsePage === 0}
+                    className="flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 transition-all"
+                  >
+                    <ChevronLeft className="h-3 w-3" /> Prev
+                  </button>
+                  <span className="text-[10px] font-bold text-gray-500">{responsePage + 1} / {totalPages}</span>
+                  <button
+                    onClick={() => setResponsePage(p => Math.min(totalPages - 1, p + 1))}
+                    disabled={responsePage >= totalPages - 1}
+                    className="flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 transition-all"
+                  >
+                    Next <ChevronRight className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        )}
+          );
+        })()}
 
 
       </div>
+
 
       {/* Full-screen image viewer */}
       {showAllImages && listing.images && (
