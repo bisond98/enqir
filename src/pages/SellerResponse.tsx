@@ -16,6 +16,8 @@ import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, where, getDocs, onSnapshot, increment } from "firebase/firestore";
 import { uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
+import { processPayment } from "@/services/paymentService";
+import { PAYMENT_PLANS } from "@/config/paymentPlans";
 import { realtimeAI } from "@/services/ai/realtimeAI";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
@@ -905,9 +907,42 @@ const SellerResponse = () => {
       // Don't block - just continue with submission
     }
 
+    // ALL offers require ₹10 Razorpay payment before submitting
+    const offerPlan = PAYMENT_PLANS.find(p => p.id === 'premium');
+    if (!offerPlan) {
+      toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+      return;
+    }
+
     setSubmitting(true);
-    
+
     try {
+      // Razorpay ₹10 payment before submitting offer
+      console.log('💳 Opening Razorpay checkout - ₹10 payment required to submit offer');
+      const paymentResult = await processPayment(
+        enquiryId,
+        authUser.uid,
+        offerPlan,
+        {
+          name: authUser.displayName || authUser.email?.split('@')[0] || '',
+          email: authUser.email || '',
+          contact: '',
+        }
+      );
+
+      if (!paymentResult.success) {
+        console.error('❌ Payment failed:', paymentResult.error);
+        toast({
+          title: 'Payment Unsuccessful',
+          description: paymentResult.error || 'Payment failed. Offer not submitted.',
+          variant: 'destructive',
+        });
+        setSubmitting(false);
+        return;
+      }
+
+      console.log('✅ Payment successful, submitting offer...');
+
       // Filter out null/empty images and create arrays of URLs and names
       const validImageUrls = imageUrls.filter(url => url.trim() !== "");
       const validImageNames = imageFiles
@@ -1849,12 +1884,12 @@ const SellerResponse = () => {
                   {submitting ? (
                     <div className="flex items-center justify-center space-x-2 relative z-10">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      <span className="text-white">Submitting Response...</span>
+                      <span className="text-white">Opening Razorpay...</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center space-x-2 relative z-10">
                       <CheckCircle className="h-5 w-5 text-white" />
-                      <span className="text-white">Submit Offer</span>
+                      <span className="text-white">Submit Offer ₹10</span>
                     </div>
                   )}
                 </Button>
