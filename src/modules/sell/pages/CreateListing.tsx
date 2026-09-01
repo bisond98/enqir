@@ -14,6 +14,8 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
+import { processPayment } from '@/services/paymentService';
+import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import {
   AlignLeft,
   Armchair,
@@ -400,12 +402,49 @@ export default function CreateListing() {
     }
     if (!validatePriceFields()) return;
 
-    const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
-    const rangeMin = priceType === 'range' ? Number(priceMin) : null;
-    const rangeMax = priceType === 'range' ? Number(priceMax) : null;
-
     setPublishing(true);
+
+    // ALL listings require ₹10 Razorpay payment before publishing
+    const listingPlan = PAYMENT_PLANS.find(p => p.id === 'premium');
+    if (!listingPlan) {
+      toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+      setPublishing(false);
+      return;
+    }
+
     try {
+      console.log('💳 Opening Razorpay checkout - ₹10 payment required to publish listing');
+
+      // Open Razorpay for ₹10 payment
+      const paymentResult = await processPayment(
+        'temp-listing-id', // temporary — real listing not created yet
+        user.uid,
+        listingPlan,
+        {
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          contact: '',
+        }
+      );
+
+      if (!paymentResult.success) {
+        console.error('❌ Payment failed:', paymentResult.error);
+        toast({
+          title: 'Payment Unsuccessful',
+          description: paymentResult.error || 'Payment failed. Listing not published.',
+          variant: 'destructive',
+        });
+        setPublishing(false);
+        return;
+      }
+
+      console.log('✅ Payment successful, publishing listing...');
+
+      // Payment succeeded — create the listing
+      const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
+      const rangeMin = priceType === 'range' ? Number(priceMin) : null;
+      const rangeMax = priceType === 'range' ? Number(priceMax) : null;
+
       await createListing(user.uid, {
         title: title.trim(),
         description: description.trim(),
@@ -432,8 +471,9 @@ export default function CreateListing() {
       window.setTimeout(() => {
         navigate('/sell/marketplace');
       }, 5000);
-    } catch {
-      toast({ title: 'Publish failed', description: 'Could not publish listing.', variant: 'destructive' });
+    } catch (error) {
+      console.error('❌ Error:', error);
+      toast({ title: 'Publish failed', description: error instanceof Error ? error.message : 'Could not publish listing.', variant: 'destructive' });
     } finally {
       setPublishing(false);
     }
@@ -920,7 +960,7 @@ export default function CreateListing() {
                 disabled={!user || uploading || publishing}
                 className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
               >
-                {publishing ? 'Publishing…' : 'Publish listing'}
+                {publishing ? 'Opening Razorpay…' : 'Publish listing ₹10'}
               </Button>
             )}
           </div>
