@@ -195,6 +195,7 @@ export default function CreateListing() {
   const [tags, setTags] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
   const [publishing, setPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
@@ -295,19 +296,48 @@ export default function CreateListing() {
       const urls: string[] = [];
       const remainingSlots = 5 - images.length;
       const selectedFiles = Array.from(files).slice(0, remainingSlots);
-      for (const file of selectedFiles) {
-        const url = await uploadToCloudinaryUnsigned(file);
+      
+      // Add placeholder progress entries
+      const startIdx = images.length;
+      setUploadProgresses(prev => [...prev, ...selectedFiles.map(() => 0)]);
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setUploadProgresses(prev => {
+            const next = [...prev];
+            const idx = startIdx + i;
+            if (next[idx] < 90) next[idx] = next[idx] + Math.floor(Math.random() * 15) + 5;
+            return next;
+          });
+        }, 200);
+        
+        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+        
+        clearInterval(progressInterval);
+        setUploadProgresses(prev => {
+          const next = [...prev];
+          next[startIdx + i] = 100;
+          return next;
+        });
         urls.push(url);
       }
       if (files.length > selectedFiles.length) {
         toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
       }
       setImages((prev) => [...prev, ...urls].slice(0, 5));
+      // Clear progress after a short delay
+      setTimeout(() => setUploadProgresses([]), 1000);
     } catch {
       toast({ title: 'Upload failed', description: 'Could not upload one or more images.', variant: 'destructive' });
+      setUploadProgresses([]);
     } finally {
       setUploading(false);
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const formatPriceInput = (value: string): string => {
@@ -851,6 +881,21 @@ export default function CreateListing() {
                     <Upload className="h-3.5 w-3.5" />
                     Photos (up to 5)
                   </Label>
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      {images.map((url, i) => (
+                        <div key={i} className="relative group">
+                          <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(i)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                          >✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {images.length < 5 && (
                   <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
                     <Input
                       type="file"
@@ -861,7 +906,20 @@ export default function CreateListing() {
                       className="cursor-pointer text-sm"
                     />
                     <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
+                    {uploading && uploadProgresses.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {uploadProgresses.map((p, i) => (
+                          <div key={i} className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div
+                              className="bg-black h-1.5 rounded-full transition-all duration-200"
+                              style={{ width: `${p}%` }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  )}
                 </div>
                 <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
                   <div className="flex items-center justify-between">
@@ -941,7 +999,8 @@ export default function CreateListing() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
+          <p className="text-center text-[10px] sm:text-xs text-gray-400 font-normal truncate mt-3">We don't offer anything free at the cost of your time and safety.</p>
+          <div className="mt-2 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
@@ -964,7 +1023,7 @@ export default function CreateListing() {
                 disabled={!user || uploading || publishing}
                 className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
               >
-                {publishing ? 'Opening Razorpay…' : 'Publish listing ₹10'}
+                {publishing ? 'Connecting…' : 'Connect'}
               </Button>
             )}
           </div>
