@@ -474,7 +474,7 @@ export default function CreateListing() {
       sessionStorage.removeItem('listing-published');
       window.setTimeout(() => {
         navigate(`/sell/listing/${newListingId}`);
-      }, 5000);
+      }, 2000);
     } catch (error) {
       console.error('❌ Error:', error);
       toast({ title: 'Publish failed', description: error instanceof Error ? error.message : 'Could not publish listing.', variant: 'destructive' });
@@ -493,7 +493,7 @@ export default function CreateListing() {
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight">Successfully Listed</h2>
             <p className="text-xs sm:text-sm text-gray-700 max-w-sm">
-              Your product is now live on the For Sale page. Redirecting in 5 seconds...
+              Your product is now live. Redirecting...
             </p>
           </CardContent>
         </Card>
