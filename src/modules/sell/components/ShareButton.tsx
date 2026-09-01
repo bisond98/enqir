@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Share2, MessageCircle, Twitter, Facebook, Copy, Check, Smartphone } from 'lucide-react';
+import { Share2, MessageCircle, Facebook, Copy, Check, Smartphone } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { shareListing } from '../services/shareService';
 import type { SellListing } from '../types';
@@ -79,7 +79,7 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       {hasNativeShare && (
         <button
           onMouseDown={(e) => { e.preventDefault(); handleShare('native'); }}
-          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
+          className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
         >
           <Smartphone className="h-4 w-4 text-blue-500" />
           Share via...
@@ -87,28 +87,28 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       )}
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
+        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
         <MessageCircle className="h-4 w-4 text-green-500" />
         WhatsApp
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
+        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <Twitter className="h-4 w-4 text-sky-500" />
-        Twitter / X
+        <svg className="h-3.5 w-3.5 text-black" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('facebook'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
+        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
         <Facebook className="h-4 w-4 text-blue-600" />
         Facebook
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('copy'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-black hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors"
       >
         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-500" />}
         {copied ? 'Copied!' : 'Copy Link'}

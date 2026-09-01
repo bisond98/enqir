@@ -99,7 +99,13 @@ export default function EnquiryWall() {
   const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const enquiriesPerPage = 10;
+  const enquiriesPerPage = viewMode === 'grid' ? 10 : 6;
+
+  // Reset to page 1 when view mode changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [viewMode]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsDropdownRef = useRef<HTMLDivElement>(null);
   const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -1549,14 +1555,14 @@ export default function EnquiryWall() {
     return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
   }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation]);
 
-  // 🚀 PAGINATION: Paginate displayEnquiries to show 10 at a time
+  // 🚀 PAGINATION: Show only current page (prev/next style)
   useEffect(() => {
-    // Reset pagination when filters change
-    const firstPage = displayEnquiries.slice(0, enquiriesPerPage);
-    setDisplayedEnquiries(firstPage);
-    setCurrentPage(1);
-    setHasMore(displayEnquiries.length > enquiriesPerPage);
-  }, [displayEnquiries, enquiriesPerPage]);
+    const startIndex = (currentPage - 1) * enquiriesPerPage;
+    const endIndex = startIndex + enquiriesPerPage;
+    const pageItems = displayEnquiries.slice(startIndex, endIndex);
+    setDisplayedEnquiries(pageItems);
+    setHasMore(endIndex < displayEnquiries.length);
+  }, [displayEnquiries, enquiriesPerPage, currentPage]);
 
   // 🛡️ PROTECTED: Count calculation - DO NOT MODIFY
   // 🚀 FIX: Calculate count from displayEnquiries filtered to live only
@@ -1619,19 +1625,21 @@ export default function EnquiryWall() {
     setLiveEnquiriesCount(liveCount);
   }, [displayEnquiries, enquiries, displayedEnquiries]);
 
-  // 🚀 PAGINATION: Load more function
-  const loadMore = useCallback(() => {
-    const nextPage = currentPage + 1;
-    const startIndex = (nextPage - 1) * enquiriesPerPage;
-    const endIndex = startIndex + enquiriesPerPage;
-    const nextBatch = displayEnquiries.slice(startIndex, endIndex);
-    
-    if (nextBatch.length > 0) {
-      setDisplayedEnquiries(prev => [...prev, ...nextBatch]);
-      setCurrentPage(nextPage);
-      setHasMore(endIndex < displayEnquiries.length);
+  // 🚀 PAGINATION: Next/Prev page functions
+  const nextPage = useCallback(() => {
+    const nextIdx = currentPage * enquiriesPerPage;
+    if (nextIdx < displayEnquiries.length) {
+      setCurrentPage(prev => prev + 1);
     }
-  }, [currentPage, displayEnquiries, enquiriesPerPage]);
+  }, [currentPage, displayEnquiries.length, enquiriesPerPage]);
+
+  const prevPage = useCallback(() => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  }, [currentPage]);
+
+  const totalPages = Math.ceil(displayEnquiries.length / enquiriesPerPage);
 
   // Memoize helper functions for better performance
   const isOwnEnquiry = useCallback((enquiry: Enquiry) => {
@@ -5850,7 +5858,7 @@ export default function EnquiryWall() {
                               <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                  <span className="text-[9px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-md enhanced-border block sm:inline">Need</span>
+                                  <span className="text-[13px] sm:text-lg text-white font-bold px-2 py-0.5 rounded-md block sm:inline border border-red-500">Need</span>
                               </div>
                                 {/* Category Badge - Desktop view only, in the middle space between Need and Posted on */}
                                 <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2 flex-1 justify-center items-center">
@@ -6090,7 +6098,7 @@ export default function EnquiryWall() {
                             <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
                             {/* Need Label - Above Title */}
                             <div className="relative text-left">
-                              <span className="text-[8px] sm:text-xs text-white/70 font-medium">Need</span>
+                              <span className="text-[10px] sm:text-sm text-white/70 font-medium border border-red-500 px-1 rounded">Need</span>
                               {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
                               {enquiry.createdAt && (
                                 <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-white/70 font-medium">
@@ -6576,20 +6584,15 @@ export default function EnquiryWall() {
               ))}
             </div>
 
-            {/* 🚀 PAGINATION: Load More Button */}
-            {hasMore && displayEnquiries.length > displayedEnquiries.length && (
-              <div className="flex justify-center items-center mt-8 mb-4">
-                <Button
-                  onClick={loadMore}
-                  className="load-more-3d-button"
+            {/* 🚀 PAGINATION: Next Button */}
+            {displayEnquiries.length > enquiriesPerPage && hasMore && (
+              <div className="flex justify-center pt-2 pb-4">
+                <button
+                  onClick={nextPage}
+                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
                 >
-                  <span className="flex items-center justify-center gap-1.5 sm:gap-2">
-                    <ChevronDown className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-sm font-semibold leading-tight">
-                      Load More
-                    </span>
-                  </span>
-                </Button>
+                  Next →
+                </button>
               </div>
             )}
             </>
