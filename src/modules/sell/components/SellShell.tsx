@@ -26,7 +26,10 @@ export default function SellShell({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(-1)}
+                  onClick={() => {
+                    if (path.startsWith('/sell/listing/')) navigate('/sell/dashboard');
+                    else navigate(-1);
+                  }}
                   className="p-2 hover:bg-white/10 rounded-xl text-white border border-white/20"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
