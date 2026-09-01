@@ -15,6 +15,8 @@ import ShareButton from '../components/ShareButton';
 import { db } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
+import { processPayment } from '@/services/paymentService';
+import { PAYMENT_PLANS } from '@/config/paymentPlans';
 
 
 function formatPrice(l: SellListing) {
@@ -76,7 +78,42 @@ export default function ListingDetail() {
       return;
     }
     setSending(true);
+
+    // ALL messages require ₹10 Razorpay payment before sending
+    const messagePlan = PAYMENT_PLANS.find(p => p.id === 'premium');
+    if (!messagePlan) {
+      toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+      setSending(false);
+      return;
+    }
+
     try {
+      console.log('💳 Opening Razorpay checkout - ₹10 payment required to message seller');
+
+      const paymentResult = await processPayment(
+        listing.id,
+        user.uid,
+        messagePlan,
+        {
+          name: user.displayName || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          contact: '',
+        }
+      );
+
+      if (!paymentResult.success) {
+        console.error('❌ Payment failed:', paymentResult.error);
+        toast({
+          title: 'Payment Unsuccessful',
+          description: paymentResult.error || 'Payment failed. Message not sent.',
+          variant: 'destructive',
+        });
+        setSending(false);
+        return;
+      }
+
+      console.log('✅ Payment successful, sending message...');
+
       console.log('📤 Sending listing response:', { listingId: listing.id, sellerId: listing.sellerId, buyerId: user.uid });
       await createListingResponse({
         listingId: listing.id,
@@ -90,7 +127,6 @@ export default function ListingDetail() {
       toast({ title: 'Sent', description: 'Your message was sent to the seller.' });
       setMessage('');
       setOfferedPrice('');
-      // Redirect to the chat with the seller
       navigate(`/sell/listing/${listing.id}/chat/${user.uid}`);
     } catch (err: any) {
       console.error('❌ Failed to send listing response:', err.code, err.message);
@@ -292,7 +328,7 @@ export default function ListingDetail() {
                 disabled={sending}
               >
                 <Send className="h-4 w-4 mr-2" />
-                {user ? (sending ? 'Sending…' : 'Send Message') : 'Sign in to message'}
+                {user ? (sending ? 'Opening Razorpay…' : 'Send Message ₹10') : 'Sign in to message'}
               </Button>
             </div>
           </div>
