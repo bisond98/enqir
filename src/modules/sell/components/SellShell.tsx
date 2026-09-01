@@ -28,6 +28,8 @@ export default function SellShell({
                   size="sm"
                   onClick={() => {
                     if (path.startsWith('/sell/listing/')) navigate('/sell/dashboard');
+                    else if (path === '/sell/dashboard') navigate('/');
+                    else if (path === '/sell/marketplace') navigate('/');
                     else navigate(-1);
                   }}
                   className="p-2 hover:bg-white/10 rounded-xl text-white border border-white/20"
