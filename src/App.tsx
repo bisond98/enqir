@@ -19,40 +19,48 @@ import AuthGuard from "./components/AuthGuard";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ChristmasTheme } from "./components/ChristmasTheme";
 import "./styles/christmas.css";
-import Landing from "./pages/Landing";
-import Dashboard from "./pages/Dashboard";
-import EnquiryWall from "./pages/EnquiryWall";
-import PostEnquiry from "./pages/PostEnquiry";
-import SellerResponse from "./pages/SellerResponse";
-import MyEnquiries from "./pages/MyEnquiries";
-import MyResponses from "./pages/MyResponses";
-import SavedEnquiries from "./pages/SavedEnquiries";
-import EnquiryResponses from "./pages/EnquiryResponses";
-import DetailedResponses from "./pages/DetailedResponses";
-import EnquiryResponsesPage from "./pages/EnquiryResponsesPage";
-import EnquiryDetail from "./pages/EnquiryDetail";
-import DataClear from "./pages/DataClear";
-import Profile from "./pages/Profile";
-import SignIn from "./pages/SignIn";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import AuthCallback from "./pages/AuthCallback";
-import Settings from "./pages/Settings";
-import Notifications from "./pages/Notifications";
-import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
-import AdminAccess from "./pages/AdminAccess";
-import PremiumTestDataGenerator from "./components/PremiumTestDataGenerator";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import RefundPolicy from "./pages/RefundPolicy";
-import ShippingPolicy from "./pages/ShippingPolicy";
-import ContactUs from "./pages/ContactUs";
-import AllChats from "./pages/AllChats";
-import HelpGuide from "./pages/HelpGuide";
-import MyChats from "./pages/MyChats";
-import ReportUser from "./pages/ReportUser";
-import { SellHome, CreateListing, Marketplace, ListingDetail, ListingChat, SellerDashboard } from "./modules/sell";
+import { lazy, Suspense } from "react";
+
+// Lazy-loaded pages — each gets its own chunk, loaded on demand
+const Landing = lazy(() => import("./pages/Landing"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const EnquiryWall = lazy(() => import("./pages/EnquiryWall"));
+const PostEnquiry = lazy(() => import("./pages/PostEnquiry"));
+const SellerResponse = lazy(() => import("./pages/SellerResponse"));
+const MyEnquiries = lazy(() => import("./pages/MyEnquiries"));
+const MyResponses = lazy(() => import("./pages/MyResponses"));
+const SavedEnquiries = lazy(() => import("./pages/SavedEnquiries"));
+const EnquiryResponses = lazy(() => import("./pages/EnquiryResponses"));
+const DetailedResponses = lazy(() => import("./pages/DetailedResponses"));
+const EnquiryResponsesPage = lazy(() => import("./pages/EnquiryResponsesPage"));
+const EnquiryDetail = lazy(() => import("./pages/EnquiryDetail"));
+const DataClear = lazy(() => import("./pages/DataClear"));
+const Profile = lazy(() => import("./pages/Profile"));
+const SignIn = lazy(() => import("./pages/SignIn"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminAccess = lazy(() => import("./pages/AdminAccess"));
+const PremiumTestDataGenerator = lazy(() => import("./components/PremiumTestDataGenerator"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const ShippingPolicy = lazy(() => import("./pages/ShippingPolicy"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const AllChats = lazy(() => import("./pages/AllChats"));
+const HelpGuide = lazy(() => import("./pages/HelpGuide"));
+const MyChats = lazy(() => import("./pages/MyChats"));
+const ReportUser = lazy(() => import("./pages/ReportUser"));
+const SellHome = lazy(() => import("./modules/sell/pages/SellHome"));
+const CreateListing = lazy(() => import("./modules/sell/pages/CreateListing"));
+const Marketplace = lazy(() => import("./modules/sell/pages/Marketplace"));
+const ListingDetail = lazy(() => import("./modules/sell/pages/ListingDetail"));
+const ListingChat = lazy(() => import("./modules/sell/pages/ListingChat"));
+const SellerDashboard = lazy(() => import("./modules/sell/pages/SellerDashboard"));
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
@@ -122,6 +130,7 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                   <ScrollToTop />
+                  <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin" /></div>}>
                   <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
@@ -170,6 +179,7 @@ const App = () => {
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                   </Routes>
+                  </Suspense>
                 </BrowserRouter>
                   </ChristmasTheme>
                 </ChatProvider>

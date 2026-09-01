@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check, ChevronRight } from "lucide-react";
+import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -19,10 +19,7 @@ import { uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { processPayment } from "@/services/paymentService";
 import { PAYMENT_PLANS } from "@/config/paymentPlans";
 import { realtimeAI } from "@/services/ai/realtimeAI";
-import { LoadingAnimation } from "@/components/LoadingAnimation";
-import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
-import { trackResponseSubmitted } from "@/utils/analytics";
 
 interface Enquiry {
   id: string;
@@ -82,18 +79,7 @@ const SellerResponse = () => {
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
   const [imageUrls, setImageUrls] = useState<string[]>(Array(5).fill(""));
   const [uploadProgresses, setUploadProgresses] = useState<number[]>(Array(5).fill(0));
-  const [govIdType, setGovIdType] = useState("");
-  const [govIdNumber, setGovIdNumber] = useState("");
-  const [govIdFile, setGovIdFile] = useState<File | null>(null);
-  const [govIdUrl, setGovIdUrl] = useState("");
-  const [govIdProgress, setGovIdProgress] = useState(0);
-  const [verifyingId, setVerifyingId] = useState(false);
-  const [verificationCountdown, setVerificationCountdown] = useState(60);
-  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
-  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
-  const idVerificationCardRef = useRef<HTMLDivElement>(null);
-  const inlineVerificationRef = useRef<HTMLDivElement>(null);
-  const submitButtonRef = useRef<HTMLDivElement>(null);
+                        const submitButtonRef = useRef<HTMLDivElement>(null);
 
   // Restore form data from localStorage if returning from profile verification
   useEffect(() => {
