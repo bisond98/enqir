@@ -42,6 +42,7 @@ export default function ListingDetail() {
 
 
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
+  const chatUnlocked = useMemo(() => !!user && responses.some(r => r.buyerId === user.uid), [user, responses]);
   const [sellerProfile, setSellerProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -78,42 +79,43 @@ export default function ListingDetail() {
       return;
     }
     setSending(true);
-
-    // ALL messages require ₹10 Razorpay payment before sending
-    const messagePlan = PAYMENT_PLANS.find(p => p.id === 'premium');
-    if (!messagePlan) {
-      toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
-      setSending(false);
-      return;
-    }
-
     try {
-      console.log('💳 Opening Razorpay checkout - ₹10 payment required to message seller');
+      // Check if user already has a response on this listing (already paid)
+      const alreadyPaid = responses.some(r => r.buyerId === user.uid);
+      console.log(alreadyPaid ? '✅ Chat already unlocked — skipping payment' : '💳 First message — opening Razorpay checkout');
 
-      const paymentResult = await processPayment(
-        listing.id,
-        user.uid,
-        messagePlan,
-        {
-          name: user.displayName || user.email?.split('@')[0] || '',
-          email: user.email || '',
-          contact: '',
+      if (!alreadyPaid) {
+        const messagePlan = PAYMENT_PLANS.find(p => p.id === 'premium');
+        if (!messagePlan) {
+          toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+          setSending(false);
+          return;
         }
-      );
 
-      if (!paymentResult.success) {
-        console.error('❌ Payment failed:', paymentResult.error);
-        toast({
-          title: 'Payment Unsuccessful',
-          description: paymentResult.error || 'Payment failed. Message not sent.',
-          variant: 'destructive',
-        });
-        setSending(false);
-        return;
+        const paymentResult = await processPayment(
+          listing.id,
+          user.uid,
+          messagePlan,
+          {
+            name: user.displayName || user.email?.split('@')[0] || '',
+            email: user.email || '',
+            contact: '',
+          }
+        );
+
+        if (!paymentResult.success) {
+          console.error('❌ Payment failed:', paymentResult.error);
+          toast({
+            title: 'Payment Unsuccessful',
+            description: paymentResult.error || 'Payment failed. Message not sent.',
+            variant: 'destructive',
+          });
+          setSending(false);
+          return;
+        }
       }
 
-      console.log('✅ Payment successful, sending message...');
-
+      console.log('✅ Proceeding to send message...');
       console.log('📤 Sending listing response:', { listingId: listing.id, sellerId: listing.sellerId, buyerId: user.uid });
       await createListingResponse({
         listingId: listing.id,
@@ -328,7 +330,7 @@ export default function ListingDetail() {
                 disabled={sending}
               >
                 <Send className="h-4 w-4 mr-2" />
-                {user ? (sending ? 'Opening Razorpay…' : 'Send Message ₹10') : 'Sign in to message'}
+                {user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Send Message' : 'Send Message ₹10')) : 'Sign in to message'}
               </Button>
             </div>
           </div>
