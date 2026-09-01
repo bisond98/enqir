@@ -91,6 +91,7 @@ const SellerResponse = () => {
   const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLDivElement>(null);
 
   // Restore form data from localStorage if returning from profile verification
   useEffect(() => {
@@ -103,6 +104,10 @@ const SellerResponse = () => {
         if (data.price) setPrice(data.price);
         if (data.notes) setNotes(data.notes);
         if (data.imageUrls) setImageUrls(data.imageUrls);
+        // Scroll to submit button after restoring
+        setTimeout(() => {
+          submitButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
       } catch {}
       localStorage.removeItem('seller_response_draft');
     }
@@ -1815,7 +1820,7 @@ const SellerResponse = () => {
               </div>
 
               {/* Enhanced Submit Button */}
-              <div className="pt-6 space-y-4">
+              <div ref={submitButtonRef} className="pt-6 space-y-4">
                 <Button
                   type="submit"
                   onClick={(e) => {
