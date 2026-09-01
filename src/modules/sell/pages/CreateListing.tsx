@@ -448,12 +448,16 @@ export default function CreateListing() {
 
       console.log('✅ Payment successful, publishing listing...');
 
-      // Payment succeeded — create the listing
+      // Payment succeeded — show success screen immediately so form fields don't flash
+      sessionStorage.setItem('listing-published', 'true');
+      setIsPublished(true);
+
+      // Create the listing in the background
       const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
       const rangeMin = priceType === 'range' ? Number(priceMin) : null;
       const rangeMax = priceType === 'range' ? Number(priceMax) : null;
 
-      await createListing(user.uid, {
+      const newListingId = await createListing(user.uid, {
         title: title.trim(),
         description: description.trim(),
         category,
@@ -465,22 +469,11 @@ export default function CreateListing() {
         priceMax: rangeMax,
         tags: parsedTags,
         images,
-      });        toast({ title: 'Published', description: 'Your listing is live.' });
+      });
+      toast({ title: 'Published', description: 'Your listing is live.' });
       sessionStorage.removeItem('listing-published');
-      setTitle('');
-      setDescription('');
-      setPrice('');
-      setPriceMin('');
-      setPriceMax('');
-      setTags('');
-      setImages([]);
-      setStep(0);
-      // Small delay to ensure Razorpay overlays are fully cleaned up
-      await new Promise(r => setTimeout(r, 300));
-      sessionStorage.setItem('listing-published', 'true');
-      setIsPublished(true);
       window.setTimeout(() => {
-        navigate('/sell/marketplace');
+        navigate(`/sell/listing/${newListingId}`);
       }, 5000);
     } catch (error) {
       console.error('❌ Error:', error);
