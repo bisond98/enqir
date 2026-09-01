@@ -1318,7 +1318,7 @@ export default function EnquiryWall() {
           }, 100);
         }, 500);
       }
-    }, 10000); // 10 seconds
+    }, 60000); // 1 minute
     
     return () => clearInterval(interval);
   }, [enquiries, searchTerm, sortBy]);
@@ -5807,7 +5807,7 @@ export default function EnquiryWall() {
                           {/* First Half - Top: Title and Description */}
                           <CardHeader className="pt-0.5 pb-2 px-2 sm:p-5 flex flex-col relative z-10 overflow-hidden mobile-black-section" style={{ flex: '1 1 75%', flexGrow: 3, flexShrink: 1, flexBasis: '75%', background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
                             {/* Category-specific 2D Sketches - List View Only */}
-                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.2]">
+                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.07]">
                               {getCategorySketch(enquiry.category)}
                             </div>
                             {/* Content wrapper - centers title vertically while keeping all spacing */}
@@ -5858,7 +5858,13 @@ export default function EnquiryWall() {
                               <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                  <span className="text-[13px] sm:text-lg text-white font-bold px-2 py-0.5 rounded-md block sm:inline border border-red-500">Need</span>
+                                  <span className="text-[14px] sm:text-base text-white font-bold px-2 py-0.5 rounded-md block sm:inline bg-red-600">Need</span>
+                                  {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
+                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
+                                      <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
+                                      Urgent
+                                    </Badge>
+                                  )}
                               </div>
                                 {/* Category Badge - Desktop view only, in the middle space between Need and Posted on */}
                                 <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2 flex-1 justify-center items-center">
@@ -5990,12 +5996,7 @@ export default function EnquiryWall() {
                               
                               {/* Badges Row - Centered on mobile */}
                               <div className="flex items-center justify-center sm:justify-start gap-0.5 sm:gap-2 flex-wrap">
-                                  {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
-                                      <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
-                                      Urgent
-                                    </Badge>
-                                  )}
+
                                   {isDealClosed(enquiry) && (
                                     <Badge variant="outline" className="text-[8px] sm:text-xs px-1 sm:px-2.5 py-0.5 sm:py-1 text-gray-500 border-gray-300 bg-gray-50">Deal Closed</Badge>
                                   )}
@@ -6047,6 +6048,15 @@ export default function EnquiryWall() {
                         </>
                       ) : (
                         <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10 overflow-hidden" style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
+                          {/* Urgent Badge - Top of header */}
+                          {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
+                            <div className="absolute top-1.5 right-1.5 z-20">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500 text-white text-[8px] sm:text-[10px] font-semibold rounded shadow-sm">
+                                <span className="w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                                Urgent
+                              </span>
+                            </div>
+                          )}
                           {/* 2D Sketches - Safely Enquire Here */}
                           <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]">
                             <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
@@ -6098,7 +6108,7 @@ export default function EnquiryWall() {
                             <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
                             {/* Need Label - Above Title */}
                             <div className="relative text-left">
-                              <span className="text-[10px] sm:text-sm text-white/70 font-medium border border-red-500 px-1 rounded">Need</span>
+                              <span className="text-[10px] sm:text-sm text-white font-medium px-1 py-0.5 rounded bg-red-600">Need</span>
                               {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
                               {enquiry.createdAt && (
                                 <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-white/70 font-medium">
@@ -6283,15 +6293,7 @@ export default function EnquiryWall() {
                                   </div>
                                 )}
                             
-                            {/* Urgent Badge */}
-                            {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                              <div className="pt-1">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 text-xs font-semibold rounded-lg border border-red-200">
-                                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                                  Urgent
-                                </span>
-                              </div>
-                            )}
+
                             
                             {/* Description - Hidden in grid view */}
                             

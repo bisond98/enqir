@@ -43,7 +43,7 @@ export default function Marketplace() {
     }
   }, [page]);
 
-  // Auto-shuffle listings every 5 seconds when no filters/search
+  // Auto-shuffle listings every 60 seconds when no filters/search
   const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all';
 
   // Seller profiles for trust badge
@@ -109,7 +109,7 @@ export default function Marketplace() {
       return a;
     };
     setShuffledListings(shuffle(listings));
-    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 15000);
+    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 60000);
     return () => clearInterval(timer);
   }, [listings, noFiltersActive]);
 
