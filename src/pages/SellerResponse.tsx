@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check } from "lucide-react";
+import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, UserCheck, Star, Verified, Lock, Eye, ImageIcon, FileText, Loader2, X, Camera, Rocket, Check, ChevronRight } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -91,8 +91,22 @@ const SellerResponse = () => {
   const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
-  
-  // Scroll to ID verification card when verification is successful
+
+  // Restore form data from localStorage if returning from profile verification
+  useEffect(() => {
+    const draft = localStorage.getItem('seller_response_draft');
+    if (draft) {
+      try {
+        const data = JSON.parse(draft);
+        if (data.title) setTitle(data.title);
+        if (data.description) setDescription(data.description);
+        if (data.price) setPrice(data.price);
+        if (data.notes) setNotes(data.notes);
+        if (data.imageUrls) setImageUrls(data.imageUrls);
+      } catch {}
+      localStorage.removeItem('seller_response_draft');
+    }
+  }, []);  // Scroll to ID verification card when verification is successful
   useEffect(() => {
     if (idVerificationResult?.matches && idVerificationCardRef.current) {
       // Small delay to ensure the card is rendered
@@ -1759,558 +1773,45 @@ const SellerResponse = () => {
               {/* Separator */}
               <Separator className="my-8" />
 
-              {/* Profile Verification Status */}
-              <div className="space-y-6">
-                  {/* Show Verified Profile Badge */}
-                  {!authLoading && isUserVerified ? (
-                    <div className="p-3 sm:p-4 border border-black rounded-lg text-center" style={{ backgroundColor: '#004d00', borderColor: '#003300' }}>
-                      <div className="inline-flex items-center gap-1.5 sm:gap-2">
-                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
-                        <Badge variant="secondary" className="bg-transparent text-white border-transparent text-[10px] sm:text-xs px-2 py-0.5">
-                          <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                          You Already Have a Trust Badge
-                        </Badge>
-                      </div>
+              {/* Profile Verification */}
+              <div className="space-y-4">
+                {!authLoading && isUserVerified ? (
+                  <div className="p-3 sm:p-4 border border-black rounded-xl text-center" style={{ backgroundColor: '#004d00', borderColor: '#003300' }}>
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
+                      <Badge variant="secondary" className="bg-transparent text-white border-transparent text-[10px] sm:text-xs px-2 py-0.5">
+                        <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                        Profile Verified — Trust Badge Active
+                      </Badge>
                     </div>
-                  ) : (
-                    /* Show ID Upload for Unverified Users */
-                    <>
-                    </>
-                  )}
-
-                {/* ID Upload Form - Only show for unverified users - Matching Buyer Form Design */}
-                {!authLoading && !isUserVerified && (
-                  <div ref={idVerificationCardRef} className={`relative space-y-4 sm:space-y-5 p-4 sm:p-8 lg:p-10 bg-gradient-to-br from-slate-50 to-white rounded-xl w-full max-w-full overflow-visible`}>
-                    {/* Loading Animation - Distorted Blue Tick Forming (Same as Profile Page) */}
-                    {verifyingId && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl z-50 p-6 sm:p-8 overflow-hidden">
-                        {/* Moving Tick - All Over Card */}
-                        <div 
-                          className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
-                          style={{
-                            animation: 'tickMoveAround 8s ease-in-out infinite',
-                            WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
-                            transform: 'translateZ(0)',
-                            WebkitTransform: 'translateZ(0)'
-                          }}
-                        >
-                          {/* Bright Bold Distorted Tick */}
-                          <svg 
-                            className="w-full h-full text-blue-400 drop-shadow-2xl"
-                            viewBox="0 0 100 100"
-                            style={{
-                              filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
-                              animation: 'tickForming 2s ease-in-out infinite',
-                              WebkitAnimation: 'tickForming 2s ease-in-out infinite'
-                            }}
-                          >
-                            {/* Bold Distorted Tick */}
-                            <path
-                              d="M 20 50 L 40 70 L 80 30"
-                              stroke="currentColor"
-                              strokeWidth="12"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeDasharray="100"
-                              style={{
-                                strokeDashoffset: '100',
-                                animation: 'tickDraw 2s ease-in-out infinite',
-                                WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
-                                filter: 'drop-shadow(0 0 8px currentColor)'
-                              }}
-                            />
-                            {/* Bold Pulsing Circles */}
-                            <circle
-                              cx="20"
-                              cy="50"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                            <circle
-                              cx="40"
-                              cy="70"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite 0.3s',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                            <circle
-                              cx="80"
-                              cy="30"
-                              r="5"
-                              fill="currentColor"
-                              style={{
-                                animation: 'pulse 1.5s ease-in-out infinite 0.6s',
-                                WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
-                                filter: 'drop-shadow(0 0 6px currentColor)'
-                              }}
-                            />
-                          </svg>
-                          
-                          {/* Bright Glowing Background */}
-                          <div 
-                            className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
-                            style={{
-                              animation: 'pulseGlow 2s ease-in-out infinite',
-                              WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
-                              transform: 'scale(1.3)',
-                              WebkitTransform: 'scale(1.3)'
-                            }}
-                          ></div>
-                        </div>
-                        
-                        {/* Countdown - Large Transparent Overlapping */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div 
-                            className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-white/20 tabular-nums animate-pulse select-none"
-                            style={{
-                              WebkitTextStroke: '1px #000000'
-                            } as React.CSSProperties}
-                          >
-                            {verificationCountdown}
-                          </div>
-                        </div>
-                        
-                        {/* Verifying Text - Bottom */}
-                        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-center w-full px-6">
-                          <p className="text-sm sm:text-base text-gray-700 font-semibold mb-1">
-                            Verifying your ID...
-                          </p>
-                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight mb-1">
-                            Your ID remains securely encrypted and will be verified within a few minutes.
-                          </p>
-                          <p className="text-[7px] sm:text-[10px] text-gray-600 font-medium leading-tight">
-                            Don't press back
-                          </p>
-                          <p className="text-[7px] sm:text-[10px] text-red-600 font-semibold leading-tight">
-                            Don't press back
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-1 w-full">
-                      <div className="flex items-start justify-between w-full">
-                        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 flex-1 min-w-0 pr-2">
-                        <h3 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-left break-words">
-                          <span className="block">Trust</span>
-                          <span className="block">Badge</span>
-                        </h3>
-                          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-                            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black flex items-center">
-                              <span className="text-black">(</span><CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-blue-600" /><span className="text-black">)</span>
-                            </span>
-                            <span className="text-[6px] sm:text-[7px] text-blue-600 font-medium whitespace-nowrap">Blue Badge For This Response.</span>
-                      </div>
-                        </div>
-                        <span className="text-xs sm:text-sm text-black font-bold flex-shrink-0 text-right mt-1 sm:mt-2">
-                          (optional)
-                        </span>
-                      </div>
-                    </div>
-                    {idVerificationResult?.matches ? (
-                      <div className="p-6 sm:p-8 bg-white rounded-lg flex flex-col items-center justify-center text-center overflow-visible">
-                        <div 
-                          className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 flex items-center justify-center mb-4 sm:mb-5 shadow-lg relative"
-                          style={{
-                            animation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
-                            WebkitAnimation: 'circleReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, pulseGlow 2.5s ease-in-out infinite 1.5s, float 3s ease-in-out infinite 2.5s',
-                            transform: 'translateZ(0)',
-                            WebkitTransform: 'translateZ(0)',
-                            willChange: 'transform, box-shadow, border-radius'
-                          }}
-                        >
-                          {/* Particle effects - deconstructed pieces assembling */}
-                          {[...Array(6)].map((_, i) => {
-                            const angle = (i * 60) * Math.PI / 180;
-                            const distance = 45;
-                            return (
-                              <div
-                                key={i}
-                                className="absolute w-3 h-3 bg-blue-400 rounded-full"
-                                style={{
-                                  left: '50%',
-                                  top: '50%',
-                                  transform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
-                                  WebkitTransform: `translate(-50%, -50%) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
-                                  animation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
-                                  WebkitAnimation: `particleAssemble 1.2s ease-out ${i * 0.1}s forwards`,
-                                  transformOrigin: 'center',
-                                  WebkitTransformOrigin: 'center',
-                                  willChange: 'transform, opacity'
-                                }}
-                              />
-                            );
-                          })}
-                          <CheckCircle 
-                            className="h-16 w-16 sm:h-20 sm:w-20 text-white relative z-10 drop-shadow-lg"
-                            style={{
-                              animation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
-                              WebkitAnimation: 'checkmarkReconstruct 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both',
-                              transform: 'translateZ(0)',
-                              WebkitTransform: 'translateZ(0)',
-                              willChange: 'transform, opacity'
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {/* ID Type and Number */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
-                          <div className="space-y-2.5 w-full">
-                            <Label htmlFor="govIdType" className="text-xs sm:text-sm font-semibold text-slate-700">
-                              ID Document Type
-                            </Label>
-                            <div className="relative">
-                            <Select value={govIdType} onValueChange={(value) => {
-                              setGovIdType(value);
-                              if (govIdNumber && value) {
-                                validateIdNumber(govIdNumber, value);
-                              } else {
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                              }
-                              setIdVerificationResult(null);
-                            }} disabled={verifyingId}>
-                                <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-full relative z-10 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]" disabled={verifyingId}>
-                                <SelectValue placeholder="Select ID Type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
-                                <SelectItem value="pan">PAN Card</SelectItem>
-                                <SelectItem value="passport">Passport</SelectItem>
-                                <SelectItem value="driving_license">Driving License</SelectItem>
-                                <SelectItem value="voter_id">Voter ID Card</SelectItem>
-                              </SelectContent>
-                            </Select>
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none z-0" />
-                            </div>
-                            {errors.govIdType && (
-                              <span className="text-xs text-red-500 flex items-center">
-                                <X className="h-3 w-3 mr-1" />
-                                {errors.govIdType}
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="space-y-2.5 w-full">
-                            <Label htmlFor="govIdNumber" className="text-xs sm:text-sm font-semibold text-slate-700">
-                              ID Number
-                            </Label>
-                            <div className="relative">
-                            <Input
-                              id="govIdNumber"
-                              placeholder={govIdType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                              value={govIdNumber}
-                              onChange={(e) => {
-                                let value = e.target.value.toUpperCase();
-                                
-                                // Auto-format Aadhaar: add space after every 4 digits
-                                if (govIdType === 'aadhaar') {
-                                  // Remove all spaces first
-                                  const digitsOnly = value.replace(/\s/g, '');
-                                  // Add space after every 4 digits
-                                  value = digitsOnly.replace(/(\d{4})(?=\d)/g, '$1 ');
-                                }
-                                
-                                setGovIdNumber(value);
-                                // Clear verification result when user changes the ID number
-                                setIdVerificationResult(null);
-                                // Clear any existing errors for ID number
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                // Validate the new value
-                                if (govIdType) {
-                                  validateIdNumber(value, govIdType);
-                                }
-                              }}
-                                className="h-10 sm:h-12 text-xs sm:text-sm border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] w-full relative z-10"
-                              disabled={verifyingId}
-                            />
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
-                            </div>
-                            {errors.govIdNumber && !idVerificationResult && (
-                              <span className="text-xs text-red-500 flex items-center">
-                                <X className="h-3 w-3 mr-1" />
-                                {errors.govIdNumber}
-                              </span>
-                            )}
-                            {/* ID Verification Status */}
-                            {verifyingId && (
-                              <div ref={inlineVerificationRef} className="flex flex-col items-center justify-center gap-3 sm:gap-4 mt-2 p-4 sm:p-6 bg-black rounded-lg w-full">
-                                {totalElapsedSeconds >= 120 ? (
-                                  <span className="text-base sm:text-lg font-bold text-white text-center">Refresh</span>
-                                ) : (
-                                  <>
-                                    <span className="text-xs sm:text-sm font-medium text-white mb-2">Verifying</span>
-                                    <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-5 rounded-lg">
-                                      <span className="text-4xl sm:text-5xl font-bold text-white tabular-nums animate-pulse">
-                                        {verificationCountdown}
-                                      </span>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                            {idVerificationResult && !verifyingId && (
-                              <div className={`flex items-start gap-1.5 sm:gap-2 mt-1 ${
-                                idVerificationResult.matches ? 'text-blue-600' : 'text-red-600'
-                              }`}>
-                                {idVerificationResult.matches ? (
-                                  <>
-                                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                    <span className="break-words text-[10px] sm:text-sm">✓ ID number verified successfully</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <X className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
-                                    <span className="break-words leading-relaxed text-[10px] sm:text-sm">{idVerificationResult.error}</span>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* ID Upload - Side by Side on Mobile */}
-                        <div className="space-y-2.5">
-                          <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
-                            ID Document
-                          </Label>
-                          
-                          {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
-                          {!(idFrontImage || idFrontUrl) && (
-                            <div className="mb-3 sm:mb-2">
-                            <input
-                              type="file"
-                              id="idFront"
-                              accept="image/*"
-                              disabled={verifyingId}
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                setIdFrontImage(file);
-                                setIdErrors(prev => ({ ...prev, idFront: "" }));
-                                setIdVerificationResult(null);
-                                
-                                try {
-                                  const uploadedUrl = await uploadToCloudinaryUnsigned(file);
-                                  setIdFrontUrl(uploadedUrl);
-                                  // Keep backward compatibility with govIdUrl
-                                  if (!govIdUrl) setGovIdUrl(uploadedUrl);
-                                } catch (error) {
-                                  console.error('Error uploading ID:', error);
-                                  toast({
-                                    title: "Upload Failed",
-                                    description: "Failed to upload image. Please try again.",
-                                    variant: "destructive",
-                                  });
-                                }
-                              }}
-                              className="hidden"
-                            />
-                            
-                              {/* Upload Button - Full Width with Black Border */}
-                            <label
-                              htmlFor="idFront"
-                                className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
-                                verifyingId
-                                  ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                                    : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
-                              }`}
-                              onClick={(e) => {
-                                if (verifyingId) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            >
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
-                              <div className="flex items-center gap-2 relative z-10">
-                                <Upload className="h-5 w-5 text-slate-600" />
-                                <span className="text-sm text-slate-700 font-semibold">Upload</span>
-                              </div>
-                            </label>
-                              </div>
-                          )}
-                          
-                          {/* Image Upload Status - Sleek Design */}
-                          {(idFrontImage || idFrontUrl) && (
-                            <div className="w-full border-[0.5px] border-black rounded-xl p-2 sm:p-5 flex items-center justify-between shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] transition-all duration-300 bg-white relative overflow-hidden">
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
-                              <div className="flex items-center gap-1.5 sm:gap-4 flex-1 min-w-0 relative z-10">
-                                {/* Success Icon with Animation */}
-                                <div className="flex-shrink-0 w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-blue-500 flex items-center justify-center shadow-md">
-                                  <CheckCircle className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white animate-pulse" style={{ animationDuration: '2s' }} />
-                              </div>
-                                
-                                {/* Text Content */}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-[11px] sm:text-lg font-bold text-black truncate leading-tight">ID Image Uploaded</p>
-                                  <p className="text-[8px] sm:text-sm text-gray-600 mt-0">Ready for verification</p>
-                                </div>
-                              </div>
-                              
-                              {/* Remove Button - Sleek Design */}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setIdFrontImage(null);
-                                  setIdFrontUrl("");
-                                  if (govIdUrl === idFrontUrl) setGovIdUrl("");
-                                  setIdVerificationResult(null);
-                                }}
-                                className="flex-shrink-0 ml-1.5 sm:ml-3 rounded-lg p-1.5 sm:p-3 hover:scale-110 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group relative z-10"
-                                style={{ backgroundColor: '#dc2626' }}
-                                disabled={verifyingId}
-                                aria-label="Remove image"
-                              >
-                                <X className="h-3.5 w-3.5 sm:h-6 sm:w-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Upload ID for Trust Badge Button */}
-                        {(idFrontImage || idFrontUrl) && govIdType && govIdNumber && (!idVerificationResult || !idVerificationResult.matches) && (
-                          <div className="mt-4 sm:mt-5">
-                            <Button
-                              type="button"
-                              onClick={async () => {
-                                if (!govIdType) {
-                                  toast({
-                                    title: "ID Type Required",
-                                    description: "Please select an ID document type.",
-                                    variant: "destructive",
-                                  });
-                                  return;
-                                }
-                                
-                                if (!govIdNumber || govIdNumber.trim() === '') {
-                                  toast({
-                                    title: "ID Number Required",
-                                    description: "Please enter your ID number.",
-                                    variant: "destructive",
-                                  });
-                                  return;
-                                }
-                                
-                                setVerifyingId(true);
-                                setVerificationCountdown(60); // Reset countdown to 60 seconds
-                                setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                
-                                // Scroll inline verification countdown into view on mobile (non-intrusive)
-                                setTimeout(() => {
-                                  if (inlineVerificationRef.current) {
-                                    inlineVerificationRef.current.scrollIntoView({
-                                      behavior: 'smooth',
-                                      block: 'center',
-                                      inline: 'nearest'
-                                    });
-                                  }
-                                }, 200);
-                                
-                                try {
-                                  // Upload image if not already uploaded
-                                  let frontImageUrl: string | null = null;
-                                  
-                                  if (idFrontImage && !idFrontUrl) {
-                                    frontImageUrl = await uploadToCloudinaryUnsigned(idFrontImage);
-                                    setIdFrontUrl(frontImageUrl);
-                                  } else {
-                                    frontImageUrl = idFrontUrl || null;
-                                  }
-                                  
-                                  // Use front image for backward compatibility with govIdUrl
-                                  if (frontImageUrl && !govIdUrl) setGovIdUrl(frontImageUrl);
-                                  
-                                  if (!frontImageUrl) {
-                                    toast({
-                                      title: "Upload Error",
-                                      description: "Failed to upload ID image. Please try again.",
-                                      variant: "destructive",
-                                    });
-                                    return;
-                                  }
-                                  
-                                  const verification = await verifyIdNumberMatch(
-                                    frontImageUrl,
-                                    govIdNumber,
-                                    govIdType
-                                  );
-                                  
-                                  setIdVerificationResult(verification);
-                                  
-                                  if (!verification.matches) {
-                                    setErrors(prev => ({ 
-                                      ...prev, 
-                                      govIdNumber: verification.error || 'ID number does not match the image(s)' 
-                                    }));
-                                    toast({
-                                      title: "ID Verification Failed",
-                                      description: verification.error || "ID number does not match the uploaded image(s).",
-                                      variant: "destructive",
-                                    });
-                                  } else {
-                                    setErrors(prev => ({ ...prev, govIdNumber: "" }));
-                                    toast({
-                                      title: "Verification Successful",
-                                      description: "Your ID has been verified!",
-                                    });
-                                  }
-                                } catch (error) {
-                                  console.error('Error verifying ID:', error);
-                                  toast({
-                                    title: "Verification Error",
-                                    description: "Failed to verify ID number. Please try again.",
-                                    variant: "destructive",
-                                  });
-                                } finally {
-                                  setVerifyingId(false);
-                                }
-                              }}
-                              disabled={!govIdType || !govIdNumber || (!idFrontImage && !idFrontUrl) || verifyingId}
-                              className="!w-full !h-12 sm:!h-14 !text-sm sm:!text-base !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
-                            >
-                              {/* Physical button depth effect */}
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                              {/* Shimmer effect */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                              {verifyingId ? (
-                                <span className="flex items-center justify-center gap-2 sm:gap-3 relative z-10">
-                                  {/* Countdown Square - No Borders */}
-                                  <div className="bg-white/20 backdrop-blur-sm p-2.5 sm:p-2.5 rounded-lg">
-                                    <span className="text-2xl sm:text-2xl font-bold text-white tabular-nums animate-pulse">
-                                      {verificationCountdown}
-                                    </span>
-                                  </div>
-                                  <span className="text-white font-semibold text-sm sm:text-base">Verifying ID...</span>
-                                </span>
-                              ) : (
-                                <span className="flex items-center justify-center gap-2 relative z-10">
-                                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                                  <span className="text-white">Upload ID for Trust Badge</span>
-                                </span>
-                              )}
-                            </Button>
-                          </div>
-                        )}
-                      </>
-                    )}
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Save form data to localStorage before redirect
+                      localStorage.setItem('seller_response_draft', JSON.stringify({
+                        enquiryId: enquiryId,
+                        title,
+                        description,
+                        price,
+                        notes,
+                        imageUrls,
+                      }));
+                      navigate(`/profile?returnTo=/respond/${enquiryId}`);
+                    }}
+                    className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all group shadow-[0_4px_0_0_rgba(37,99,235,0.4)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4)] active:translate-y-0.5"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <ShieldCheck className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile</p>
+                      <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge for this response</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
+                  </button>
                 )}
-
               </div>
 
               {/* Enhanced Submit Button */}
