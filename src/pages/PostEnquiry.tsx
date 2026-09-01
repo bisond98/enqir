@@ -1436,37 +1436,19 @@ export default function PostEnquiry() {
       return;
     }
 
-    // Set loading state immediately after validation passes
-    setLoading(true);
-
-    // Check if premium option is selected
-    console.log('Checking premium status:', { selectedPlan, planId: selectedPlan?.id, planPrice: selectedPlan?.price });
+    // ALL enquiries require ₹10 Razorpay payment before posting
+    // handleDirectPayment manages its own loading/error states
+    console.log('💳 Opening Razorpay checkout - ₹10 payment required for all enquiries');
+    console.log('💳 Plan details:', { id: selectedPlan?.id, name: selectedPlan?.name, price: selectedPlan?.price });
     
-    // If premium option is selected, go directly to Razorpay checkout (Razorpay has its own card form)
-    if (selectedPlan && selectedPlan.price > 0) {
-      console.log('💳 Premium plan selected - Opening Razorpay checkout directly (Razorpay has built-in card form)');
-      console.log('💳 Plan details:', { id: selectedPlan.id, name: selectedPlan.name, price: selectedPlan.price });
-      
-      // CRITICAL: Prevent form submission and wait for payment
-      // Call handleDirectPayment and wait for it to complete
-      // The payment handler will create the enquiry after successful payment
-      try {
-        await handleDirectPayment();
-        // If payment succeeds, handleDirectPayment will create the enquiry
-        // So we should return here to prevent double submission
-        return;
-      } catch (error) {
-        console.error('❌ Error in handleDirectPayment:', error);
-        setLoading(false); // Reset loading on error
-        toast({
-          title: "Payment Error",
-          description: error instanceof Error ? error.message : "Failed to open payment gateway. Please try again.",
-          variant: "destructive",
-        });
-        // Don't submit enquiry if payment failed
-        return;
-      }
+    try {
+      await handleDirectPayment();
+    } catch (error) {
+      console.error('❌ Error in handleDirectPayment:', error);
     }
+    // Always return — handleDirectPayment creates the enquiry on success
+    // and shows error toasts on failure. Never post without payment.
+    return;
     
     // PRO PLAN LOGIC - KEPT FOR FUTURE UPDATES
     // If premium option is selected AND user doesn't have Pro remaining, show payment modal first
