@@ -235,6 +235,14 @@ export default function CreateListing() {
   const isVerifiedOrPending = isProfileVerified;
 
   useEffect(() => {
+    // Check sessionStorage in case React state was lost due to Razorpay history manipulation
+    if (sessionStorage.getItem('listing-published') === 'true') {
+      sessionStorage.removeItem('listing-published');
+      setIsPublished(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isPublished) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [isPublished]);
 
@@ -457,8 +465,8 @@ export default function CreateListing() {
         priceMax: rangeMax,
         tags: parsedTags,
         images,
-      });
-      toast({ title: 'Published', description: 'Your listing is live.' });
+      });        toast({ title: 'Published', description: 'Your listing is live.' });
+      sessionStorage.removeItem('listing-published');
       setTitle('');
       setDescription('');
       setPrice('');
@@ -467,6 +475,9 @@ export default function CreateListing() {
       setTags('');
       setImages([]);
       setStep(0);
+      // Small delay to ensure Razorpay overlays are fully cleaned up
+      await new Promise(r => setTimeout(r, 300));
+      sessionStorage.setItem('listing-published', 'true');
       setIsPublished(true);
       window.setTimeout(() => {
         navigate('/sell/marketplace');
