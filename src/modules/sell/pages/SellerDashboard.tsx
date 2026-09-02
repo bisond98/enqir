@@ -158,7 +158,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
       </div>
 
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border border-black/10">
+      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border-[3px] border-black">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length },
           { key: 'responses' as const, label: 'Responses', count: responses.length },
@@ -210,7 +210,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     <Input
                       value={editTitle}
                       onChange={(e) => setEditTitle(e.target.value)}
-                      className="h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                      className="h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
                     />
                   </div>
                   {/* Description */}
@@ -219,7 +219,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     <Textarea
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
-                      className="text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl min-h-[80px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                      className="text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl min-h-[80px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
                     />
                   </div>
                   {/* Category */}
@@ -228,7 +228,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     <select
                       value={editCategory}
                       onChange={(e) => setEditCategory(e.target.value)}
-                      className="w-full h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-white px-3 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-300"
+                      className="w-full h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-white px-3 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-300"
                     >
                       {SELL_CATEGORIES.map((c) => (
                         <option key={c.value} value={c.value}>{c.label}</option>
@@ -238,7 +238,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   {/* Location */}
                   <div className="relative">
                     <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Location</label>
-                    <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                    <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
                       <span className="flex items-center justify-center pl-3 text-black"><MapPin className="h-4 w-4" /></span>
                       <input
                         type="text"
@@ -254,7 +254,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       />
                     </div>
                     {locationDropdownOpen && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.15)] max-h-48 overflow-y-auto">
+                      <div className="absolute z-50 w-full mt-1 bg-white border-[3px] border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.15)] max-h-48 overflow-y-auto">
                         {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
                           SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
                             <button
@@ -325,7 +325,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   {editPriceType === 'fixed' ? (
                     <div>
                       <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price (₹)</label>
-                      <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                      <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
                         <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
                         <input
                           type="text"
@@ -341,7 +341,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     <div className="flex gap-2">
                       <div className="flex-1">
                         <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Min (₹)</label>
-                        <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                        <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
                           <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
                           <input
                             type="text"
@@ -355,7 +355,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       </div>
                       <div className="flex-1">
                         <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Max (₹)</label>
-                        <div className="flex items-center border-2 border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                        <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
                           <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
                           <input
                             type="text"
@@ -375,7 +375,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                           value={editTags}
                           onChange={(e) => setEditTags(e.target.value)}
                           placeholder="e.g. urgent, wholesale, negotiable"
-                          className="h-10 text-sm border-2 border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
+                          className="h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
                         />
                   </div>
                   {/* Action Buttons */}
@@ -393,9 +393,9 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="p-4">
                     <div className="flex gap-3.5">
                       {l.images?.[0] ? (
-                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0" />
+                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border-[2px] border-black" />
                       ) : (
-                        <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 border-[2px] border-black">
                           <Package className="h-6 w-6 text-gray-300" />
                         </div>
                       )}
@@ -424,13 +424,13 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-gray-800 hover:text-black border-2 border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.08)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.12)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.08)] active:translate-y-0.5 bg-white hover:bg-gray-50"
+                      className="flex-1 py-2.5 text-[11px] font-bold text-gray-800 hover:text-black border-[2px] border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.08)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.12)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.08)] active:translate-y-0.5 bg-white hover:bg-gray-50"
                     >
                       <Pencil className="h-3 w-3" />Edit
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-red-600 border-2 border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(239,68,68,0.1)] hover:shadow-[0_3px_0_0_rgba(239,68,68,0.15)] active:shadow-[0_1px_0_0_rgba(239,68,68,0.1)] active:translate-y-0.5 bg-white hover:bg-red-50"
+                      className="flex-1 py-2.5 text-[11px] font-bold text-red-600 border-[2px] border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(239,68,68,0.1)] hover:shadow-[0_3px_0_0_rgba(239,68,68,0.15)] active:shadow-[0_1px_0_0_rgba(239,68,68,0.1)] active:translate-y-0.5 bg-white hover:bg-red-50"
                     >
                       <Trash2 className="h-3 w-3" />Delete
                     </button>
@@ -495,7 +495,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
             return (
-              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border-2 border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_3px_0_0_rgba(0,0,0,0.1)] group">
+              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border-[3px] border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_3px_0_0_rgba(0,0,0,0.1)] group">
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">

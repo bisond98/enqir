@@ -2032,7 +2032,7 @@ const Landing = () => {
                 - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-4">
-              <p className="text-xs sm:text-sm font-black text-black mb-3">Enquiries</p>
+              <p className="text-xs sm:text-sm font-black text-black mb-3 inline-block border-2 border-black rounded-xl px-2 py-0.5">Enquiries</p>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
@@ -2802,7 +2802,7 @@ const Landing = () => {
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
                 {shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="text-xs sm:text-sm font-black text-black mb-3">For Sale</p>
+                    <p className="inline-block border-2 border-black rounded-xl px-2 py-0.5 text-xs sm:text-sm font-black text-black mb-3">For Sale</p>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
