@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight } from "lucide-react";
+import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import LoadingAnimation from "@/components/LoadingAnimation";
+
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, where, getDocs, onSnapshot, increment } from "firebase/firestore";
@@ -80,6 +82,18 @@ const SellerResponse = () => {
   const [imageUrls, setImageUrls] = useState<string[]>(Array(5).fill(""));
   const [uploadProgresses, setUploadProgresses] = useState<number[]>(Array(5).fill(0));
                         const submitButtonRef = useRef<HTMLDivElement>(null);
+
+  // ID verification state
+  const [govIdType, setGovIdType] = useState("");
+  const [govIdNumber, setGovIdNumber] = useState("");
+  const [govIdUrl, setGovIdUrl] = useState("");
+  const [govIdFile, setGovIdFile] = useState<File | null>(null);
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [verificationCountdown, setVerificationCountdown] = useState(60);
+  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
+  const idVerificationCardRef = useRef<HTMLDivElement>(null);
+
 
   // Restore form data from localStorage if returning from profile verification
   useEffect(() => {
@@ -903,8 +917,7 @@ const SellerResponse = () => {
     setSubmitting(true);
 
     try {
-      // Razorpay ₹10 payment before submitting offer
-      console.log('💳 Opening Razorpay checkout - ₹10 payment required to submit offer');
+      console.log('💳 Opening Razorpay checkout...');
       const paymentResult = await processPayment(
         enquiryId,
         authUser.uid,
@@ -927,137 +940,98 @@ const SellerResponse = () => {
         return;
       }
 
-      console.log('✅ Payment successful, submitting offer...');
+      console.log('✅ Payment successful!');
 
-      // Filter out null/empty images and create arrays of URLs and names
-      const validImageUrls = imageUrls.filter(url => url.trim() !== "");
-      const validImageNames = imageFiles
-        .filter((file, index) => file !== null && imageUrls[index] !== "")
-        .map(file => file?.name || "");
-
-      const responseData: SellerSubmission = {
-        enquiryId: enquiryId!,
-        sellerId: authUser?.uid || "",
-        sellerName: authUser?.displayName || "A user",
-        sellerEmail: authUser?.email || "",
-        title: title.trim(),
-        message: description.trim(),
-        price: price.trim(),
-        notes: notes.trim(),
-        imageUrls: validImageUrls,
-        imageNames: validImageNames,
-        imageCount: validImageUrls.length,
-        govIdType: govIdType.trim(),
-        govIdNumber: govIdNumber.trim(),
-        govIdUrl: idFrontUrl || govIdUrl || "", // Use front image URL if available, fallback to govIdUrl
-        govIdFileName: idFrontImage?.name || govIdFile?.name || "",
-        isIdentityVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
-        status: isUserVerified ? "approved" as const : "pending" as const,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        buyerViewed: false,
-        chatEnabled: false,
-        userVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
-        isProfileVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl))
-      };
-
-      console.log('Submitting seller response:', responseData);
-      
-      // Save to sellerSubmissions collection
-      const docRef = await addDoc(collection(db, "sellerSubmissions"), responseData);
-      console.log('Seller response saved with ID:', docRef.id);
-      
-      // Track analytics event
-      trackResponseSubmitted(enquiryId!, docRef.id);
-      
-      // Set submission ID for real-time tracking
-      setSubmissionId(docRef.id);
-      
-      // 🤖 AI Processing - Skip for verified users, process for non-verified
-      if (isUserVerified) {
-        console.log('✅ Trust Badge User: Seller response automatically approved and made live!');
-        
-        // Increment enquiry response count when verified user's response is auto-approved
-        if (enquiry) {
-          try {
-            const enquiryRef = doc(db, 'enquiries', enquiryId!);
-            await updateDoc(enquiryRef, {
-              responses: increment(1),
-              lastResponseAt: serverTimestamp()
-            });
-            console.log('✅ SellerResponse: Incremented response count for verified user auto-approval');
-          } catch (error) {
-            console.error('❌ SellerResponse: Error incrementing enquiry response count:', error);
-            // Don't fail the submission if count increment fails
-          }
-        }
-      } else {
-        console.log('🤖 SellerResponse: Starting AI processing for response:', docRef.id);
-        realtimeAI.processSellerResponse(docRef.id, responseData)
-          .then((result) => {
-            if (result.success) {
-              console.log('✅ AI: Seller response auto-approved instantly!');
-            } else if (result.action === 'flagged') {
-              console.log('⏳ AI: Seller response flagged for manual review');
-            } else {
-              console.log('❌ AI: Seller response auto-rejected');
-            }
-          })
-          .catch((error) => {
-            console.error('🤖 AI: Error processing seller response:', error);
-            // AI processing failure doesn't affect user experience
-          });
-      }
-      
-      // Note: Response count is incremented only when response is approved (in realtimeAI.ts or Admin.tsx)
-      // Set submitted state first
-      setIsSubmitted(true);
+      // Show success screen immediately
       setSubmitting(false);
-      
-      // Create notification for seller (response confirmation)
-      try {
-        await createNotification('new_response', {
-          title: 'Response Submitted Successfully! 🎯',
-          message: `Your offer for "${enquiry?.title}" has been submitted and is ${isUserVerified ? 'now live!' : 'under review.'}`,
-          priority: 'high',
-          actionUrl: '/my-responses',
-          actionText: 'View My Responses'
-        });
-      } catch (notificationError) {
-        console.error('Failed to create notification:', notificationError);
-      }
-      
-      // Notify the buyer (enquiry owner) about the new response
-      if (enquiry?.userId && enquiry.userId !== authUser?.uid && notificationContext?.createNotificationForUser) {
+      setIsSubmitted(true);
+      setTimeout(() => {
+        navigate('/dashboard?mode=seller');
+      }, 3000);
+
+      // Save to Firebase in background (fire-and-forget)
+      (async () => {
         try {
-          await notificationContext.createNotificationForUser(
-            enquiry.userId,
-            'new_response',
-            {
-              title: '🎯 New Response to Your Enquiry!',
-              message: `${authUser?.displayName || 'A user'} responded to "${enquiry.title}"`,
-              priority: 'high',
-              actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${authUser?.uid}`,
-              actionText: 'View Response',
-              enquiryId: enquiryId,
-              sellerId: authUser?.uid,
-              sellerName: authUser?.displayName || 'A user'
-            }
-          );
-          console.log('✅ Buyer notification created successfully');
-        } catch (notificationError) {
-          console.error('Failed to create buyer notification:', notificationError);
+          console.log('📤 Saving offer to Firebase...');
+
+        const validImageUrls = imageUrls.filter(url => url.trim() !== "");
+        const validImageNames = imageFiles
+          .filter((file, index) => file !== null && imageUrls[index] !== "")
+          .map(file => file?.name || "");
+
+        const responseData: SellerSubmission = {
+          enquiryId: enquiryId!,
+          sellerId: authUser?.uid || "",
+          sellerName: authUser?.displayName || "A user",
+          sellerEmail: authUser?.email || "",
+          title: title.trim(),
+          message: description.trim(),
+          price: price.trim(),
+          notes: notes.trim(),
+          imageUrls: validImageUrls,
+          imageNames: validImageNames,
+          imageCount: validImageUrls.length,
+          govIdType: govIdType.trim(),
+          govIdNumber: govIdNumber.trim(),
+          govIdUrl: idFrontUrl || govIdUrl || "",
+          govIdFileName: idFrontImage?.name || govIdFile?.name || "",
+          isIdentityVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
+          status: "approved" as const,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          buyerViewed: false,
+          chatEnabled: false,
+          userVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
+          isProfileVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl))
+        };
+
+        const docRef = await addDoc(collection(db, "sellerSubmissions"), responseData);
+        console.log('✅ Offer saved with ID:', docRef.id);
+        trackResponseSubmitted(enquiryId!, docRef.id);
+
+        // AI Processing
+        if (!isUserVerified) {
+          realtimeAI.processSellerResponse(docRef.id, responseData).catch(() => {});
         }
+
+        // Notifications
+        try {
+          await createNotification('new_response', {
+            title: 'Response Submitted Successfully! 🎯',
+            message: `Your offer for "${enquiry?.title}" has been submitted and is now live!`,
+            priority: 'high',
+            actionUrl: '/my-responses',
+            actionText: 'View My Responses'
+          });
+        } catch {}
+
+        // Notify buyer
+        if (enquiry?.userId && enquiry.userId !== authUser?.uid && notificationContext?.createNotificationForUser) {
+          try {
+            await notificationContext.createNotificationForUser(
+              enquiry.userId,
+              'new_response',
+              {
+                title: '🎯 New Response to Your Enquiry!',
+                message: `${authUser?.displayName || 'A user'} responded to "${enquiry.title}"`,
+                priority: 'high',
+                actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${authUser?.uid}`,
+                actionText: 'View Response',
+                enquiryId: enquiryId,
+                sellerId: authUser?.uid,
+                sellerName: authUser?.displayName || 'A user'
+              }
+            );
+          } catch {}
+        }
+      } catch (err) {
+        console.error('❌ Background submission error:', err);
       }
-      
-      // Success page will be shown, no need to scroll
-      //   updateType: 'new response submitted'
-      // });
+    })();
+
     } catch (error) {
       console.error('Error submitting response:', error);
       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
-      setIsSubmitted(false); // Reset submitted state on error
-    } finally {
       setSubmitting(false);
     }
   };
@@ -1874,14 +1848,13 @@ const SellerResponse = () => {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center space-x-2 relative z-10">
-                      <CheckCircle className="h-5 w-5 text-white" />
-                      <span className="text-white">Submit Offer ₹10</span>
+                      <span className="text-white">Connect</span>
                     </div>
                   )}
                 </Button>
                 
                 <p className="text-[8px] sm:text-[10px] text-center text-muted-foreground">
-                  By submitting, you agree to our terms and confirm all information is accurate
+                  We do not offer anything free to waste your time
                 </p>
               </div>
             </form>
