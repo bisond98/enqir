@@ -1332,45 +1332,7 @@ const Dashboard = () => {
   };
 
   const getLockedResponses = (enquiryId: string) => {
-    const responses = enquiryResponses[enquiryId] || [];
-    const enquiry = enquiries.find(e => e.id === enquiryId);
-    
-    if (!enquiry) return [];
-    
-    // Get the selected plan for this enquiry
-    const selectedPlanId = enquiry.selectedPlanId || 'free';
-    
-    // Determine response limit based on plan
-    let responseLimit = 2; // Default free plan
-    
-    switch (selectedPlanId) {
-      case 'free':
-        responseLimit = 2;
-        break;
-      case 'basic':
-        responseLimit = 5;
-        break;
-      case 'standard':
-        responseLimit = 10;
-        break;
-      case 'premium':
-      case 'pro':
-        responseLimit = -1; // Unlimited
-        break;
-      default:
-        responseLimit = 2; // Default to free
-    }
-    
-    // If unlimited, no locked responses
-    if (responseLimit === -1) {
-      console.log('No locked responses (unlimited plan)');
-      return [];
-    }
-    
-    // Show locked responses beyond the limit
-    const lockedResponses = responses.slice(responseLimit);
-    console.log(`Locked responses for ${selectedPlanId} plan:`, lockedResponses.length);
-    return lockedResponses;
+    return [];
   };
 
   const getRemainingResponseCount = (enquiryId: string) => {
@@ -1841,16 +1803,7 @@ const Dashboard = () => {
                                     </Button>
                                   </div>
                                   
-                                  {remainingCount > 0 && (
-                                    <div className="flex items-center gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1 xl:py-1.5 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300/60 rounded-lg lg:rounded-md xl:rounded-lg shadow-md">
-                                      <div className="flex items-center justify-center w-3.5 h-3.5 xl:w-4 xl:h-4 bg-amber-500/20 rounded-md flex-shrink-0">
-                                        <Lock className="h-2.5 w-2.5 xl:h-3 xl:w-3 text-amber-700" />
-                                      </div>
-                                      <span className="text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] text-amber-800 font-bold tracking-tight whitespace-nowrap">
-                                        {remainingCount} Locked
-                                      </span>
-                                    </div>
-                                  )}
+
 
                               {/* Spacer to maintain card height */}
                               <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>

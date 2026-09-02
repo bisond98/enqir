@@ -859,7 +859,7 @@ const MyEnquiries = () => {
                         </div>
 
                         {/* Plan Information Group - Premium Design */}
-                        {(enquiry.selectedPlanId && enquiry.selectedPlanId !== 'free') && (
+                        {false && (
                           <div className="space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border-[0.5px] border-gray-800 shadow-md">
                             <div className="flex items-center justify-between gap-3 sm:gap-4 lg:gap-3 xl:gap-4">
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0">

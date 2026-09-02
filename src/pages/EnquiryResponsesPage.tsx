@@ -13,7 +13,6 @@ import { db } from "@/firebase";
 import { collection, query, where, orderBy, getDocs, doc, getDoc, onSnapshot, updateDoc, getDoc as firestoreGetDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
-import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PaymentPlan, PAYMENT_PLANS } from "@/config/paymentPlans";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 
@@ -145,38 +144,9 @@ const EnquiryResponsesPage = () => {
     
     let filteredResponses = responses;
     
-    // If user is the enquiry owner (buyer), apply plan limits based on their selected plan
     if (enquiry.userId === user.uid) {
-      const planId = enquiry.selectedPlanId || 'free';
-      
-      // Determine response limit based on plan
-      let responseLimit = 2; // Default free plan
-      
-      switch (planId) {
-        case 'free':
-          responseLimit = 2;
-          break;
-        case 'basic':
-          responseLimit = 5;
-          break;
-        case 'standard':
-          responseLimit = 10;
-          break;
-        case 'premium':
-        case 'pro':
-          responseLimit = -1; // Unlimited
-          break;
-        default:
-          responseLimit = 2; // Default to free
-      }
-      
-      // Apply limit
-      if (responseLimit === -1) {
-        filteredResponses = responses; // Unlimited for premium/pro
-      } else {
-        filteredResponses = responses.slice(0, responseLimit);
-        console.log(`🔒 EnquiryResponsesPage: Limiting to ${responseLimit} responses for ${planId} plan`);
-      }
+      // All responses visible - no plan limits
+      filteredResponses = responses;
     } else {
       // For sellers or other users, filter to only their own responses
       filteredResponses = responses.filter(r => r.sellerId === user.uid);
@@ -1118,60 +1088,6 @@ const EnquiryResponsesPage = () => {
           </AnimatePresence>
         </div>
 
-        {(() => {
-          // Don't show unlock message for premium plans (top tier) or pro plans (hidden for future)
-          // Always use selectedPlanId - don't use isPremium flag
-          const enquiryPlan = enquiry?.selectedPlanId || 'free';
-          const isPremiumOrPro = enquiryPlan === 'premium' || enquiryPlan === 'pro';
-          
-          // Only show for plans below premium (free, basic, standard)
-          if (!user || !enquiry || user.uid !== enquiry.userId || isPremiumOrPro) {
-            return null;
-          }
-          
-          const currentPlan = PAYMENT_PLANS.find(p => p.id === enquiryPlan);
-          const responseLimit = currentPlan?.responses || 2;
-          
-          // Only show if there are more responses than the limit
-          if ((responses.length || 0) <= responseLimit) {
-            return null;
-          }
-          
-          return (
-            <div className="my-3 sm:my-6 text-center bg-white border-2 border-blue-200 rounded-lg p-3 sm:p-5 flex flex-col items-center shadow-lg">
-              <div className="flex items-center justify-center mb-2">
-                <Crown className="h-5 w-5 sm:h-7 sm:w-7 text-blue-600 mr-2" />
-                <span className="text-sm sm:text-lg font-black text-gray-900">Unlock All Responses</span>
-              </div>
-              <p className="text-gray-700 text-[8px] sm:text-[10px] font-bold mb-2 sm:mb-3">
-                Only the first {responseLimit} responses are visible for your current plan.<br />
-                Upgrade to a higher plan to view all {responses.length} responses.
-              </p>
-              {(() => {
-                const isExpired = enquiry.deadline && (() => {
-                  const now = new Date();
-                  const deadlineDate = enquiry.deadline.toDate ? enquiry.deadline.toDate() : new Date(enquiry.deadline);
-                  return deadlineDate < now;
-                })();
-                
-                return (
-              <Button
-                variant="default"
-                    disabled={isExpired}
-                    className="bg-blue-600 hover:bg-blue-700 text-white w-full max-w-xs mt-1 sm:mt-2 py-2 sm:py-3 text-xs sm:text-base font-black rounded-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => {
-                      if (!isExpired) {
-                        handleUpgradeClick(enquiry);
-                      }
-                    }}
-              >
-                    {isExpired ? 'Enquiry Expired' : 'Upgrade Plan'}
-              </Button>
-                );
-              })()}
-            </div>
-          );
-        })()}
       </div>
       </div>
 
@@ -1215,40 +1131,7 @@ const EnquiryResponsesPage = () => {
         </div>
       )}
 
-      {/* Payment Plan Selector Dialog */}
-      {showPaymentSelector && selectedEnquiryForUpgrade && (
-        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
-            {/* Physical button depth effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
-            
-            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
-              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
-                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
-                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
-                </div>
-                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{selectedEnquiryForUpgrade.title}"</span>
-              </DialogTitle>
-              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
-                Upgrade to unlock more curated, verified sellers.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
-              <PaymentPlanSelector
-                currentPlanId={currentPlan}
-                enquiryId={selectedEnquiryForUpgrade.id}
-                userId={user?.uid || ''}
-                onPlanSelect={handlePlanSelect}
-                isUpgrade={true}
-                enquiryCreatedAt={selectedEnquiryForUpgrade.createdAt}
-                className="max-w-4xl mx-auto w-full"
-                user={user}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+
     </Layout>
   );
 };
