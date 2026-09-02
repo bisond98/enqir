@@ -9,7 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
 
@@ -169,7 +169,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
             className={`flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
               activeTab === key
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-[0_4px_0_0_rgba(37,99,235,0.3)]'
-                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                : 'text-black font-black hover:bg-gray-50'
             }`}
           >
             {label} ({count})
@@ -393,18 +393,21 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="p-4">
                     <div className="flex gap-3.5">
                       {l.images?.[0] ? (
-                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border-[2px] border-black" />
+                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border border-black" />
                       ) : (
-                        <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 border-[2px] border-black">
+                        <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black">
                           <Package className="h-6 w-6 text-gray-300" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0 pt-0.5">
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="font-semibold text-[15px] text-gray-900 truncate leading-tight">{l.title}</h3>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md flex-shrink-0 ${
-                            l.status === 'live' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                          }`}>{l.status}</span>
+                          <span className={`flex-shrink-0 flex items-center gap-1 text-[10px] font-semibold p-1 rounded-full ${
+                            l.status === 'live' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            <span className={`w-2.5 h-2.5 rounded-full border border-black ${l.status === 'live' ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+                            
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           {l.price != null && (
@@ -424,13 +427,13 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-gray-800 hover:text-black border-[2px] border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.08)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.12)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.08)] active:translate-y-0.5 bg-white hover:bg-gray-50"
+                      className="flex-1 py-2.5 text-[11px] font-black text-gray-800 border border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 bg-white hover:bg-gray-50"
                     >
                       <Pencil className="h-3 w-3" />Edit
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="flex-1 py-2.5 text-[11px] font-bold text-red-600 border-[2px] border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_0_0_rgba(239,68,68,0.1)] hover:shadow-[0_3px_0_0_rgba(239,68,68,0.15)] active:shadow-[0_1px_0_0_rgba(239,68,68,0.1)] active:translate-y-0.5 bg-white hover:bg-red-50"
+                      className="flex-1 py-2.5 text-[11px] font-black text-white border border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 bg-[#800020] hover:bg-[#6b0019]"
                     >
                       <Trash2 className="h-3 w-3" />Delete
                     </button>
@@ -495,35 +498,39 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
             return (
-              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border-[3px] border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_3px_0_0_rgba(0,0,0,0.1)] group">
-                <div className="p-4">
+              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
+                <div className="p-4 pt-2"><p className="text-[11px] text-gray-500 font-bold text-center mb-2">Buyer's Message</p>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">                          <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-4 w-4 text-white" />
+                      <div className="flex items-center gap-2 mb-2">                          <div className="w-6 h-6 rounded-md bg-green-600 border border-black flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="h-3 w-3 text-white" />
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-black text-gray-900 text-sm truncate leading-tight">{listing?.title ?? 'Listing'}</p>
-                          <p className="text-[10px] text-gray-600 font-medium">Buyer inquiry</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-black text-gray-900 text-base truncate leading-tight">{listing?.title ?? 'Listing'}</p>
                         </div>
+                        
                       </div>
-                      <p className="text-[13px] text-gray-900 whitespace-pre-wrap line-clamp-2 leading-relaxed pl-10">{r.message}</p>
+                      <div className="flex items-center gap-2 mt-2 pl-2">
+                        {r.offeredPrice != null && r.message && (
+                          <div className="flex flex-col gap-2">
+                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center flex-shrink-0">
+                              <span className="text-[9px] font-bold text-gray-500 mr-1">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] flex items-center"><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div>
+                          </div>
+                        )}
+                        {r.offeredPrice != null && !r.message && (
+                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-6 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex flex-col items-center justify-center"><span className="text-[9px] font-bold text-gray-500">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span></div></div>
+                        )}
+                        {r.message && !r.offeredPrice && (
+                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] min-h-[44px] flex items-center"><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div></div>
+                        )}
+                      </div>
                     </div>
-                    {r.offeredPrice != null && (
-                      <div className="flex flex-col items-end flex-shrink-0">
-                        <span className="text-[11px] text-gray-600 font-medium mb-0.5">Offered</span>
-                        <span className="text-sm font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-lg border border-gray-200">
-                          ₹{r.offeredPrice.toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
-                <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-gray-600 font-medium">View response details →</span>
-                    <MessageSquare className="h-3.5 w-3.5 text-green-500 group-hover:text-green-600 transition-colors" />
-                  </div>
+                <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2 flex justify-end">
+                  <Eye className="h-4 w-4 text-gray-500 group-hover:text-black transition-colors" />
                 </div>
               </Link>
             );

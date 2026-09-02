@@ -330,7 +330,7 @@ export default function ListingDetail() {
                 disabled={sending}
               >
                 <Send className="h-4 w-4 mr-2" />
-                {user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Send Message' : 'Send Message ₹10')) : 'Sign in to message'}
+                {user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Connect' : 'Connect')) : 'Sign in to message'}
               </Button>
             </div>
           </div>

@@ -986,7 +986,7 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
                           >
                             {/* Physical button depth effect */}
                             {!isExpired && (
@@ -995,7 +995,7 @@ const MyEnquiries = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                               </>
                             )}
-                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-red-500 fill-red-500 stroke-black stroke-2" />
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-white fill-white stroke-black stroke-2" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>
                             <span className="sm:hidden whitespace-nowrap tracking-tight relative z-10">Delete</span>
                           </button>

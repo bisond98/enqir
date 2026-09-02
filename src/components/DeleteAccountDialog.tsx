@@ -126,7 +126,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose, onConfirm, userName }: De
       <Card className="w-80 sm:w-96 mx-4 max-h-[90vh] overflow-y-auto">
         <CardHeader className="text-center pb-4">
           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Trash2 className="h-6 w-6 text-red-600" />
+            <Trash2 className="h-6 w-6 text-[#800020]" />
           </div>
           <CardTitle className="text-lg sm:text-xl text-slate-900">
             Delete Account
@@ -142,7 +142,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose, onConfirm, userName }: De
 
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-2">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-[#800020] mt-0.5 flex-shrink-0" />
               <div className="text-xs sm:text-sm text-red-800">
                 <p className="font-semibold mb-1">This action cannot be undone!</p>
                 <ul className="space-y-1 text-xs">
@@ -167,7 +167,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose, onConfirm, userName }: De
               placeholder="Enter your password"
               className={`text-sm ${
                 isPasswordValid ? 'border-green-500 focus:border-green-500' : 
-                passwordError ? 'border-red-500 focus:border-red-500' : ''
+                passwordError ? 'border-[#800020] focus:border-[#800020]' : ''
               }`}
               disabled={isLoading || isVerifying}
               autoComplete="current-password"
@@ -191,7 +191,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose, onConfirm, userName }: De
 
           <div className="space-y-2">
             <Label htmlFor="confirmation" className="text-sm font-medium">
-              Type <span className="font-bold text-red-600">DELETE</span> to confirm:
+              Type <span className="font-bold text-[#800020]">DELETE</span> to confirm:
             </Label>
             <Input
               id="confirmation"
