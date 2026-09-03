@@ -999,22 +999,28 @@ export default function CreateListing() {
             </div>
           )}
 
-          <p className="text-center text-[10px] sm:text-xs text-gray-400 font-normal truncate mt-3">We don't offer anything free at the cost of your time and safety.</p>
+          {step === totalSteps - 1 && (
+            <p className="text-center text-[10px] sm:text-xs text-gray-400 font-normal truncate mt-3">We don't offer anything free at the cost of your time and safety.</p>
+          )}
           <div className="mt-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={goBack}
               disabled={step === 0}
-              className="border-2 border-black font-black rounded-xl h-11 sm:h-12"
+              className="!bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group font-black h-11 sm:h-12"
             >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+              <ChevronLeft className="h-4 w-4 mr-1 relative z-10" />
+              <span className="relative z-10">Back</span>
             </Button>
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} className="bg-black text-white font-black rounded-xl h-11 sm:h-12 px-6">
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
+              <Button type="button" onClick={goNext} className="!bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group font-black h-11 sm:h-12 px-6">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <span className="relative z-10">Next</span>
+                <ChevronRight className="h-4 w-4 ml-1 relative z-10" />
               </Button>
             ) : (
               <Button
