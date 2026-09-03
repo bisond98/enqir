@@ -680,7 +680,7 @@ export default function MyChats() {
                     key={chat.id}
                   >
                     <Card
-                      className={`border-[0.5px] border-black rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      className={`border-[3px] border-black rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
                         isAdminWarning
                           ? 'bg-[#5C1A1A] text-white'
                           : isDisabled 
@@ -902,10 +902,10 @@ export default function MyChats() {
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
-                            className={`w-full border-[0.5px] border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 rounded-xl relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 ${
+                            className={`relative w-full !rounded-2xl !border-[1.5px] !border-black/20 text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 !h-auto transition-all duration-200 overflow-hidden ${
                               isDisabled
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-400 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] group/openchat'
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.15)]'
+                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:translate-y-[4px] group/openchat'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();

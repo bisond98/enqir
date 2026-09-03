@@ -259,8 +259,8 @@ export default function ListingDetail() {
           <div className="p-4 sm:p-5">
             {/* Title + Price */}
             <div className="mb-3">
-              <h2 className="text-base sm:text-lg font-black text-black leading-snug text-left flex items-center gap-1.5">
-                <span className="px-3 py-1 rounded-xl border-2 border-black">{listing.title}</span>
+              <h2 className="text-[13px] sm:text-sm font-bold text-black leading-snug text-left flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded-lg border border-black">{listing.title}</span>
                 {sellerProfile?.isProfileVerified && (
                   <span className="inline-flex items-center justify-center w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2 w-2 text-white" /></span>
                 )}
@@ -345,12 +345,14 @@ export default function ListingDetail() {
               </div>
               <Button
                 variant="outline"
-                className="w-full h-11 !bg-green-600 hover:!bg-green-700 !text-white !border-green-700 font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(22,163,74,0.3)] hover:shadow-[0_6px_0_0_rgba(22,163,74,0.3)] active:shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:translate-y-0.5 transition-all"
+                className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform !relative !overflow-hidden group"
                 onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
                 disabled={sending}
               >
-                <Send className="h-4 w-4 mr-2" />
-                {user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Connect' : 'Connect')) : 'Sign in to message'}
+                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <Send className="h-4 w-4 mr-2 relative z-10" />
+                <span className="relative z-10">{user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Connect' : 'Connect')) : 'Sign in to message'}</span>
               </Button>
             </div>
           </div>
@@ -384,12 +386,12 @@ export default function ListingDetail() {
                       <p className="text-[10px] font-bold text-gray-400 uppercase">{r.buyerName || 'Buyer'}</p>
                       <p className="text-xs text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
                       {r.offeredPrice != null && (
-                        <span className="inline-flex items-center gap-0.5 text-[10px] font-black text-black mt-1.5">
-                          <IndianRupee className="h-2.5 w-2.5" />₹{r.offeredPrice.toLocaleString('en-IN')}
+                        <span className="inline-flex items-center gap-0.5 text-sm font-black text-black mt-1.5">
+                          <IndianRupee className="h-3.5 w-3.5" />{r.offeredPrice.toLocaleString('en-IN')}
                         </span>
                       )}
                     </div>
-                    <span className="flex-shrink-0 mt-1 w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
+                    <span className="flex-shrink-0 mt-3 w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
                   </div>
                 </Link>
               ))}

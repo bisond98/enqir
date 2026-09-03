@@ -1285,13 +1285,13 @@ const SellerResponse = () => {
                     <div className="space-y-2 text-xs sm:text-sm text-gray-700">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Price:</span>
-                        <span className="font-semibold text-gray-900">₹{existingSubmission.price}</span>
+                        <span className="font-semibold text-gray-900">{existingSubmission.price}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Status:</span>
                         <Badge 
                           variant={existingSubmission.status === 'approved' ? 'default' : existingSubmission.status === 'rejected' ? 'destructive' : 'secondary'} 
-                          className="ml-2 text-[10px] sm:text-xs"
+                          className={`ml-2 text-[10px] sm:text-xs ${existingSubmission.status === 'approved' ? 'bg-green-950 text-white hover:bg-green-950' : ''}`}
                         >
                           {existingSubmission.status}
                         </Badge>
@@ -1308,13 +1308,15 @@ const SellerResponse = () => {
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                     <Link to="/dashboard" className="flex-1">
-                      <Button className="w-full bg-black hover:bg-gray-900 text-white text-xs sm:text-sm py-2.5">
-                        View Dashboard
+                      <Button className="relative w-full !rounded-2xl !border-[0.5px] !border-black/20 bg-black hover:bg-gray-900 text-white font-semibold py-3 !text-sm !h-12 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:translate-y-[4px] transition-all duration-200 overflow-hidden">
+                        <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/20 pointer-events-none" />
+                        <span className="relative">View Dashboard</span>
                       </Button>
                     </Link>
                     <Link to="/enquiries" className="flex-1">
-                      <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm py-2.5">
-                        Find More Requests
+                      <Button variant="outline" className="relative w-full !rounded-2xl !border-[0.5px] !border-gray-300 text-gray-700 hover:bg-gray-50 !text-sm !h-12 shadow-[0_8px_0_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.15),inset_0_-2px_4px_rgba(0,0,0,0.04)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.1)] active:translate-y-[4px] transition-all duration-200 overflow-hidden">
+                        <span className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-black/5 pointer-events-none" />
+                        <span className="relative">Find More Requests</span>
                       </Button>
                     </Link>
                   </div>

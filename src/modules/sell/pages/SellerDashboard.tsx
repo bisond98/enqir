@@ -204,7 +204,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               <p className="text-sm font-bold text-gray-500 mb-1">No listings yet.</p>
               <p className="text-xs text-gray-400 mb-4">Start selling to see your listings here.</p>
               <Link to="/sell/new">
-                <Button className="!bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group font-black text-xs px-4">
+                <Button className="relative !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:!translate-y-[4px] !transition-all !duration-200 !overflow-hidden group font-black text-xs px-4">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                   <Plus className="h-3 w-3 mr-1.5 relative z-10" />
@@ -389,15 +389,19 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="flex-1 py-2.5 text-[11px] font-black text-gray-800 border border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 bg-white hover:bg-gray-50"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-gray-800 !border-[0.5px] !border-black/20 rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all duration-200 shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:translate-y-[4px] bg-white hover:bg-gray-50 overflow-hidden group/edit"
                     >
-                      <Pencil className="h-3 w-3" />Edit
+                      <span className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-black/5 pointer-events-none" />
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/edit:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <Pencil className="h-3 w-3 relative z-10" /><span className="relative z-10">Edit</span>
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="flex-1 py-2.5 text-[11px] font-black text-white border border-black rounded-xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 bg-[#800020] hover:bg-[#6b0019]"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[0.5px] !border-black/20 rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all duration-200 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:translate-y-[4px] bg-[#800020] hover:bg-[#6b0019] overflow-hidden group/del"
                     >
-                      <Trash2 className="h-3 w-3" />Delete
+                      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/20 pointer-events-none" />
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/del:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <Trash2 className="h-3 w-3 relative z-10" /><span className="relative z-10">Delete</span>
                     </button>
                   </div>
                 </Link>
