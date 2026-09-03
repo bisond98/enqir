@@ -46,10 +46,17 @@ export default function ListingDetail() {
   // Scroll to the targeted buyer response after loading
   useEffect(() => {
     if (targetBuyerId && responses.length > 0) {
+      // Find which page the target response is on and navigate there first
+      const targetIndex = responses.findIndex(r => r.buyerId === targetBuyerId);
+      if (targetIndex >= 0) {
+        const targetPage = Math.floor(targetIndex / RESPONSES_PER_PAGE);
+        setResponsePage(targetPage);
+      }
+      // Wait for page to render, then scroll
       const timer = setTimeout(() => {
         const el = document.getElementById(`response-${targetBuyerId}`);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [targetBuyerId, responses]);

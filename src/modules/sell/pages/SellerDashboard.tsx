@@ -458,38 +458,43 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
             const listing = listings.find((l) => l.id === r.listingId);
             return (
               <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
-                <div className="p-4 pt-2"><p className="text-[11px] text-gray-500 font-bold text-center mb-2">Buyer's Message</p>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">                          <div className="w-6 h-6 rounded-md bg-green-600 border border-black flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-3 w-3 text-white" />
+                <div className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-shrink-0">
+                      {listing?.images?.[0] ? (
+                        <img src={listing.images[0]} alt="" className="w-11 h-11 rounded-xl object-cover border border-black/10" />
+                      ) : (
+                        <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center border border-black/10">
+                          <Package className="h-5 w-5 text-gray-300" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-black text-gray-900 text-base truncate leading-tight">{listing?.title ?? 'Listing'}</p>
-                        </div>
-                        
-                      </div>
-                      <div className="flex items-center gap-2 mt-2 pl-2">
-                        {r.offeredPrice != null && !isNaN(r.offeredPrice) && r.message && (
-                          <div className="flex flex-col gap-2">
-                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center flex-shrink-0">
-                              <span className="text-[9px] font-bold text-gray-500 mr-1">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] flex items-center"><Mail className="h-3 w-3 text-gray-500 mr-1.5 flex-shrink-0" /><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div>
-                          </div>
-                        )}
-                        {r.offeredPrice != null && !isNaN(r.offeredPrice) && !r.message && (
-                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-6 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex flex-col items-center justify-center"><span className="text-[9px] font-bold text-gray-500">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span></div></div>
-                        )}
-                        {r.message && (r.offeredPrice == null || isNaN(r.offeredPrice)) && (
-                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] min-h-[44px] flex items-center"><Mail className="h-3 w-3 text-gray-500 mr-1.5 flex-shrink-0" /><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div></div>
-                        )}
+                      )}
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-600 border-2 border-white flex items-center justify-center">
+                        <Mail className="h-2.5 w-2.5 text-white" />
                       </div>
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-[14px] text-gray-900 truncate leading-tight">{listing?.title ?? 'Listing'}</p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">Buyer enquiry</p>
+                    </div>
+                    <Eye className="h-4 w-4 text-gray-300 group-hover:text-black transition-colors flex-shrink-0" />
                   </div>
-                </div>
-                <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-2 flex justify-end">
-                  <Eye className="h-4 w-4 text-gray-500 group-hover:text-black transition-colors" />
+                  {(r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message ? (
+                    <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+                      {r.offeredPrice != null && !isNaN(r.offeredPrice) && (
+                        <div className="flex items-center gap-2">
+                          <IndianRupee className="h-3 w-3 text-gray-400" />
+                          <span className="text-[13px] font-bold text-gray-900">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
+                          <span className="text-[10px] text-gray-400 uppercase tracking-wide">offer</span>
+                        </div>
+                      )}
+                      {r.message && (
+                        <div className="flex items-start gap-2">
+                          <Mail className="h-3.5 w-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-[13px] text-gray-600 line-clamp-2 leading-relaxed">{r.message}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               </Link>
             );
