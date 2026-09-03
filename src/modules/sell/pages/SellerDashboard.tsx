@@ -456,45 +456,44 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
-            return (
-              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
-                <div className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex-shrink-0">
-                      {listing?.images?.[0] ? (
-                        <img src={listing.images[0]} alt="" className="w-11 h-11 rounded-xl object-cover border border-black/10" />
-                      ) : (
-                        <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center border border-black/10">
-                          <Package className="h-5 w-5 text-gray-300" />
-                        </div>
-                      )}
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-600 border-2 border-white flex items-center justify-center">
-                        <Mail className="h-2.5 w-2.5 text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[14px] text-gray-900 truncate leading-tight">{listing?.title ?? 'Listing'}</p>
-                      <p className="text-[11px] text-gray-400 mt-0.5">Buyer enquiry</p>
-                    </div>
-                    <Eye className="h-4 w-4 text-gray-300 group-hover:text-black transition-colors flex-shrink-0" />
+            return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
+                <div className="bg-green-950 px-5 py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Mail className="h-5 w-5 text-white flex-shrink-0" />
+                    <p className="font-semibold text-[16px] text-white truncate">{listing?.title ?? 'Listing'}</p>
                   </div>
-                  {(r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message ? (
-                    <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
-                      {r.offeredPrice != null && !isNaN(r.offeredPrice) && (
-                        <div className="flex items-center gap-2">
-                          <IndianRupee className="h-3 w-3 text-gray-400" />
-                          <span className="text-[13px] font-bold text-gray-900">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
-                          <span className="text-[10px] text-gray-400 uppercase tracking-wide">offer</span>
+                  <span className="text-[12px] text-white/60 flex-shrink-0">Buyer's Message</span>
+                </div>
+                <div className="p-5 pt-4">
+                  <div className="flex items-center gap-4">
+                    {listing?.images?.[0] ? (
+                      <img src={listing.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover border border-black/10 flex-shrink-0" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center border border-black/10 flex-shrink-0">
+                        <Package className="h-7 w-7 text-gray-300" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      
+                      {(r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message ? (
+                        <div className="space-y-2">
+                          {r.offeredPrice != null && !isNaN(r.offeredPrice) && (
+                            <div className="flex items-center gap-2">
+                              <IndianRupee className="h-4 w-4 text-gray-400" />
+                              <span className="text-[15px] font-bold text-gray-900">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
+                              <span className="text-[11px] text-gray-400 uppercase tracking-wider">offer</span>
+                            </div>
+                          )}
+                          {r.message && (
+                            <div className="flex items-start gap-2.5">
+                              <Mail className="h-3.5 w-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
+                              <p className="text-[14px] text-gray-600 line-clamp-2 leading-relaxed">{r.message}</p>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {r.message && (
-                        <div className="flex items-start gap-2">
-                          <Mail className="h-3.5 w-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
-                          <p className="text-[13px] text-gray-600 line-clamp-2 leading-relaxed">{r.message}</p>
-                        </div>
-                      )}
+                      ) : null}
                     </div>
-                  ) : null}
+                  </div>
                 </div>
               </Link>
             );
