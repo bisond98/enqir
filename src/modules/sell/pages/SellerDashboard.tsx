@@ -111,8 +111,19 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
   const listingsTotalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
   const paginatedListings = listings.slice((listingsPage - 1) * ITEMS_PER_PAGE, listingsPage * ITEMS_PER_PAGE);
-  const responsesTotalPages = Math.ceil(responses.length / ITEMS_PER_PAGE);
-  const paginatedResponses = responses.slice((responsesPage - 1) * ITEMS_PER_PAGE, responsesPage * ITEMS_PER_PAGE);
+  // Deduplicate responses: keep only the first message per buyer per listing
+  const uniqueResponses = (() => {
+    const seen = new Map<string, SellListingResponse>();
+    // Responses are sorted newest-first, so iterate in reverse to keep the oldest (first) message
+    for (let i = responses.length - 1; i >= 0; i--) {
+      const r = responses[i];
+      const key = `${r.listingId}_${r.buyerId}`;
+      if (!seen.has(key)) seen.set(key, r);
+    }
+    return Array.from(seen.values());
+  })();
+  const responsesTotalPages = Math.ceil(uniqueResponses.length / ITEMS_PER_PAGE);
+  const paginatedResponses = uniqueResponses.slice((responsesPage - 1) * ITEMS_PER_PAGE, responsesPage * ITEMS_PER_PAGE);
 
   if (!user) {
     return (
@@ -302,73 +313,21 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       ))}
                     </div>
                   </div>
-                  {/* Price Type */}
+                  {/* Price */}
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price Type</label>
-                    <div className="flex gap-2">
-                      {(['fixed', 'range'] as ListingPriceType[]).map((pt) => (
-                        <button
-                          key={pt}
-                          onClick={() => setEditPriceType(pt)}
-                          className={`flex-1 h-10 text-xs font-bold border-2 rounded-xl transition-all ${
-                            editPriceType === pt
-                              ? 'border-[4px] border-black bg-black text-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]'
-                              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                          }`}
-                        >
-                          {pt === 'fixed' ? 'Fixed Price' : 'Price Range'}
-                        </button>
-                      ))}
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price</label>
+                    <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                      <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={editPrice}
+                        onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
+                        placeholder="0"
+                        className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
+                      />
                     </div>
                   </div>
-                  {/* Price */}
-                  {editPriceType === 'fixed' ? (
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price (₹)</label>
-                      <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
-                        <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          value={editPrice}
-                          onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
-                          placeholder="0"
-                          className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Min (₹)</label>
-                        <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
-                          <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={editPriceMin}
-                            onChange={(e) => setEditPriceMin(e.target.value.replace(/[^0-9]/g, ''))}
-                            placeholder="0"
-                            className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Max (₹)</label>
-                        <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
-                          <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={editPriceMax}
-                            onChange={(e) => setEditPriceMax(e.target.value.replace(/[^0-9]/g, ''))}
-                            placeholder="0"
-                            className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
                   {/* Tags */}
                   <div>
                     <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Tags (comma separated)</label>                        <Input
@@ -498,7 +457,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
             return (
-              <Link to={`/sell/listing/${r.listingId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
+              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block border border-black rounded-2xl overflow-hidden hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all shadow-[0_4px_0_0_rgba(0,0,0,0.1)] group">
                 <div className="p-4 pt-2"><p className="text-[11px] text-gray-500 font-bold text-center mb-2">Buyer's Message</p>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -511,19 +470,19 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                         
                       </div>
                       <div className="flex items-center gap-2 mt-2 pl-2">
-                        {r.offeredPrice != null && r.message && (
+                        {r.offeredPrice != null && !isNaN(r.offeredPrice) && r.message && (
                           <div className="flex flex-col gap-2">
                             <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center flex-shrink-0">
                               <span className="text-[9px] font-bold text-gray-500 mr-1">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
                             </div>
-                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] flex items-center"><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div>
+                            <div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] flex items-center"><Mail className="h-3 w-3 text-gray-500 mr-1.5 flex-shrink-0" /><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div>
                           </div>
                         )}
-                        {r.offeredPrice != null && !r.message && (
+                        {r.offeredPrice != null && !isNaN(r.offeredPrice) && !r.message && (
                           <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-6 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] flex flex-col items-center justify-center"><span className="text-[9px] font-bold text-gray-500">offer</span><span className="text-sm font-black text-black">₹{r.offeredPrice.toLocaleString('en-IN')}</span></div></div>
                         )}
-                        {r.message && !r.offeredPrice && (
-                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] min-h-[44px] flex items-center"><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div></div>
+                        {r.message && (r.offeredPrice == null || isNaN(r.offeredPrice)) && (
+                          <div className="flex-1 flex justify-center"><div className="bg-white rounded-xl px-4 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.15)] max-w-[250px] min-h-[44px] flex items-center"><Mail className="h-3 w-3 text-gray-500 mr-1.5 flex-shrink-0" /><p className="text-[13px] text-black whitespace-pre-wrap line-clamp-2 leading-relaxed font-bold">{r.message}</p></div></div>
                         )}
                       </div>
                     </div>

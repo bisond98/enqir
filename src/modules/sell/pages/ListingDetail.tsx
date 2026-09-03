@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,20 @@ export default function ListingDetail() {
   const [showAllImages, setShowAllImages] = useState(false);
   const [responsePage, setResponsePage] = useState(0);
   const RESPONSES_PER_PAGE = 5;
+  const [searchParams] = useSearchParams();
+  const targetBuyerId = searchParams.get('buyer');
 
+
+  // Scroll to the targeted buyer response after loading
+  useEffect(() => {
+    if (targetBuyerId && responses.length > 0) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`response-${targetBuyerId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [targetBuyerId, responses]);
 
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
   const chatUnlocked = useMemo(() => !!user && responses.some(r => r.buyerId === user.uid), [user, responses]);
@@ -356,7 +369,8 @@ export default function ListingDetail() {
                 <Link
                   key={r.id}
                   to={`/sell/listing/${listing?.id}/chat/${r.buyerId}`}
-                  className="block border border-black/10 rounded-xl p-3 hover:bg-gray-50 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.05)]"
+                  id={`response-${r.buyerId}`}
+                  className={`block border rounded-xl p-3 hover:bg-gray-50 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.05)] ${r.buyerId === targetBuyerId ? 'border-black border-2 bg-yellow-50' : 'border-black/10'}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
