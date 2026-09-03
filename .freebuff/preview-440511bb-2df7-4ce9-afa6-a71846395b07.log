@@ -1,12 +1,1145 @@
 Forced re-optimization of dependencies
-Port 8083 is in use, trying another one...
 
-  VITE v5.4.19  ready in 89 ms
+  VITE v5.4.19  ready in 154 ms
 
-  ➜  Local:   http://localhost:8084/
-Browserslist: browsers data (caniuse-lite) is 22 months old. Please run:
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.0.0.2:5173/
+Browserslist: browsers data (caniuse-lite) is 23 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
 
 warn - The class `ease-[cubic-bezier(0.16,1,0.3,1)]` is ambiguous and matches multiple utilities.
 warn - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.16,1,0.3,1)&rsqb;` to silence this warning.
+12:44:37 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+12:46:06 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+12:49:26 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+12:53:00 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+12:56:55 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:00:54 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:02:27 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:03:43 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:13:40 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:34:14 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:37:56 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:40:34 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:44:35 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:47:02 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:47:02 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |       
+      `----
+  [31mx[0m await isn't allowed in non-async function
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       // Notify the buyer (enquiry owner) about the new response
+ [2m1071[0m |       if (enquiry?.userId && enquiry.userId !== authUser?.uid && notificationContext?.createNotificationForUser) {
+ [2m1072[0m |         try {
+ [2m1073[0m |           await notificationContext.createNotificationForUser(
+      : [35;1m                ^^^^^^^^^^^^^^^^^^^[0m
+ [2m1074[0m |             enquiry.userId,
+ [2m1075[0m |             'new_response',
+ [2m1076[0m |             {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1096:1]
+ [2m1093[0m |       // Success page will be shown, no need to scroll
+ [2m1094[0m |       //   updateType: 'new response submitted'
+ [2m1095[0m |       // });
+ [2m1096[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1099:1]
+ [2m1096[0m |     } catch (error) {
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      : [35;1m    ^[0m
+ [2m1100[0m |       setSubmitting(false);
+ [2m1101[0m |     }
+ [2m1102[0m |   };
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:47:02 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |       
+      `----
+  [31mx[0m await isn't allowed in non-async function
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       // Notify the buyer (enquiry owner) about the new response
+ [2m1071[0m |       if (enquiry?.userId && enquiry.userId !== authUser?.uid && notificationContext?.createNotificationForUser) {
+ [2m1072[0m |         try {
+ [2m1073[0m |           await notificationContext.createNotificationForUser(
+      : [35;1m                ^^^^^^^^^^^^^^^^^^^[0m
+ [2m1074[0m |             enquiry.userId,
+ [2m1075[0m |             'new_response',
+ [2m1076[0m |             {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1096:1]
+ [2m1093[0m |       // Success page will be shown, no need to scroll
+ [2m1094[0m |       //   updateType: 'new response submitted'
+ [2m1095[0m |       // });
+ [2m1096[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1099:1]
+ [2m1096[0m |     } catch (error) {
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      : [35;1m    ^[0m
+ [2m1100[0m |       setSubmitting(false);
+ [2m1101[0m |     }
+ [2m1102[0m |   };
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:47:12 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |       
+      `----
+  [31mx[0m await isn't allowed in non-async function
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       // Notify the buyer (enquiry owner) about the new response
+ [2m1071[0m |       if (enquiry?.userId && enquiry.userId !== authUser?.uid && notificationContext?.createNotificationForUser) {
+ [2m1072[0m |         try {
+ [2m1073[0m |           await notificationContext.createNotificationForUser(
+      : [35;1m                ^^^^^^^^^^^^^^^^^^^[0m
+ [2m1074[0m |             enquiry.userId,
+ [2m1075[0m |             'new_response',
+ [2m1076[0m |             {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1096:1]
+ [2m1093[0m |       // Success page will be shown, no need to scroll
+ [2m1094[0m |       //   updateType: 'new response submitted'
+ [2m1095[0m |       // });
+ [2m1096[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1099:1]
+ [2m1096[0m |     } catch (error) {
+ [2m1097[0m |       console.error('Error submitting response:', error);
+ [2m1098[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1099[0m |     } finally {
+      : [35;1m    ^[0m
+ [2m1100[0m |       setSubmitting(false);
+ [2m1101[0m |     }
+ [2m1102[0m |   };
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:48:38 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:48:38 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1069:1]
+ [2m1066[0m |       })();
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+ [2m1073[0m |     }
+      : [35;1m    ^[0m
+ [2m1074[0m |   };
+ [2m1075[0m | 
+ [2m1076[0m |   const formatDate = (timestamp: any) => {
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:48:38 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1069:1]
+ [2m1066[0m |       })();
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+ [2m1073[0m |     }
+      : [35;1m    ^[0m
+ [2m1074[0m |   };
+ [2m1075[0m | 
+ [2m1076[0m |   const formatDate = (timestamp: any) => {
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:48:55 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1066:1]
+ [2m1063[0m |         } catch (err) {
+ [2m1064[0m |           console.error('Background submission error:', err);
+ [2m1065[0m |         }
+ [2m1066[0m |       })();
+      : [35;1m       ^[0m
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      `----
+  [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1069:1]
+ [2m1066[0m |       })();
+ [2m1067[0m | 
+ [2m1068[0m |       return;
+ [2m1069[0m |     } catch (error) {
+      : [35;1m      ^^^^^[0m
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+      `----
+  [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1073:1]
+ [2m1070[0m |       console.error('Error submitting response:', error);
+ [2m1071[0m |       setErrors({ submit: 'Failed to submit response. Please check your connection and try again.' });
+ [2m1072[0m |       setSubmitting(false);
+ [2m1073[0m |     }
+      : [35;1m    ^[0m
+ [2m1074[0m |   };
+ [2m1075[0m | 
+ [2m1076[0m |   const formatDate = (timestamp: any) => {
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:52:43 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:53:26 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:56:57 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:56:57 PM [vite] Internal server error:   [31mx[0m Expected '}', got 'live'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:975:1]
+ [2m972[0m |         try {
+ [2m973[0m |           await createNotification('new_response', {
+ [2m974[0m |             title: 'Response Submitted Successfully! 🎯',
+ [2m975[0m |             message: `Your offer for "${enquiry?.title}" has been submitted and is ${now live!}`,
+     : [35;1m                                                                                         ^^^^[0m
+ [2m976[0m |             priority: 'high',
+ [2m977[0m |             actionUrl: '/my-responses',
+ [2m978[0m |             actionText: 'View My Responses'
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:58:28 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:58:28 PM [vite] Internal server error:   [31mx[0m Expected '}', got 'live'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:968:1]
+ [2m965[0m |         try {
+ [2m966[0m |           await createNotification('new_response', {
+ [2m967[0m |             title: 'Response Submitted Successfully! 🎯',
+ [2m968[0m |             message: `Your offer for "${enquiry?.title}" has been submitted and is ${now live!}`,
+     : [35;1m                                                                                         ^^^^[0m
+ [2m969[0m |             priority: 'high',
+ [2m970[0m |             actionUrl: '/my-responses',
+ [2m971[0m |             actionText: 'View My Responses'
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:59:27 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+1:59:27 PM [vite] Internal server error:   [31mx[0m Expected '}', got 'live'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:968:1]
+ [2m965[0m |         try {
+ [2m966[0m |           await createNotification('new_response', {
+ [2m967[0m |             title: 'Response Submitted Successfully! 🎯',
+ [2m968[0m |             message: `Your offer for "${enquiry?.title}" has been submitted and is ${now live!}`,
+     : [35;1m                                                                                         ^^^^[0m
+ [2m969[0m |             priority: 'high',
+ [2m970[0m |             actionUrl: '/my-responses',
+ [2m971[0m |             actionText: 'View My Responses'
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+1:59:37 PM [vite] Internal server error:   [31mx[0m Expected '}', got 'live'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:968:1]
+ [2m965[0m |         try {
+ [2m966[0m |           await createNotification('new_response', {
+ [2m967[0m |             title: 'Response Submitted Successfully! 🎯',
+ [2m968[0m |             message: `Your offer for "${enquiry?.title}" has been submitted and is ${now live!}`,
+     : [35;1m                                                                                         ^^^^[0m
+ [2m969[0m |             priority: 'high',
+ [2m970[0m |             actionUrl: '/my-responses',
+ [2m971[0m |             actionText: 'View My Responses'
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+2:01:19 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+2:05:20 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+2:05:20 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1031:1]
+ [2m1028[0m |         console.error('❌ Background submission error:', err);
+ [2m1029[0m |       }
+ [2m1030[0m |     })();
+ [2m1031[0m |   };
+      : [35;1m   ^[0m
+ [2m1032[0m | 
+ [2m1033[0m |   const formatDate = (timestamp: any) => {
+ [2m1034[0m |     if (!timestamp) return 'No deadline';
+      `----
+  [31mx[0m 'import', and 'export' cannot be used outside of module code
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1996:1]
+ [2m1993[0m |   );
+ [2m1994[0m | };
+ [2m1995[0m | 
+ [2m1996[0m | export default SellerResponse;
+      : [35;1m^^^^^^[0m
+ [2m1997[0m | 
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+2:05:20 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1031:1]
+ [2m1028[0m |         console.error('❌ Background submission error:', err);
+ [2m1029[0m |       }
+ [2m1030[0m |     })();
+ [2m1031[0m |   };
+      : [35;1m   ^[0m
+ [2m1032[0m | 
+ [2m1033[0m |   const formatDate = (timestamp: any) => {
+ [2m1034[0m |     if (!timestamp) return 'No deadline';
+      `----
+  [31mx[0m 'import', and 'export' cannot be used outside of module code
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1996:1]
+ [2m1993[0m |   );
+ [2m1994[0m | };
+ [2m1995[0m | 
+ [2m1996[0m | export default SellerResponse;
+      : [35;1m^^^^^^[0m
+ [2m1997[0m | 
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+2:06:06 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+2:06:07 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1031:1]
+ [2m1028[0m |         console.error('❌ Background submission error:', err);
+ [2m1029[0m |       }
+ [2m1030[0m |     })();
+ [2m1031[0m |   };
+      : [35;1m   ^[0m
+ [2m1032[0m | 
+ [2m1033[0m |   const formatDate = (timestamp: any) => {
+ [2m1034[0m |     if (!timestamp) return 'No deadline';
+      `----
+  [31mx[0m 'import', and 'export' cannot be used outside of module code
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1996:1]
+ [2m1993[0m |   );
+ [2m1994[0m | };
+ [2m1995[0m | 
+ [2m1996[0m | export default SellerResponse;
+      : [35;1m^^^^^^[0m
+ [2m1997[0m | 
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+2:06:07 PM [vite] Internal server error:   [31mx[0m Expected a semicolon
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1031:1]
+ [2m1028[0m |         console.error('❌ Background submission error:', err);
+ [2m1029[0m |       }
+ [2m1030[0m |     })();
+ [2m1031[0m |   };
+      : [35;1m   ^[0m
+ [2m1032[0m | 
+ [2m1033[0m |   const formatDate = (timestamp: any) => {
+ [2m1034[0m |     if (!timestamp) return 'No deadline';
+      `----
+  [31mx[0m 'import', and 'export' cannot be used outside of module code
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx[0m:1996:1]
+ [2m1993[0m |   );
+ [2m1994[0m | };
+ [2m1995[0m | 
+ [2m1996[0m | export default SellerResponse;
+      : [35;1m^^^^^^[0m
+ [2m1997[0m | 
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/SellerResponse.tsx
+  
+2:11:12 PM [vite] hmr update /src/pages/SellerResponse.tsx, /src/index.css
+2:54:41 PM [vite] hmr update /src/index.css, /src/pages/EnquiryDetail.tsx, /src/components/PaymentPlanSelector.tsx, /src/pages/Dashboard.tsx, /src/modules/sell/pages/ListingDetail.tsx, /src/modules/sell/pages/CreateListing.tsx, /src/pages/PostEnquiry.tsx, /src/pages/MyEnquiries.tsx, /src/pages/EnquiryResponsesPage.tsx, /src/pages/EnquiryResponses.tsx, /src/pages/SellerResponse.tsx
+2:55:37 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+2:56:23 PM [vite] hmr update /src/pages/EnquiryResponsesPage.tsx, /src/index.css
+2:57:09 PM [vite] hmr update /src/pages/EnquiryResponsesPage.tsx, /src/index.css
+2:57:10 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:463:1]
+ [2m460[0m |   }
+ [2m461[0m | 
+ [2m462[0m |   return (
+ [2m463[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m464[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m465[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m466[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+2:57:29 PM [vite] hmr update /src/pages/EnquiryResponsesPage.tsx, /src/index.css
+2:57:29 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+2:57:42 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:00:26 PM [vite] hmr update /src/pages/MyEnquiries.tsx, /src/index.css
+3:00:26 PM [vite] hmr update /src/pages/EnquiryResponses.tsx, /src/index.css
+3:00:26 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+3:00:27 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:00:48 PM [vite] hmr update /src/pages/EnquiryDetail.tsx, /src/index.css
+3:00:48 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:02:21 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:02:44 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:02:45 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:02:50 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:04:59 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx[0m:462:1]
+ [2m459[0m |   }
+ [2m460[0m | 
+ [2m461[0m |   return (
+ [2m462[0m |     <Layout>
+     : [35;1m     ^^^^^^[0m
+ [2m463[0m |       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+ [2m464[0m |         {/* Header - Matching Profile Page Style - Full Width */}
+ [2m465[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/EnquiryResponsesPage.tsx
+  
+3:05:00 PM [vite] hmr update /src/pages/EnquiryResponsesPage.tsx, /src/index.css
+3:08:15 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+3:12:03 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+7:51:40 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+7:53:08 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+7:53:32 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+7:54:14 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+7:55:05 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+8:03:08 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:07:54 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:12:59 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:20:05 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:21:15 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:22:25 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:24:32 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+8:25:23 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+10:58:49 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:00:20 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:01:12 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:03:08 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+11:06:58 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+11:08:42 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:12:57 PM [vite] page reload src/components/DeleteAccountDialog.tsx
+11:12:57 PM [vite] hmr update /src/pages/MyResponses.tsx, /src/index.css
+11:12:57 PM [vite] hmr update /src/pages/MyEnquiries.tsx, /src/index.css
+11:14:22 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:16:16 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:17:53 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:17:53 PM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+11:17:53 PM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+11:18:09 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:19:19 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:19:28 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:20:18 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:22:05 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:23:47 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:25:06 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:26:18 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:28:00 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:29:19 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:30:59 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:38:52 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:40:40 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:42:49 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:44:56 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:46:59 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:48:41 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:50:32 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+11:57:55 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:00:09 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:01:09 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:02:29 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:02:29 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+12:02:30 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+12:02:46 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:03:57 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:12:28 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:12:36 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:12:40 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:12:44 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:12:54 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:13:01 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:13:05 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:13:13 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:14:19 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:15:27 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:15:31 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:16:21 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:16:25 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:16:37 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:16:40 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:20:43 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:20:43 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+12:20:43 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+12:21:06 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:22:53 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:23:25 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:26:31 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:27:51 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:28:30 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:30:52 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:32:52 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:33:50 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:34:45 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:36:13 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:37:35 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:40:21 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:43:28 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:50:57 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:00:44 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:08:10 AM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+1:13:17 AM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+1:21:28 AM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+1:22:18 AM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+1:24:16 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:25:43 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:26:00 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:28:34 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:29:30 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:30:48 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:30:58 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:32:05 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:33:05 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:34:30 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:36:38 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:37:50 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:39:44 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:40:45 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:41:56 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:44:03 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:46:21 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:48:09 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:59:08 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:59:08 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+1:59:08 AM [vite] Internal server error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:140:1]
+ [2m137[0m |   }
+ [2m138[0m | 
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+     : [35;1m       ^[0m
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+ [2m143[0m |         {[
+     `----
+  [31mx[0m Expected ',', got '< (jsx tag start)'
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx[0m:142:1]
+ [2m139[0m |   const shellContent = (
+ [2m140[0m |       <>
+ [2m141[0m |       {/* Stats Row */}
+ [2m142[0m |       <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
+     : [35;1m      ^[0m
+ [2m143[0m |         {[
+ [2m144[0m |           { label: 'Listings', count: listings.length },
+ [2m145[0m |           { label: 'Active', count: liveCount },
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/SellerDashboard.tsx
+  
+1:59:55 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:00:39 AM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:36:35 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:36:43 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:56:32 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:59:08 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+12:59:47 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:02:32 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:07:18 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:07:43 PM [vite] hmr update /src/modules/sell/pages/ListingDetail.tsx, /src/index.css
+1:07:43 PM [vite] Internal server error:   [31mx[0m Unexpected token `SellShell`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/ListingDetail.tsx[0m:200:1]
+ [2m197[0m |   }
+ [2m198[0m | 
+ [2m199[0m |   return (
+ [2m200[0m |     <SellShell title="Listing">
+     : [35;1m     ^^^^^^^^^[0m
+ [2m201[0m |       <div className="space-y-4 pb-6">
+ [2m202[0m |         {/* Image Gallery */}
+ [2m203[0m |         {listing.images && listing.images.length > 0 && (
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/ListingDetail.tsx
+  
+1:07:58 PM [vite] Internal server error:   [31mx[0m Unexpected token `SellShell`. Expected jsx identifier
+     ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/ListingDetail.tsx[0m:200:1]
+ [2m197[0m |   }
+ [2m198[0m | 
+ [2m199[0m |   return (
+ [2m200[0m |     <SellShell title="Listing">
+     : [35;1m     ^^^^^^^^^[0m
+ [2m201[0m |       <div className="space-y-4 pb-6">
+ [2m202[0m |         {/* Image Gallery */}
+ [2m203[0m |         {listing.images && listing.images.length > 0 && (
+     `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/modules/sell/pages/ListingDetail.tsx
+  
+1:10:51 PM [vite] hmr update /src/modules/sell/pages/ListingDetail.tsx, /src/index.css
+1:21:55 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:30:18 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:38:05 PM [vite] hmr update /src/modules/sell/pages/ListingDetail.tsx, /src/index.css
+1:43:27 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:47:13 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:49:28 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:53:46 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:57:03 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+1:58:27 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:01:04 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:47:35 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:48:44 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:49:35 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+2:53:40 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:12:21 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:12:40 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:19:12 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:24:46 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:27:09 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:29:17 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:30:13 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:31:09 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:31:49 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:33:41 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+3:45:23 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+3:49:16 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+3:50:50 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+3:53:48 PM [vite] hmr update /src/modules/sell/pages/CreateListing.tsx, /src/index.css
+3:57:16 PM [vite] hmr update /src/modules/sell/pages/CreateListing.tsx, /src/index.css
+4:04:23 PM [vite] hmr update /src/modules/sell/components/SellShell.tsx, /src/index.css
+4:06:11 PM [vite] hmr update /src/modules/sell/pages/SellHome.tsx, /src/index.css
+4:07:30 PM [vite] hmr update /src/modules/sell/pages/SellHome.tsx, /src/index.css
+4:09:09 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+4:09:09 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/PostEnquiry.tsx[0m:1920:1]
+ [2m1917[0m |   }
+ [2m1918[0m | 
+ [2m1919[0m |   return (
+ [2m1920[0m |     <Layout>
+      : [35;1m     ^^^^^^[0m
+ [2m1921[0m |       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+ [2m1922[0m |         {/* Header - Matching Live Enquiries - Full Width */}
+ [2m1923[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/PostEnquiry.tsx
+  
+4:09:09 PM [vite] Internal server error:   [31mx[0m Unexpected token `Layout`. Expected jsx identifier
+      ,-[[36;1;4m/Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/PostEnquiry.tsx[0m:1920:1]
+ [2m1917[0m |   }
+ [2m1918[0m | 
+ [2m1919[0m |   return (
+ [2m1920[0m |     <Layout>
+      : [35;1m     ^^^^^^[0m
+ [2m1921[0m |       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+ [2m1922[0m |         {/* Header - Matching Live Enquiries - Full Width */}
+ [2m1923[0m |         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+      `----
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /Users/nivedsunil/Desktop/enqir 1 copy 9 untested copy 7/src/pages/PostEnquiry.tsx
+  
+4:11:51 PM [vite] hmr update /src/pages/PostEnquiry.tsx, /src/index.css
+4:14:47 PM [vite] hmr update /src/pages/Landing.tsx, /src/index.css
+4:15:24 PM [vite] hmr update /src/pages/MyChats.tsx, /src/index.css
+4:18:08 PM [vite] hmr update /src/pages/EnquiryWall.tsx, /src/index.css
+4:22:59 PM [vite] hmr update /src/pages/EnquiryWall.tsx, /src/index.css
+4:24:13 PM [vite] hmr update /src/pages/EnquiryWall.tsx, /src/index.css
+4:46:42 PM [vite] hmr update /src/modules/sell/pages/SellerDashboard.tsx, /src/index.css
+4:54:49 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+4:56:01 PM [vite] hmr update /src/pages/Dashboard.tsx, /src/index.css
+4:59:16 PM [vite] hmr update /src/pages/MyEnquiries.tsx, /src/index.css
+5:00:57 PM [vite] hmr update /src/pages/MyEnquiries.tsx, /src/index.css
+5:03:07 PM [vite] hmr update /src/pages/MyEnquiries.tsx, /src/index.css

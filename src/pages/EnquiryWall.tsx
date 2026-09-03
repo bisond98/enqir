@@ -6358,27 +6358,8 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black text-white border-0 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
+                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
-                                    style={{
-                                      background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
-                                      boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)',
-                                      transform: 'translateY(-30px)',
-                                      transformStyle: 'preserve-3d',
-                                      perspective: '1000px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.transform = 'translateY(-30px) scale(1.05)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.transform = 'translateY(-30px)';
-                                    }}
-                                    onMouseDown={(e) => {
-                                      e.currentTarget.style.transform = 'translateY(-30px) scale(0.95)';
-                                    }}
-                                    onMouseUp={(e) => {
-                                      e.currentTarget.style.transform = 'translateY(-30px) scale(1.05)';
-                                    }}
                                   >
                                     {/* 3D Border Effect */}
                                     <div className="absolute inset-0 rounded-md sm:rounded-xl border-2 border-blue-800/50 pointer-events-none" 
@@ -6464,14 +6445,8 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-9 text-[11px] font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden"
+                                className="w-full h-10 text-[11px] font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
-                                style={{
-                                  background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
-                                  boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)',
-                                  transformStyle: 'preserve-3d',
-                                  perspective: '1000px'
-                                }}
                               >
                                 {/* 3D Border Effect */}
                                 <div className="absolute inset-0 rounded-md border-2 border-blue-800/50 pointer-events-none" 
@@ -6533,14 +6508,8 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black text-white border-0 hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden"
+                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
-                                style={{
-                                  background: 'linear-gradient(to bottom right, #2563eb, #1d4ed8, #1e40af)',
-                                  boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)',
-                                  transformStyle: 'preserve-3d',
-                                  perspective: '1000px'
-                                }}
                               >
                                 {/* 3D Border Effect */}
                                 <div className="absolute inset-0 rounded-md sm:rounded-xl border-2 border-blue-800/50 pointer-events-none" 

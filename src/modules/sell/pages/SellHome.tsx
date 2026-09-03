@@ -69,10 +69,12 @@ export default function SellHome() {
                 Post an item or service with images, tags, and pricing.
               </p>
             <Link to="/sell/new" className="block">
-                <Button className="w-full h-12 sm:h-11 bg-black hover:bg-gray-900 text-white border border-black font-black text-xs sm:text-sm rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200">
-                  <Plus className="h-4 w-4 mr-2" />
-                Publish Listing
-              </Button>
+                <Button className="w-full !h-14 !text-sm !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <Plus className="h-4 w-4 mr-2 relative z-10" />
+                  <span className="relative z-10">Publish Listing</span>
+                </Button>
             </Link>
           </CardContent>
         </Card>
@@ -84,10 +86,12 @@ export default function SellHome() {
                 Browse active listings like a classifieds marketplace.
               </p>
             <Link to="/sell/marketplace" className="block">
-                <Button variant="outline" className="w-full h-12 sm:h-11 border border-black font-black text-xs sm:text-sm rounded-xl bg-white hover:bg-gray-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200">
-                  <Store className="h-4 w-4 mr-2" />
-                Browse Listings
-              </Button>
+                <Button variant="outline" className="w-full !h-14 !text-sm !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <Store className="h-4 w-4 mr-2 relative z-10" />
+                  <span className="relative z-10">Browse Listings</span>
+                </Button>
             </Link>
           </CardContent>
         </Card>
@@ -99,10 +103,12 @@ export default function SellHome() {
                 Manage listings and track buyer responses from one dashboard.
               </p>
             <Link to="/sell/dashboard" className="block">
-                <Button variant="outline" className="w-full h-12 sm:h-11 border border-black font-black text-xs sm:text-sm rounded-xl bg-white hover:bg-gray-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200">
-                  <LayoutDashboard className="h-4 w-4 mr-2" />
-                Open Dashboard
-              </Button>
+                <Button variant="outline" className="w-full !h-14 !text-sm !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <LayoutDashboard className="h-4 w-4 mr-2 relative z-10" />
+                  <span className="relative z-10">Open Dashboard</span>
+                </Button>
             </Link>
           </CardContent>
         </Card>

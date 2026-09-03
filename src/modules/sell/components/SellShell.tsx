@@ -75,23 +75,26 @@ export default function SellShell({
               </Button>
             </Link>
           </div>
-          <div className="sm:hidden grid grid-cols-3 gap-2 mb-4">
+          <div className="sm:hidden grid grid-cols-3 gap-3 mb-4">
             <Link to="/sell/new">
-              <Button size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isCreate ? '!bg-none !bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-none !bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
-                <Plus className="h-4 w-4 mr-1" />
-                Sell
+              <Button size="sm" className={`w-full h-12 font-black !rounded-2xl !border-[0.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-black hover:!bg-gray-900 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]'}`}>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <Plus className="h-4 w-4 mr-1 relative z-10" />
+                <span className="relative z-10">Sell</span>
               </Button>
             </Link>
             <Link to="/sell/marketplace">
-              <Button variant="outline" size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isShop ? '!bg-none !bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-none !bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
-                <Store className="h-4 w-4 mr-1" />
-                Shop
+              <Button variant="outline" size="sm" className={`w-full h-12 font-black !rounded-2xl !border-[0.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isShop ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <Store className="h-4 w-4 mr-1 relative z-10" />
+                <span className="relative z-10">Shop</span>
               </Button>
             </Link>
             <Link to="/sell/dashboard">
-              <Button variant="outline" size="sm" className={`w-full border-2 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all ${isPanel ? '!bg-none !bg-blue-600 !text-white !border-blue-600 !shadow-lg' : '!bg-none !bg-white !text-black !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]'}`}>
-                <LayoutDashboard className="h-4 w-4 mr-1" />
-                Panel
+              <Button variant="outline" size="sm" className={`w-full h-12 font-black !rounded-2xl !border-[0.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isPanel ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <LayoutDashboard className="h-4 w-4 mr-1 relative z-10" />
+                <span className="relative z-10">Panel</span>
               </Button>
             </Link>
           </div>

@@ -1000,7 +1000,7 @@ export default function CreateListing() {
           )}
 
           <p className="text-center text-[10px] sm:text-xs text-gray-400 font-normal truncate mt-3">We don't offer anything free at the cost of your time and safety.</p>
-          <div className="mt-2 flex flex-col-reverse sm:flex-row gap-2 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
+          <div className="mt-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
@@ -1021,9 +1021,13 @@ export default function CreateListing() {
                 type="button"
                 onClick={publish}
                 disabled={!user || uploading || publishing}
-                className="bg-black text-white border-2 border-black font-black rounded-xl h-11 sm:h-12 px-8"
+                className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
               >
-                {publishing ? 'Connecting…' : 'Connect'}
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <span className="relative z-10">{publishing ? 'Connecting…' : 'Connect'}</span>
               </Button>
             )}
           </div>

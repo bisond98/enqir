@@ -204,8 +204,11 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               <p className="text-sm font-bold text-gray-500 mb-1">No listings yet.</p>
               <p className="text-xs text-gray-400 mb-4">Start selling to see your listings here.</p>
               <Link to="/sell/new">
-                <Button className="bg-black text-white border border-black font-black text-xs rounded-xl px-4 shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">
-                  <Plus className="h-3 w-3 mr-1.5" />Create Listing
+                <Button className="!bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group font-black text-xs px-4">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <Plus className="h-3 w-3 mr-1.5 relative z-10" />
+                  <span className="relative z-10">Create Listing</span>
                 </Button>
               </Link>
             </div>
