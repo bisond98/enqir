@@ -407,7 +407,10 @@ export default function Marketplace() {
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
-              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
+              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
+                <div className="absolute bottom-1 right-1 z-10">
+                  <ShareButton listing={l} />
+                </div>
                 <div className="p-2.5 pb-0">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
@@ -417,19 +420,21 @@ export default function Marketplace() {
                   </div>
                 )}
                 </div>
+                {l.price != null && (
+                  <div className="absolute top-2 right-2 z-10">
+                    <span className="text-sm font-black text-black bg-white border border-black !rounded-2xl px-3.5 py-1.5 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
+                      {formatPrice(l)}
+                    </span>
+                  </div>
+                )}
                 <div className="p-2.5">
-                  <div className="flex items-start justify-between gap-1">
+                  <div className="flex items-start gap-1">
                     <h3 className="font-black text-black text-xs truncate flex-1 flex items-center gap-1">
                       {l.title}
                       {sellerProfiles[l.sellerId]?.isProfileVerified && (
                         <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2 w-2 text-white" /></span>
                       )}
                     </h3>
-                    {l.price != null && (
-                      <span className="relative text-[12px] font-black text-black bg-white border border-black/30 !rounded-2xl px-3 py-1 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)]">
-                        {formatPrice(l)}
-                      </span>
-                    )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                     {l.condition && (
@@ -440,10 +445,10 @@ export default function Marketplace() {
                     <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                     </span>
-                    <ShareButton listing={l} />
+
                   </div>
-                  <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5 mt-1">
-                    <MapPin className="h-2 w-2 text-white" />{l.location}
+                  <span className="text-[8px] font-black text-black bg-white border border-black/30 !rounded-xl px-1.5 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
+                    <MapPin className="h-1.5 w-1.5 text-red-500" />{l.location}
                   </span>
                 </div>
               </div>
