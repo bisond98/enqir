@@ -5858,9 +5858,9 @@ export default function EnquiryWall() {
                               <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                  <span className="text-[14px] sm:text-base text-white font-bold px-2 py-0.5 rounded-md block sm:inline bg-red-600">Need</span>
+                                  <span className="text-[14px] sm:text-base text-white font-bold px-2 py-0.5 rounded-xl border border-black block sm:inline bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
                                   {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white border-0 shadow-sm font-semibold">
+                                    <Badge className="text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] font-semibold">
                                       <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
                                       Urgent
                                     </Badge>
@@ -5875,7 +5875,7 @@ export default function EnquiryWall() {
                                     <div key={index} className="flex items-center gap-1.5">
                                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                       <span 
-                                        className="text-[8px] sm:text-[10px] text-white/90 font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
+                                        className="text-[8px] sm:text-[10px] text-black font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl border border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2)] transition-all duration-200"
                                   style={{
                                           textTransform: 'capitalize',
                                           letterSpacing: '0.025em'
@@ -5891,7 +5891,7 @@ export default function EnquiryWall() {
                                   <div className="hidden sm:flex items-center gap-1.5 mr-3 sm:mr-0">
                                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                     <span 
-                                      className="text-[8px] sm:text-[10px] text-white font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-200"
+                                      className="text-[8px] sm:text-[10px] text-black font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl border border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2)] transition-all duration-200"
                                     style={{
                                         letterSpacing: '0.025em'
                                     }}
@@ -6051,7 +6051,7 @@ export default function EnquiryWall() {
                           {/* Urgent Badge - Top of header */}
                           {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                             <div className="absolute top-1.5 right-1.5 z-20">
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500 text-white text-[8px] sm:text-[10px] font-semibold rounded shadow-sm">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500 text-white text-[8px] sm:text-[10px] font-bold border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                                 <span className="w-1 h-1 bg-white rounded-full animate-pulse"></span>
                                 Urgent
                               </span>
@@ -6108,10 +6108,10 @@ export default function EnquiryWall() {
                             <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
                             {/* Need Label - Above Title */}
                             <div className="relative text-left">
-                              <span className="text-[10px] sm:text-sm text-white font-medium px-1 py-0.5 rounded bg-red-600">Need</span>
+                              <span className="text-[10px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-xl border border-black bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
                               {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
                               {enquiry.createdAt && (
-                                <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-white/70 font-medium">
+                                <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-black font-bold px-1.5 py-0.5 rounded-xl border border-black bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">
                                   Posted on: {formatDateTime(enquiry.createdAt)}
                                 </span>
                               )}
@@ -6328,8 +6328,7 @@ export default function EnquiryWall() {
                                 ).filter(cat => cat && typeof cat === 'string');
                                 
                                 return categoriesToShow.map((cat, index) => (
-                                  <Badge key={index} variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-gray-900 font-bold shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] rounded-lg sm:rounded-xl flex-shrink-0 whitespace-nowrap relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
+                                  <Badge key={index} variant="secondary" className="text-[7px] sm:text-[9px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1.5 bg-white text-black font-black border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] flex-shrink-0 whitespace-nowrap relative overflow-hidden">
                                     <span className="relative z-10">{String(cat).replace('-', ' ')}</span>
                                   </Badge>
                                 ));
@@ -6358,7 +6357,7 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
+                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !border !border-black !rounded-xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
                                     {/* 3D Border Effect */}
@@ -6414,7 +6413,7 @@ export default function EnquiryWall() {
                                   ).filter(cat => cat && typeof cat === 'string');
                                   
                                   return categoriesToShow.map((cat, index) => (
-                                    <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-gray-900 font-bold rounded-lg flex-shrink-0 whitespace-nowrap">
+                                    <Badge key={index} variant="secondary" className="text-[7px] px-1.5 py-0.5 bg-white text-black font-black border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] flex-shrink-0 whitespace-nowrap">
                                       <span>{String(cat).replace('-', ' ')}</span>
                                     </Badge>
                                   ));
@@ -6445,7 +6444,7 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-10 text-[11px] font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
+                                className="w-full h-10 text-[11px] font-black !text-white !border !border-black !rounded-xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 {/* 3D Border Effect */}

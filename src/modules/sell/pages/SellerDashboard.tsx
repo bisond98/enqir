@@ -363,7 +363,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       )}
                       <div className="flex-1 min-w-0 pt-0.5">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-[15px] text-gray-900 truncate leading-tight">{l.title}</h3>
+                          <h3 className="font-semibold text-[17px] text-gray-900 truncate leading-tight">{l.title}</h3>
                           <span className={`flex-shrink-0 flex items-center gap-1 text-[10px] font-semibold p-1 rounded-full ${
                             l.status === 'live' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
                           }`}>
@@ -371,7 +371,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                             
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-2 mt-3">
                           {l.price != null && (
                             <span className="text-[13px] font-bold text-gray-900">
                               ₹{l.price.toLocaleString('en-IN')}
@@ -379,7 +379,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                           )}
                           <span className="text-[11px] text-gray-400">•</span>
                           <span className="text-[11px] text-gray-500 flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />{l.location}
+                            <MapPin className="h-3 w-3 text-red-500" />{l.location}
                           </span>
                         </div>
                       </div>

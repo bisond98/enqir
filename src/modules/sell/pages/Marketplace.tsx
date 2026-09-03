@@ -180,7 +180,7 @@ export default function Marketplace() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
             placeholder="Search listings…"
-            className="pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border-2 border-black rounded-xl focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all placeholder:text-slate-400 placeholder:text-[10px]"
+            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
           />
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
@@ -206,9 +206,9 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="h-10 sm:h-12 text-xs sm:text-sm border-2 border-black rounded-xl focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
-                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-                <SelectValue placeholder="Categories" />
+              <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 overflow-hidden text-black font-bold">
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-black" />
+                <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All categories</SelectItem>
@@ -221,10 +221,10 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className={`w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-2 border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all px-3 gap-1.5`}
+              className={`relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border border-black/30 !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden`}
             >
-              <MapPin className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" />
-              <span className={`flex-1 text-left truncate ${location !== 'all' ? 'text-black font-bold' : 'text-gray-400'}`}>
+              <MapPin className="h-3.5 w-3.5 text-black flex-shrink-0" />
+              <span className={`flex-1 text-center truncate ${location !== 'all' ? 'text-black font-bold' : 'text-black font-bold'}`}>
                 {activeLocationLabel}
               </span>
             </button>
@@ -298,15 +298,17 @@ export default function Marketplace() {
               <X className="h-3 w-3" />Clear filters
             </button>
           )}
-          <Button
-            className="flex-1 h-10 bg-black text-white border-2 border-black rounded-xl font-black text-sm shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+          <button
+            className="relative flex-1 h-10 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border border-black/30 !font-black text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
-            <Search className="h-4 w-4 mr-1.5" />Search
-          </Button>
+            <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+            <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
+          </button>
           {/* View Toggle */}
-          <div className="flex border-2 border-black rounded-xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+          <div className="flex border border-black/30 !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)]">
             <button
               onClick={() => { setViewMode('list'); setPage(0); }}
               className={`h-10 px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
@@ -315,7 +317,7 @@ export default function Marketplace() {
             </button>
             <button
               onClick={() => { setViewMode('grid'); setPage(0); }}
-              className={`h-10 px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+              className={`h-10 px-3 flex items-center justify-center transition-all border-l border-black/30 ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
               <LayoutGrid className="h-4 w-4" />
             </button>
@@ -349,12 +351,12 @@ export default function Marketplace() {
 
         {/* LIST VIEW */}
         {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
-          <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/30 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
+          <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
-                <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 border border-black/10" />
+                <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
               ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black/10">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
                   <span className="text-[10px] font-bold text-gray-400">No Image</span>
                 </div>
               )}
@@ -367,23 +369,23 @@ export default function Marketplace() {
                     )}
                   </h3>
                   {l.price != null && (
-                    <span className="text-sm font-black text-black bg-white border-2 border-black px-3.5 py-1.5 rounded-full flex-shrink-0">
+                    <span className="relative text-sm font-black text-black bg-white border border-black/30 !rounded-2xl px-3.5 py-1.5 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
                       {formatPrice(l)}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{l.description}</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">{l.description && l.description.length > 20 ? l.description.slice(0, 20) + '......' : l.description}</p>
                 <div className="flex items-center gap-2 mt-1.5">
                   {l.condition && (
-                    <span className="text-[9px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                    <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {l.condition}
                     </span>
                   )}
-                  <span className="text-[9px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                  <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                     {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                   </span>
-                  <span className="text-[9px] font-bold text-black flex items-center gap-0.5">
-                    <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
+                  <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
+                    <MapPin className="h-2.5 w-2.5 text-white" />{l.location}
                   </span>
                   <ShareButton listing={l} />
                 </div>
@@ -405,14 +407,16 @@ export default function Marketplace() {
         {!loading && !error && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
-              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/30 rounded-2xl overflow-hidden hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
+              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
+                <div className="p-2.5 pb-0">
                 {l.images?.[0] ? (
-                  <img src={l.images[0]} alt="" className="w-full aspect-square object-cover border-b border-black/10" />
+                  <img src={l.images[0]} alt="" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
                 ) : (
-                  <div className="w-full aspect-square bg-gray-100 flex items-center justify-center border-b border-black/10">
+                  <div className="w-full aspect-square !rounded-2xl bg-gray-100 flex items-center justify-center !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
                     <span className="text-xs font-bold text-gray-400">No Image</span>
                   </div>
                 )}
+                </div>
                 <div className="p-2.5">
                   <div className="flex items-start justify-between gap-1">
                     <h3 className="font-black text-black text-xs truncate flex-1 flex items-center gap-1">
@@ -422,24 +426,24 @@ export default function Marketplace() {
                       )}
                     </h3>
                     {l.price != null && (
-                      <span className="text-[12px] font-black text-black bg-white border-2 border-black px-3 py-1 rounded-full flex-shrink-0">
+                      <span className="relative text-[12px] font-black text-black bg-white border border-black/30 !rounded-2xl px-3 py-1 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)]">
                         {formatPrice(l)}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                     {l.condition && (
-                      <span className="text-[8px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                      <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-bold bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                    <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                     </span>
                     <ShareButton listing={l} />
                   </div>
-                  <span className="text-[8px] font-bold text-black flex items-center gap-0.5 mt-1">
-                    <MapPin className="h-2 w-2 text-red-500" />{l.location}
+                  <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5 mt-1">
+                    <MapPin className="h-2 w-2 text-white" />{l.location}
                   </span>
                 </div>
               </div>
@@ -452,7 +456,7 @@ export default function Marketplace() {
           <div className="flex justify-center pt-2 pb-4">
             <button
               onClick={() => setPage(p => p + 1)}
-              className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+              className="bg-black text-white border border-black font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
             >
               Next →
             </button>
