@@ -246,8 +246,8 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 overflow-hidden text-black font-bold">
-                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-black" />
+              <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 overflow-hidden font-bold">
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent className="!rounded-2xl !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-white">
@@ -266,10 +266,10 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border border-black/30 !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
+              className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
             >
-              <MapPin className="h-3.5 w-3.5 text-black flex-shrink-0" />
-              <span className="flex-1 text-center truncate text-black font-bold">
+              <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0" />
+              <span className="flex-1 text-center truncate text-white font-bold">
                 {activeLocationLabel}
               </span>
             </button>
@@ -279,7 +279,7 @@ export default function Marketplace() {
               <div
                 ref={locPopupRef}
                 onClick={(e) => e.stopPropagation()}
-                className="absolute z-50 top-full mt-1 right-0 w-72 bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] overflow-hidden"
+                className="absolute z-50 top-full mt-1 right-0 w-72 bg-white border-[1.5px] border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] overflow-hidden"
               >
                 {/* Search */}
                 <div className="p-3 border-b border-gray-100">
@@ -290,7 +290,7 @@ export default function Marketplace() {
                       value={locSearch}
                       onChange={(e) => setLocSearch(e.target.value)}
                       placeholder="Search location…"
-                      className="w-full h-9 text-xs bg-gray-50 border-2 border-black rounded-xl pl-8 pr-3 outline-none focus:outline-none focus:border-[4px] focus:border-black focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none focus:shadow-none transition-all duration-300"
+                      className="w-full h-9 text-xs bg-gray-50 border-[1.5px] border-black rounded-xl pl-8 pr-3 outline-none focus:outline-none focus:border-[4px] focus:border-black focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none focus:shadow-none transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -341,7 +341,7 @@ export default function Marketplace() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
             placeholder="Search listings…"
-            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
+            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
           />
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
@@ -374,22 +374,22 @@ export default function Marketplace() {
             </button>
           )}
           {/* View Toggle */}
-          <div className="flex h-10 sm:h-12 border border-black/30 !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
+          <div className="flex h-10 sm:h-12 border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
             <button
               onClick={() => { setViewMode('list'); setPage(0); }}
-              className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+              className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
               <List className="h-3 w-3" />
             </button>
             <button
               onClick={() => { setViewMode('grid'); setPage(0); }}
-              className={`h-full px-3 flex items-center justify-center transition-all border-l border-black/30 ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+              className={`h-full px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
               <LayoutGrid className="h-3 w-3" />
             </button>
           </div>
           <button
-            className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border border-black/30 !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+            className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
@@ -536,7 +536,7 @@ export default function Marketplace() {
           <div className="flex justify-center pt-2 pb-4">
             <button
               onClick={() => setPage(p => p + 1)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black/30 !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
             >
               Next →
             </button>
