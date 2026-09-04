@@ -241,38 +241,8 @@ export default function Marketplace() {
       />
 
       {/* Search & Filters */}
-      <div className="space-y-3 mb-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
-            placeholder="Search listings…"
-            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
-          />
-          {search && (
-            <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-
-        {/* Auto-detected category suggestion */}
-        {showCategorySuggestion && (
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-400">Did you mean:</span>
-            <button
-              onClick={() => { setCategory(detectedCategory!); }}
-              className="text-[10px] font-bold text-black bg-gray-100 border border-black/20 rounded-full px-2.5 py-1 hover:bg-gray-200 transition-colors"
-            >
-              {SELL_CATEGORIES.find(c => c.value === detectedCategory)?.label}
-            </button>
-          </div>
-        )}
-
-        {/* Filter Row */}
+      <div className="space-y-3 mb-8">
+        {/* Filter Row: Categories + Location — equal size on mobile */}
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
@@ -296,10 +266,10 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className={`relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border border-black/30 !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden`}
+              className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border border-black/30 !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
             >
               <MapPin className="h-3.5 w-3.5 text-black flex-shrink-0" />
-              <span className={`flex-1 text-center truncate ${location !== 'all' ? 'text-black font-bold' : 'text-black font-bold'}`}>
+              <span className="flex-1 text-center truncate text-black font-bold">
                 {activeLocationLabel}
               </span>
             </button>
@@ -363,7 +333,37 @@ export default function Marketplace() {
           </div>
         </div>
 
-        {/* Active Filters + Search Button + View Toggle */}
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
+            placeholder="Search listings…"
+            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border border-black/30 !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
+          />
+          {search && (
+            <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Auto-detected category suggestion */}
+        {showCategorySuggestion && (
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-gray-400">Did you mean:</span>
+            <button
+              onClick={() => { setCategory(detectedCategory!); }}
+              className="text-[10px] font-bold text-black bg-gray-100 border border-black/20 rounded-full px-2.5 py-1 hover:bg-gray-200 transition-colors"
+            >
+              {SELL_CATEGORIES.find(c => c.value === detectedCategory)?.label}
+            </button>
+          </div>
+        )}
+
+        {/* Search + View Toggle */}
         <div className="flex items-center gap-2">
           {hasFilters && (
             <button
@@ -373,8 +373,23 @@ export default function Marketplace() {
               <X className="h-3 w-3" />Clear filters
             </button>
           )}
+          {/* View Toggle */}
+          <div className="flex h-10 sm:h-12 border border-black/30 !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
+            <button
+              onClick={() => { setViewMode('list'); setPage(0); }}
+              className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            >
+              <List className="h-3 w-3" />
+            </button>
+            <button
+              onClick={() => { setViewMode('grid'); setPage(0); }}
+              className={`h-full px-3 flex items-center justify-center transition-all border-l border-black/30 ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            >
+              <LayoutGrid className="h-3 w-3" />
+            </button>
+          </div>
           <button
-            className="relative flex-1 h-10 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border border-black/30 !font-black text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+            className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border border-black/30 !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
@@ -382,21 +397,6 @@ export default function Marketplace() {
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
             <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
           </button>
-          {/* View Toggle */}
-          <div className="flex border border-black/30 !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)]">
-            <button
-              onClick={() => { setViewMode('list'); setPage(0); }}
-              className={`h-10 px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-            >
-              <List className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => { setViewMode('grid'); setPage(0); }}
-              className={`h-10 px-3 flex items-center justify-center transition-all border-l border-black/30 ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </div>
 
