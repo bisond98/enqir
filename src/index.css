@@ -42,17 +42,11 @@
   }
   
   /* GPU acceleration for animated elements */
-  [class*="animate-"], 
-  [class*="transition-"],
-  [class*="motion-"],
-  button:hover,
-  a:hover,
+  /* GPU-accelerate only actively animating elements (not all buttons/links) */
   [data-framer-component],
   [data-framer-name] {
     will-change: transform, opacity;
-    transform: translateZ(0);
     backface-visibility: hidden;
-    perspective: 1000px;
   }
 
   /* Override for specific fast transitions */
@@ -60,12 +54,11 @@
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
   
-  /* Optimize scrollable containers */
+  /* Optimize scrollable containers — only -webkit-overflow-scrolling for smooth iOS scroll */
   [class*="overflow-auto"],
   [class*="overflow-scroll"],
   [class*="overflow-y-auto"] {
     -webkit-overflow-scrolling: touch;
-    will-change: scroll-position;
   }
   
   @keyframes spin {

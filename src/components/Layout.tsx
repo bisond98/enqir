@@ -10,12 +10,13 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
 import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Footer from "./Footer";
-import AIChatbot from "./AIChatbot";
-import SmartNotifications from "./SmartNotifications";
-import { NotificationManager } from "./NotificationManager";
-import SignOutDialog from "./SignOutDialog";
 import { lazy, Suspense } from "react";
+// Lazy load heavy non-critical components to reduce initial bundle size
+const Footer = lazy(() => import("./Footer"));
+const AIChatbot = lazy(() => import("./AIChatbot"));
+const SmartNotifications = lazy(() => import("./SmartNotifications"));
+const NotificationManagerLazy = lazy(() => import("./NotificationManager").then(m => ({ default: m.NotificationManager })));
+const SignOutDialog = lazy(() => import("./SignOutDialog"));
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getProEnquiriesRemaining } from "@/services/paymentService";
 import { collection, query, getDocs, getDoc, doc, onSnapshot, where } from "firebase/firestore";
@@ -917,10 +918,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                       <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black">
                         <Home className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>
-                    </Link>
-                  
-                  {/* Smart Notifications */}
-                  <SmartNotifications />
+                    </Link>                    {/* Smart Notifications */}
+                    <Suspense fallback={null}>
+                      <SmartNotifications />
+                    </Suspense>
                   
                     {/* Dashboard button - visible on mobile */}
                     <Link to="/dashboard" className="md:hidden">
@@ -1110,12 +1111,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 } else {
                   navigate("/post-enquiry");
                 }
-              }}
-              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center active:scale-95"
+              }}              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
               style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}
             >
               <span className="text-sm font-black text-white">Buy</span>
             </button>
+
             <button
               onClick={() => {
                 setShowActionMenu(false);
@@ -1125,7 +1126,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-2 border-black flex items-center justify-center active:scale-95"
+              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
               style={{ animation: 'popupRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards' }}
             >
               <span className="text-sm font-black text-white">Sell</span>
@@ -1135,28 +1136,35 @@ export default function Layout({ children, showNavigation = true }: { children: 
       )}
 
       {/* Footer */}
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
       
       {/* Mobile Notification Popups */}
-      <NotificationManager />
+      <Suspense fallback={null}>
+        <NotificationManagerLazy />
+      </Suspense>
       
       {/* AI Chatbot - Available on all pages with SAFETY FALLBACK */}
-      {(() => {
-        try {
-          return <AIChatbot />;
-        } catch (error) {
-          console.error('AI Chatbot failed to load:', error);
-          // GRACEFUL DEGRADATION: Don't render chatbot, app continues normally
-          return null;
-        }
-      })()}
+      <Suspense fallback={null}>
+        {(() => {
+          try {
+            return <AIChatbot />;
+          } catch (error) {
+            // GRACEFUL DEGRADATION: Don't render chatbot, app continues normally
+            return null;
+          }
+        })()}
+      </Suspense>
 
       {/* Sign Out Confirmation Dialog */}
-      <SignOutDialog
-        open={showSignOutDialog}
-        onOpenChange={setShowSignOutDialog}
-        onConfirm={handleSignOut}
-      />
+      <Suspense fallback={null}>
+        <SignOutDialog
+          open={showSignOutDialog}
+          onOpenChange={setShowSignOutDialog}
+          onConfirm={handleSignOut}
+        />
+      </Suspense>
     </div>
   );
 }

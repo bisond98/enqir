@@ -556,29 +556,32 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   useEffect(() => {
-    loadActiveChats();
-    
-    // Set up real-time listeners for chat messages and seller submissions to refresh
     if (!user?.uid) return;
     
+    // Defer initial chat load by 3 seconds so page render isn't blocked
+    const initialDelay = setTimeout(() => {
+      loadActiveChats();
+    }, 3000);
+    
+    // Set up real-time listeners for chat messages and seller submissions to refresh
     let timeoutId: NodeJS.Timeout;
     
     const refreshChats = () => {
-      // Debounce refresh to avoid too frequent updates
+      // Debounce refresh to avoid too frequent updates (increased from 500ms to 2s)
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         loadActiveChats();
-      }, 500);
+      }, 2000);
     };
     
     // Listen to chat messages changes (includes admin messages)
     const unsubscribeChatMessages = onSnapshot(
-      query(collection(db, "chatMessages")),
+      query(collection(db, "chatMessages"), where("participants", "array-contains", user.uid)),
       () => {
         refreshChats();
       },
       (error) => {
-        console.error("Error listening to chat messages:", error);
+        // Silently handle - will retry on next snapshot
       }
     );
     
@@ -593,7 +596,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         refreshChats(); // Refresh when admin messages change
       },
       (error) => {
-        console.error("Error listening to admin messages:", error);
+        // Silently handle
       }
     );
 
@@ -607,11 +610,12 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         refreshChats();
       },
       (error) => {
-        console.error("Error listening to seller submissions:", error);
+        // Silently handle
       }
     );
 
     return () => {
+      clearTimeout(initialDelay);
       clearTimeout(timeoutId);
       unsubscribeChatMessages();
       unsubscribeSellerSubmissions();

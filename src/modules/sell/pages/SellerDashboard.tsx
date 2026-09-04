@@ -355,7 +355,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="p-4">
                     <div className="flex gap-3.5">
                       {l.images?.[0] ? (
-                        <img src={l.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border border-black" />
+                        <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border border-black" />
                       ) : (
                         <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black">
                           <Package className="h-6 w-6 text-gray-300" />
@@ -474,7 +474,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                 <div className="p-4">
                   <div className="flex items-center gap-3.5">
                     {listing?.images?.[0] ? (
-                      <img src={listing.images[0]} alt="" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border border-black" />
+                      <img src={listing.images[0]} alt="" loading="lazy" decoding="async" className="w-[72px] h-[72px] rounded-2xl object-cover flex-shrink-0 border border-black" />
                     ) : (
                       <div className="w-[72px] h-[72px] rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 border border-black">
                         <Package className="h-6 w-6 text-gray-300" />

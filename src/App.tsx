@@ -1,10 +1,14 @@
 import { app } from "./firebase";
 
-console.log("✅ Firebase is connected:", app);
-
-// Initialize AI Services
-import "./services/ai";
-console.log("🤖 AI Services: Automated approval system initialized");
+// Defer AI Services initialization to after first paint (not critical for initial render)
+if (typeof window !== 'undefined') {
+  const loadAIServices = () => import("./services/ai");
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(loadAIServices, { timeout: 5000 });
+  } else {
+    setTimeout(loadAIServices, 1000);
+  }
+}
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -64,7 +68,17 @@ const SellerDashboard = lazy(() => import("./modules/sell/pages/SellerDashboard"
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes - reduce unnecessary re-fetches
+      gcTime: 10 * 60 * 1000, // 10 minutes - keep cached data longer
+      refetchOnWindowFocus: false, // Don't refetch when tab regains focus
+      refetchOnReconnect: false, // Don't refetch on network reconnect
+      retry: 1, // Only retry once on failure
+    },
+  },
+});
 
 // Global fix to ensure body scroll is always enabled
 if (typeof window !== 'undefined') {
@@ -88,30 +102,16 @@ if (typeof window !== 'undefined') {
     }
   };
   
-  // Check periodically and on focus (optimized with throttled requestAnimationFrame)
-  let lastCheck = 0;
-  const throttleDelay = 1000; // Check every 1 second (same as original interval)
-  let rafId: number | null = null;
-  
-  const checkScrollThrottled = (timestamp: number) => {
-    if (timestamp - lastCheck >= throttleDelay) {
-      ensureScroll();
-      lastCheck = timestamp;
-    }
-    rafId = requestAnimationFrame(checkScrollThrottled);
-  };
-  
-  // Start the throttled animation frame loop
-  rafId = requestAnimationFrame(checkScrollThrottled);
+  // Check periodically and on focus — use setInterval instead of requestAnimationFrame
+  // RAF fires ~60x/sec even when throttled; setInterval avoids waking the renderer
+  const scrollCheckInterval = setInterval(ensureScroll, 2000);
   
   window.addEventListener('focus', ensureScroll);
   window.addEventListener('load', ensureScroll);
   
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-    }
+    clearInterval(scrollCheckInterval);
   });
 }
 

@@ -2499,7 +2499,7 @@ const Dashboard = () => {
                   >
                     {listing.images && listing.images[0] && (
                       <div className="h-32 sm:h-36 overflow-hidden bg-gray-100">
-                        <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                        <img src={listing.images[0]} alt={listing.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       </div>
                     )}
                     <div className="p-3">

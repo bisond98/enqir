@@ -56,9 +56,19 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          'vendor-ui': [
+            '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select',
+            '@radix-ui/react-tooltip', '@radix-ui/react-popover', '@radix-ui/react-tabs',
+            '@radix-ui/react-toast', '@radix-ui/react-accordion', '@radix-ui/react-checkbox',
+            '@radix-ui/react-label', '@radix-ui/react-separator', '@radix-ui/react-slot',
+            '@radix-ui/react-switch', '@radix-ui/react-toggle', '@radix-ui/react-toggle-group',
+            '@radix-ui/react-scroll-area'
+          ],
           'vendor-motion': ['framer-motion'],
           'vendor-date': ['date-fns'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-charts': ['chart.js', 'recharts'],
+          'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
         // Optimize asset filenames for better caching
         assetFileNames: (assetInfo) => {

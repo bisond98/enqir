@@ -354,7 +354,7 @@ export default function Marketplace() {
           <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
               {l.images?.[0] ? (
-                <img src={l.images[0]} alt="" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
+                <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
               ) : (
                 <div className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
                   <span className="text-[10px] font-bold text-gray-400">No Image</span>
@@ -369,7 +369,7 @@ export default function Marketplace() {
                     )}
                   </h3>
                   {l.price != null && (
-                    <span className="relative text-sm font-black text-black bg-white border border-black/30 !rounded-2xl px-3.5 py-1.5 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
+                    <span className="relative text-sm font-black text-white bg-black border border-black !rounded-2xl px-3.5 py-1.5 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
                       {formatPrice(l)}
                     </span>
                   )}
@@ -377,15 +377,15 @@ export default function Marketplace() {
                 <p className="text-[11px] text-gray-500 mt-0.5">{l.description && l.description.length > 20 ? l.description.slice(0, 20) + '......' : l.description}</p>
                 <div className="flex items-center gap-2 mt-1.5">
                   {l.condition && (
-                    <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
+                    <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {l.condition}
                     </span>
                   )}
-                  <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
+                  <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                     {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                   </span>
-                  <span className="text-[9px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
-                    <MapPin className="h-2.5 w-2.5 text-white" />{l.location}
+                  <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
+                    <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
                   </span>
                   <ShareButton listing={l} />
                 </div>
@@ -413,7 +413,7 @@ export default function Marketplace() {
                 </div>
                 <div className="p-2.5 pb-0">
                 {l.images?.[0] ? (
-                  <img src={l.images[0]} alt="" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
+                  <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
                 ) : (
                   <div className="w-full aspect-square !rounded-2xl bg-gray-100 flex items-center justify-center !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
                     <span className="text-xs font-bold text-gray-400">No Image</span>
@@ -422,7 +422,7 @@ export default function Marketplace() {
                 </div>
                 {l.price != null && (
                   <div className="absolute top-2 right-2 z-10">
-                    <span className="text-sm font-black text-black bg-white border border-black !rounded-2xl px-3.5 py-1.5 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
+                    <span className="text-sm font-black text-white bg-black border border-black !rounded-2xl px-3.5 py-1.5 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
                       {formatPrice(l)}
                     </span>
                   </div>
@@ -438,16 +438,16 @@ export default function Marketplace() {
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                     {l.condition && (
-                      <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
+                      <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-black text-white bg-black !border-[0.5px] !border-black/20 !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
                     </span>
 
                   </div>
-                  <span className="text-[8px] font-black text-black bg-white border border-black/30 !rounded-xl px-1.5 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
+                  <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
                     <MapPin className="h-1.5 w-1.5 text-red-500" />{l.location}
                   </span>
                 </div>
@@ -461,7 +461,7 @@ export default function Marketplace() {
           <div className="flex justify-center pt-2 pb-4">
             <button
               onClick={() => setPage(p => p + 1)}
-              className="bg-black text-white border border-black font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black/30 !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
             >
               Next →
             </button>

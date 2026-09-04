@@ -475,8 +475,6 @@ export default function EnquiryWall() {
     // Process enquiries data
     const processEnquiries = (snapshot: any) => {
       try {
-        console.log('📊 EnquiryWall: Received snapshot with', snapshot.docs.length, 'documents');
-        
         const allEnquiriesData = snapshot.docs.map((doc: any) => {
           const data = doc.data();
           return {
@@ -647,46 +645,55 @@ export default function EnquiryWall() {
         const profiles: {[key: string]: any} = {};
         const userIds = [...new Set(enquiries.map(enquiry => enquiry.userId))];
         
-        // Batch fetch profiles for better performance
-        const profilePromises = userIds.map(async (userId) => {
+        // Batch fetch using Firestore 'in' queries (max 10 per query) — much fewer network requests
+        const batches: string[][] = [];
+        for (let i = 0; i < userIds.length; i += 10) {
+          batches.push(userIds.slice(i, i + 10));
+        }
+        
+        const batchPromises = batches.map(async (batch) => {
           try {
-            // Try 'userProfiles' first
-            let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
-            if (!profileDoc.exists()) {
-              // Fallback to 'profiles' collection
-              profileDoc = await getDoc(doc(db, 'profiles', userId));
-            }
-            if (profileDoc.exists()) {
-              return { userId, data: profileDoc.data() };
-            }
-            return null;
-          } catch (error) {
-            console.error(`Error fetching user profile for ${userId}:`, error);
-            return null;
+            const q = query(collection(db, 'userProfiles'), where('userId', 'in', batch));
+            const snapshot = await getDocs(q);
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              const uid = data.userId || docSnap.id;
+              if (uid) profiles[uid] = data;
+            });
+          } catch {
+            // Fallback: fetch individually only this batch
+            const fallbackPromises = batch.map(async (userId) => {
+              try {
+                let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
+                if (!profileDoc.exists()) {
+                  profileDoc = await getDoc(doc(db, 'profiles', userId));
+                }
+                if (profileDoc.exists()) {
+                  profiles[userId] = profileDoc.data();
+                }
+              } catch { /* skip */ }
+            });
+            await Promise.all(fallbackPromises);
           }
         });
         
-        const results = await Promise.all(profilePromises);
+        await Promise.all(batchPromises);
         
         if (isMounted) {
-          results.forEach((result) => {
-            if (result) {
-              profiles[result.userId] = result.data;
-            }
-          });
           setUserProfiles(profiles);
         }
       } catch (error) {
-        console.error('Error fetching user profiles:', error);
         if (isMounted) {
           setUserProfiles({});
         }
       }
     };
 
-    fetchUserProfiles();
+    // Defer profile fetch by 2s to not compete with page render
+    const timeoutId = setTimeout(fetchUserProfiles, 2000);
 
     return () => {
+      clearTimeout(timeoutId);
       isMounted = false;
     };
   }, [enquiries]);

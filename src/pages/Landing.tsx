@@ -1010,7 +1010,7 @@ const Landing = () => {
     };
 
     loadSellListings();
-    const refreshTimer = setInterval(loadSellListings, 30000);
+    const refreshTimer = setInterval(loadSellListings, 60000);
     return () => {
       isMounted = false;
       clearInterval(refreshTimer);
@@ -2916,7 +2916,7 @@ const Landing = () => {
                                     <div className="flex-1 flex flex-col px-2.5 pt-2.5 pb-2 sm:px-3 sm:pt-3 sm:pb-0 lg:px-3.5 lg:pt-3.5 lg:pb-0 overflow-hidden min-h-0">
                                       <div className={`w-full rounded-lg border border-black bg-white overflow-hidden mb-2 sm:mb-2.5`} style={{ height: `${imgHeight}px` }}>
                                         {imageUrl ? (
-                                          <img src={imageUrl} alt={listing.title || "Listing"} className="w-full h-full object-cover" />
+                                          <img src={imageUrl} alt={listing.title || "Listing"} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                         ) : (
                                           <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-500">No image</div>
                                         )}

@@ -4,43 +4,17 @@ import { useEffect, useRef } from 'react';
  * Performance optimization hook
  * Handles common performance optimizations like scroll optimization, 
  * image preloading, and viewport management
+ * 
+ * NOTE: Removed will-change: scroll-position on all overflow containers
+ * as it creates unnecessary compositor layers and hurts GPU memory.
+ * Modern browsers already optimize scroll performance automatically.
  */
 export function usePerformanceOptimizations() {
-  const scrollOptimizedRef = useRef<Set<HTMLElement>>(new Set());
-
-  useEffect(() => {
-    // Optimize scroll performance for all scrollable containers
-    const optimizeScrollContainers = () => {
-      const scrollContainers = document.querySelectorAll(
-        '.overflow-auto, .overflow-y-auto, .overflow-x-auto, [class*="overflow"]'
-      );
-
-      scrollContainers.forEach((container) => {
-        if (container instanceof HTMLElement && !scrollOptimizedRef.current.has(container)) {
-          container.style.willChange = 'scroll-position';
-          container.style.webkitOverflowScrolling = 'touch';
-          scrollOptimizedRef.current.add(container);
-        }
-      });
-    };
-
-    // Run on mount and after a short delay to catch dynamically added elements
-    optimizeScrollContainers();
-    const timeoutId = setTimeout(optimizeScrollContainers, 1000);
-
-    return () => {
-      clearTimeout(timeoutId);
-      // Cleanup will-change for better performance
-      scrollOptimizedRef.current.forEach((container) => {
-        container.style.willChange = 'auto';
-      });
-      scrollOptimizedRef.current.clear();
-    };
-  }, []);
-
-  // Optimize images
+  // Optimize images via IntersectionObserver (native lazy loading fallback)
   useEffect(() => {
     const images = document.querySelectorAll('img[data-src]');
+    if (images.length === 0) return;
+
     const imageObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -55,7 +29,7 @@ export function usePerformanceOptimizations() {
           }
         });
       },
-      { rootMargin: '50px' }
+      { rootMargin: '200px' } // Start loading 200px before visible
     );
 
     images.forEach((img) => imageObserver.observe(img));
@@ -72,18 +46,24 @@ export function usePerformanceOptimizations() {
  */
 export function usePreventLayoutShift() {
   useEffect(() => {
-    // Add aspect ratio to images without dimensions
     const images = document.querySelectorAll('img:not([width]):not([height])');
+    const cleanup: (() => void)[] = [];
+    
     images.forEach((img) => {
       if (img instanceof HTMLImageElement) {
-        img.addEventListener('load', function onLoad() {
-          if (this.naturalWidth && this.naturalHeight) {
-            const aspectRatio = this.naturalHeight / this.naturalWidth;
-            this.style.aspectRatio = `${this.naturalWidth} / ${this.naturalHeight}`;
-            this.removeEventListener('load', onLoad);
+        const onLoad = () => {
+          if (img.naturalWidth && img.naturalHeight) {
+            img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
           }
-        });
+          img.removeEventListener('load', onLoad);
+        };
+        img.addEventListener('load', onLoad);
+        cleanup.push(() => img.removeEventListener('load', onLoad));
       }
     });
+
+    return () => {
+      cleanup.forEach(fn => fn());
+    };
   }, []);
 }

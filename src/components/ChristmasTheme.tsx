@@ -33,8 +33,8 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
     
     window.addEventListener('popstate', handlePopState);
     
-    // Check periodically in case of programmatic navigation
-    const interval = setInterval(checkLandingPage, 100);
+    // Check periodically in case of programmatic navigation (reduced from 100ms to save battery/CPU)
+    const interval = setInterval(checkLandingPage, 10000);
     
     return () => {
       window.removeEventListener('popstate', handlePopState);
