@@ -8,12 +8,82 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { db } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+
+// Category icon mapping
+const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
+  'electronics': Zap,
+  'mobiles': Smartphone,
+  'laptops': Laptop,
+  'furniture': Sofa,
+  'home': Home,
+  'fashion': Shirt,
+  'vehicles': Car,
+  'services': Wrench,
+  'agriculture-farming': Sprout,
+  'antiques': Gem,
+  'art': Palette,
+  'baby-kids': Baby,
+  'bags-luggage': ShoppingBag,
+  'beauty-products': Sparkles,
+  'bicycles': Zap,
+  'books-publications': BookOpen,
+  'business': Briefcase,
+  'childcare-family': Baby,
+  'collectibles': Gem,
+  'construction-renovation': Hammer,
+  'education-training': BookOpen,
+  'entertainment-media': Music,
+  'events-entertainment': Music,
+  'food-beverage': Utensils,
+  'gaming-recreation': Gamepad2,
+  'government-public': Shield,
+  'health-beauty': Stethoscope,
+  'insurance-services': Shield,
+  'jobs': Briefcase,
+  'jewelry-accessories': Gem,
+  'legal-financial': Scale,
+  'marketing-advertising': Megaphone,
+  'memorabilia': Gift,
+  'musical-instruments': Music,
+  'musical-accessories': Music,
+  'musical-services': Music,
+  'non-profit-charity': Heart,
+  'office-supplies': Briefcase,
+  'personal': User,
+  'pets': PawPrint,
+  'photography-cameras': Camera,
+  'fitness-gym-equipment': Dumbbell,
+  'garden-outdoor': Sprout,
+  'kitchen-dining': Utensils,
+  'raw-materials-industrial': Package,
+  'real-estate': Building2,
+  'real-estate-services': Building2,
+  'renewable-energy': Zap,
+  'repair-services': Wrench,
+  'cleaning-services': Sparkles,
+  'security-safety': Shield,
+  'sneakers': Shirt,
+  'souvenir': Gift,
+  'sports-outdoor': Dumbbell,
+  'thrift': ShoppingBag,
+  'technology': Laptop,
+  'tools-equipment': Wrench,
+  'transportation-logistics': Truck,
+  'travel-tourism': Plane,
+  'tutoring-lessons': BookOpen,
+  'vintage': Gem,
+  'waste-management': Recycle,
+  'wedding-events': Heart,
+  'medical-equipment': Stethoscope,
+  'appliances': Sofa,
+  'other': Tag,
+};
 
 function formatPrice(l: SellListing) {
   const fmt = (n: number) => n.toLocaleString('en-IN');
@@ -210,11 +280,16 @@ export default function Marketplace() {
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-black" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All categories</SelectItem>
-                {SELL_CATEGORIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                ))}
+              <SelectContent className="!rounded-2xl !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-white">
+                <SelectItem value="all" className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black mb-0.5 !shadow-[0_2px_0_0_rgba(0,0,0,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.15)] !transition-all !duration-150">All categories</SelectItem>
+                {SELL_CATEGORIES.map((c) => {
+                  const Icon = CATEGORY_ICONS[c.value] || Tag;
+                  return (
+                    <SelectItem key={c.value} value={c.value} className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black mb-0.5 !shadow-[0_2px_0_0_rgba(0,0,0,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.15)] !transition-all !duration-150">
+                      <span className="flex items-center gap-2"><Icon className="h-3.5 w-3.5 text-black" /> {c.label}</span>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
