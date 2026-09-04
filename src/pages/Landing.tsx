@@ -1975,12 +1975,11 @@ const Landing = () => {
           <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
           {/* Deal Closure card - Mobile only, desktop shows in features grid */}
             <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
-            <Card className="p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-2 border-black rounded-xl sm:rounded-2xl">
+            <Card className="p-3 sm:p-6 bg-gray-200 border border-black rounded-xl sm:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">
               <div className="relative">
-                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4 group-hover:scale-110 transition-spring" />
-                <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
+                <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4" />
               </div>
-              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center group-hover:text-pal-blue transition-spring">Deal Closure</h3>
+              <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 text-center">Deal Closure</h3>
               <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">
                 To Every action paid = only serious users
               </p>
@@ -1990,12 +1989,11 @@ const Landing = () => {
           {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
-              <Card key={index} className={`p-3 sm:p-6 glass-card hover-lift transition-spring group bg-gray-200 border-2 border-black rounded-xl sm:rounded-2xl ${feature.title === "Deal Closure" ? "hidden md:block" : ""}`}>
+              <Card key={index} className={`p-3 sm:p-6 bg-gray-200 border border-black rounded-xl sm:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] ${feature.title === "Deal Closure" ? "hidden md:block" : ""}`}>
                 <div className="relative">
-                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2 group-hover:scale-110 transition-spring" />
-                  <div className="absolute inset-0 bg-pal-blue/20 blur-xl opacity-0 group-hover:opacity-100 transition-spring"></div>
+                  <feature.icon className="h-5 w-5 sm:h-6 md:h-5 text-black mx-auto mb-2 sm:mb-3 md:mb-2" />
                 </div>
-                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center group-hover:text-pal-blue transition-spring">{feature.title}</h3>
+                <h3 className="text-xs sm:text-sm md:text-xs font-black text-black mb-1 sm:mb-1.5 md:mb-1 text-center">{feature.title}</h3>
                 <p className="text-[10px] sm:text-xs md:text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
               </Card>
             ))}
@@ -2032,7 +2030,7 @@ const Landing = () => {
                 - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-4">
-              <p className="text-xs sm:text-sm font-black text-black mb-3 inline-block border-2 border-black rounded-xl px-2 py-0.5">Enquiries</p>
+              <p className="text-xs sm:text-sm font-black text-white bg-black mb-3 inline-block border border-black rounded-xl px-2 py-0.5 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">Enquiries</p>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
@@ -2702,7 +2700,7 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-9 sm:h-12 px-4 sm:px-6 text-[10px] sm:text-sm font-black !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                  className="h-9 sm:h-12 px-4 sm:px-6 text-[10px] sm:text-sm font-black !border !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
@@ -2802,7 +2800,7 @@ const Landing = () => {
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
                 {shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="inline-block border-2 border-black rounded-xl px-2 py-0.5 text-xs sm:text-sm font-black text-black mb-3">For Sale</p>
+                    <p className="inline-block border border-black rounded-xl px-2 py-0.5 text-xs sm:text-sm font-black text-white bg-black mb-3 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">For Sale</p>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
@@ -2961,7 +2959,7 @@ const Landing = () => {
                       </AnimatePresence>
                     </div>
                     <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-9 sm:h-11 px-4 border-[0.5px] border-black !bg-black hover:!bg-gray-900 !text-white text-[10px] sm:text-xs font-black !rounded-2xl inline-flex items-center gap-1.5 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]">
+                      <button className="h-9 sm:h-11 px-4 border border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] sm:text-xs font-black !rounded-2xl inline-flex items-center gap-1.5 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]">
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                         <span className="relative z-10">Show All</span>
