@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SellShell from '../components/SellShell';
+import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -91,11 +92,36 @@ function formatPrice(l: SellListing) {
   return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
 
+function formatPostedDate(dateString: any): string {
+  try {
+    let date: Date;
+    if (dateString?.toDate && typeof dateString.toDate === 'function') {
+      date = dateString.toDate();
+    } else if (dateString?.seconds !== undefined) {
+      date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
+    } else if (dateString instanceof Date) {
+      date = dateString;
+    } else if (typeof dateString === 'string' || typeof dateString === 'number') {
+      date = new Date(dateString);
+    } else {
+      return '';
+    }
+    if (!date || isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 export default function Marketplace() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [category, setCategory] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+  const [trustBadgeOnly, setTrustBadgeOnly] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -113,7 +139,7 @@ export default function Marketplace() {
     }
   }, [page]);
 
-  // Auto-shuffle listings every 60 seconds when no filters/search
+  // Auto-shuffle listings every 5 minutes when no filters/search
   const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all';
 
   // Seller profiles for trust badge
@@ -164,7 +190,7 @@ export default function Marketplace() {
     load();
   }, [search, category, location]);
 
-  // Shuffle effect: every 5 seconds when no filters/search active
+  // Shuffle effect: every 5 minutes when no filters/search active
   useEffect(() => {
     if (!noFiltersActive || listings.length <= 1) {
       setShuffledListings(listings);
@@ -179,7 +205,7 @@ export default function Marketplace() {
       return a;
     };
     setShuffledListings(shuffle(listings));
-    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 60000);
+    const timer = setInterval(() => setShuffledListings(shuffle(listings)), 300000);
     return () => clearInterval(timer);
   }, [listings, noFiltersActive]);
 
@@ -194,7 +220,24 @@ export default function Marketplace() {
   const showCategorySuggestion = detectedCategory && category !== detectedCategory;
 
   const canSearch = search.trim().length === 0 || search.trim().length >= 2;
-  const hasFilters = category !== 'all' || location !== 'all';
+
+  // Effective price of a listing used for budget filtering (range → its max number).
+  const listingPrice = (l: SellListing): number => {
+    if (l.priceType === 'range') return l.priceMax ?? l.priceMin ?? l.price ?? 0;
+    return l.price ?? l.priceMin ?? l.priceMax ?? 0;
+  };
+
+  const minVal = priceMin ? Math.max(0, parseFloat(priceMin.replace(/[^0-9]/g, ''))) : null;
+  const maxVal = priceMax ? Math.max(0, parseFloat(priceMax.replace(/[^0-9]/g, ''))) : null;
+  const budgetActive = minVal !== null || maxVal !== null;
+  const hasFilters = category !== 'all' || location !== 'all' || budgetActive || trustBadgeOnly;
+
+  // Show Indian-style thousand separators (e.g. 1,00,000) while typing.
+  const toInr = (raw: string): string => {
+    const digits = raw.replace(/[^0-9]/g, '');
+    if (!digits) return '';
+    return Number(digits).toLocaleString('en-IN');
+  };
 
 
 
@@ -226,13 +269,34 @@ export default function Marketplace() {
   }, [locSearch]);
 
   const activeLocationLabel = location === 'all' ? 'Locations' : location;
-  const displayListings = noFiltersActive ? shuffledListings : listings;
+
+  // Apply budget (min/max) and trust-badge filters on top of the fetched results.
+  const budgetFilteredListings = useMemo(() => {
+    const base = noFiltersActive ? shuffledListings : listings;
+    if (!budgetActive && !trustBadgeOnly) return base;
+    return base.filter((l) => {
+      if (budgetActive) {
+        const p = listingPrice(l);
+        if (minVal !== null && p < minVal) return false;
+        if (maxVal !== null && p > maxVal) return false;
+      }
+      if (trustBadgeOnly && !sellerProfiles[l.sellerId]?.isProfileVerified) return false;
+      return true;
+    });
+  }, [noFiltersActive, shuffledListings, listings, budgetActive, trustBadgeOnly, minVal, maxVal, sellerProfiles]);
+
+  const displayListings = budgetFilteredListings;
   const perPage = viewMode === 'grid' ? 12 : 10;
   const totalPages = Math.ceil(displayListings.length / perPage);
   const pagedListings = displayListings.slice(page * perPage, (page + 1) * perPage);
 
+  // Keep the current page in range when filters shrink the result set.
+  useEffect(() => {
+    if (page > Math.max(0, totalPages - 1)) setPage(Math.max(0, totalPages - 1));
+  }, [totalPages, page]);
+
   return (
-    <SellShell title="Marketplace">
+    <SellShell title="Marketplace" filterOpen={filterOpen} onToggleFilter={() => setFilterOpen(v => !v)}>
       <MapLocationPicker
         open={mapPickerOpen}
         onOpenChange={setMapPickerOpen}
@@ -242,6 +306,85 @@ export default function Marketplace() {
 
       {/* Search & Filters */}
       <div className="space-y-3 mb-8">
+        {/* Filter Panel: Adjust budget + trust badge — opens from the header Filter toggle */}
+        {filterOpen && (
+          <div className="border-[1.5px] border-black !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] p-4 sm:p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm sm:text-base font-black text-black tracking-tight flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4" />
+                Adjust budget
+              </h3>
+              <button onClick={() => setFilterOpen(false)} className="p-1 rounded-lg hover:bg-black/5 text-gray-400 hover:text-black transition-colors">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Min–Max budget */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Min (₹)</label>
+                <div className="relative">
+                  <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={toInr(priceMin)}
+                    onChange={(e) => setPriceMin(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="e.g., 5,000"
+                    style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                    className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Max (₹)</label>
+                <div className="relative">
+                  <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={toInr(priceMax)}
+                    onChange={(e) => setPriceMax(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="e.g., 50,000"
+                    style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                    className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="text-[9px] text-gray-500 -mt-2">Applies on top of your current search, category, and tags.</p>
+
+            {/* Trust badge toggle */}
+            <div className={`flex items-center justify-between gap-3 py-2 px-3 border-t border-black/10 rounded-xl transition-colors ${trustBadgeOnly ? 'bg-blue-50' : ''}`}>
+              <button
+                type="button"
+                onClick={() => setTrustBadgeOnly(v => !v)}
+                className="text-left flex-1 cursor-pointer"
+              >
+                <p className={`text-xs font-black ${trustBadgeOnly ? 'text-blue-700' : 'text-black'}`}>Trust badge sellers only</p>
+                <p className="text-[9px] text-gray-500">Show only verified sellers</p>
+              </button>
+              <Switch checked={trustBadgeOnly} onCheckedChange={setTrustBadgeOnly} thumbClassName="data-[state=unchecked]:!bg-black" className="flex-shrink-0 !h-6 !w-11 !min-h-0 !min-w-0 !border-2 !border-black data-[state=checked]:!bg-blue-600" />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => { setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); }}
+                className="flex items-center justify-center gap-1 px-3 py-2 text-[10px] font-bold text-black bg-white border border-black !rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => setFilterOpen(false)}
+                className="flex-1 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl border border-black !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:!translate-y-[2px] transition-all duration-200"
+              >
+                <Search className="h-4 w-4 mr-1.5" />Show results
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Filter Row: Categories + Location — equal size on mobile */}
         <div className="flex gap-2">
           <div className="flex-1">
@@ -367,7 +510,7 @@ export default function Marketplace() {
         <div className="flex items-center gap-2">
           {hasFilters && (
             <button
-              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); }}
+              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); }}
               className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
             >
               <X className="h-3 w-3" />Clear filters
@@ -416,7 +559,7 @@ export default function Marketplace() {
           </div>
         )}
 
-        {!loading && !error && listings.length === 0 && (
+        {!loading && !error && displayListings.length === 0 && (
           <div className="text-center py-10 border-2 border-dashed border-black/10 rounded-2xl">
             <ImageOff className="h-12 w-12 text-gray-300 mx-auto mb-3" />
             <p className="text-sm font-bold text-gray-500 mb-1">No listings found.</p>
@@ -444,7 +587,7 @@ export default function Marketplace() {
                     )}
                   </h3>
                   {l.price != null && (
-                    <span className="relative text-sm font-black text-white bg-black border border-black !rounded-2xl px-3.5 py-1.5 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
+                    <span className="relative text-base sm:text-lg font-black text-white bg-black border border-black !rounded-2xl px-4 py-2 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
                       {formatPrice(l)}
                     </span>
                   )}
@@ -456,12 +599,14 @@ export default function Marketplace() {
                       {l.condition}
                     </span>
                   )}
-                  <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
-                    {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
-                  </span>
                   <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
                     <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
                   </span>
+                  {formatPostedDate(l.createdAt) && (
+                    <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
+                      Posted on {formatPostedDate(l.createdAt)}
+                    </span>
+                  )}
                   <ShareButton listing={l} />
                 </div>
                 {l.tags?.length > 0 && (
@@ -497,7 +642,7 @@ export default function Marketplace() {
                 </div>
                 {l.price != null && (
                   <div className="absolute top-2 right-2 z-10">
-                    <span className="text-sm font-black text-white bg-black border border-black !rounded-2xl px-3.5 py-1.5 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
+                    <span className="text-base sm:text-lg font-black text-white bg-black border border-black !rounded-2xl px-4 py-2 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
                       {formatPrice(l)}
                     </span>
                   </div>
@@ -517,29 +662,41 @@ export default function Marketplace() {
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
-                      {SELL_CATEGORIES.find(c => c.value === l.category)?.label ?? l.category}
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] inline-flex items-center gap-0.5">
+                      <MapPin className="h-1.5 w-1.5 text-red-500" />{l.location}
                     </span>
 
                   </div>
-                  <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
-                    <MapPin className="h-1.5 w-1.5 text-red-500" />{l.location}
-                  </span>
+                  {formatPostedDate(l.createdAt) && (
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
+                      Posted on {formatPostedDate(l.createdAt)}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Pagination Next button */}
-        {!loading && !error && displayListings.length > perPage && page < totalPages - 1 && (
-          <div className="flex justify-center pt-2 pb-4">
-            <button
-              onClick={() => setPage(p => p + 1)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
-            >
-              Next →
-            </button>
+        {/* Pagination Previous / Next buttons */}
+        {!loading && !error && displayListings.length > perPage && (
+          <div className="flex justify-center gap-3 pt-2 pb-4">
+            {page > 0 && (
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                className="min-w-[130px] flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
+              >
+                ← Previous
+              </button>
+            )}
+            {page < totalPages - 1 && (
+              <button
+                onClick={() => setPage(p => p + 1)}
+                className="min-w-[130px] flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 border border-black !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200"
+              >
+                Next →
+              </button>
+            )}
           </div>
         )}
       </div>

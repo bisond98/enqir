@@ -59,6 +59,8 @@ export default function PostEnquiry() {
       console.log('PostEnquiry v2.1 loaded - Categories: Business, Personal, Service at top');
     }
   }, []);
+
+
   
   // Debug profile verification status
   // Helper function to determine if user is verified

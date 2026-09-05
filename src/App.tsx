@@ -9,6 +9,18 @@ if (typeof window !== 'undefined') {
     setTimeout(loadAIServices, 1000);
   }
 }
+// Preload the Razorpay checkout script ONCE (single central place) while the
+// browser is idle, so the checkout opens instantly on any payment page — the
+// script is fetched/executed in the background instead of on click.
+if (typeof window !== 'undefined') {
+  const preloadRazorpay = () =>
+    import("./services/paymentService").then((m) => m.preloadRazorpayScript());
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(preloadRazorpay, { timeout: 10000 });
+  } else {
+    setTimeout(preloadRazorpay, 4000);
+  }
+}
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";

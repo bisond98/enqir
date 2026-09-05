@@ -34,9 +34,14 @@ declare global {
   }
 }
 
+// Cache the in-flight/pending load so concurrent callers share a single download.
+let razorpayScriptPromise: Promise<void> | null = null;
+
 // Load Razorpay script dynamically
 const loadRazorpayScript = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  if (razorpayScriptPromise) return razorpayScriptPromise;
+
+  razorpayScriptPromise = new Promise((resolve, reject) => {
     if (window.Razorpay) {
       console.log('✅ Razorpay script already loaded');
       resolve();
@@ -52,11 +57,13 @@ const loadRazorpayScript = (): Promise<void> => {
       if (window.Razorpay) {
         resolve();
       } else {
+        razorpayScriptPromise = null; // Allow retry on next attempt
         reject(new Error('Razorpay script loaded but window.Razorpay is not available'));
       }
     };
     script.onerror = () => {
       console.error('❌ Failed to load Razorpay script');
+      razorpayScriptPromise = null; // Allow retry on next attempt
       reject(new Error('Failed to load Razorpay script'));
     };
     document.body.appendChild(script);
@@ -64,9 +71,20 @@ const loadRazorpayScript = (): Promise<void> => {
     // Timeout after 10 seconds
     setTimeout(() => {
       if (!window.Razorpay) {
+        razorpayScriptPromise = null; // Allow retry on next attempt
         reject(new Error('Razorpay script loading timeout'));
       }
     }, 10000);
+  });
+  return razorpayScriptPromise;
+};
+
+// Preload the Razorpay checkout script in the background so the checkout opens
+// instantly when the user clicks the payment button. Safe to call early — errors
+// are ignored because the payment flow re-loads the script on demand if needed.
+export const preloadRazorpayScript = (): void => {
+  loadRazorpayScript().catch(() => {
+    // Ignore preload failures — the checkout flow handles loading on demand.
   });
 };
 
