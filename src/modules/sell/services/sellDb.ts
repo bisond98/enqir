@@ -108,8 +108,14 @@ export async function listMyListings(sellerId: string) {
 }
 
 export async function createListingResponse(input: Omit<SellListingResponse, 'id' | 'createdAt'> & { buyerName?: string }) {
+  // Filter out undefined values — Firestore rejects them
+  const cleanInput = Object.fromEntries(
+    Object.entries(input).filter(([, v]) => v !== undefined)
+  );
   const payload = {
-    ...input,
+    ...cleanInput,
+    voiceUrl: input.voiceUrl || null,
+    attachments: input.attachments || null,
     createdAt: serverTimestamp(),
   };
   const ref = await addDoc(collection(db, RESPONSES_COLLECTION), payload);
@@ -125,9 +131,11 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
       senderType: 'buyer',
       recipientId: input.sellerId,
       message: input.offeredPrice ? `₹${Number(input.offeredPrice).toLocaleString("en-IN")}${input.message ? " - " + input.message : ""}` : input.message,
-      timestamp: serverTimestamp(),
-      offeringPrice: input.offeredPrice || null,
+      timestamp: serverTimestamp(),      offeringPrice: input.offeredPrice || null,
+      voiceUrl: input.voiceUrl || null,
+      attachments: input.attachments || null,
     });
+
   } catch (chatErr) {
     console.error('Failed to create chat message for listing response:', chatErr);
   }

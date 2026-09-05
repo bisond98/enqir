@@ -712,7 +712,7 @@ export default function CreateListing() {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
                   className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
-                  maxLength={15}
+                  maxLength={30}
                   autoFocus
                 />
                 <p className="text-[11px] text-slate-500">Keep it specific. Mention brand, model, or size if it helps.</p>

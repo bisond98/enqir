@@ -182,10 +182,9 @@ export default function PostEnquiry() {
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Reference images (optional for buyers)
-  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>(Array(4).fill(null));
-  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>(Array(4).fill(""));
-  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>(Array(4).fill(0));
+  // Reference images (optional for buyers, up to 5)
+  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
   
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
@@ -1214,165 +1213,63 @@ export default function PostEnquiry() {
     setLocationSuggestions([]);
   };
 
-  // Compress image for faster upload
-  const compressImage = (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      if (!ctx) {
-        console.warn('Canvas context not available, using original file');
-        resolve(file);
-        return;
-      }
-      
-      img.onload = () => {
-        try {
-          // Calculate new dimensions (max 1920px width/height)
-          const maxWidth = 1920;
-          const maxHeight = 1920;
-          let { width, height } = img;
-          
-          if (width > maxWidth || height > maxHeight) {
-            if (width > height) {
-              height = (height * maxWidth) / width;
-              width = maxWidth;
-            } else {
-              width = (width * maxHeight) / height;
-              height = maxHeight;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                const compressedFile = new File([blob], file.name, {
-                  type: 'image/jpeg',
-                  lastModified: Date.now(),
-                });
-                resolve(compressedFile);
-              } else {
-                reject(new Error('Compression failed'));
-              }
-            },
-            'image/jpeg',
-            0.85 // Quality: 85%
-          );
-        } catch (error) {
-          console.error('Error compressing image:', error);
-          resolve(file); // Fallback to original file
-        }
-      };
-      
-      img.onerror = () => {
-        console.warn('Image load error, using original file');
-        resolve(file);
-      };
-      
-      img.src = URL.createObjectURL(file);
-    });
-  };
+  // Handle reference image upload (batch, matching CreateListing style)
+  const [referenceUploadProgresses, setReferenceUploadProgresses] = useState<number[]>([]);
 
-  // Handle reference image upload
-  const handleReferenceImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Image too large",
-        description: "Image must be less than 5MB. Please choose a smaller image.",
-        variant: "destructive"
-      });
+  const onAddReferenceImages = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    if (referenceImageUrls.length >= 5) {
+      toast({ title: 'Image limit reached', description: 'You can upload up to 5 images only.', variant: 'destructive' });
       return;
     }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload a valid image file (JPG, PNG, etc.)",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Update the specific image file
-    const newImageFiles = [...referenceImageFiles];
-    newImageFiles[index] = file;
-    setReferenceImageFiles(newImageFiles);
-    
-    // Upload to Cloudinary immediately
-    const newProgresses = [...referenceUploadProgresses];
-    newProgresses[index] = 25;
-    setReferenceUploadProgresses(newProgresses);
-
+    setUploadingImages(true);
     try {
-      // Compress image for faster upload
-      const compressedFile = await compressImage(file);
-      newProgresses[index] = 50;
-      setReferenceUploadProgresses(newProgresses);
-      
-      const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
-      
-      newProgresses[index] = 100;
-      setReferenceUploadProgresses(newProgresses);
-      
-      const newImageUrls = [...referenceImageUrls];
-      newImageUrls[index] = uploadedUrl;
-      setReferenceImageUrls(newImageUrls);
-      
-      toast({
-        title: "Image uploaded",
-        description: "Reference image uploaded successfully",
-      });
-    } catch (uploadError: any) {
-      // Reset progress on error
-      newProgresses[index] = 0;
-      setReferenceUploadProgresses(newProgresses);
-      
-      const errorMessage = uploadError instanceof Error 
-        ? uploadError.message 
-        : 'Failed to upload image. Please try again.';
-      
-      toast({
-        title: "Upload Failed 📤",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      
-      // Remove the file from the input so user can try again
-      const fileInput = document.getElementById(`reference-image-${index}`) as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = '';
+      const urls: string[] = [];
+      const remainingSlots = 5 - referenceImageUrls.length;
+      const selectedFiles = Array.from(files).slice(0, remainingSlots);
+
+      // Add placeholder progress entries
+      const startIdx = referenceImageUrls.length;
+      setReferenceUploadProgresses(prev => [...prev, ...selectedFiles.map(() => 0)]);
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setReferenceUploadProgresses(prev => {
+            const next = [...prev];
+            const idx = startIdx + i;
+            if (next[idx] < 90) next[idx] = next[idx] + Math.floor(Math.random() * 15) + 5;
+            return next;
+          });
+        }, 200);
+
+        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+
+        clearInterval(progressInterval);
+        setReferenceUploadProgresses(prev => {
+          const next = [...prev];
+          next[startIdx + i] = 100;
+          return next;
+        });
+        urls.push(url);
       }
+      if (files.length > selectedFiles.length) {
+        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+      }
+      setReferenceImageUrls(prev => [...prev, ...urls].slice(0, 5));
+      // Clear progress after a short delay
+      setTimeout(() => setReferenceUploadProgresses([]), 1000);
+    } catch {
+      toast({ title: 'Upload failed', description: 'Could not upload one or more images.', variant: 'destructive' });
+      setReferenceUploadProgresses([]);
+    } finally {
+      setUploadingImages(false);
     }
   };
 
   // Remove reference image
   const removeReferenceImage = (index: number) => {
-    const newImageFiles = [...referenceImageFiles];
-    const newImageUrls = [...referenceImageUrls];
-    const newProgresses = [...referenceUploadProgresses];
-    
-    newImageFiles[index] = null;
-    newImageUrls[index] = "";
-    newProgresses[index] = 0;
-    
-    setReferenceImageFiles(newImageFiles);
-    setReferenceImageUrls(newImageUrls);
-    setReferenceUploadProgresses(newProgresses);
-    
-    toast({
-      title: "Image removed",
-      description: "Reference image has been removed",
-    });
+    setReferenceImageUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleManualStatusCheck = async () => {
@@ -2297,51 +2194,51 @@ export default function PostEnquiry() {
                   {/* Step 6: Photos & Verify */}
                   {step === 6 && (
                     <div className="max-w-lg mx-auto w-full space-y-6">
-                      {/* Reference Images */}
+                      {/* Reference Images (matching CreateListing style) */}
                       <div className="space-y-2">
                         <Label className="text-xs font-bold flex items-center gap-2">
-                          <Upload className="h-3.5 w-3.5" /> Reference Images (Optional)
+                          <Upload className="h-3.5 w-3.5" />
+                          Show your need (optional)
                         </Label>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          {Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index} className="relative">
-                              <label
-                                htmlFor={`ref-img-${index}`}
-                                className={cn(
-                                  'flex flex-col items-center justify-center w-full h-24 sm:h-28 border-2 border-black rounded-xl cursor-pointer transition-all relative overflow-hidden group',
-                                  referenceImageUrls[index] ? 'border-green-300 bg-green-50' : 'bg-white hover:bg-gray-50'
-                                )}
-                              >
-                                <input
-                                  id={`ref-img-${index}`}
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => handleReferenceImageUpload(e, index)}
-                                  disabled={loading}
-                                />
-                                {referenceImageUrls[index] ? (
-                                  <div className="flex flex-col items-center justify-center p-2">
-                                    <Check className="h-5 w-5 text-green-600 mb-1" />
-                                    <p className="text-[9px] text-black font-black text-center">Uploaded</p>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeReferenceImage(index); }}
-                                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 z-20"
-                                    >
-                                      <X className="h-2.5 w-2.5" />
-                                    </button>
+                        {referenceImageUrls.length > 0 && (
+                          <div className="grid grid-cols-3 gap-2 mb-3">
+                            {referenceImageUrls.map((url, i) => (
+                              <div key={i} className="relative group">
+                                <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                                <button
+                                  type="button"
+                                  onClick={() => removeReferenceImage(i)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                                >✕</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {referenceImageUrls.length < 5 && (
+                          <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
+                            <Input
+                              type="file"
+                              multiple
+                              accept="image/*"
+                              onChange={(e) => onAddReferenceImages(e.target.files)}
+                              disabled={uploadingImages || referenceImageUrls.length >= 5}
+                              className="cursor-pointer text-sm"
+                            />
+                            <p className="text-[11px] text-slate-600 mt-2">{referenceImageUrls.length}/5 images</p>
+                            {uploadingImages && referenceUploadProgresses.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {referenceUploadProgresses.map((p, i) => (
+                                  <div key={i} className="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div
+                                      className="bg-black h-1.5 rounded-full transition-all duration-200"
+                                      style={{ width: `${p}%` }}
+                                    />
                                   </div>
-                                ) : (
-                                  <div className="flex flex-col items-center justify-center p-2">
-                                    <Upload className="h-5 w-5 text-black mb-1" />
-                                    <p className="text-[9px] text-black font-black text-center">Add Image</p>
-                                  </div>
-                                )}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
 
@@ -2578,9 +2475,8 @@ export default function PostEnquiry() {
                       setIdFrontImage(null);
                       setIdBackImage(null);
                       // Clear reference images
-                      setReferenceImageFiles(Array(4).fill(null));
-                      setReferenceImageUrls(Array(4).fill(""));
-                      setReferenceUploadProgresses(Array(4).fill(0));
+                      setReferenceImageUrls([]);
+                      setReferenceUploadProgresses([]);
                     }}
                     className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200"
                   >

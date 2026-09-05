@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,13 +10,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { db } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
+import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 
 
 function formatPrice(l: SellListing) {
@@ -41,6 +42,25 @@ export default function ListingDetail() {
   const RESPONSES_PER_PAGE = 5;
   const [searchParams] = useSearchParams();
   const targetBuyerId = searchParams.get('buyer');
+
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
+  const [voicePreviewUrl, setVoicePreviewUrl] = useState<string | null>(null);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+  const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // File attachment state
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [attachedPreviews, setAttachedPreviews] = useState<string[]>([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [fileUploadProgresses, setFileUploadProgresses] = useState<number[]>([]);
+  const [voiceUploadProgress, setVoiceUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
 
   // Scroll to the targeted buyer response after loading
@@ -89,16 +109,111 @@ export default function ListingDetail() {
     run();
   }, [id]);
 
+  // Voice recording functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setVoiceBlob(blob);
+        setVoicePreviewUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach(t => t.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    } catch {
+      toast({ title: 'Microphone access denied', description: 'Please allow microphone access to record voice messages.', variant: 'destructive' });
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setIsRecording(false);
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = null;
+    }
+  };
+
+  const playPauseVoice = () => {
+    if (!voicePreviewUrl) return;
+    if (isPlayingVoice) {
+      voiceAudioRef.current?.pause();
+      setIsPlayingVoice(false);
+    } else {
+      const audio = new Audio(voicePreviewUrl);
+      voiceAudioRef.current = audio;
+      audio.onended = () => setIsPlayingVoice(false);
+      audio.play();
+      setIsPlayingVoice(true);
+    }
+  };
+
+  const clearVoice = () => {
+    setVoiceBlob(null);
+    if (voicePreviewUrl) URL.revokeObjectURL(voicePreviewUrl);
+    setVoicePreviewUrl(null);
+    setRecordingTime(0);
+    setIsPlayingVoice(false);
+  };
+
+  const formatRecordingTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  // File attachment functions
+  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (attachedFiles.length + files.length > 5) {
+      toast({ title: 'Max 5 files', description: 'You can attach up to 5 files only.', variant: 'destructive' });
+    }
+    const allowed = files.slice(0, 5 - attachedFiles.length);
+    setAttachedFiles(prev => [...prev, ...allowed]);
+    // Generate previews for images
+    allowed.forEach(f => {
+      if (f.type.startsWith('image/')) {
+        const url = URL.createObjectURL(f);
+        setAttachedPreviews(prev => [...prev, url]);
+      } else {
+        setAttachedPreviews(prev => [...prev, '']);
+      }
+    });
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeAttachedFile = (index: number) => {
+    if (attachedPreviews[index]) URL.revokeObjectURL(attachedPreviews[index]);
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+    setAttachedPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const submitResponse = async () => {
     if (!user || !listing) {
       toast({ title: 'Sign in required', description: 'Please sign in to message the seller.', variant: 'destructive' });
       return;
     }
-    if (!message.trim() && !offeredPrice.trim()) {
-      toast({ title: "Input required", description: "Enter a message or offered price.", variant: "destructive" });
+    const hasContent = message.trim() || offeredPrice.trim() || voiceBlob || attachedFiles.length > 0;
+    if (!hasContent) {
+      toast({ title: "Input required", description: "Enter a message, price, voice note, or attachment.", variant: "destructive" });
       return;
     }
     setSending(true);
+    setUploadingMedia(true);
     try {
       // Check if user already has a response on this listing (already paid)
       const alreadyPaid = responses.some(r => r.buyerId === user.uid);
@@ -135,6 +250,45 @@ export default function ListingDetail() {
         }
       }
 
+      // Upload voice note to Cloudinary (only if present)
+      let voiceUrl: string | undefined;
+      if (voiceBlob && voiceBlob.size > 0) {
+        setVoiceUploadProgress(10);
+        const voiceInterval = setInterval(() => {
+          setVoiceUploadProgress(prev => prev < 90 ? prev + Math.floor(Math.random() * 15) + 5 : prev);
+        }, 200);
+        const voiceFile = new File([voiceBlob], 'voice-note.webm', { type: 'audio/webm' });
+        voiceUrl = await uploadToCloudinaryAuto(voiceFile);
+        clearInterval(voiceInterval);
+        setVoiceUploadProgress(100);
+      }
+
+      // Upload attached files to Cloudinary (only if present)
+      const attachments: { url: string; name: string; type: string }[] = [];
+      if (attachedFiles.length > 0) {
+        setFileUploadProgresses(attachedFiles.map(() => 0));
+        for (let i = 0; i < attachedFiles.length; i++) {
+          const f = attachedFiles[i];
+          // Simulate progress
+          const progressInterval = setInterval(() => {
+            setFileUploadProgresses(prev => {
+              const next = [...prev];
+              if (next[i] < 90) next[i] = next[i] + Math.floor(Math.random() * 15) + 5;
+              return next;
+            });
+          }, 200);
+          const url = await uploadToCloudinaryAuto(f);
+          clearInterval(progressInterval);
+          setFileUploadProgresses(prev => {
+            const next = [...prev];
+            next[i] = 100;
+            return next;
+          });
+          attachments.push({ url, name: f.name, type: f.type });
+        }
+        setTimeout(() => setFileUploadProgresses([]), 1000);
+      }
+
       console.log('✅ Proceeding to send message...');
       console.log('📤 Sending listing response:', { listingId: listing.id, sellerId: listing.sellerId, buyerId: user.uid });
       await createListingResponse({
@@ -144,17 +298,25 @@ export default function ListingDetail() {
         buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
         message: message.trim(),
         offeredPrice: offeredPrice.trim() ? Number(offeredPrice) : null,
+        voiceUrl,
+        attachments: attachments.length > 0 ? attachments : undefined,
       });
       console.log('✅ Listing response sent successfully');
       toast({ title: 'Sent', description: 'Your message was sent to the seller.' });
       setMessage('');
       setOfferedPrice('');
+      clearVoice();
+      setAttachedFiles([]);
+      setAttachedPreviews([]);
+      setFileUploadProgresses([]);
+      setVoiceUploadProgress(0);
       navigate(`/sell/listing/${listing.id}/chat/${user.uid}`);
     } catch (err: any) {
       console.error('❌ Failed to send listing response:', err.code, err.message);
       toast({ title: 'Failed', description: err.message || 'Could not send your message.', variant: 'destructive' });
     } finally {
       setSending(false);
+      setUploadingMedia(false);
     }
   };
 
@@ -342,6 +504,83 @@ export default function ListingDetail() {
                   rows={3}
                   className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
                 />
+                {/* Voice & Attach toolbar */}
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={isRecording ? stopRecording : startRecording}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold border-[1.5px] transition-all ${isRecording ? 'border-red-500 bg-red-50 text-red-600 animate-pulse' : 'border-black/20 bg-white text-black hover:bg-gray-50'}`}
+                  >
+                    <Mic className="h-3.5 w-3.5" />
+                    {isRecording ? `Recording ${formatRecordingTime(recordingTime)}` : 'Voice'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={attachedFiles.length >= 5}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold border-[1.5px] border-black/20 bg-white text-black hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Paperclip className="h-3.5 w-3.5" />
+                    Attach ({attachedFiles.length}/5)
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*,application/pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={handleFileAttach}
+                  />
+                </div>
+                {/* Voice preview */}
+                {voicePreviewUrl && (
+                  <div className="mt-2 p-2 rounded-xl border-[1.5px] border-black/20 bg-gray-50">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={playPauseVoice}
+                        className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0"
+                      >
+                        {isPlayingVoice ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 ml-0.5" />}
+                      </button>
+                      <span className="text-[11px] font-bold text-gray-600">Voice note ({formatRecordingTime(recordingTime)})</span>
+                      <button type="button" onClick={clearVoice} className="ml-auto text-red-500 hover:text-red-700">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {uploadingMedia && voiceUploadProgress > 0 && voiceUploadProgress < 100 && (
+                      <div className="mt-1.5 w-full bg-gray-200 rounded-full h-1.5">
+                        <div className="bg-black h-1.5 rounded-full transition-all duration-200" style={{ width: `${voiceUploadProgress}%` }} />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Attached file previews */}
+                {attachedFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {attachedFiles.map((f, i) => (
+                      <div key={i} className="relative group flex flex-col">
+                        {attachedPreviews[i] ? (
+                          <img src={attachedPreviews[i]} alt={f.name} className="w-14 h-14 object-cover rounded-lg border border-black/10" />
+                        ) : (
+                          <div className="w-14 h-14 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center">
+                            <span className="text-[8px] font-bold text-gray-500 text-center px-1 truncate w-full">{f.name.split('.').pop()?.toUpperCase()}</span>
+                          </div>
+                        )}
+                        {uploadingMedia && fileUploadProgresses[i] !== undefined && fileUploadProgresses[i] < 100 && (
+                          <div className="w-14 bg-gray-200 rounded-full h-1 mt-0.5">
+                            <div className="bg-black h-1 rounded-full transition-all duration-200" style={{ width: `${fileUploadProgresses[i]}%` }} />
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeAttachedFile(i)}
+                          className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                        >✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <Button
                 variant="outline"
@@ -352,7 +591,7 @@ export default function ListingDetail() {
                 <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <Send className="h-4 w-4 mr-2 relative z-10" />
-                <span className="relative z-10">{user ? (sending ? (chatUnlocked ? 'Sending…' : 'Opening Razorpay…') : (chatUnlocked ? 'Connect' : 'Connect')) : 'Sign in to message'}</span>
+                <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
               </Button>
             </div>
           </div>

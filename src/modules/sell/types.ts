@@ -28,6 +28,8 @@ export interface SellListingResponse {
   buyerId: string;
   message: string;
   offeredPrice?: number | null;
+  voiceUrl?: string;
+  attachments?: { url: string; name: string; type: string }[];
   createdAt?: any;
 }
 

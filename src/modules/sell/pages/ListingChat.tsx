@@ -11,7 +11,7 @@ import {
 import { useState as useStateTooltip } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle, Play, Pause } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
@@ -31,8 +31,65 @@ interface ChatMessage {
   message: string;
   timestamp: any;
   isSystemMessage?: boolean;
-  attachments?: Array<{ name: string; type: string; size?: number; base64?: string }>;
+  attachments?: Array<{ name: string; type: string; size?: number; base64?: string; url?: string }>;
   voiceMessage?: string;
+  voiceUrl?: string;
+}
+
+// WhatsApp-style voice player component
+function VoicePlayer({ src }: { src: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play();
+      setPlaying(true);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2.5">
+      <button
+        type="button"
+        onClick={toggle}
+        className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform"
+      >
+        {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+      </button>
+      <div className="flex-1 min-w-0">
+        <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div className="bg-blue-600 h-1.5 rounded-full transition-all duration-200" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+      <audio
+        ref={audioRef}
+        src={src}
+        onTimeUpdate={() => {
+          const audio = audioRef.current;
+          if (audio && audio.duration) {
+            setProgress((audio.currentTime / audio.duration) * 100);
+          }
+        }}
+        onLoadedMetadata={() => {
+          const audio = audioRef.current;
+          if (audio) setDuration(audio.duration);
+        }}
+        onEnded={() => { setPlaying(false); setProgress(0); }}
+        className="hidden"
+      />
+      <span className="text-[10px] font-bold text-gray-500 flex-shrink-0 w-7 text-right">
+        {duration > 0 ? `${Math.floor(duration / 60)}:${String(Math.floor(duration % 60)).padStart(2, '0')}` : '0:00'}
+      </span>
+    </div>
+  );
 }
 
 export default function ListingChat() {
@@ -470,33 +527,80 @@ export default function ListingChat() {
                           );
                         }
                         const isOwn = msg.senderId === user?.uid;
+                        const bubbleClass = `max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative border-[0.5px] border-black bg-white text-black`;
+                        const isVoiceMsg = msg.message?.includes('Voice message');
+                        const hasText = msg.message && msg.message !== '\u2709' && msg.message.trim().length > 0 && !isVoiceMsg;
+                        const hasVoice = !!msg.voiceUrl;
+                        const hasImages = msg.attachments?.some(a => (a.type?.startsWith('image/') || a.type === 'image') && (a.base64 || a.url));
+                        const hasFiles = msg.attachments?.some(a => !(a.type?.startsWith('image/') || a.type === 'image') && !(a.type?.startsWith('audio/') || a.type === 'audio'));
+                        const hasAudioAtts = msg.attachments?.some(a => (a.type?.startsWith('audio/') || a.type === 'audio') && (a.base64 || a.url));
+
                         return (
-                          <div key={msg.id || index} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                            <div className="max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] px-3 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl relative border-[0.5px] border-black bg-white text-black">
-                              {msg.attachments && msg.attachments.length > 0 && (
-                                <div className="mb-2 space-y-2">
-                                  {msg.attachments.map((att, i) => (
-                                    <div key={i}>
-                                      {att.type?.startsWith('image/') && att.base64 ? (
-                                        <img src={att.base64} alt={att.name} className="max-w-[200px] max-h-[200px] rounded-lg object-cover" />
-                                      ) : att.type?.startsWith('audio/') && att.base64 ? (
-                                        <audio controls src={att.base64} className="h-7 max-w-[160px]" />
-                                      ) : (
-                                        <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border">
-                                          <File className="h-4 w-4 text-slate-600" />
-                                          <span className="text-xs truncate">{att.name}</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              {msg.message && msg.message !== '📎' ? (
+                          <div key={msg.id || index} className={`space-y-1.5 ${isOwn ? 'flex flex-col items-end' : 'flex flex-col items-start'}`}>
+                            {/* Text / Amount bubble — shown first */}
+                            {hasText && (
+                              <div className={bubbleClass}>
                                 <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words text-black font-medium">{msg.message}</p>
-                              ) : msg.attachments && msg.attachments.length > 0 ? (
-                                <p className="text-xs text-gray-400 text-right">✓</p>
-                              ) : null}
-                            </div>
+                              </div>
+                            )}
+
+                            {/* Each image attachment — separate bubble */}
+                            {msg.attachments && msg.attachments.map((att, i) => {
+                              if ((att.type?.startsWith('image/') || att.type === 'image') && (att.base64 || att.url)) {
+                                return (
+                                  <div key={`img-${i}`} className={bubbleClass}>
+                                    <img src={att.base64 || att.url} alt={att.name} className="max-w-[220px] max-h-[220px] rounded-lg object-cover" />
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+
+                            {/* Each audio attachment — separate bubble */}
+                            {msg.attachments && msg.attachments.map((att, i) => {
+                              if ((att.type?.startsWith('audio/') || att.type === 'audio') && (att.base64 || att.url)) {
+                                return (
+                                  <div key={`aud-${i}`} className={bubbleClass}>
+                                    <VoicePlayer src={att.base64 || att.url} />
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+
+                            {/* Voice note — separate bubble */}
+                            {hasVoice && (
+                              <div className={bubbleClass}>
+                                <VoicePlayer src={msg.voiceUrl} />
+                              </div>
+                            )}
+
+                            {/* Non-image, non-audio file attachments — separate bubble */}
+                            {msg.attachments && msg.attachments.map((att, i) => {
+                              if (!(att.type?.startsWith('image/') || att.type === 'image') && !(att.type?.startsWith('audio/') || att.type === 'audio')) {
+                                return (
+                                  <div key={`file-${i}`} className={bubbleClass}>
+                                    {att.url ? (
+                                      <a href={att.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-1">
+                                        <File className="h-4 w-4 text-slate-600" />
+                                        <span className="text-xs truncate">{att.name}</span>
+                                      </a>
+                                    ) : (
+                                      <div className="flex items-center gap-2 p-1">
+                                        <File className="h-4 w-4 text-slate-600" />
+                                        <span className="text-xs truncate">{att.name}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+
+                            {/* No text but has media — show single checkmark */}
+                            {!hasText && ((hasVoice) || (hasImages)) && (
+                              <p className="text-[10px] text-gray-400">✓</p>
+                            )}
                           </div>
                         );
                       })}
