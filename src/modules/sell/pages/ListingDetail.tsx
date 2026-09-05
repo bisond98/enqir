@@ -471,7 +471,7 @@ export default function ListingDetail() {
             <div className="bg-black p-3">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-white" />
-                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Message Seller
+                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">{chatUnlocked ? 'Your Chat' : 'Message Seller'}
                   {sellerProfile?.isProfileVerified && (
                     <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
                   )}
@@ -480,6 +480,20 @@ export default function ListingDetail() {
               </div>
             </div>
             <div className="p-4 space-y-3">
+              {chatUnlocked ? (
+                /* Buyer already has a chat — show simple Message button */
+                <Button
+                  variant="outline"
+                  className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                  onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
+                >
+                  <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
+                  <span className="relative z-10">Continue Messaging</span>
+                </Button>
+              ) : (
+              <>
               <div>
                 <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
                 <div className="relative">
@@ -592,7 +606,9 @@ export default function ListingDetail() {
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <Send className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
-              </Button>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}

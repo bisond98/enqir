@@ -425,64 +425,41 @@ const SellerResponse = () => {
   // Validation function
   // Image compression function
   const compressImage = (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      if (!ctx) {
-        console.warn('Canvas context not available, using original file');
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('Image compression timed out, using original file');
         resolve(file);
-        return;
-      }
-      
-      img.onload = () => {
-        try {
-          // Calculate new dimensions (max 1200px width)
-          const maxWidth = 1200;
-          const maxHeight = 1200;
-          let { width, height } = img;
-          
-          if (width > maxWidth || height > maxHeight) {
-            if (width > height) {
-              height = (height * maxWidth) / width;
-              width = maxWidth;
-            } else {
-              width = (width * maxHeight) / height;
-              height = maxHeight;
+      }, 8000);
+      const cleanup = () => clearTimeout(timeout);
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        if (!ctx) { cleanup(); resolve(file); return; }
+        img.onload = () => {
+          try {
+            const maxWidth = 1200;
+            const maxHeight = 1200;
+            let { width, height } = img;
+            if (width > maxWidth || height > maxHeight) {
+              if (width > height) { height = (height * maxWidth) / width; width = maxWidth; }
+              else { width = (width * maxHeight) / height; height = maxHeight; }
             }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          // Set white background
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, width, height);
-          
-          // Draw and compress
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          canvas.toBlob((blob) => {
-            if (blob) {
-              resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
-            } else {
-              console.warn('Failed to create blob, using original file');
-              resolve(file);
-            }
-          }, 'image/jpeg', 0.85);
-        } catch (error) {
-          console.error('Error compressing image:', error);
-          resolve(file);
-        }
-      };
-      
-      img.onerror = () => {
-        console.error('Error loading image for compression');
-        resolve(file);
-      };
-      
-      img.src = URL.createObjectURL(file);
+            canvas.width = width;
+            canvas.height = height;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+              cleanup();
+              if (blob) resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+              else resolve(file);
+            }, 'image/jpeg', 0.85);
+          } catch { cleanup(); resolve(file); }
+        };
+        img.onerror = () => { cleanup(); resolve(file); };
+        img.src = URL.createObjectURL(file);
+      } catch { cleanup(); resolve(file); }
     });
   };
 
@@ -604,11 +581,17 @@ const SellerResponse = () => {
     try {
       // Update progress for this specific slot
       const newProgresses = [...uploadProgresses];
-      newProgresses[index] = 25;
+      newProgresses[index] = 10;
       setUploadProgresses(newProgresses);
 
       // Compress image for faster upload
+      newProgresses[index] = 25;
+      setUploadProgresses([...newProgresses]);
       const compressedFile = await compressImage(file);
+      
+      // Upload to Cloudinary
+      newProgresses[index] = 50;
+      setUploadProgresses([...newProgresses]);
       const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
       
       // Update progress to complete
