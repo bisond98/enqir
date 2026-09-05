@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,8 +11,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
@@ -36,6 +38,7 @@ export default function ListingDetail() {
   const [message, setMessage] = useState('');
   const [offeredPrice, setOfferedPrice] = useState('');
   const [sending, setSending] = useState(false);
+  const [paymentDone, setPaymentDone] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
   const [responsePage, setResponsePage] = useState(0);
@@ -214,6 +217,7 @@ export default function ListingDetail() {
     }
     setSending(true);
     setUploadingMedia(true);
+    setPaymentDone(false);
     try {
       // Check if user already has a response on this listing (already paid)
       const alreadyPaid = responses.some(r => r.buyerId === user.uid);
@@ -249,6 +253,9 @@ export default function ListingDetail() {
           return;
         }
       }
+
+      // Payment confirmed — warn the buyer not to press back while we upload/send
+      setPaymentDone(true);
 
       // Upload voice note to Cloudinary (only if present)
       let voiceUrl: string | undefined;
@@ -317,6 +324,7 @@ export default function ListingDetail() {
     } finally {
       setSending(false);
       setUploadingMedia(false);
+      setPaymentDone(false);
     }
   };
 
@@ -367,6 +375,19 @@ export default function ListingDetail() {
 
   return (
     <SellShell title="Listing">
+      {paymentDone && sending && createPortal(
+        <div className="fixed inset-0 z-[999] overflow-y-auto bg-slate-50">
+          <LoadingAnimation message="Creating Chat Room" showBackButton={false} className="min-h-screen" />
+          {/* Warning — bottom centre, animated icon */}
+          <div className="fixed inset-x-0 bottom-5 sm:bottom-8 flex items-center justify-center pointer-events-none">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 px-3 py-1.5">
+              <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 flex-shrink-0 animate-bounce drop-shadow-[0_2px_4px_rgba(220,38,38,0.4)]" />
+              <span className="text-base sm:text-2xl font-black text-black tracking-wide">Do not press back</span>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
       <div className="space-y-4 pb-6">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
@@ -510,33 +531,35 @@ export default function ListingDetail() {
               </div>
               <div>
                 <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Chat with Seller</Label>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Write your message to the seller…"
-                  maxLength={250}
-                  rows={3}
-                  className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none"
-                />
-                {/* Voice & Attach toolbar */}
-                <div className="flex items-center gap-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={isRecording ? stopRecording : startRecording}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold border-[1.5px] transition-all ${isRecording ? 'border-red-500 bg-red-50 text-red-600 animate-pulse' : 'border-black/20 bg-white text-black hover:bg-gray-50'}`}
-                  >
-                    <Mic className="h-3.5 w-3.5" />
-                    {isRecording ? `Recording ${formatRecordingTime(recordingTime)}` : 'Voice'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={attachedFiles.length >= 5}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold border-[1.5px] border-black/20 bg-white text-black hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Paperclip className="h-3.5 w-3.5" />
-                    Attach ({attachedFiles.length}/5)
-                  </button>
+                <div className="relative">
+                  <Textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Write your message to the seller…"
+                    maxLength={250}
+                    rows={3}
+                    className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20"
+                  />
+                  {/* Voice & Attach icons — right side */}
+                  <div className="absolute right-2 bottom-2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={isRecording ? stopRecording : startRecording}
+                      title={isRecording ? 'Stop recording' : 'Record voice message'}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'text-gray-500 hover:text-black hover:bg-gray-100'}`}
+                    >
+                      <Mic className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={attachedFiles.length >= 5}
+                      title={`Attach files (${attachedFiles.length}/5)`}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Paperclip className="h-4 w-4" />
+                    </button>
+                  </div>
                   <input
                     ref={fileInputRef}
                     type="file"

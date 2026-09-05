@@ -99,7 +99,7 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<SellListing[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [shuffledListings, setShuffledListings] = useState<SellListing[]>([]);
@@ -368,7 +368,7 @@ export default function Marketplace() {
           {hasFilters && (
             <button
               onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); }}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 transition-colors flex-shrink-0"
+              className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
             >
               <X className="h-3 w-3" />Clear filters
             </button>

@@ -8,13 +8,15 @@ interface LoadingAnimationProps {
   className?: string;
   showBackButton?: boolean;
   onBack?: () => void;
+  children?: React.ReactNode;
 }
 
 export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ 
   message = "Loading...",
   className = "",
   showBackButton = true,
-  onBack
+  onBack,
+  children
 }) => {
   const navigate = useNavigate();
 
@@ -221,6 +223,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               ...
             </motion.span>
           </motion.p>
+          {children}
         </motion.div>
       </motion.div>
     </motion.div>
