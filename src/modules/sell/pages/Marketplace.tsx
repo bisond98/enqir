@@ -659,7 +659,16 @@ export default function Marketplace() {
                   <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
                     <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
                   </span>
-                  {formatPostedDate(l.createdAt) && (
+                  {l.details?.year && (
+                    <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
+                      {l.details.year}
+                    </span>
+                  )}
+                  {l.details?.kmsDriven ? (
+                    <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
+                      {l.details.kmsDriven} km
+                    </span>
+                  ) : !l.details?.year && formatPostedDate(l.createdAt) && (
                     <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
                       Posted on {formatPostedDate(l.createdAt)}
                     </span>
@@ -750,7 +759,16 @@ export default function Marketplace() {
                     </span>
 
                   </div>
-                  {formatPostedDate(l.createdAt) && (
+                  {l.details?.year && (
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
+                      {l.details.year}
+                    </span>
+                  )}
+                  {l.details?.kmsDriven ? (
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
+                      {l.details.kmsDriven} km
+                    </span>
+                  ) : !l.details?.year && formatPostedDate(l.createdAt) && (
                     <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 inline-flex items-center gap-0.5 mt-1.5">
                       Posted on {formatPostedDate(l.createdAt)}
                     </span>
