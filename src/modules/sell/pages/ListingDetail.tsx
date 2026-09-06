@@ -502,7 +502,7 @@ export default function ListingDetail() {
 
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-4 sm:mt-3">
-              <span className="bg-white text-black border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              <span className="bg-black text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
 
               {listing.condition && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
@@ -513,15 +513,13 @@ export default function ListingDetail() {
                 <MapPin className="h-3 w-3 text-black" />{listing.location}
               </span>
               {formatPostedDate(listing.createdAt) && (
-                <div className="mx-auto">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                    <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
-                  </span>
-                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                  <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                </span>
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-black bg-black text-white border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                     {tag}
                   </span>
                 ))

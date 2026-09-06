@@ -32,7 +32,11 @@ export default function SellShell({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    if (path.startsWith('/sell/listing/')) navigate('/sell/dashboard');
+                    if (path.startsWith('/sell/listing/')) {
+                      // Go back to wherever the user came from (marketplace, dashboard, etc.)
+                      if ((window.history.state as any)?.idx > 0) navigate(-1);
+                      else navigate('/sell/marketplace');
+                    }
                     else if (path === '/sell/dashboard') navigate('/');
                     else if (path === '/sell/marketplace') navigate('/');
                     else navigate(-1);

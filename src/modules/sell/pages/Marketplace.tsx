@@ -9,12 +9,13 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { db } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Category icon mapping
 const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
@@ -129,6 +130,47 @@ export default function Marketplace() {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [shuffledListings, setShuffledListings] = useState<SellListing[]>([]);
+  const { user } = useAuth();
+  const [savedListingIds, setSavedListingIds] = useState<Set<string>>(new Set());
+
+  // Load user's saved listing IDs (profiles.savedListings - same store as the listing page save)
+  useEffect(() => {
+    if (!user?.uid) { setSavedListingIds(new Set()); return; }
+    let cancelled = false;
+    getDoc(doc(db, 'profiles', user.uid)).then(snap => {
+      if (!cancelled) setSavedListingIds(new Set((snap.data()?.savedListings || []) as string[]));
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [user?.uid]);
+
+  const toggleSaveListing = async (e: React.MouseEvent, listingId: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!user) {
+      sessionStorage.setItem('returnAfterSignIn', window.location.pathname);
+      navigate('/signin');
+      return;
+    }
+    const isSaved = savedListingIds.has(listingId);
+    setSavedListingIds(prev => {
+      const next = new Set(prev);
+      if (isSaved) next.delete(listingId); else next.add(listingId);
+      return next;
+    });
+    try {
+      await updateDoc(doc(db, 'profiles', user.uid), isSaved
+        ? { savedListings: arrayRemove(listingId) }
+        : { savedListings: arrayUnion(listingId) }
+      );
+    } catch (err) {
+      console.error('Failed to update saved listings:', err);
+      setSavedListingIds(prev => {
+        const next = new Set(prev);
+        if (isSaved) next.add(listingId); else next.delete(listingId);
+        return next;
+      });
+    }
+  };
 
   // Scroll to top on page change
   const prevPage = useRef(page);
@@ -571,13 +613,26 @@ export default function Marketplace() {
         {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
           <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
-              {l.images?.[0] ? (
-                <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
-              ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0 !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
-                  <span className="text-[10px] font-bold text-gray-400">No Image</span>
+              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                {l.images?.[0] ? (
+                  <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl bg-gray-100 flex items-center justify-center !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
+                    <span className="text-[10px] font-bold text-gray-400">No Image</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={(e) => toggleSaveListing(e, l.id)}
+                    aria-label={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                    title={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                    className="p-0.5 rounded-lg transition-all active:scale-95 hover:bg-gray-100"
+                  >
+                    <Bookmark className={`h-3.5 w-3.5 ${savedListingIds.has(l.id) ? 'fill-black text-black' : 'text-gray-500 hover:text-black'}`} />
+                  </button>
+                  <ShareButton listing={l} />
                 </div>
-              )}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-black text-black text-sm truncate flex items-center gap-1">
@@ -607,7 +662,6 @@ export default function Marketplace() {
                       Posted on {formatPostedDate(l.createdAt)}
                     </span>
                   )}
-                  <ShareButton listing={l} />
                 </div>
                 {l.tags?.length > 0 && (
                   <div className="flex items-center gap-1 mt-1 flex-wrap">
@@ -628,9 +682,36 @@ export default function Marketplace() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
               <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
-                <div className="absolute bottom-1 right-1 z-10">
-                  <ShareButton listing={l} />
-                </div>
+                {formatPrice(l).length >= 9 ? (
+                  /* Wide price chip would overlap a top-left save — stack save above share instead */
+                  <div className="absolute bottom-1 right-1 z-10 flex flex-col items-center gap-1">
+                    <button
+                      onClick={(e) => toggleSaveListing(e, l.id)}
+                      aria-label={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                      title={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                      className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-md active:scale-95 transition-all"
+                    >
+                      <Bookmark className={`h-3.5 w-3.5 ${savedListingIds.has(l.id) ? 'fill-black text-black' : 'text-gray-600'}`} />
+                    </button>
+                    <span className="translate-x-1"><ShareButton listing={l} /></span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="absolute top-1 left-1 z-10">
+                      <button
+                        onClick={(e) => toggleSaveListing(e, l.id)}
+                        aria-label={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                        title={savedListingIds.has(l.id) ? 'Remove from saved' : 'Save listing'}
+                        className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-md active:scale-95 transition-all"
+                      >
+                        <Bookmark className={`h-3.5 w-3.5 ${savedListingIds.has(l.id) ? 'fill-black text-black' : 'text-gray-600'}`} />
+                      </button>
+                    </div>
+                    <div className="absolute bottom-1 right-1 z-10">
+                      <span className="translate-x-1"><ShareButton listing={l} /></span>
+                    </div>
+                  </>
+                )}
                 <div className="p-2.5 pb-0">
                 {l.images?.[0] ? (
                   <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
