@@ -17,6 +17,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useUsage } from "@/contexts/UsageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { matchesForEnquiry, notifyMatch, type MatchItem } from "@/modules/sell/services/matchEngine";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
@@ -166,6 +167,8 @@ export default function PostEnquiry() {
   const [uploadStage, setUploadStage] = useState('');
   const [formProgress, setFormProgress] = useState(0);
   const [submittedEnquiryId, setSubmittedEnquiryId] = useState<string | null>(null);
+  // AI match engine: listings matching the just-posted enquiry (success screen strip)
+  const [postMatches, setPostMatches] = useState<MatchItem[] | null>(null);
   const [enquiryStatus, setEnquiryStatus] = useState<string>('pending');
   const [isEnquiryApproved, setIsEnquiryApproved] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
@@ -483,7 +486,24 @@ export default function PostEnquiry() {
           const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
           const enquiryId = docRef.id;
           console.log('Premium enquiry saved successfully with ID:', enquiryId);
-          
+
+          // AI Match engine: scan live listings for this need (non-blocking)
+          matchesForEnquiry({
+            id: enquiryId,
+            title: enquiryData.title,
+            description: enquiryData.description,
+            category: enquiryData.category,
+            categories: enquiryData.categories,
+            budget: String(enquiryData.budget ?? ''),
+            location: enquiryData.location,
+            userId: enquiryData.userId,
+          }).then((matches) => {
+            setPostMatches(matches);
+            if (matches.length > 0) {
+              notifyMatch({ userId: user.uid, side: 'buyer', count: matches.length, topScore: matches[0].score, listingTitle: matches[0].listing?.title, targetUrl: `/sell/listing/${matches[0].listingId}` }).catch(() => {});
+            }
+          }).catch(() => {});
+
           // Save payment record with actual enquiry ID
           const paymentRecordId = await savePaymentRecord(
             enquiryId,
@@ -793,6 +813,22 @@ export default function PostEnquiry() {
       const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
       console.log('Premium enquiry saved successfully with ID:', docRef.id);
       console.log('Premium enquiry data:', enquiryData);
+      // AI Match engine (non-blocking)
+      matchesForEnquiry({
+        id: docRef.id,
+        title: enquiryData.title,
+        description: enquiryData.description,
+        category: enquiryData.category,
+        categories: enquiryData.categories,
+        budget: String(enquiryData.budget ?? ''),
+        location: enquiryData.location,
+        userId: enquiryData.userId,
+      }).then((matches) => {
+        setPostMatches(matches);
+        if (matches.length > 0) {
+          notifyMatch({ userId: user.uid, side: 'buyer', count: matches.length, topScore: matches[0].score, listingTitle: matches[0].listing?.title, targetUrl: `/sell/listing/${matches[0].listingId}` }).catch(() => {});
+        }
+      }).catch(() => {});
       setSubmittedEnquiryId(docRef.id);
       setEnquiryStatus('pending');
       setIsEnquiryApproved(false);
@@ -1545,6 +1581,22 @@ export default function PostEnquiry() {
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
+        // AI Match engine (non-blocking)
+        matchesForEnquiry({
+          id: docRef.id,
+          title: enquiryData.title,
+          description: enquiryData.description,
+          category: enquiryData.category,
+          categories: enquiryData.categories,
+          budget: String(enquiryData.budget ?? ''),
+          location: enquiryData.location,
+          userId: enquiryData.userId,
+        }).then((matches) => {
+          setPostMatches(matches);
+          if (matches.length > 0) {
+            notifyMatch({ userId: user.uid, side: 'buyer', count: matches.length, topScore: matches[0].score, listingTitle: matches[0].listing?.title, targetUrl: `/sell/listing/${matches[0].listingId}` }).catch(() => {});
+          }
+        }).catch(() => {});
         // Mark as submitted immediately after successful creation to prevent duplicates
         setIsSubmitted(true);
         setSubmittedEnquiryId(docRef.id);
@@ -1877,6 +1929,34 @@ export default function PostEnquiry() {
                 <p className="text-sm sm:text-base text-green-700 mb-6 sm:mb-7 max-w-md mx-auto">
                   Sent for verification - You'll get notified
                 </p>
+
+                {/* AI Match engine: instant matches for this need */}
+                {postMatches && postMatches.length > 0 && (
+                  <div className="mb-6 max-w-xl mx-auto text-left">
+                    <div className="bg-white border-[1.5px] border-black rounded-2xl p-4 shadow-[0_4px_0_0_rgba(0,0,0,0.12)]">
+                      <p className="text-xs font-black text-black mb-3 flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                        🔥 We already found {postMatches.length} {postMatches.length === 1 ? 'listing' : 'listings'} matching your need
+                      </p>
+                      <div className="space-y-2">
+                        {postMatches.slice(0, 3).map((m) => (
+                          <Link
+                            key={m.listingId}
+                            to={`/sell/listing/${m.listingId}`}
+                            className="flex items-center justify-between gap-2 border border-gray-200 rounded-xl px-3 py-2.5 hover:border-black transition-colors bg-gray-50"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-xs font-black text-black truncate">{m.listing?.title || 'Listing'}</p>
+                              <p className="text-[10px] font-bold text-gray-500 truncate">{m.reasons.slice(0, 2).join(' · ')}</p>
+                            </div>
+                            <span className={`flex-shrink-0 text-[10px] font-black text-white rounded-full px-2 py-1 ${m.score >= 85 ? 'bg-emerald-600' : 'bg-blue-600'}`}>{m.score}%</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <Link to="/dashboard">
                     <Button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200">

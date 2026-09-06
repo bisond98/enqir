@@ -543,6 +543,22 @@ export default function CreateListing() {
         details: Object.keys(details).length > 0 ? details : null,
       });
       toast({ title: 'Published', description: 'Your listing is live.' });
+      // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
+      import('../services/matchEngine').then(({ matchesForListing, notifyMatch }) =>
+        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, location, condition, priceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
+          .then((matches) => {
+            if (matches.length > 0) {
+              notifyMatch({
+                userId: user.uid,
+                side: 'seller',
+                count: matches.length,
+                topScore: matches[0].score,
+                listingTitle: title.trim(),
+                targetUrl: `/sell/listing/${newListingId}`,
+              }).catch(() => {});
+            }
+          })
+      ).catch(() => {});
       sessionStorage.removeItem('listing-published');
       window.setTimeout(() => {
         navigate(`/sell/listing/${newListingId}`);

@@ -56,6 +56,8 @@ export async function getListing(listingId: string): Promise<SellListing | null>
 export async function listMarketplace(params: {
   search?: string;
   category?: string;
+  /** Category family: any of these values pass the category filter (e.g. car + vehicles). */
+  categories?: string[];
   location?: string;
   pageSize?: number;
 }) {
@@ -73,7 +75,9 @@ export async function listMarketplace(params: {
     return bMs - aMs;
   });
 
-  if (params.category) {
+  if (params.categories?.length) {
+    listings = listings.filter((l) => params.categories!.includes(l.category));
+  } else if (params.category) {
     listings = listings.filter((l) => l.category === params.category);
   }
   if (params.location) {

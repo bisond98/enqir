@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -26,6 +26,7 @@ import { LoadingAnimation } from "../components/LoadingAnimation";
 import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
 import SellerDashboard from "../modules/sell/pages/SellerDashboard";
 import type { SellListing, SellListingResponse } from "../modules/sell/types";
+import { computeUserMatches, type UserMatches } from "../modules/sell/services/matchEngine";
 
 interface Enquiry {
   id: string;
@@ -113,20 +114,24 @@ const Dashboard = () => {
   const [interestListings, setInterestListings] = useState<SellListing[]>([]);
   const [hiddenInterestIds, setHiddenInterestIds] = useState<Set<string>>(new Set());
   const [enquiryView, setEnquiryView] = useState<'enquiries' | 'interests' | 'saved'>('enquiries');
-  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
+  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings' | 'matches'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const urlMode = urlParams.get('mode');
-      if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings') {
+      if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings' || urlMode === 'matches') {
         localStorage.setItem('dashboardViewMode', urlMode);
         return urlMode;
       }
       const saved = localStorage.getItem('dashboardViewMode');
-      const mode = (saved === 'buyer' || saved === 'seller' || saved === 'listings') ? saved : 'buyer';
+      const mode = (saved === 'buyer' || saved === 'seller' || saved === 'listings' || saved === 'matches') ? saved : 'buyer';
       return mode;
     }
     return 'buyer';
   });
+
+  // Match engine state (AI matches between enquiries & listings)
+  const [userMatches, setUserMatches] = useState<UserMatches | null>(null);
+  const [matchesLoading, setMatchesLoading] = useState(false);
 
   const [listingPage, setListingPage] = useState(0);
   const LISTINGS_PER_PAGE = 6;
@@ -167,22 +172,35 @@ const Dashboard = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlMode = urlParams.get('mode');
-    if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings') {
+    if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings' || urlMode === 'matches') {
       setViewMode(urlMode);
       localStorage.setItem('dashboardViewMode', urlMode);
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else {
       const saved = localStorage.getItem('dashboardViewMode');
-      if (saved && (saved === 'buyer' || saved === 'seller' || saved === 'listings') && saved !== viewMode) {
+      if (saved && (saved === 'buyer' || saved === 'seller' || saved === 'listings' || saved === 'matches') && saved !== viewMode) {
         setViewMode(saved);
       }
     }
   }, []);
 
-  const handleToggleView = (mode: 'buyer' | 'seller' | 'listings') => {
+  // Load AI matches when the Matches view is opened
+  useEffect(() => {
+    if (viewMode !== 'matches' || !user?.uid || userMatches) return;
+    let cancelled = false;
+    setMatchesLoading(true);
+    computeUserMatches(user.uid)
+      .then((m) => { if (!cancelled) setUserMatches(m); })
+      .catch(() => { if (!cancelled) setUserMatches({ forNeeds: [], forListings: [], computedAt: Date.now() }); })
+    .finally(() => { if (!cancelled) setMatchesLoading(false); });
+    return () => { cancelled = true; };
+  }, [viewMode, user?.uid, userMatches]);
+
+  const handleToggleView = (mode: 'buyer' | 'seller' | 'listings' | 'matches') => {
     setViewMode(mode);
     localStorage.setItem('dashboardViewMode', mode);
+    if (mode === 'matches') setShowScrollIndicator(false);
   };
 
   const deleteResponse = async (submissionId: string) => {
@@ -1539,6 +1557,7 @@ const Dashboard = () => {
                         { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                         { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                         { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
+                        { key: 'matches' as const, label: 'Matches', icon: Sparkles, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                       ]).map(({ key, label, icon: Icon, activeColor }) => (
                         <motion.button
                           key={key}
@@ -2742,6 +2761,133 @@ const Dashboard = () => {
               {/* Content */}
               <CardContent className="p-3 sm:p-6 lg:p-5 xl:p-6">
                 <SellerDashboard minimal />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* AI Matches View */}
+        {viewMode === 'matches' && (
+          <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-2 sm:pt-4 pb-8 sm:pb-12">
+            <Card className="group border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+              {/* Header - matching other dashboard views */}
+              <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] pb-6 sm:pb-16 lg:pb-14">
+                <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3">
+                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      AI Matches
+                    </h2>
+                  </div>
+                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 w-full">
+                    <div className="text-center">
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-white leading-snug">
+                        Listings matching your needs · Buyers matching your listings.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <CardContent className="p-3 sm:p-6 lg:p-5 xl:p-6">
+                {matchesLoading ? (
+                  <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs font-bold text-gray-500">Finding your matches…</p>
+                  </div>
+                ) : !userMatches ? (
+                  <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <Sparkles className="h-8 w-8 text-gray-300" />
+                    <p className="text-xs font-bold text-gray-500">No matches yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Section 1: For your needs */}
+                    <div>
+                      <h3 className="text-sm font-black text-black mb-3 flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-red-600" />
+                        For Your Needs
+                        <span className="text-[10px] font-black text-white bg-black rounded-full px-2 py-0.5">{userMatches.forNeeds.length}</span>
+                      </h3>
+                      {userMatches.forNeeds.length === 0 ? (
+                        <p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                          No listings match your enquiries yet. We keep watching — you'll get a notification the moment one appears.
+                        </p>
+                      ) : (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {userMatches.forNeeds.slice(0, 10).map((m) => (
+                            <button
+                              key={m.listingId + m.enquiryId}
+                              onClick={() => navigate(`/sell/listing/${m.listingId}`)}
+                              className="text-left border-[1.5px] border-black rounded-2xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.12)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.18)] active:translate-y-[2px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12)] transition-all"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-black text-black truncate">{m.listing?.title || 'Listing'}</p>
+                                  <p className="text-[10px] font-bold text-gray-500 truncate">matches your: "{m.enquiry?.title}"</p>
+                                </div>
+                                <span className={`flex-shrink-0 text-[10px] font-black text-white rounded-full px-2 py-1 ${m.score >= 85 ? 'bg-emerald-600' : m.score >= 60 ? 'bg-blue-600' : 'bg-gray-500'}`}>{m.score}%</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                                {m.listing?.price != null && (
+                                  <span className="text-[10px] font-black bg-black text-white rounded-full px-2 py-0.5 inline-flex items-center"><IndianRupee className="h-2.5 w-2.5" />{Number(m.listing.price).toLocaleString('en-IN')}</span>
+                                )}
+                                {m.listing?.location && <span className="text-[10px] font-bold text-black bg-white border border-black rounded-full px-2 py-0.5 inline-flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{m.listing.location}</span>}
+                                <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">{m.label}</span>
+                              </div>
+                              {m.reasons.length > 0 && (
+                                <p className="text-[9px] text-gray-500 font-semibold mt-2 truncate">✓ {m.reasons.slice(0, 3).join(' · ')}</p>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Section 2: For your listings */}
+                    <div>
+                      <h3 className="text-sm font-black text-black mb-3 flex items-center gap-2">
+                        <Users className="h-4 w-4 text-blue-600" />
+                        For Your Listings
+                        <span className="text-[10px] font-black text-white bg-black rounded-full px-2 py-0.5">{userMatches.forListings.length}</span>
+                      </h3>
+                      {userMatches.forListings.length === 0 ? (
+                        <p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                          No buyer enquiries match your listings yet. New enquiries trigger instant alerts.
+                        </p>
+                      ) : (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {userMatches.forListings.slice(0, 10).map((m) => (
+                            <button
+                              key={m.listingId + m.enquiryId}
+                              onClick={() => navigate(`/enquiry/${m.enquiryId}`)}
+                              className="text-left border-[1.5px] border-black rounded-2xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.12)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.18)] active:translate-y-[2px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12)] transition-all"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-black text-black truncate">{m.enquiry?.title || 'Enquiry'}</p>
+                                  <p className="text-[10px] font-bold text-gray-500 truncate">needs your: "{m.listing?.title}"</p>
+                                </div>
+                                <span className={`flex-shrink-0 text-[10px] font-black text-white rounded-full px-2 py-1 ${m.score >= 85 ? 'bg-emerald-600' : m.score >= 60 ? 'bg-blue-600' : 'bg-gray-500'}`}>{m.score}%</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                                {m.enquiry?.budget && <span className="text-[10px] font-black bg-black text-white rounded-full px-2 py-0.5 inline-flex items-center"><IndianRupee className="h-2.5 w-2.5" />{String(m.enquiry.budget).replace(/[^0-9]/g, '') ? Number(String(m.enquiry.budget).replace(/[^0-9]/g, '')).toLocaleString('en-IN') : String(m.enquiry.budget)}</span>}
+                                {m.enquiry?.location && <span className="text-[10px] font-bold text-black bg-white border border-black rounded-full px-2 py-0.5 inline-flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{m.enquiry.location}</span>}
+                                <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">{m.label}</span>
+                              </div>
+                              {m.reasons.length > 0 && (
+                                <p className="text-[9px] text-gray-500 font-semibold mt-2 truncate">✓ {m.reasons.slice(0, 3).join(' · ')}</p>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
+import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSearch';
 import type { SellListing } from '../types';
 import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
@@ -135,6 +136,11 @@ export default function Marketplace() {
   const { user } = useAuth();
   const [savedListingIds, setSavedListingIds] = useState<Set<string>>(new Set());
 
+  // Natural-language search: parsed suggestion (live) + auto-applied structured overlay
+  const [nlFilters, setNlFilters] = useState<NLFilters | null>(null);
+  const [nlSuggestion, setNlSuggestion] = useState<NLFilters | null>(null);
+  const nlSuppressRef = useRef<string | null>(null);
+
   // Load user's saved listing IDs (profiles.savedListings - same store as the listing page save)
   useEffect(() => {
     if (!user?.uid) { setSavedListingIds(new Set()); return; }
@@ -215,9 +221,16 @@ export default function Marketplace() {
     setLoading(true);
     setError(null);
     try {
+      // AI NL-search family: car ↔ vehicles share one bucket so neither hides the other
+      const CATEGORY_FAMILY: Record<string, string[]> = { car: ['car', 'vehicles'], vehicles: ['car', 'vehicles'] };
+      const cats = CATEGORY_FAMILY[category];
+      // Text query = residual keywords only (the sentence minus what the parser
+      // extracted), so "toyota car under 100000" doesn't text-match itself to zero.
+      const textQuery = parseNLSearch(search)?.search ?? search;
       const data = await listMarketplace({
-        search,
-        category: category === 'all' ? undefined : category,
+        search: textQuery,
+        categories: cats,
+        category: cats ? undefined : category === 'all' ? undefined : category,
         location: location === 'all' ? undefined : location,
       });
       setListings(data);
@@ -233,6 +246,28 @@ export default function Marketplace() {
     setPage(0);
     load();
   }, [search, category, location]);
+
+  // Live natural-language search: parse while typing and AUTO-APPLY (debounced) —
+  // results progress as the sentence takes shape, no extra Apply click needed.
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 4) { setNlSuggestion(null); setNlFilters(null); return; }
+    const t = setTimeout(() => {
+      const parsed = parseNLSearch(q);
+      // Only sentence-like queries engage the AI layer — plain keywords stay pure text search
+      if (!parsed || !isNLSearchQuery(q, parsed)) { setNlSuggestion(null); setNlFilters(null); return; }
+      setNlSuggestion(parsed);
+      if (nlSuppressRef.current === q) return; // user dismissed the overlay for this exact text
+      nlSuppressRef.current = null;
+      setNlFilters(parsed);
+      if (parsed.category && parsed.category !== category) setCategory(parsed.category);
+      if (parsed.location && parsed.location !== location) { setLocation(parsed.location); setLocSearch(parsed.location); }
+      if (parsed.priceMin) setPriceMin(parsed.priceMin);
+      if (parsed.priceMax) setPriceMax(parsed.priceMax);
+    }, 350);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   // Shuffle effect: every 5 minutes when no filters/search active
   useEffect(() => {
@@ -264,6 +299,51 @@ export default function Marketplace() {
   const showCategorySuggestion = detectedCategory && category !== detectedCategory;
 
   const canSearch = search.trim().length === 0 || search.trim().length >= 2;
+
+  // Structured-details / condition check applied on top of the fetched results.
+  // Soft matching: a listing MISSING a detail (older listings have details: null)
+  // still counts as a possible match; only a present-but-different value excludes it.
+  const nlMatches = useCallback((l: SellListing): boolean => {
+    if (!nlFilters) return true;
+    const d = (l.details ?? {}) as Record<string, string>;
+    if (nlFilters.condition && l.condition !== nlFilters.condition) return false;
+    const w = nlFilters.details;
+    const eq = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+    if (w.brand && eq(d.brand, w.brand) === false && d.brand) return false;
+    if (w.transmission && d.transmission && !eq(d.transmission, w.transmission)) return false;
+    if (w.fuel && d.fuel && !eq(d.fuel, w.fuel)) return false;
+    if (w.year && d.year && d.year !== w.year) return false;
+    if (w.ownership && d.ownership && !eq(d.ownership, w.ownership)) return false;
+    if (w.ram && d.ram && d.ram !== w.ram) return false;
+    if (w.storage && d.storage && d.storage !== w.storage) return false;
+    if (w.bhk && d.bhk && d.bhk !== w.bhk) return false;
+    if (w.kmsDriven) {
+      const kms = parseInt(String(d.kmsDriven ?? '').replace(/[^0-9]/g, ''), 10);
+      const wantKm = parseInt(w.kmsDriven, 10);
+      if (!isNaN(kms) && !isNaN(wantKm) && kms > wantKm) return false;
+    }
+    return true;
+  }, [nlFilters]);
+
+  // How strongly a listing matches the parsed details (exact fields = higher score).
+  // Used to rank: hard matches first, soft (missing-details) matches after.
+  const nlStrength = useCallback((l: SellListing): number => {
+    if (!nlFilters) return 0;
+    const d = (l.details ?? {}) as Record<string, string>;
+    const w = nlFilters.details;
+    let score = 0;
+    const eq = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+    if (w.brand && eq(d.brand, w.brand)) score += 3;
+    if (w.transmission && eq(d.transmission, w.transmission)) score += 1;
+    if (w.fuel && eq(d.fuel, w.fuel)) score += 1;
+    if (w.year && d.year === w.year) score += 1;
+    if (nlFilters.condition && l.condition === nlFilters.condition) score += 1;
+    return score;
+  }, [nlFilters]);
+
+  // Categories that are effectively the same family in this app (cars get listed
+  // under both 'car' and 'vehicles') — sibling categories pass the category filter.
+  const CATEGORY_SIBLINGS: Record<string, string[]> = { car: ['vehicles'], vehicles: ['car'] };
 
   // Effective price of a listing used for budget filtering (range → its max number).
   const listingPrice = (l: SellListing): number => {
@@ -329,7 +409,24 @@ export default function Marketplace() {
     });
   }, [noFiltersActive, shuffledListings, listings, budgetActive, trustBadgeOnly, minVal, maxVal, sellerProfiles]);
 
-  const displayListings = budgetFilteredListings;
+  const displayListings = useMemo(
+    () => {
+      if (!nlFilters) return budgetFilteredListings;
+      const filtered = budgetFilteredListings.filter(nlMatches);
+      const wantCat = nlFilters.category;
+      const siblings = wantCat ? (CATEGORY_SIBLINGS[wantCat] ?? []) : [];
+      // Listings in the requested category (or its siblings) rank first; others stay visible below as related
+      return [...filtered].sort((a, b) => {
+        const inA = (a.category === wantCat || siblings.includes(a.category)) ? 1 : 0;
+        const inB = (b.category === wantCat || siblings.includes(b.category)) ? 1 : 0;
+        if (inA !== inB) return inB - inA;
+        const s = nlStrength(b) - nlStrength(a);
+        if (s !== 0) return s;
+        return 0;
+      });
+    },
+    [budgetFilteredListings, nlFilters, nlMatches, nlStrength]
+  );
   const perPage = viewMode === 'grid' ? 12 : 10;
   const totalPages = Math.ceil(displayListings.length / perPage);
   const pagedListings = displayListings.slice(page * perPage, (page + 1) * perPage);
@@ -526,8 +623,21 @@ export default function Marketplace() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') load(); }}
-            placeholder="Search listings…"
+            onKeyDown={(e) => {
+              if (e.key !== 'Enter') return;
+              // Apply immediately on Enter (no debounce wait) and trigger the fetch
+              const parsed = parseNLSearch(search);
+              if (parsed && isNLSearchQuery(search, parsed)) {
+                nlSuppressRef.current = null;
+                setNlFilters(parsed);
+                if (parsed.category && parsed.category !== category) setCategory(parsed.category);
+                if (parsed.location && parsed.location !== location) { setLocation(parsed.location); setLocSearch(parsed.location); }
+                if (parsed.priceMin) setPriceMin(parsed.priceMin);
+                if (parsed.priceMax) setPriceMax(parsed.priceMax);
+              }
+              load();
+            }}
+            placeholder='Search listings… or try "used car under 2 lakh"'
             className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
           />
           {search && (
@@ -536,6 +646,27 @@ export default function Marketplace() {
             </button>
           )}
         </div>
+
+        {/* AI natural-language filters: chips of what was understood (auto-applied) */}
+        {(nlSuggestion || nlFilters) && (
+          <div className="flex items-center gap-1.5 flex-wrap -mt-1">
+            <Sparkles className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+            {(nlFilters ?? nlSuggestion)!.chips.map((chip) => (
+              <span key={chip} className="text-[10px] font-black text-white bg-black border border-black rounded-full px-2.5 py-1">{chip}</span>
+            ))}
+            {nlFilters ? (
+              <button
+                onClick={() => { nlSuppressRef.current = search.trim(); setNlFilters(null); }}
+                className="text-gray-400 hover:text-black"
+                title="Turn off AI filtering for this search"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <span className="text-[10px] font-bold text-gray-400 ml-0.5">detecting…</span>
+            )}
+          </div>
+        )}
 
         {/* Auto-detected category suggestion */}
         {showCategorySuggestion && (
@@ -554,7 +685,7 @@ export default function Marketplace() {
         <div className="flex items-center gap-2">
           {hasFilters && (
             <button
-              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); }}
+              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); nlSuppressRef.current = null; setNlFilters(null); setNlSuggestion(null); }}
               className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
             >
               <X className="h-3 w-3" />Clear filters

@@ -13,7 +13,8 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown, Sparkles } from "lucide-react";
+import { parseNLSearch, isNLSearchQuery, type NLFilters } from "@/modules/sell/services/nlSearch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -129,6 +130,9 @@ export default function EnquiryWall() {
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isAISearching, setIsAISearching] = useState(false);
+  // Natural-language search overlay for enquiries (same parser as marketplace)
+  const [nlFilters, setNlFilters] = useState<NLFilters | null>(null);
+  const nlSuppressRef = useRef<string | null>(null);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isShuffling, setIsShuffling] = useState(false);
@@ -1149,6 +1153,94 @@ export default function EnquiryWall() {
   const showCategoryFallback = useMemo(() => {
     return filteredEnquiries.length === 0 && selectedCategory !== "all" && !aiSearchResults;
   }, [filteredEnquiries.length, selectedCategory, aiSearchResults]);
+
+  // Natural-language parse as the user types — auto-applied (same engine as marketplace)
+  useEffect(() => {
+    const q = searchTerm.trim();
+    if (q.length < 4) { setNlFilters(null); return; }
+    const t = setTimeout(() => {
+      if (nlSuppressRef.current === q) return;
+      nlSuppressRef.current = null;
+      const parsed = parseNLSearch(q);
+      // Plain short keywords ("apple", "honda", "sofa") keep classic text search —
+      // the AI layer only engages for sentence-like queries with real filters
+      setNlFilters(parsed && isNLSearchQuery(q, parsed) ? parsed : null);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  // Enquiry-side category families (enquiries use slightly different category ids)
+  const ENQUIRY_CATEGORY_FAMILY: Record<string, string[]> = {
+    car: ['car', 'automobile', 'vehicles'],
+    bike: ['bike', 'automobile', 'vehicles', 'bicycles'],
+    mobiles: ['mobiles', 'electronics-gadgets', 'electronics'],
+    laptops: ['laptops', 'electronics-gadgets', 'electronics', 'technology'],
+    electronics: ['electronics', 'electronics-gadgets'],
+    appliances: ['appliances', 'electronics-gadgets'],
+    furniture: ['furniture', 'home-furniture', 'home'],
+    home: ['home', 'home-furniture', 'furniture'],
+    fashion: ['fashion', 'fashion-apparel'],
+    'fashion-apparel': ['fashion-apparel', 'fashion'],
+    books: ['books', 'books-publications'],
+    gaming: ['gaming', 'gaming-recreation'],
+    'gaming-recreation': ['gaming-recreation', 'gaming'],
+    'real-estate': ['real-estate'],
+    jobs: ['jobs'],
+    pets: ['pets'],
+    bicycles: ['bicycles', 'bike', 'automobile'],
+    sneakers: ['sneakers'],
+    'sports-outdoor': ['sports-outdoor', 'fitness-gym-equipment'],
+    'musical-instruments': ['musical-instruments'],
+    'baby-kids': ['baby-kids', 'childcare-family'],
+    'jewelry-accessories': ['jewelry-accessories'],
+    'books-publications': ['books-publications', 'books'],
+    'home-furniture': ['home-furniture', 'furniture', 'home'],
+    'photography-cameras': ['photography-cameras'],
+  };
+
+  const KNOWN_BRAND_WORDS = ['maruti suzuki', 'maruti', 'hyundai', 'tata', 'mahindra', 'toyota', 'honda', 'kia', 'renault', 'nissan', 'volkswagen', 'skoda', 'bmw', 'mercedes', 'audi', 'ford', 'fiat', 'chevrolet', 'datsun', 'porsche', 'ferrari', 'lamborghini', 'rolls royce', 'bentley', 'jaguar', 'volvo', 'hero', 'bajaj', 'tvs', 'royal enfield', 'yamaha', 'suzuki', 'ktm', 'jawa', 'yezdi', 'ather', 'ola', 'revolt', 'kawasaki', 'ducati', 'benelli', 'harley', 'apple', 'iphone', 'samsung', 'oneplus', 'xiaomi', 'redmi', 'realme', 'vivo', 'oppo', 'motorola', 'nothing', 'pixel', 'nokia', 'iqoo', 'asus', 'infinix', 'tecno', 'macbook', 'dell', 'lenovo', 'acer', 'msi'];
+
+  // Structured NL filtering for enquiries — soft rules: missing info never excludes,
+  // only clear contradictions do.
+  const nlMatchEnquiry = useCallback((e: Enquiry): boolean => {
+    if (!nlFilters) return true;
+    if (nlFilters.category) {
+      const fam = ENQUIRY_CATEGORY_FAMILY[nlFilters.category] ?? [nlFilters.category];
+      const cats = [e.category, ...(Array.isArray((e as any).categories) ? (e as any).categories : [])]
+        .filter(Boolean).map((c: any) => String(c).toLowerCase());
+      if (cats.length > 0 && !cats.some((c: string) => fam.includes(c))) return false;
+    }
+    if (nlFilters.location) {
+      const loc = String(e.location ?? '').toLowerCase();
+      if (loc && !loc.includes(nlFilters.location.toLowerCase())) return false;
+    }
+    if (nlFilters.priceMin || nlFilters.priceMax) {
+      const num = parseFloat(String(e.budget ?? '').replace(/[^0-9.]/g, ''));
+      if (!isNaN(num) && num > 0) {
+        if (nlFilters.priceMin && num < parseFloat(nlFilters.priceMin)) return false;
+        if (nlFilters.priceMax && num > parseFloat(nlFilters.priceMax)) return false;
+      }
+    }
+    // Brand: if enquiry text mentions a DIFFERENT known brand → exclude
+    if (nlFilters.details.brand) {
+      const text = `${e.title ?? ''} ${e.description ?? ''}`.toLowerCase();
+      const want = nlFilters.details.brand.toLowerCase();
+      const wantWords = want.split(' ');
+      const mentionsWant = text.includes(want) || wantWords.some(w => w.length > 2 && text.includes(w));
+      if (!mentionsWant) {
+        const mentionsOther = KNOWN_BRAND_WORDS.some(b => !want.includes(b) && text.includes(b));
+        if (mentionsOther) return false;
+      }
+    }
+    return true;
+  }, [nlFilters]);
+
+  // Apply the NL overlay on top of the normal filter pipeline
+  const nlFilteredEnquiries = useMemo(() => {
+    const base = showCategoryFallback ? enquiries : filteredEnquiries;
+    if (!nlFilters) return base;
+    return base.filter(nlMatchEnquiry);
+  }, [showCategoryFallback, enquiries, filteredEnquiries, nlFilters, nlMatchEnquiry]);
   
   // Count trust badge enquiries from live enquiries
   const trustBadgeEnquiriesCount = useMemo(() => {
@@ -1332,7 +1424,7 @@ export default function EnquiryWall() {
   
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
-    let results = showCategoryFallback ? enquiries : filteredEnquiries;
+    let results = nlFilteredEnquiries;
     
     // Filter by trust badge if enabled - match the exact conditions for blue tick display
     if (showTrustBadgeOnly) {
@@ -5211,6 +5303,23 @@ export default function EnquiryWall() {
                         </div>
                       </button>
                     ))}
+                  </div>
+                )}
+
+                {/* AI natural-language chips (auto-applied while typing) */}
+                {nlFilters && nlFilters.chips.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                    <Sparkles className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                    {nlFilters.chips.map((chip) => (
+                      <span key={chip} className="text-[10px] font-black text-white bg-black border border-black rounded-full px-2.5 py-1">{chip}</span>
+                    ))}
+                    <button
+                      onClick={() => { nlSuppressRef.current = searchTerm.trim(); setNlFilters(null); }}
+                      className="text-gray-400 hover:text-black"
+                      title="Turn off AI filtering"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 )}
               </div>
