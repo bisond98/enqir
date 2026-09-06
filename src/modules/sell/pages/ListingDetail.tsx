@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Tag, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -28,6 +28,27 @@ function formatPrice(l: SellListing) {
   return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
 
+function formatPostedDate(dateString: any): string {
+  try {
+    let date: Date;
+    if (dateString?.toDate && typeof dateString.toDate === 'function') {
+      date = dateString.toDate();
+    } else if (dateString?.seconds !== undefined) {
+      date = new Date(dateString.seconds * 1000 + (dateString.nanoseconds || 0) / 1000000);
+    } else if (dateString instanceof Date) {
+      date = dateString;
+    } else if (typeof dateString === 'string' || typeof dateString === 'number') {
+      date = new Date(dateString);
+    } else {
+      return '';
+    }
+    if (!date || isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -38,6 +59,7 @@ export default function ListingDetail() {
   const [message, setMessage] = useState('');
   const [offeredPrice, setOfferedPrice] = useState('');
   const [sending, setSending] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -443,14 +465,14 @@ export default function ListingDetail() {
             <span className="absolute top-3 right-3 z-10 inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)]"><CheckCircle className="h-4 w-4 text-white" /></span>
           )}
           <div className="p-4 sm:p-5">
-            {/* Title + Price */}
-            <div className="mb-3">
-              <h2 className="text-[13px] sm:text-sm font-bold text-black leading-snug text-left">
-                <span className="bg-white text-black border border-black font-black text-xs sm:text-sm rounded-xl px-5 py-2.5 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-block">{listing.title}</span>
-              </h2>
-              <div className="w-full text-center mt-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">₹{listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
-              </div>
+            {/* Amount — in title's place, with the title's chip size & border */}
+            <div className="text-left">
+              <span className="bg-white text-black border border-black font-black text-lg sm:text-xl rounded-xl px-6 py-3 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-block">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+            </div>
+
+            {/* Title — in amount's place, with the amount's size */}
+            <div className="w-full text-center mt-10 sm:mt-8">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.title}</h2>
             </div>
 
             {/* Description */}
@@ -463,16 +485,20 @@ export default function ListingDetail() {
             {/* Info Chips + Share inside card */}
             <div className="flex flex-wrap items-center gap-1.5">
               {listing.condition && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-black bg-black text-white border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                   {listing.condition}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1 text-[10px] font-black bg-black text-white border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                <Tag className="h-2.5 w-2.5" />{listing.category}
+              <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                <MapPin className="h-3 w-3 text-black" />{listing.location}
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-black bg-black text-white border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                <MapPin className="h-3 w-3 text-white" />{listing.location}
-              </span>
+              {formatPostedDate(listing.createdAt) && (
+                <div className="w-full sm:w-auto">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                    <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                  </span>
+                </div>
+              )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
                   <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-black bg-black text-white border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
@@ -480,19 +506,44 @@ export default function ListingDetail() {
                   </span>
                 ))
               )}
-              <span className="ml-auto"><ShareButton listing={listing} /></span>
+              {chatUnlocked && (
+                <div className="sm:hidden mt-4 w-full flex justify-center">
+                  <Button
+                    variant="outline"
+                    className="relative !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                    onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                    <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
+                    <span className="relative z-10">Continue Messaging</span>
+                  </Button>
+                </div>
+              )}
+              <div className="w-full flex items-center justify-between mt-4 mb-0.5 gap-2">
+                <button
+                  onClick={() => setSaved(v => !v)}
+                  aria-label={saved ? 'Remove from saved' : 'Save listing'}
+                  className={`p-1 rounded-lg transition-all active:scale-95 ${saved ? 'text-black hover:bg-gray-100' : 'text-gray-600 hover:text-black hover:bg-gray-100'}`}
+                >
+                  <Bookmark className={`h-4 w-4 ${saved ? 'fill-black text-black' : 'text-gray-600'}`} />
+                </button>
+                <span className="ml-auto"><ShareButton listing={listing} /></span>
+              </div>
             </div>
 
           </div>
         </div>
 
         {/* Message Seller Card */}
-        {!isOwner && (
-          <div id="message-seller" className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-            <div className="bg-black p-3">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-white" />
-                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">{chatUnlocked ? 'Your Chat' : 'Message Seller'}
+        {!isOwner && (chatUnlocked ? (
+          <>
+            {/* Desktop: keep the card + Your Chat header */}
+            <div className="hidden sm:block border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+              <div className="bg-black p-3">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-white" />
+                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Your Chat
                   {sellerProfile?.isProfileVerified && (
                     <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
                   )}
@@ -501,20 +552,33 @@ export default function ListingDetail() {
               </div>
             </div>
             <div className="p-4 space-y-3">
-              {chatUnlocked ? (
-                /* Buyer already has a chat — show simple Message button */
-                <Button
-                  variant="outline"
-                  className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
-                  onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
-                >
-                  <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                  <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
-                  <span className="relative z-10">Continue Messaging</span>
-                </Button>
-              ) : (
-              <>
+              <Button
+                variant="outline"
+                className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
+              >
+                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
+                <span className="relative z-10">Continue Messaging</span>
+              </Button>
+            </div>
+          </div>
+        </>
+        ) : (
+          <div id="message-seller" className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+            <div className="bg-black p-3">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-white" />
+                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Message Seller
+                  {sellerProfile?.isProfileVerified && (
+                    <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
+                  )}
+                </h3>
+                <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
               <div>
                 <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
                 <div className="relative">
@@ -629,12 +693,10 @@ export default function ListingDetail() {
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <Send className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
-                  </Button>
-                </>
-              )}
+              </Button>
             </div>
           </div>
-        )}
+        ))}
 
         {/* Buyer Responses (Owner Only) */}
         {isOwner && (() => {

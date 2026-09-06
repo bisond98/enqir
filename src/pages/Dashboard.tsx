@@ -110,6 +110,8 @@ const Dashboard = () => {
   const [sellResponses, setSellResponses] = useState<SellListingResponse[]>([]);
   const [sellListingsReady, setSellListingsReady] = useState(false);
   const [interestListings, setInterestListings] = useState<SellListing[]>([]);
+  const [hiddenInterestIds, setHiddenInterestIds] = useState<Set<string>>(new Set());
+  const [enquiryView, setEnquiryView] = useState<'enquiries' | 'interests' | 'saved'>('enquiries');
   const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1043,11 +1045,11 @@ const Dashboard = () => {
           return;
         }
         
-        // Fetch listing details for each unique ID
+        // Fetch listing details for each unique ID (skip listings owned by the user - messaging your own listing isn't an interest)
         const listings: SellListing[] = [];
         for (const lid of listingIds) {
           const listingDoc = await getDoc(doc(db, "sell_listings", lid));
-          if (listingDoc.exists() && listingDoc.data().status === "live") {
+          if (listingDoc.exists() && listingDoc.data().status === "live" && listingDoc.data().sellerId !== user.uid) {
             listings.push({ id: listingDoc.id, ...listingDoc.data() } as SellListing);
           }
         }
@@ -1060,6 +1062,30 @@ const Dashboard = () => {
     loadInterestListings();
     return () => { cancelled = true; };
   }, [user?.uid]);
+
+  // Load/remove hidden interest cards (persisted per user in localStorage)
+  useEffect(() => {
+    if (!user?.uid) { setHiddenInterestIds(new Set()); return; }
+    try {
+      const raw = localStorage.getItem(`hiddenInterests_${user.uid}`);
+      if (raw) setHiddenInterestIds(new Set(JSON.parse(raw)));
+    } catch {}
+  }, [user?.uid]);
+
+  const removeInterest = (listingId: string) => {
+    setHiddenInterestIds(prev => {
+      const next = new Set(prev);
+      next.add(listingId);
+      try { if (user?.uid) localStorage.setItem(`hiddenInterests_${user.uid}`, JSON.stringify([...next])); } catch {}
+      return next;
+    });
+    toast({ title: "Removed from Interests" });
+  };
+
+  const visibleInterestListings = useMemo(
+    () => interestListings.filter((l) => !hiddenInterestIds.has(l.id)),
+    [interestListings, hiddenInterestIds]
+  );
 
   // Add visibility change listener to refresh data when user returns to tab
   useEffect(() => {
@@ -1524,11 +1550,21 @@ const Dashboard = () => {
                   <div className="bg-black border border-black rounded-lg p-3 sm:p-5 lg:p-4 xl:p-5 w-full">
                     <div className="text-center">
                       <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center justify-center gap-2 dashboard-header-no-emoji mb-1">
-                        <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                        Your Enquiries
+                        {enquiryView === 'interests' ? (
+                          <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                        ) : enquiryView === 'saved' ? (
+                          <Bookmark className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                        ) : (
+                          <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                        )}
+                        {enquiryView === 'interests' ? 'Interests' : enquiryView === 'saved' ? 'Saved' : 'Your Enquiries'}
                       </h2>
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-400 leading-snug">
-                        Track your needs; We won't be tracking you.
+                        {enquiryView === 'interests'
+                          ? "Products you messaged the seller about"
+                          : enquiryView === 'saved'
+                          ? "Enquiries you bookmarked for later"
+                          : "Track your needs; We won't be tracking you."}
                       </p>
                     </div>
                   </div>
@@ -1543,7 +1579,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
                       <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{allEnquiriesForStats.length || enquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Total</p>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Enquiries</p>
                     </div>
                   </div>
                   
@@ -1551,21 +1587,8 @@ const Dashboard = () => {
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{(() => {
-                        const allEnqs = allEnquiriesForStats.length > 0 ? allEnquiriesForStats : enquiries;
-                        const now = new Date();
-                        return allEnqs.filter(e => {
-                          // Must be live status
-                          if (e.status !== 'live') return false;
-                          // Must not be expired
-                          if (e.deadline) {
-                            const deadlineDate = e.deadline.toDate ? e.deadline.toDate() : new Date(e.deadline);
-                            if (deadlineDate < now) return false;
-                          }
-                          return true;
-                        }).length;
-                      })()}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Active</p>
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{visibleInterestListings.length}</h3>
+                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Interests</p>
                     </div>
                   </div>
                   
@@ -1579,7 +1602,37 @@ const Dashboard = () => {
                   </div>
                 </div>
 
+                {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
+                <div className="flex justify-center mb-4 sm:mb-6 lg:mb-5">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                    {([
+                      { key: 'enquiries' as const, label: 'Enquiries', icon: FileText },
+                      { key: 'interests' as const, label: 'Interests', icon: ShoppingBag },
+                      { key: 'saved' as const, label: 'Saved', icon: Bookmark },
+                    ]).map(({ key, label, icon: Icon }) => (
+                      <motion.button
+                        key={key}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEnquiryView(key); }}
+                        whileTap={{ scale: 0.95 }}
+                        animate={enquiryView === key ? { scale: 1.03 } : { scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        className={cn(
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
+                          enquiryView === key
+                            ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.5)]'
+                            : 'text-black hover:text-black hover:bg-gray-100'
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                        <span>{label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Professional Enquiry Cards Section */}
+                {enquiryView === 'enquiries' && (
                 <div className="mb-6 sm:mb-12 lg:mb-8">
                   {/* Empty State - Professional */}
                   {enquiries.length === 0 ? (
@@ -1899,6 +1952,127 @@ const Dashboard = () => {
                     </div>
                   )}
                 </div>
+                )}
+
+                {/* Interests view - cards render here inside the card, like the enquiry cards */}
+                {enquiryView === 'interests' && (
+                  <div className="mb-6 sm:mb-12 lg:mb-8">
+                    {visibleInterestListings.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300/60">
+                        <ShoppingBag className="h-10 w-10 text-gray-300 mb-2" />
+                        <p className="text-xs text-gray-500 font-medium">No interests yet — message a seller about a listing</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        {visibleInterestListings.map((listing) => (
+                          <motion.div
+                            key={listing.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
+                          >
+                            {/* Premium Black Header - matching enquiry card */}
+                            <div className="relative bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5">
+                              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                              <div className="relative flex items-start justify-between gap-2">
+                                <h5 className="text-sm font-bold text-white leading-snug tracking-tight truncate flex-1 min-w-0 drop-shadow-sm">
+                                  {listing.title}
+                                </h5>
+                                <div className="flex-shrink-0 flex items-center gap-1.5">
+                                  <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-500 rounded-full border-2 border-black shadow-md ring-2 ring-white/20 group-hover:scale-110 transition-transform">
+                                    <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* White Content Area - matching enquiry card */}
+                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
+                              <div className="text-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5">
+                                <p className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight">
+                                  {listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
+                                </p>
+                                {listing.location && (
+                                  <p className="text-[10px] sm:text-xs font-bold text-gray-600 flex items-center justify-center gap-1 mt-1.5">
+                                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                                    {listing.location}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Spacer to maintain card height - matching enquiry card */}
+                              <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
+
+                              {/* Chat + Remove buttons - 3D style matching enquiry card buttons */}
+                              <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+                                <Link
+                                  to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
+                                  className="w-full flex items-center justify-center border-[0.5px] border-black bg-gradient-to-b from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xs sm:text-sm px-3.5 py-2 h-9 font-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 relative overflow-hidden group/chat"
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <MessageSquare className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 group-hover/chat:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">Chat with Seller</span>
+                                </Link>
+                              </div>
+                              <div className="flex justify-center mt-2.5" onClick={(e) => e.stopPropagation()}>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
+                                  className="w-full flex-1 flex-shrink-0 !border-[0.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] group/delete flex items-center justify-center !relative !overflow-hidden"
+                                >
+                                  {/* Physical button depth effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shimmer effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                  <span className="tracking-tight whitespace-nowrap relative z-10">Remove</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Saved view */}
+                {enquiryView === 'saved' && (
+                  <div className="mb-6 sm:mb-12 lg:mb-8">
+                    {savedEnquiries.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300/60">
+                        <Bookmark className="h-10 w-10 text-gray-300 mb-2" />
+                        <p className="text-xs text-gray-500 font-medium">No saved enquiries yet — tap Save on any enquiry</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {savedEnquiries.slice(0, 5).map((enquiry) => (
+                          <div key={enquiry.id} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                            <h4 className="text-sm font-bold text-black truncate">{enquiry.title}</h4>
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
+                              <span className="text-[10px] font-black text-gray-900">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span className="text-[10px] font-bold text-black">• {enquiry.location}</span>}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); navigate('/my-enquiries', { state: { highlightId: enquiry.id } }); }}
+                              className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] font-black rounded-xl h-8"
+                            >
+                              View Details
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
             )}
@@ -2464,68 +2638,6 @@ const Dashboard = () => {
                     </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-          )}
-
-          {/* Interest Listings Card - Only in buyer view */}
-          {viewMode === 'buyer' && interestListings.length > 0 && (
-          <Card className="border-[0.5px] border-black rounded-2xl overflow-hidden mt-6 sm:mt-8 lg:mt-0 mb-4 sm:mb-6 lg:mb-8 lg:w-full lg:max-w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl lg:rounded-t-2xl xl:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] xl:min-h-[150px] pb-6 sm:pb-16 lg:pb-14 xl:pb-16">
-              <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3 xl:gap-4">
-                <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                    <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                    Your Interests
-                  </h2>
-                </div>
-                <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
-                  <div className="text-center">
-                    <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
-                      Products you messaged the seller about
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <CardContent className="p-4 sm:p-6 lg:p-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {interestListings.map((listing) => (
-                  <Link
-                    key={listing.id}
-                    to={`/sell/listing/${listing.id}`}
-                    className="block border-2 border-black rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
-                  >
-                    {listing.images && listing.images[0] && (
-                      <div className="h-32 sm:h-36 overflow-hidden bg-gray-100">
-                        <img src={listing.images[0]} alt={listing.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div className="p-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-black truncate">{listing.title}</h3>
-                          <p className="text-xs font-bold text-black mt-1">
-                            {listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
-                          </p>
-                        </div>
-                        <Link
-                          to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
-                          onClick={(e) => e.stopPropagation()}className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors border-2 border-black"
-                          >
-                          <MessageSquare className="h-3.5 w-3.5 text-white" />
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-1 mt-1.5">
-                        <span className="text-[10px] text-gray-500 flex items-center gap-0.5">
-                          <MapPin className="h-2.5 w-2.5" />{listing.location}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
             </CardContent>
           </Card>
           )}
