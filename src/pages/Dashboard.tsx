@@ -1536,19 +1536,19 @@ const Dashboard = () => {
                   <div className="flex justify-center mt-4 sm:mt-5">
                     <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                       {([
-                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
-                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
-                        { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.4)]' },
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
+                        { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                       ]).map(({ key, label, icon: Icon, activeColor }) => (
                         <motion.button
                           key={key}
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-2 sm:gap-2 px-5 sm:px-5 lg:px-6 py-2.5 sm:py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-bold transition-all duration-200 whitespace-nowrap',
+                            'relative flex items-center gap-2 sm:gap-2 px-5 sm:px-5 lg:px-6 py-2.5 sm:py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
                             viewMode === key
                               ? activeColor
-                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                              : 'text-black hover:text-black hover:bg-gray-100'
                           )}
                           whileTap={{ scale: 0.95 }}
                           animate={viewMode === key ? { scale: 1.05 } : { scale: 1 }}
@@ -1643,10 +1643,10 @@ const Dashboard = () => {
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                     {([
-                      { key: 'enquiries' as const, label: 'Enquiries', icon: FileText },
-                      { key: 'interests' as const, label: 'Interests', icon: ShoppingBag },
-                      { key: 'saved' as const, label: 'Saved', icon: Bookmark },
-                    ]).map(({ key, label, icon: Icon }) => (
+                      { key: 'enquiries' as const, label: 'Enquiries' },
+                      { key: 'interests' as const, label: 'Interests' },
+                      { key: 'saved' as const, label: 'Saved' },
+                    ]).map(({ key, label }) => (
                       <motion.button
                         key={key}
                         type="button"
@@ -1657,11 +1657,10 @@ const Dashboard = () => {
                         className={cn(
                           'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
                           enquiryView === key
-                            ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.5)]'
+                            ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
                             : 'text-black hover:text-black hover:bg-gray-100'
                         )}
                       >
-                        <Icon className="h-3.5 w-3.5 flex-shrink-0" />
                         <span>{label}</span>
                       </motion.button>
                     ))}

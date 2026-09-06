@@ -439,10 +439,12 @@ export default function ListingDetail() {
         document.body
       )}
       <div className="space-y-4 pb-6">
+        {/* Unified Listing Card — image + details in one bordered card */}
+        <div className="relative border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
-            <div className="relative w-full h-56 sm:h-72 lg:h-80 rounded-xl overflow-hidden border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-gray-100">
+            <div className="relative w-full h-56 sm:h-72 lg:h-80 overflow-hidden bg-gray-100">
               <img
                 src={listing.images[activeImage]}
                 alt={listing.title}
@@ -487,31 +489,21 @@ export default function ListingDetail() {
           </div>
         )}
 
-        {/* Listing Info Card */}
-        <div className="relative border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+        {/* Listing Details — inside the same unified card */}
+        <div className="relative">
           {sellerProfile?.isProfileVerified && (
             <span className="absolute top-3 right-3 z-10 inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)]"><CheckCircle className="h-4 w-4 text-white" /></span>
           )}
           <div className="p-4 sm:p-5">
-            {/* Amount — in title's place, with the title's chip size & border */}
-            <div className="text-left">
-              <span className="bg-white text-black border border-black font-black text-lg sm:text-xl rounded-xl px-6 py-3 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-block">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
-            </div>
-
-            {/* Title — in amount's place, with the amount's size */}
-            <div className="w-full text-center mt-10 sm:mt-8">
+            {/* Title */}
+            <div className="w-full text-center">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.title}</h2>
             </div>
 
-            {/* Description */}
-            {listing.description && (
-              <div className="border-t border-gray-100 pt-3 mb-3">
-                <p className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
-              </div>
-            )}
+            {/* Amount + Info Chips on one row — amount right side next to location etc */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-4 sm:mt-3">
+              <span className="bg-white text-black border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
 
-            {/* Info Chips + Share inside card */}
-            <div className="flex flex-wrap items-center gap-1.5">
               {listing.condition && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                   {listing.condition}
@@ -521,7 +513,7 @@ export default function ListingDetail() {
                 <MapPin className="h-3 w-3 text-black" />{listing.location}
               </span>
               {formatPostedDate(listing.createdAt) && (
-                <div className="w-full sm:w-auto">
+                <div className="mx-auto">
                   <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                     <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                   </span>
@@ -534,6 +526,15 @@ export default function ListingDetail() {
                   </span>
                 ))
               )}
+            </div>
+
+            {/* Description */}
+            {listing.description && (
+              <div className="border-t border-gray-100 pt-3 mb-3 mt-3">
+                <p className="text-[13px] text-black whitespace-pre-wrap leading-relaxed font-bold">{listing.description}</p>
+              </div>
+            )}
+
               {chatUnlocked && (
                 <div className="sm:hidden mt-4 w-full flex justify-center">
                   <Button
