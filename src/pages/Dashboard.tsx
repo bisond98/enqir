@@ -1640,7 +1640,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
-                <div className="flex justify-center mb-4 sm:mb-6 lg:mb-5">
+                <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', icon: FileText },
@@ -2083,74 +2083,27 @@ const Dashboard = () => {
                   <div className="mb-6 sm:mb-12 lg:mb-8">
                     {savedListings.length > 0 && (
                       <div className="mb-5">
-                        <p className="text-[10px] sm:text-xs font-black text-gray-500 uppercase tracking-wide mb-2.5">Saved Listings</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <p className="w-fit mx-auto block text-xs sm:text-sm font-black text-white bg-black uppercase tracking-wide mb-4 text-center rounded-md px-3 py-1.5">Saved Listings</p>
+                        <div className="space-y-3 max-h-[250px] overflow-y-auto snap-y snap-proximity rounded-2xl p-1.5 -mx-2 sm:-mx-3 lg:-mx-4 xl:-mx-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
                           {savedListings.map((listing) => (
-                            <motion.div
-                              key={listing.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.3 }}
-                              className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
-                              onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
-                            >
-                              {/* Premium Black Header - matching enquiry card, with listings icon */}
-                              <div className="relative bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5">
-                                <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
-                                <div className="relative flex items-start justify-between gap-2">
-                                  <h5 className="text-sm font-bold text-white leading-snug tracking-tight truncate flex-1 min-w-0 drop-shadow-sm inline-flex items-center gap-1.5">
-                                    <LayoutDashboard className="w-3.5 h-3.5 flex-shrink-0 text-white" />
-                                    {listing.title}
-                                  </h5>
-                                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-500 rounded-full border-2 border-black shadow-md ring-2 ring-white/20 group-hover:scale-110 transition-transform">
-                                    <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
-                                  </div>
-                                </div>
+                            <div key={listing.id} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all snap-start">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <h4 className="text-sm font-bold text-black truncate min-w-0">{listing.title}</h4>
+                                <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">For Sale</span>
                               </div>
-
-                              {/* White Content Area */}
-                              <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
-                                <div className="text-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5">
-                                  <p className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight">
-                                    {listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
-                                  </p>
-                                  {listing.location && (
-                                    <p className="text-[10px] sm:text-xs font-bold text-gray-600 flex items-center justify-center gap-1 mt-1.5">
-                                      <MapPin className="h-3 w-3 flex-shrink-0" />
-                                      {listing.location}
-                                    </p>
-                                  )}
-                                </div>
-                                <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
-
-                                {/* Chat + Remove buttons */}
-                                <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-                                  <Link
-                                    to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
-                                    className="w-full flex items-center justify-center border-[0.5px] border-black bg-gradient-to-b from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xs sm:text-sm px-3.5 py-2 h-9 font-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 relative overflow-hidden group/chat"
-                                  >
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                    <MessageSquare className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 group-hover/chat:scale-110 transition-transform relative z-10" />
-                                    <span className="tracking-tight whitespace-nowrap relative z-10">Chat with Seller</span>
-                                  </Link>
-                                </div>
-                                <div className="flex justify-center mt-2.5" onClick={(e) => e.stopPropagation()}>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeSavedListing(listing.id); }}
-                                    className="w-full flex-1 flex-shrink-0 !border-[0.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] group/delete flex items-center justify-center !relative !overflow-hidden"
-                                  >
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
-                                    <span className="tracking-tight whitespace-nowrap relative z-10">Remove</span>
-                                  </Button>
-                                </div>
+                              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">{listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
+                                {listing.location && <span className="text-[10px] font-bold text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">• {listing.location}</span>}
                               </div>
-                            </motion.div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); navigate(`/sell/listing/${listing.id}`); }}
+                                className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] font-black rounded-xl h-8"
+                              >
+                                Buy
+                              </Button>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -2163,25 +2116,30 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {savedEnquiries.length > 0 && <p className="text-[10px] sm:text-xs font-black text-gray-500 uppercase tracking-wide">Saved Enquiries</p>}
+                        {savedEnquiries.length > 0 && <p className="w-fit mx-auto block text-xs sm:text-sm font-black text-white bg-black uppercase tracking-wide text-center rounded-md px-3 py-1.5">Saved Enquiries</p>}
+                        <div className="space-y-3 max-h-[250px] overflow-y-auto snap-y snap-proximity rounded-2xl p-1.5 -mx-2 sm:-mx-3 lg:-mx-4 xl:-mx-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
                         {savedEnquiries.slice(0, 5).map((enquiry) => (
-                          <div key={enquiry.id} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
-                            <h4 className="text-sm font-bold text-black truncate">{enquiry.title}</h4>
+                          <div key={enquiry.id} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all snap-start">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">Need</span>
+                              <h4 className="text-sm font-bold text-black truncate min-w-0">{enquiry.title}</h4>
+                            </div>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                               <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
-                              <span className="text-[10px] font-black text-gray-900">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                              {enquiry.location && <span className="text-[10px] font-bold text-black">• {enquiry.location}</span>}
+                              <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span className="text-[10px] font-bold text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">• {enquiry.location}</span>}
                             </div>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={(e) => { e.stopPropagation(); navigate('/my-enquiries', { state: { highlightId: enquiry.id } }); }}
-                              className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] font-black rounded-xl h-8"
+                              className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 text-[10px] font-black rounded-xl h-8"
                             >
-                              View Details
+                              Connect
                             </Button>
                           </div>
                         ))}
+                        </div>
                       </div>
                     )}
                   </div>
