@@ -15,7 +15,7 @@ import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
@@ -60,6 +60,34 @@ export default function ListingDetail() {
   const [offeredPrice, setOfferedPrice] = useState('');
   const [sending, setSending] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Load initial saved state and toggle saved listings in profiles.savedListings (same pattern as savedEnquiries)
+  useEffect(() => {
+    if (!user || !id) return;
+    let cancelled = false;
+    getDoc(doc(db, 'profiles', user.uid)).then(snap => {
+      if (!cancelled) {
+        const ids: string[] = snap.data()?.savedListings || [];
+        setSaved(ids.includes(id));
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [user?.uid, id]);
+
+  const toggleSave = async () => {
+    if (!user || !id) { setSaved(v => !v); return; }
+    const next = !saved;
+    setSaved(next);
+    try {
+      await updateDoc(doc(db, 'profiles', user.uid), next
+        ? { savedListings: arrayUnion(id) }
+        : { savedListings: arrayRemove(id) }
+      );
+    } catch (err) {
+      console.error('Failed to update saved listings:', err);
+      setSaved(!next);
+    }
+  };
   const [paymentDone, setPaymentDone] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -522,7 +550,7 @@ export default function ListingDetail() {
               )}
               <div className="w-full flex items-center justify-between mt-4 mb-0.5 gap-2">
                 <button
-                  onClick={() => setSaved(v => !v)}
+                  onClick={toggleSave}
                   aria-label={saved ? 'Remove from saved' : 'Save listing'}
                   className={`p-1 rounded-lg transition-all active:scale-95 ${saved ? 'text-black hover:bg-gray-100' : 'text-gray-600 hover:text-black hover:bg-gray-100'}`}
                 >
