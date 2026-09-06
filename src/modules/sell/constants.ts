@@ -2,6 +2,9 @@ export const SELL_CATEGORIES: Array<{ value: string; label: string }> = [
   // Original categories (at top)
   { value: 'electronics', label: 'Electronics' },
   { value: 'mobiles', label: 'Mobiles' },
+  { value: 'car', label: 'Car' },
+  { value: 'bike', label: 'Bike' },
+  { value: 'laptops', label: 'Laptops' },
   { value: 'laptops', label: 'Laptops' },
   { value: 'furniture', label: 'Furniture' },
   { value: 'home', label: 'Home' },

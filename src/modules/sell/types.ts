@@ -2,6 +2,9 @@ export type ListingCondition = 'new' | 'used';
 
 export type ListingPriceType = 'fixed' | 'range';
 
+// Per-category structured attributes (brand, year, fuel, etc.) keyed by field name
+export type ListingDetails = Record<string, string>;
+
 export interface SellListing {
   id: string;
   sellerId: string;
@@ -16,6 +19,7 @@ export interface SellListing {
   priceMax?: number | null;
   tags: string[];
   images: string[];
+  details?: ListingDetails | null;
   createdAt?: any;
   updatedAt?: any;
   status: 'live' | 'draft' | 'deleted';

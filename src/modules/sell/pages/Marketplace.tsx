@@ -21,6 +21,8 @@ import { useAuth } from '@/contexts/AuthContext';
 const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
   'electronics': Zap,
   'mobiles': Smartphone,
+  'car': Car,
+  'bike': Zap,
   'laptops': Laptop,
   'furniture': Sofa,
   'home': Home,

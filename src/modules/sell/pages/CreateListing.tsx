@@ -14,6 +14,7 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
+import { fieldsForCategoryStep } from '../categoryDetails';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import {
@@ -80,13 +81,43 @@ import {
   Zap,
   X,
   BadgeCheck,
+  ChevronDown,
+  CalendarDays,
+  Settings,
+  Fuel,
+  Gauge,
+  HardDrive,
+  Clock,
+  Ruler,
+  Compass,
 } from 'lucide-react';
+
+// H-pattern stick-shift (manual gearbox) icon
+function GearShiftIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className={className}>
+      <circle cx="12" cy="12" r="10" strokeWidth="1.6" />
+      <line x1="8" y1="7.5" x2="8" y2="16.5" />
+      <line x1="12" y1="7.5" x2="12" y2="16.5" />
+      <line x1="16" y1="7.5" x2="16" y2="16.5" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <circle cx="8" cy="7.5" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="7.5" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="7.5" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="8" cy="16.5" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="16.5" r="1.15" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="16.5" r="1.15" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
 const CATEGORY_ICON: Record<string, LucideIcon> = {
   electronics: Cpu,
   mobiles: Smartphone,
+  car: Car,
+  bike: Bike,
   laptops: Laptop,
   furniture: Armchair,
   home: Home,
@@ -159,8 +190,8 @@ const STEPS = [
   { key: 'description', label: 'Description', description: 'Tell buyers more' },
   { key: 'location', label: 'Location', description: 'Where is the item?' },
   { key: 'details', label: 'Condition', description: 'How you want to sell' },
-  { key: 'price', label: 'Price', description: 'Set your numbers' },
-  { key: 'extras', label: 'Tags & photos', description: 'Finish strong' },
+  { key: 'price', label: 'Price & Photos', description: 'Set your numbers' },
+  { key: 'extras', label: 'Confirmation', description: 'Finish strong' },
 ] as const;
 
 export default function CreateListing() {
@@ -193,6 +224,7 @@ export default function CreateListing() {
   const [priceMin, setPriceMin] = useState<string>('');
   const [priceMax, setPriceMax] = useState<string>('');
   const [tags, setTags] = useState<string>('');
+  const [details, setDetails] = useState<Record<string, string>>({});
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
@@ -223,6 +255,7 @@ export default function CreateListing() {
         if (d.priceMin) setPriceMin(d.priceMin);
         if (d.priceMax) setPriceMax(d.priceMax);
         if (d.tags) setTags(d.tags);
+        if (d.details) setDetails(d.details);
         if (d.images?.length) setImages(d.images);
       } catch {}
       localStorage.removeItem(STORAGE_KEY);
@@ -339,6 +372,14 @@ export default function CreateListing() {
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
+
+  const setDetail = (key: string, value: string) =>
+    setDetails((prev) => {
+      const next = { ...prev };
+      if (value) next[key] = value;
+      else delete next[key];
+      return next;
+    });
 
   const formatPriceInput = (value: string): string => {
     const digits = value.replace(/[^\d]/g, '');
@@ -499,6 +540,7 @@ export default function CreateListing() {
         priceMax: rangeMax,
         tags: parsedTags,
         images,
+        details: Object.keys(details).length > 0 ? details : null,
       });
       toast({ title: 'Published', description: 'Your listing is live.' });
       sessionStorage.removeItem('listing-published');
@@ -710,12 +752,46 @@ export default function CreateListing() {
                   id="listing-title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., iPhone 13 Pro 128GB — excellent condition"
+                  placeholder={(category === 'car' || category === 'vehicles') ? 'e.g., Innova, Scorpio' : 'e.g., iPhone 13 Pro 128GB — excellent condition'}
                   className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
                   maxLength={30}
                   autoFocus
                 />
-                <p className="text-[11px] text-slate-500">Keep it specific. Mention brand, model, or size if it helps.</p>
+                <p className="text-[11px] text-slate-500">Keep it specific.</p>
+                {fieldsForCategoryStep(category, 'title').length > 0 && (
+                  <div className="flex items-center justify-between gap-3 -mt-1 mb-5">
+                    {fieldsForCategoryStep(category, 'title').map((f) => (
+                      <div key={f.key} className="relative w-[48%]">
+                        {f.typeable ? (
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={4}
+                            value={details[f.key] ?? ''}
+                            onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, ''))}
+                            placeholder={f.placeholder ?? 'Type year'}
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                          />
+                        ) : (
+                          <>
+                            <select
+                              value={details[f.key] ?? ''}
+                              onChange={(e) => setDetail(f.key, e.target.value)}
+                              className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 text-black"
+                            >
+                              <option value="">{f.placeholder ?? 'Select'}</option>
+                              {f.options?.map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="h-4" />
               </div>
             )}
 
@@ -733,6 +809,83 @@ export default function CreateListing() {
                   className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                   autoFocus
                 />
+                {fieldsForCategoryStep(category, 'description').length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    {/* Creative toggle-style fields (e.g., transmission) */}
+                    {(() => {
+                      const descFields = fieldsForCategoryStep(category, 'description');
+                      const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
+                      const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
+                      return (
+                        <>
+                          {toggleFields.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {toggleFields.map((f) => {
+                                const val = details[f.key] ?? '';
+                                const isOn = val === f.options![1];
+                                return (
+                                  <div key={f.key} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-2.5">
+                                    <span className="text-xs sm:text-sm font-bold text-black">{f.label}</span>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => setDetail(f.key, f.options![0])}
+                                        className={cn('text-[10px] font-black uppercase tracking-wide transition-colors', val === f.options![0] ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600')}
+                                      >
+                                        {f.options![0]}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="slider"
+                                        aria-label={f.label}
+                                        aria-valuenow={val || undefined}
+                                        onClick={() => setDetail(f.key, val === f.options![1] ? f.options![0] : f.options![1])}
+                                        className="relative inline-flex h-[24px] w-[50px] items-center rounded-full flex-shrink-0 bg-black"
+                                      >
+                                        <span
+                                          className="absolute left-0 top-1/2 h-[30px] w-[30px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.25)] will-change-transform transition-transform duration-300 ease-in-out"
+                                          style={{ transform: val === f.options![1] ? 'translate(20px, -50%)' : 'translate(0px, -50%)' }}
+                                        />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setDetail(f.key, f.options![1])}
+                                        className={cn('text-[10px] font-black uppercase tracking-wide transition-colors', val === f.options![1] ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600')}
+                                      >
+                                        {f.options![1]}
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {selectFields.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {selectFields.map((f) => (
+                                <div key={f.key} className="space-y-2">
+                                  <div className="relative">
+                                    <select
+                                      value={details[f.key] ?? ''}
+                                      onChange={(e) => setDetail(f.key, e.target.value)}
+                                      className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                                    >
+                                      <option value="">{f.placeholder ?? 'Select'}</option>
+                                      {f.options?.map((opt) => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                      ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
             )}
 
@@ -847,6 +1000,41 @@ export default function CreateListing() {
                   </div>
                 </div>
 
+                {condition === 'used' && fieldsForCategoryStep(category, 'details').map((f) => (
+                  <div key={f.key} className="space-y-2">
+                    <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>
+                    <div className="relative">
+                      {f.type === 'select' ? (
+                        <>
+                          <select
+                            value={details[f.key] ?? ''}
+                            onChange={(e) => setDetail(f.key, e.target.value)}
+                            className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                          >
+                            <option value="">{f.placeholder ?? 'Select'}</option>
+                            {f.options?.map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </>
+                      ) : (
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          value={details[f.key] ?? ''}
+                          onChange={(e) => setDetail(f.key, formatPriceInput(e.target.value))}
+                          placeholder={f.placeholder}
+                          className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
+                        />
+                      )}
+                      {f.suffix && f.type !== 'select' && (
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black text-gray-500">{f.suffix}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
               </div>
             )}
 
@@ -871,11 +1059,24 @@ export default function CreateListing() {
                     />
                   </div>
                 </div>
-              </div>
-            )}
-
-            {step === 6 && (
-              <div className="max-w-lg mx-auto w-full space-y-6">
+                {fieldsForCategoryStep(category, 'price').map((f) => (
+                  <div key={f.key} className="space-y-2">
+                    <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>
+                    <div className="relative">
+                      <select
+                        value={details[f.key] ?? ''}
+                        onChange={(e) => setDetail(f.key, e.target.value)}
+                        className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                      >
+                        <option value="">{f.placeholder ?? 'Select'}</option>
+                        {f.options?.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                    </div>
+                  </div>
+                ))}
                 <div className="space-y-2">
                   <Label className="text-xs font-bold flex items-center gap-2">
                     <Upload className="h-3.5 w-3.5" />
@@ -921,41 +1122,97 @@ export default function CreateListing() {
                   </div>
                   )}
                 </div>
-                <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
-                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
-                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
-                    <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location}</span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                    <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Price</span>
-                    <span className="text-sm sm:text-base font-black text-black">{price ? `₹${price}` : '—'}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tags" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
-                    <Tag className="h-3.5 w-3.5" />                     Tags
-                  </Label>
-                  <Input
-                    id="tags"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    placeholder="apple, warranty, charger…"
-                    className="rounded-2xl h-11 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
-                  />
-                  {parsedTags.length > 0 && (
-                    <p className="text-[11px] text-slate-600">
-                      <span className="font-semibold">Preview:</span> {parsedTags.join(' · ')}
-                    </p>
-                  )}
-                </div>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="max-w-lg mx-auto w-full space-y-5">
+                {(() => {
+                  const titleFields = fieldsForCategoryStep(category, 'title').filter((f) => details[f.key]);
+                  const descFields = fieldsForCategoryStep(category, 'description').filter((f) => details[f.key]);
+                  const usedFields = condition === 'used' ? fieldsForCategoryStep(category, 'details').filter((f) => details[f.key]) : [];
+                  const priceFields = fieldsForCategoryStep(category, 'price').filter((f) => details[f.key]);
+                  const hasSpecs = titleFields.length + descFields.length + usedFields.length + priceFields.length > 0;
+                  const hasPhoto = images.length > 0;
+                  return (
+                    <>
+                      {/* Hero: photo + title + price */}
+                      <div className="rounded-2xl overflow-hidden border-2 border-black bg-white">
+                        {hasPhoto ? (
+                          <div className="relative">
+                            <img src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
+                            {images.length > 1 && (
+                              <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-black rounded-full px-2 py-0.5">+{images.length - 1} more</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="h-24 bg-slate-50 border-b-2 border-dashed border-black/15 flex flex-col items-center justify-center gap-1">
+                            <Upload className="h-5 w-5 text-gray-400" />
+                            <span className="text-[11px] text-gray-400 font-medium">No photos added yet</span>
+                          </div>
+                        )}
+                        <div className="p-4">
+                          <h3 className="font-black text-base sm:text-lg text-black leading-snug">{title || 'Untitled listing'}</h3>
+                          <div className="flex items-baseline gap-2 mt-1.5">
+                            <span className="text-lg sm:text-xl font-black text-black">{price ? `₹${price}` : 'Price not set'}</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
+                              {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <Icon className="h-3 w-3" />; })()}
+                              {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5 capitalize">
+                              <BadgeCheck className="h-3 w-3" />{condition}
+                            </span>
+                            {location && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
+                                <MapPin className="h-3 w-3" /> {location}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Specs — only filled ones, as compact chips */}
+                      {hasSpecs && (
+                        <div className="rounded-2xl border border-black/15 bg-slate-50/70 p-3.5">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Details</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[...titleFields, ...descFields, ...usedFields, ...priceFields].map((f) => {
+                              const SpecIcon =
+                                f.key === 'brand' ? Tag :
+                                f.key === 'year' ? CalendarDays :
+                                f.key === 'transmission' ? GearShiftIcon :
+                                f.key === 'fuel' ? Fuel :
+                                f.key === 'kmsDriven' ? Gauge :
+                                f.key === 'ownership' ? User :
+                                f.key === 'storage' ? HardDrive :
+                                f.key === 'ram' ? Cpu :
+                                f.key === 'processor' ? Cpu :
+                                f.key === 'warranty' ? ShieldCheck :
+                                f.key === 'experience' ? Briefcase :
+                                f.key === 'jobType' ? Clock :
+                                f.key === 'workMode' ? Home :
+                                f.key === 'salaryPeriod' ? IndianRupee :
+                                f.key === 'bhk' ? Home :
+                                f.key === 'carpetArea' ? Ruler :
+                                f.key === 'furnishing' ? Armchair :
+                                f.key === 'facing' ? Compass :
+                                f.key === 'listingFor' ? Tag :
+                                null;
+                              return (
+                                <span key={f.key} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                                  {SpecIcon && <SpecIcon className="h-3 w-3 text-black" />}
+                                  {details[f.key]}{f.suffix ? ` ${f.suffix}` : ''}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -968,7 +1225,7 @@ export default function CreateListing() {
                 onClick={() => {
                   localStorage.setItem(STORAGE_KEY, JSON.stringify({
                     title, description, category, location, condition,
-                    priceType, price, priceMin, priceMax, tags, images
+                    priceType, price, priceMin, priceMax, tags, images, details
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}

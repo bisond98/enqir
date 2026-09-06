@@ -517,6 +517,13 @@ export default function ListingDetail() {
                   <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
+              {listing.details && Object.values(listing.details).filter(Boolean).length > 0 && (
+                Object.values(listing.details).filter(Boolean).map((val, i) => (
+                  <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                    {val}
+                  </span>
+                ))
+              )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
                   <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
