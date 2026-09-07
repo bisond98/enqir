@@ -790,7 +790,7 @@ const EnquiryDetail = () => {
                   {/* Reference Images Section - Only on Detailed Page */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
                     <div className="mb-5 sm:mb-6 pt-5 sm:pt-6 border-t-[0.5px] border-black">
-                      <h3 className="text-sm sm:text-sm font-semibold text-slate-800 mb-3 sm:mb-4 flex items-center justify-center gap-2.5">
+                      <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-4 flex items-center justify-center gap-2.5">
                         <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4" />
                         Reference Images ({enquiry.referenceImages.length})
                       </h3>
@@ -835,7 +835,7 @@ const EnquiryDetail = () => {
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Price</p>
+                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Budget</p>
                           <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">{formatBudget(enquiry.budget)}</p>
                         </div>
                       </div>
@@ -907,13 +907,23 @@ const EnquiryDetail = () => {
                     </div>
                   </div>
 
+                  {enquiry.notes && (
+                    <div className="mt-12 sm:mt-14 mb-4">
+                      <p className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3 flex items-center justify-center gap-2.5">
+                        <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
+                        Additional Notes
+                      </p>
+                      <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                    </div>
+                  )}
+
                   {/* Save & Share - icon-only, under the Posted tile */}
-                  <div className="flex justify-between items-center mt-4">
+                  <div className="flex justify-between items-center mt-10">
                     <button
                       onClick={handleSave}
                       title={savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}
                       className={`p-1.5 transition-all duration-200 hover:scale-110 active:scale-95 ${
-                        savedEnquiries.includes(enquiry.id) ? 'text-black' : 'text-gray-500 hover:text-black'
+                        savedEnquiries.includes(enquiry.id) ? 'text-black' : 'text-slate-800 hover:text-black'
                       }`}
                     >
                       <Bookmark className={`h-4 w-4 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
@@ -921,7 +931,7 @@ const EnquiryDetail = () => {
                     <button
                       onClick={handleShare}
                       title="Share"
-                      className="p-1.5 text-gray-500 hover:text-black transition-all duration-200 hover:scale-110 active:scale-95"
+                      className="p-1.5 text-slate-800 hover:text-black transition-all duration-200 hover:scale-110 active:scale-95"
                     >
                       <Share2 className="h-4 w-4" />
                     </button>
@@ -1023,16 +1033,6 @@ const EnquiryDetail = () => {
                     )}
                   </div>
                   </div>
-
-                  {enquiry.notes && (
-                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-[0.5px] border-black">
-                      <p className="text-sm sm:text-sm font-bold text-slate-800 mb-3 sm:mb-3 flex items-center gap-2.5">
-                        <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
-                        Additional Notes
-                      </p>
-                      <p className="text-sm sm:text-sm md:text-base text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
