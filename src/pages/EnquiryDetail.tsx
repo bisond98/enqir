@@ -768,9 +768,7 @@ const EnquiryDetail = () => {
           
         {/* Content - Inside Container */}
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
               <Card className="border border-black shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
@@ -837,7 +835,7 @@ const EnquiryDetail = () => {
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Budget</p>
+                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Price</p>
                           <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">{formatBudget(enquiry.budget)}</p>
                         </div>
                       </div>
@@ -849,8 +847,8 @@ const EnquiryDetail = () => {
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
+                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Location</p>
@@ -865,8 +863,8 @@ const EnquiryDetail = () => {
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/deadline:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
+                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Deadline</p>
@@ -929,59 +927,8 @@ const EnquiryDetail = () => {
                     </button>
                   </div>
 
-                  {enquiry.notes && (
-                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-[0.5px] border-black">
-                      <p className="text-sm sm:text-sm font-bold text-slate-800 mb-3 sm:mb-3 flex items-center gap-2.5">
-                        <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
-                        Additional Notes
-                      </p>
-                      <p className="text-sm sm:text-sm md:text-base text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Admin Information (if available) */}
-              {/*
-              {(enquiry.adminNotes || enquiry.aiNotes) && (
-                <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="pb-6 bg-gradient-to-r from-amber-50 to-orange-50">
-                    <h2 className="text-2xl font-bold flex items-center gap-3">
-                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                        <Shield className="h-5 w-5 text-amber-600" />
-                      </div>
-                      Admin Information
-                    </h2>
-                  </CardHeader>
-                  <CardContent className="p-8 space-y-6">
-                    {formatAdminNotes(enquiry.adminNotes) && (
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200/50">
-                        <p className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
-                          <Shield className="h-4 w-4" />
-                          Admin Notes
-                        </p>
-                        <p className="text-blue-800 leading-relaxed">{formatAdminNotes(enquiry.adminNotes)}</p>
-                      </div>
-                    )}
-                    {enquiry.aiNotes && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
-                        <p className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4" />
-                          AI Analysis
-                        </p>
-                        <p className="text-green-800 leading-relaxed text-sm">{enquiry.aiNotes}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-              */}
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-4 sm:space-y-6">
-              {/* Action Buttons - Professional Design */}
-              <div>
+                  {/* Connect — inside the card, below save/share */}
+                  <div className="mt-4 pt-5 border-t-[0.5px] border-black">
                   <div className="space-y-4">
                     {user && enquiry.userId === user.uid ? (
                       <div className="space-y-3">
@@ -1075,10 +1022,57 @@ const EnquiryDetail = () => {
                       })()
                     )}
                   </div>
-              </div>
+                  </div>
 
+                  {enquiry.notes && (
+                    <div className="mt-5 sm:mt-5 pt-5 sm:pt-5 border-t-[0.5px] border-black">
+                      <p className="text-sm sm:text-sm font-bold text-slate-800 mb-3 sm:mb-3 flex items-center gap-2.5">
+                        <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
+                        Additional Notes
+                      </p>
+                      <p className="text-sm sm:text-sm md:text-base text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Admin Information (if available) */}
+              {/*
+              {(enquiry.adminNotes || enquiry.aiNotes) && (
+                <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+                  <CardHeader className="pb-6 bg-gradient-to-r from-amber-50 to-orange-50">
+                    <h2 className="text-2xl font-bold flex items-center gap-3">
+                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <Shield className="h-5 w-5 text-amber-600" />
+                      </div>
+                      Admin Information
+                    </h2>
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-6">
+                    {formatAdminNotes(enquiry.adminNotes) && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200/50">
+                        <p className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          Admin Notes
+                        </p>
+                        <p className="text-blue-800 leading-relaxed">{formatAdminNotes(enquiry.adminNotes)}</p>
+                      </div>
+                    )}
+                    {enquiry.aiNotes && (
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
+                        <p className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          AI Analysis
+                        </p>
+                        <p className="text-green-800 leading-relaxed text-sm">{enquiry.aiNotes}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              */}
             </div>
-          </div>
+
         </div>
 
         {/* Payment Plan Selector Modal for Upgrades */}
