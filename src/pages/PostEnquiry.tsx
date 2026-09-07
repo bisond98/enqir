@@ -30,6 +30,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
+import { APP_CATEGORIES } from "@/constants/categories";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
@@ -1044,77 +1045,9 @@ export default function PostEnquiry() {
   ) : null;
   if (!user) return notAuth;
 
-  // Categories array - matching EnquiryWall.tsx with main categories at top
-  let categories = [
-    // Main categories at the top
-    { value: "business", label: "Business", group: "Main" },
-    { value: "personal", label: "Personal", group: "Main" },
-    { value: "service", label: "Service", group: "Main" },
-    // Rest of categories
-    { value: "agriculture-farming", label: "Agriculture", group: "Lifestyle" },
-    { value: "antiques", label: "Antiques", group: "Products" },
-    { value: "art", label: "Art", group: "Products" },
-    { value: "automobile", label: "Automobile", group: "Products" },
-    { value: "car", label: "Car", group: "Products" },
-    { value: "bike", label: "Bike", group: "Products" },
-    { value: "mobiles", label: "Mobiles", group: "Products" },
-    { value: "baby-kids", label: "Baby & Kids", group: "Products" },
-    { value: "bags-luggage", label: "Bags & Luggage", group: "Products" },
-    { value: "books-publications", label: "Books", group: "Products" },
-    { value: "beauty-products", label: "Beauty", group: "Products" },
-    { value: "bicycles", label: "Bicycles", group: "Products" },
-    { value: "childcare-family", label: "Childcare", group: "Lifestyle" },
-    { value: "collectibles", label: "Collectibles", group: "Products" },
-    { value: "construction-renovation", label: "Construction", group: "Industrial" },
-    { value: "education-training", label: "Education", group: "Lifestyle" },
-    { value: "electronics-gadgets", label: "Electronics", group: "Products" },
-    { value: "entertainment-media", label: "Entertainment", group: "Lifestyle" },
-    { value: "events-entertainment", label: "Events", group: "Lifestyle" },
-    { value: "fashion-apparel", label: "Fashion", group: "Products" },
-    { value: "food-beverage", label: "Food", group: "Lifestyle" },
-    { value: "gaming-recreation", label: "Gaming", group: "Lifestyle" },
-    { value: "government-public", label: "Government", group: "Professional" },
-    { value: "health-beauty", label: "Health", group: "Lifestyle" },
-    { value: "home-furniture", label: "Home", group: "Products" },
-    { value: "insurance-services", label: "Insurance", group: "Professional" },
-    { value: "jobs", label: "Jobs", group: "Professional" },
-    { value: "jewelry-accessories", label: "Jewelry", group: "Products" },
-    { value: "legal-financial", label: "Legal", group: "Professional" },
-    { value: "marketing-advertising", label: "Marketing", group: "Professional" },
-    { value: "memorabilia", label: "Memorabilia", group: "Products" },
-    { value: "non-profit-charity", label: "Non-Profit", group: "Professional" },
-    { value: "pets", label: "Pets", group: "Lifestyle" },
-    { value: "raw-materials-industrial", label: "Industrial", group: "Industrial" },
-    { value: "real-estate", label: "Real Estate", group: "Professional" },
-    { value: "real-estate-services", label: "Real Estate Services", group: "Professional" },
-    { value: "renewable-energy", label: "Renewable Energy", group: "Technology" },
-    { value: "security-safety", label: "Security", group: "Security" },
-    { value: "sneakers", label: "Sneakers", group: "Products" },
-    { value: "souvenir", label: "Souvenir", group: "Products" },
-    { value: "sports-outdoor", label: "Sports", group: "Lifestyle" },
-    { value: "technology", label: "Technology", group: "Technology" },
-    { value: "thrift", label: "Thrift", group: "Products" },
-    { value: "transportation-logistics", label: "Transportation", group: "Industrial" },
-    { value: "travel-tourism", label: "Travel", group: "Lifestyle" },
-    { value: "vintage", label: "Vintage", group: "Products" },
-    { value: "waste-management", label: "Waste Management", group: "Industrial" },
-    { value: "wedding-events", label: "Wedding", group: "Lifestyle" },
-    { value: "musical-instruments", label: "Musical Instruments", group: "Products" },
-    { value: "tools-equipment", label: "Tools & Equipment", group: "Products" },
-    { value: "appliances", label: "Appliances", group: "Products" },
-    { value: "photography-cameras", label: "Photography & Cameras", group: "Products" },
-    { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment", group: "Products" },
-    { value: "kitchen-dining", label: "Kitchen & Dining", group: "Products" },
-    { value: "garden-outdoor", label: "Garden & Outdoor", group: "Products" },
-    { value: "office-supplies", label: "Office Supplies", group: "Products" },
-    { value: "repair-services", label: "Repair Services", group: "Professional" },
-    { value: "cleaning-services", label: "Cleaning Services", group: "Professional" },
-    { value: "musical-services", label: "Musical Services", group: "Professional" },
-    { value: "tutoring-lessons", label: "Tutoring & Lessons", group: "Professional" },
-    { value: "medical-equipment", label: "Medical Equipment", group: "Products" },
-    { value: "musical-accessories", label: "Musical Accessories", group: "Products" },
-    { value: "other", label: "Other", group: "Other" }
-  ];
+  // Categories — shared unified list, identical to the Sell form
+  // (Main categories on top, max 3 can be selected below).
+  let categories = APP_CATEGORIES;
   
   // Category icon mapping
   const categoryIcons: Record<string, any> = {
@@ -1128,6 +1061,9 @@ export default function PostEnquiry() {
     "car": Car,
     "bike": Bike,
     "mobiles": Smartphone,
+    "laptops": Monitor,
+    "furniture": Sofa,
+    "vehicles": Car,
     "baby-kids": Baby,
     "bags-luggage": Briefcase,
     "books-publications": BookOpen,

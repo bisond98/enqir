@@ -11,6 +11,8 @@ export interface SellListing {
   title: string;
   description: string;
   category: string;
+  /** All selected categories (max 3) — first one is the primary (same as `category`). */
+  categories?: string[];
   location: string;
   condition: ListingCondition;
   priceType: ListingPriceType;

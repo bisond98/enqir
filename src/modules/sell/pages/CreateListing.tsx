@@ -123,6 +123,8 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   home: Home,
   fashion: Shirt,
   vehicles: Car,
+  automobile: Car,
+  service: Wrench,
   services: Wrench,
   'agriculture-farming': Tractor,
   antiques: Landmark,
@@ -215,6 +217,20 @@ export default function CreateListing() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
+  const [selectedCats, setSelectedCats] = useState<string[]>([]);
+
+  // Max 3 categories — primary (first selected) drives category details,
+  // all selected are stored in `categories` for matching/search.
+  const toggleCat = (v: string) => {
+    setSelectedCats((prev) => {
+      if (prev.includes(v)) return prev.filter((x) => x !== v);
+      if (prev.length >= 3) return prev; // cap at 3
+      return [...prev, v];
+    });
+  };
+  useEffect(() => {
+    setCategory(selectedCats[0] ?? 'other');
+  }, [selectedCats]);
   const [location, setLocation] = useState<string>('Other');
   const [locationSearch, setLocationSearch] = useState('');
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
@@ -248,6 +264,7 @@ export default function CreateListing() {
         if (d.title) setTitle(d.title);
         if (d.description) setDescription(d.description);
         if (d.category) setCategory(d.category);
+        if (Array.isArray(d.categories) && d.categories.length) setSelectedCats(d.categories.slice(0, 3));
         if (d.location) setLocation(d.location);
         if (d.condition) setCondition(d.condition);
         if (d.priceType) setPriceType(d.priceType);
@@ -532,6 +549,7 @@ export default function CreateListing() {
         title: title.trim(),
         description: description.trim(),
         category,
+        categories: selectedCats.length > 0 ? selectedCats : [category],
         location,
         condition,
         priceType,
@@ -545,7 +563,7 @@ export default function CreateListing() {
       toast({ title: 'Published', description: 'Your listing is live.' });
       // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
       import('../services/matchEngine').then(({ matchesForListing, notifyMatch }) =>
-        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, location, condition, priceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
+        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, categories: selectedCats.length > 0 ? selectedCats : [category], location, condition, priceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
           .then((matches) => {
             if (matches.length > 0) {
               notifyMatch({
@@ -667,21 +685,31 @@ export default function CreateListing() {
                     )}
                   </div>
 
+                  {/* Max-3 hint */}
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-[11px] sm:text-xs font-bold text-slate-600">Choose up to 3 categories to best match</p>
+                    <span className={`text-[11px] font-black px-2.5 py-1 rounded-full border ${selectedCats.length >= 3 ? 'bg-black text-white border-black' : 'bg-white text-black border-black/20'}`}>{selectedCats.length}/3</span>
+                  </div>
+
                   {/* Category grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {paginatedCats.map((c) => {
                       const Icon = CATEGORY_ICON[c.value] ?? LayoutGrid;
-                      const selected = category === c.value;
+                      const selected = selectedCats.includes(c.value);
+                      const disabled = !selected && selectedCats.length >= 3;
                       return (
                         <button
                           key={c.value}
                           type="button"
-                          onClick={() => setCategory(c.value)}
+                          onClick={() => toggleCat(c.value)}
+                          disabled={disabled}
                           className={cn(
                             'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                             selected
                               ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
-                              : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
+                              : disabled
+                                ? 'border-black/10 bg-slate-50 text-slate-400 opacity-60 cursor-not-allowed'
+                                : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
                           )}
                         >
                           <div
@@ -706,11 +734,12 @@ export default function CreateListing() {
                         <span className="text-[11px] font-bold text-black">Please choose</span>
                         {(() => {
                           const Icon = CATEGORY_ICON['other'] ?? LayoutGrid;
-                          const selected = category === 'other';
+                          const selected = selectedCats.includes('other');
                           return (
                             <button
                               type="button"
-                              onClick={() => setCategory('other')}
+                              onClick={() => toggleCat('other')}
+                              disabled={!selected && selectedCats.length >= 3}
                               className={cn(
                                 'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                 selected
@@ -1240,7 +1269,7 @@ export default function CreateListing() {
                 type="button"
                 onClick={() => {
                   localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    title, description, category, location, condition,
+                    title, description, category, categories: selectedCats, location, condition,
                     priceType, price, priceMin, priceMax, tags, images, details
                   }));
                   navigate('/profile?returnTo=/sell/new');

@@ -148,7 +148,9 @@ const BROAD_BUCKETS: Record<string, string[]> = {
 export function scoreMatch(listing: SellListing, enquiry: EnquiryForMatch): { score: number; reasons: string[] } {
   const reasons: string[] = [];
 
-  const listingCats = [String(listing.category ?? '').toLowerCase()];
+  const listingCats = [listing.category, ...((listing as any).categories ?? [])]
+    .filter(Boolean)
+    .map((c) => String(c).toLowerCase());
   const enquiryCats = [enquiry.category, ...(enquiry.categories ?? [])]
     .filter(Boolean)
     .map((c) => String(c).toLowerCase());

@@ -76,9 +76,9 @@ export async function listMarketplace(params: {
   });
 
   if (params.categories?.length) {
-    listings = listings.filter((l) => params.categories!.includes(l.category));
+    listings = listings.filter((l) => params.categories!.includes(l.category) || (Array.isArray((l as any).categories) && (l as any).categories.some((c: string) => params.categories!.includes(c))));
   } else if (params.category) {
-    listings = listings.filter((l) => l.category === params.category);
+    listings = listings.filter((l) => l.category === params.category || (Array.isArray((l as any).categories) && (l as any).categories.includes(params.category!)));
   }
   if (params.location) {
     listings = listings.filter((l) => l.location === params.location);
