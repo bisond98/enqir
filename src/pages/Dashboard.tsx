@@ -114,24 +114,37 @@ const Dashboard = () => {
   const [interestListings, setInterestListings] = useState<SellListing[]>([]);
   const [hiddenInterestIds, setHiddenInterestIds] = useState<Set<string>>(new Set());
   const [enquiryView, setEnquiryView] = useState<'enquiries' | 'interests' | 'saved'>('enquiries');
-  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings' | 'matches'>(() => {
+  const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'matches'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const urlMode = urlParams.get('mode');
       if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings' || urlMode === 'matches') {
         localStorage.setItem('dashboardViewMode', urlMode);
-        return urlMode;
+        return urlMode === 'listings' ? 'seller' : urlMode; // legacy ?mode=listings → Sell tab
       }
       const saved = localStorage.getItem('dashboardViewMode');
-      const mode = (saved === 'buyer' || saved === 'seller' || saved === 'listings' || saved === 'matches') ? saved : 'buyer';
-      return mode;
+      if (saved === 'buyer' || saved === 'seller' || saved === 'matches') return saved;
+      if (saved === 'listings') return 'seller'; // legacy saved value
+      return 'buyer';
     }
     return 'buyer';
+  });
+  // Sell tab sub-view: Responses | Listings (same pattern as Enquiries/Interests/Saved)
+  const [sellerView, setSellerView] = useState<'responses' | 'listings'>(() => {
+    if (typeof window !== 'undefined') {
+      const urlMode = new URLSearchParams(window.location.search).get('mode');
+      if (urlMode === 'listings') return 'listings';
+      if (localStorage.getItem('dashboardViewMode') === 'listings') return 'listings';
+    }
+    return 'responses';
   });
 
   // Match engine state (AI matches between enquiries & listings)
   const [userMatches, setUserMatches] = useState<UserMatches | null>(null);
   const [matchesLoading, setMatchesLoading] = useState(false);
+  // Red-dot indicator on the Matches toggle (count > 0 = unread matches waiting)
+  const [matchDotCount, setMatchDotCount] = useState<number | null>(null);
+  const matchScanRef = useRef<Promise<UserMatches> | null>(null);
 
   const [listingPage, setListingPage] = useState(0);
   const LISTINGS_PER_PAGE = 6;
@@ -173,31 +186,60 @@ const Dashboard = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlMode = urlParams.get('mode');
     if (urlMode === 'buyer' || urlMode === 'seller' || urlMode === 'listings' || urlMode === 'matches') {
-      setViewMode(urlMode);
-      localStorage.setItem('dashboardViewMode', urlMode);
+      setViewMode(urlMode === 'listings' ? 'seller' : urlMode);
+      if (urlMode === 'listings') setSellerView('listings');
+      localStorage.setItem('dashboardViewMode', urlMode === 'listings' ? 'seller' : urlMode);
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else {
       const saved = localStorage.getItem('dashboardViewMode');
-      if (saved && (saved === 'buyer' || saved === 'seller' || saved === 'listings' || saved === 'matches') && saved !== viewMode) {
+      if (saved && (saved === 'buyer' || saved === 'seller' || saved === 'matches') && saved !== viewMode) {
         setViewMode(saved);
+      } else if (saved === 'listings') {
+        setViewMode('seller');
+        setSellerView('listings');
       }
     }
   }, []);
+
+  // Shared scanner so the dot check and the Matches tab never double-fetch
+  const scanMatches = (uid: string): Promise<UserMatches> => {
+    if (!matchScanRef.current) {
+      matchScanRef.current = computeUserMatches(uid).catch(
+        () => ({ forNeeds: [], forListings: [], computedAt: Date.now() }) as UserMatches
+      );
+    }
+    return matchScanRef.current;
+  };
 
   // Load AI matches when the Matches view is opened
   useEffect(() => {
     if (viewMode !== 'matches' || !user?.uid || userMatches) return;
     let cancelled = false;
     setMatchesLoading(true);
-    computeUserMatches(user.uid)
+    scanMatches(user.uid)
       .then((m) => { if (!cancelled) setUserMatches(m); })
-      .catch(() => { if (!cancelled) setUserMatches({ forNeeds: [], forListings: [], computedAt: Date.now() }); })
-    .finally(() => { if (!cancelled) setMatchesLoading(false); });
+      .finally(() => { if (!cancelled) setMatchesLoading(false); });
     return () => { cancelled = true; };
   }, [viewMode, user?.uid, userMatches]);
 
-  const handleToggleView = (mode: 'buyer' | 'seller' | 'listings' | 'matches') => {
+  // Red-dot indicator: lightweight scan on dashboard load so the Matches
+  // toggle can show a dot/badge when matches are waiting (without opening it)
+  useEffect(() => {
+    if (!user?.uid || userMatches) return;
+    let cancelled = false;
+    scanMatches(user.uid)
+      .then((m) => { if (!cancelled) setMatchDotCount(m.forNeeds.length + m.forListings.length); })
+      .catch(() => { if (!cancelled) setMatchDotCount(0); });
+    return () => { cancelled = true; };
+  }, [user?.uid, userMatches]);
+
+  // Seen it — clear the indicator once the Matches tab content has loaded
+  useEffect(() => {
+    if (viewMode === 'matches' && userMatches) setMatchDotCount(0);
+  }, [viewMode, userMatches]);
+
+  const handleToggleView = (mode: 'buyer' | 'seller' | 'matches') => {
     setViewMode(mode);
     localStorage.setItem('dashboardViewMode', mode);
     if (mode === 'matches') setShowScrollIndicator(false);
@@ -1556,7 +1598,6 @@ const Dashboard = () => {
                       {([
                         { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                         { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                        { key: 'listings' as const, label: 'Listings', icon: LayoutDashboard, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                         { key: 'matches' as const, label: 'Matches', icon: Sparkles, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
                       ]).map(({ key, label, icon: Icon, activeColor }) => (
                         <motion.button
@@ -1575,6 +1616,15 @@ const Dashboard = () => {
                         >
                           <Icon className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
                           <span>{label}</span>
+                          {key === 'matches' && !!matchDotCount && viewMode !== 'matches' && (
+                            matchDotCount < 5 ? (
+                              <span className="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white pointer-events-none" />
+                            ) : (
+                              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full border border-white flex items-center justify-center pointer-events-none">
+                                {matchDotCount > 99 ? '99+' : matchDotCount}
+                              </span>
+                            )
+                          )}
                         </motion.button>
                       ))}
                     </div>
@@ -2172,7 +2222,7 @@ const Dashboard = () => {
               className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate('/my-responses');
+                if (sellerView === 'responses') navigate('/my-responses');
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -2183,8 +2233,12 @@ const Dashboard = () => {
                   {/* Header Section with Title - Centered */}
                   <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8 xl:mt-10">
                     <h2 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <Reply className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      Your Responses
+                      {sellerView === 'listings' ? (
+                        <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      ) : (
+                        <Reply className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
+                      )}
+                      {sellerView === 'listings' ? 'My Listings' : 'Your Responses'}
                     </h2>
                   </div>
                   
@@ -2192,7 +2246,7 @@ const Dashboard = () => {
                   <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 xl:p-4 w-full">
                     <div className="text-center">
                       <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-white leading-snug">
-                        Track your reply to the enquiries
+                        {sellerView === 'listings' ? 'Manage your sell listings and track responses.' : 'Track your reply to the enquiries'}
                       </p>
                     </div>
                   </div>
@@ -2200,6 +2254,38 @@ const Dashboard = () => {
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
+                {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
+                <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                    {([
+                      { key: 'responses' as const, label: 'Responses' },
+                      { key: 'listings' as const, label: 'Listings' },
+                    ]).map(({ key, label }) => (
+                      <motion.button
+                        key={key}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setSellerView(key); }}
+                        whileTap={{ scale: 0.95 }}
+                        animate={sellerView === key ? { scale: 1.03 } : { scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        className={cn(
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
+                          sellerView === key
+                            ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
+                            : 'text-black hover:text-black hover:bg-gray-100'
+                        )}
+                      >
+                        <span>{label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Responses-only content — Listings sub-view renders SellerDashboard below */}
+                {sellerView === 'listings' ? (
+                  <SellerDashboard minimal />
+                ) : (
+                <>
                 {/* Professional Stats Grid - Circular Design */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
                   <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
@@ -2511,12 +2597,14 @@ const Dashboard = () => {
                     </Button>
                   </div>
                 )}
+                </>
+                )}
               </CardContent>
             </Card>
             )}
 
-          {/* Saved Enquiries Card - Seller View Only */}
-          {viewMode === 'seller' && (
+          {/* Saved Enquiries Card - Seller View Only (Responses sub-view, same as before) */}
+          {viewMode === 'seller' && sellerView === 'responses' && (
           <Card 
             className="group cursor-pointer border-[0.5px] border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-50 hover:to-orange-100 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 lg:mt-10 relative"
             onClick={(e) => e.stopPropagation()}
@@ -2731,40 +2819,6 @@ const Dashboard = () => {
           </Card>
           )}
         </div>
-
-        {/* Listings View - Full Seller Dashboard */}
-        {viewMode === 'listings' && (
-          <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-2 sm:pt-4 pb-8 sm:pb-12">
-            <Card className="group border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full">
-              <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              
-              {/* Professional Header - Matching Dashboard Style */}
-              <div className="relative bg-black rounded-t-2xl sm:rounded-t-3xl p-2 sm:p-6 lg:p-5 xl:p-6 overflow-visible flex items-end justify-center min-h-[80px] sm:min-h-[140px] lg:min-h-[130px] pb-6 sm:pb-16 lg:pb-14">
-                <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-4 lg:gap-3">
-                  <div className="text-center w-full flex items-center justify-center mt-4 sm:mt-10 lg:mt-8">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      My Listings
-                    </h2>
-                  </div>
-                  
-                  <div className="bg-black border border-black rounded-lg p-2 sm:p-4 lg:p-3 w-full">
-                    <div className="text-center">
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] text-white leading-snug">
-                        Manage your sell listings and track responses.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <CardContent className="p-3 sm:p-6 lg:p-5 xl:p-6">
-                <SellerDashboard minimal />
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* AI Matches View */}
         {viewMode === 'matches' && (

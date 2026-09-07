@@ -154,7 +154,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
         {[
           { label: 'Listings', count: listings.length },
           { label: 'Active', count: liveCount },
-          { label: 'Responses', count: responses.length },
+          { label: 'Buyers', count: responses.length },
         ].map(({ label, count }) => (
           <div key={label} className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24">
             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
@@ -172,7 +172,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
       <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border-[3px] border-black">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length },
-          { key: 'responses' as const, label: 'Responses', count: responses.length },
+          { key: 'responses' as const, label: 'Buyers', count: responses.length },
         ]).map(({ key, label, count }) => (
           <button
             key={key}
