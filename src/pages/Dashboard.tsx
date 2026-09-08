@@ -145,6 +145,11 @@ const Dashboard = () => {
   const [matchesError, setMatchesError] = useState(false);
   // Red-dot indicator on the Matches toggle (count > 0 = unread matches waiting)
   const [matchDotCount, setMatchDotCount] = useState<number | null>(null);
+  // Unread counts for the Buy / Sell / AI toggle badges (styled like MyChats)
+  const [buyUnreadCount, setBuyUnreadCount] = useState(0);
+  const [sellUnreadCount, setSellUnreadCount] = useState(0);
+  // Responses sub-toggle badge: submissions newer than last viewed
+  const [responsesUnread, setResponsesUnread] = useState(0);
   const matchScanRef = useRef<Promise<UserMatches> | null>(null);
 
   const [listingPage, setListingPage] = useState(0);
@@ -252,6 +257,89 @@ const Dashboard = () => {
   useEffect(() => {
     if (viewMode === 'matches' && userMatches) setMatchDotCount(0);
   }, [viewMode, userMatches]);
+
+  // Buy badge: enquiries with unread responses (same localStorage pattern as hasUnreadResponses)
+  useEffect(() => {
+    if (!user?.uid) { setBuyUnreadCount(0); return; }
+    let count = 0;
+    for (const enquiry of enquiries) {
+      const responses = enquiryResponses[enquiry.id] || [];
+      if (responses.length === 0) continue;
+      const viewedKey = `responses_viewed_${user.uid}_${enquiry.id}`;
+      const lastViewedTime = localStorage.getItem(viewedKey);
+      if (!lastViewedTime) { count++; continue; }
+      const viewedTime = parseInt(lastViewedTime, 10);
+      if (isNaN(viewedTime)) { count++; continue; }
+      const hasNew = responses.some((response: any) => {
+        const t = response.createdAt?.toDate ? response.createdAt.toDate().getTime() : (response.createdAt ? new Date(response.createdAt).getTime() : 0);
+        return t > viewedTime;
+      });
+      if (hasNew) count++;
+    }
+    setBuyUnreadCount(count);
+  }, [user?.uid, enquiries, enquiryResponses]);
+
+  // Sell badge: listing chats with messages newer than last viewed (same pattern as MyChats hasNotification)
+  useEffect(() => {
+    if (!user?.uid) { setSellUnreadCount(0); return; }
+    let cancelled = false;
+    const loadSellUnread = async () => {
+      try {
+        const chatQuery = query(
+          collection(db, 'chatMessages'),
+          where('enquiryId', '>=', 'sell_listing_'),
+          where('enquiryId', '<', 'sell_listing\uf8ff')
+        );
+        const snap = await getDocs(chatQuery);
+        // Group by thread (enquiryId + buyerId/sellerId pair)
+        const threadLatest = new Map<string, number>();
+        snap.docs.forEach(d => {
+          const data = d.data();
+          if (!data.enquiryId || data.isSystemMessage) return;
+          // Only threads where I'm the seller (listing owner) or the chatting buyer
+          const t = data.timestamp?.toDate ? data.timestamp.toDate().getTime() : (data.timestamp?.seconds ? data.timestamp.seconds * 1000 : 0);
+          if (!t) return;
+          const key = `${data.enquiryId}_${data.senderId === user.uid ? data.recipientId : data.senderId}`;
+          const cur = threadLatest.get(key) || 0;
+          if (t > cur) threadLatest.set(key, t);
+        });
+        let count = 0;
+        threadLatest.forEach((latest, key) => {
+          const listingId = key.split('_').slice(2).join('_');
+          const readKey = `chat_read_${user.uid}_${key}`;
+          const lastViewed = localStorage.getItem(readKey);
+          if (!lastViewed) { count++; return; }
+          if (latest > parseInt(lastViewed, 10)) count++;
+        });
+        if (!cancelled) setSellUnreadCount(count);
+      } catch {
+        if (!cancelled) setSellUnreadCount(0);
+      }
+    };
+    loadSellUnread();
+    const refresh = () => loadSellUnread();
+    window.addEventListener('chatViewed', refresh);
+    window.addEventListener('dashboardUpdated', refresh);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('chatViewed', refresh);
+      window.removeEventListener('dashboardUpdated', refresh);
+    };
+  }, [user?.uid]);
+
+  // Responses sub-toggle badge: submissions newer than last viewed
+  useEffect(() => {
+    if (!user?.uid || !sellerSubmissions.length) { setResponsesUnread(0); return; }
+    let count = 0;
+    for (const s of sellerSubmissions) {
+      const key = `response_viewed_${user.uid}_${s.id}`;
+      const viewed = localStorage.getItem(key);
+      if (!viewed) { count++; continue; }
+      const t = s.createdAt?.toDate ? s.createdAt.toDate().getTime() : (s.createdAt ? new Date(s.createdAt).getTime() : 0);
+      if (t > parseInt(viewed, 10) || isNaN(parseInt(viewed, 10))) count++;
+    }
+    setResponsesUnread(count);
+  }, [user?.uid, sellerSubmissions]);
 
   const handleToggleView = (mode: 'buyer' | 'seller' | 'matches') => {
     setViewMode(mode);
@@ -1627,10 +1715,10 @@ const Dashboard = () => {
                   <div className="flex justify-center mt-4 sm:mt-5">
                     <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                       {([
-                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                        { key: 'matches' as const, label: 'Matches', icon: Sparkles, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                      ]).map(({ key, label, icon: Icon, activeColor }) => (
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: buyUnreadCount },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: sellUnreadCount },
+                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: matchDotCount || 0 },
+                      ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
                         <motion.button
                           key={key}
                           type="button"
@@ -1647,14 +1735,15 @@ const Dashboard = () => {
                         >
                           <Icon className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
                           <span>{label}</span>
-                          {key === 'matches' && !!matchDotCount && viewMode !== 'matches' && (
-                            matchDotCount < 5 ? (
-                              <span className="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white pointer-events-none" />
-                            ) : (
-                              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full border border-white flex items-center justify-center pointer-events-none">
-                                {matchDotCount > 99 ? '99+' : matchDotCount}
-                              </span>
-                            )
+                          {unread > 0 && (
+                            <motion.span
+                              className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                            >
+                              {unread > 9 ? '9+' : unread}
+                            </motion.span>
                           )}
                         </motion.button>
                       ))}
@@ -1743,14 +1832,19 @@ const Dashboard = () => {
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                     {([
-                      { key: 'enquiries' as const, label: 'Enquiries' },
-                      { key: 'interests' as const, label: 'Interests' },
-                      { key: 'saved' as const, label: 'Saved' },
-                    ]).map(({ key, label }) => (
+                      { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
+                      { key: 'interests' as const, label: 'Interests', unread: visibleInterestListings.length > 0 && localStorage.getItem(`interests_viewed_${user?.uid}`) === null ? visibleInterestListings.length : (visibleInterestListings.length > parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) ? visibleInterestListings.length - parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) : 0) },
+                      { key: 'saved' as const, label: 'Saved', unread: (savedEnquiries.length + savedListings.length) > parseInt(localStorage.getItem(`saved_viewed_${user?.uid}`) || '0', 10) ? (savedEnquiries.length + savedListings.length) - parseInt(localStorage.getItem(`saved_viewed_${user?.uid}`) || '0', 10) : 0 },
+                    ]).map(({ key, label, unread }) => (
                       <motion.button
                         key={key}
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setEnquiryView(key); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEnquiryView(key);
+                          localStorage.setItem(key === 'interests' ? `interests_viewed_${user?.uid}` : key === 'saved' ? `saved_viewed_${user?.uid}` : `enquiries_viewed_${user?.uid}`, String(key === 'interests' ? visibleInterestListings.length : key === 'saved' ? savedEnquiries.length + savedListings.length : buyUnreadCount));
+                          if (key === 'enquiries') setBuyUnreadCount(0);
+                        }}
                         whileTap={{ scale: 0.95 }}
                         animate={enquiryView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -1762,6 +1856,16 @@ const Dashboard = () => {
                         )}
                       >
                         <span>{label}</span>
+                        {unread > 0 && (
+                          <motion.span
+                            className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                          >
+                            {unread > 9 ? '9+' : unread}
+                          </motion.span>
+                        )}
                       </motion.button>
                     ))}
                   </div>
@@ -2289,13 +2393,18 @@ const Dashboard = () => {
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
                     {([
-                      { key: 'responses' as const, label: 'Responses' },
-                      { key: 'listings' as const, label: 'Listings' },
-                    ]).map(({ key, label }) => (
+                      { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
+                      { key: 'listings' as const, label: 'Listings', unread: sellUnreadCount },
+                    ]).map(({ key, label, unread }) => (
                       <motion.button
                         key={key}
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setSellerView(key); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSellerView(key);
+                          if (key === 'responses') setResponsesUnread(0);
+                          if (key === 'listings') setSellUnreadCount(0);
+                        }}
                         whileTap={{ scale: 0.95 }}
                         animate={sellerView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -2307,6 +2416,16 @@ const Dashboard = () => {
                         )}
                       >
                         <span>{label}</span>
+                        {unread > 0 && (
+                          <motion.span
+                            className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                          >
+                            {unread > 9 ? '9+' : unread}
+                          </motion.span>
+                        )}
                       </motion.button>
                     ))}
                   </div>

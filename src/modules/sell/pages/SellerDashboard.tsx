@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import SellShell from '../components/SellShell';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -109,8 +110,6 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   const liveCount = listings.filter(l => l.status === 'live').length;
   const draftCount = listings.filter(l => l.status === 'draft').length;
 
-  const listingsTotalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
-  const paginatedListings = listings.slice((listingsPage - 1) * ITEMS_PER_PAGE, listingsPage * ITEMS_PER_PAGE);
   // Deduplicate responses: keep only the first message per buyer per listing
   const uniqueResponses = (() => {
     const seen = new Map<string, SellListingResponse>();
@@ -122,6 +121,21 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
     }
     return Array.from(seen.values());
   })();
+
+  // Unread counts for My Listings / Buyers toggle badges ("new since last viewed")
+  const listingsUnread = (() => {
+    if (!user) return 0;
+    const seen = parseInt(localStorage.getItem(`sd_listings_viewed_${user.uid}`) || '0', 10);
+    return listings.length > seen ? listings.length - seen : 0;
+  })();
+  const responsesUnread = (() => {
+    if (!user) return 0;
+    const seen = parseInt(localStorage.getItem(`sd_responses_viewed_${user.uid}`) || '0', 10);
+    return uniqueResponses.length > seen ? uniqueResponses.length - seen : 0;
+  })();
+
+  const listingsTotalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
+  const paginatedListings = listings.slice((listingsPage - 1) * ITEMS_PER_PAGE, listingsPage * ITEMS_PER_PAGE);
   const responsesTotalPages = Math.ceil(uniqueResponses.length / ITEMS_PER_PAGE);
   const paginatedResponses = uniqueResponses.slice((responsesPage - 1) * ITEMS_PER_PAGE, responsesPage * ITEMS_PER_PAGE);
 
@@ -171,19 +185,33 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
       {/* Tab Toggle */}
       <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border-[3px] border-black">
         {([
-          { key: 'listings' as const, label: 'My Listings', count: listings.length },
-          { key: 'responses' as const, label: 'Buyers', count: responses.length },
-        ]).map(({ key, label, count }) => (
+          { key: 'listings' as const, label: 'My Listings', count: listings.length, unread: listingsUnread },
+          { key: 'responses' as const, label: 'Buyers', count: responses.length, unread: responsesUnread },
+        ]).map(({ key, label, count, unread }) => (
           <button
             key={key}
-            onClick={() => { setActiveTab(key); setListingsPage(1); setResponsesPage(1); }}
-            className={`flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
+            onClick={() => {
+              setActiveTab(key); setListingsPage(1); setResponsesPage(1);
+              if (key === 'listings') { setListingsUnread(0); localStorage.setItem(`sd_listings_viewed_${user?.uid}`, String(listings.length)); }
+              if (key === 'responses') { setResponsesUnread(0); localStorage.setItem(`sd_responses_viewed_${user?.uid}`, String(responses.length)); }
+            }}
+            className={`relative flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
               activeTab === key
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-[0_4px_0_0_rgba(37,99,235,0.3)]'
                 : 'text-black font-black hover:bg-gray-50'
             }`}
           >
             {label} ({count})
+            {unread > 0 && (
+              <motion.span
+                className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
+                initial={{ scale: 0 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {unread > 9 ? '9+' : unread}
+              </motion.span>
+            )}
           </button>
         ))}
       </div>
