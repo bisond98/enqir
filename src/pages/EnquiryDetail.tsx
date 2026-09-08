@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   IndianRupee,
   Bookmark,
-  ImageIcon
+  ImageIcon,
+  Flag
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -928,6 +929,15 @@ const EnquiryDetail = () => {
                     >
                       <Bookmark className={`h-4 w-4 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
                     </button>
+                    {user && enquiry.userId !== user.uid && (
+                      <button
+                        onClick={() => navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`)}
+                        title="Report"
+                        className="p-1.5 text-slate-800 hover:text-red-600 transition-all duration-200 hover:scale-110 active:scale-95"
+                      >
+                        <Flag className="h-4 w-4" />
+                      </button>
+                    )}
                     <button
                       onClick={handleShare}
                       title="Share"

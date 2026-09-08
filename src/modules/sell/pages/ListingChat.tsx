@@ -11,11 +11,11 @@ import {
 import { useState as useStateTooltip } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle, Play, Pause } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle, Play, Pause, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, onSnapshot, doc, getDoc, updateDoc, setDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
@@ -116,6 +116,22 @@ export default function ListingChat() {
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const [showCallTooltip, setShowCallTooltip] = useState(false);
 
+  // Block user state (mirrors EnquiryResponses)
+  const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [userToBlock, setUserToBlock] = useState<{ id: string; name: string } | null>(null);
+  const [showBlockUserConfirm, setShowBlockUserConfirm] = useState(false);
+
+  const otherPartyId = useMemo(() => {
+    if (!listing || !user) return '';
+    return user.uid === listing.sellerId ? buyerId || '' : listing.sellerId || '';
+  }, [listing, user, buyerId]);
+
+  const otherPartyName = useMemo(() => {
+    if (!otherPartyId) return 'User';
+    return otherPartyId.slice(0, 6).toUpperCase();
+  }, [otherPartyId]);
+
 
   const compressImage = (file: File, quality: number = 0.8): Promise<File> => {
     return new Promise((resolve) => {
@@ -163,6 +179,28 @@ export default function ListingChat() {
     load();
   }, [id]);
 
+  // Load block status for current user + other party (mirrors EnquiryResponses)
+  useEffect(() => {
+    if (!user?.uid || !listing || !otherPartyId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        const currentBlocked = userDoc.exists() ? (userDoc.data().blockedUsers || []) : [];
+        if (cancelled) return;
+        setBlockedUsers(currentBlocked);
+
+        const otherRef = doc(db, 'users', otherPartyId);
+        const otherDoc = await getDoc(otherRef);
+        const otherBlocked = otherDoc.exists() ? (otherDoc.data().blockedUsers || []) : [];
+        if (cancelled) return;
+        setIsBlocked(currentBlocked.includes(otherPartyId) || otherBlocked.includes(user.uid));
+      } catch { }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.uid, listing?.sellerId, buyerId, otherPartyId]);
+
   useEffect(() => {
     if (!id || !buyerId) return;
     const chatId = `sell_${id}_${buyerId}`;
@@ -176,6 +214,10 @@ export default function ListingChat() {
     const unsub = onSnapshot(q, (snap) => {
       const docs = snap.docs.filter(d => {
         const data = d.data();
+        // Always show system messages
+        if (data.isSystemMessage || data.senderId === 'system') return true;
+        // Hide messages from users I have blocked
+        if (data.senderId && blockedUsers.includes(data.senderId)) return false;
         // Show messages where this buyer is either sender or recipient
         if (data.senderId === buyerId) return true;
         if (data.recipientId === buyerId) return true;
@@ -192,7 +234,7 @@ export default function ListingChat() {
       setTimeout(() => chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight }), 100);
     });
     return () => unsub();
-  }, [id, buyerId]);
+  }, [id, buyerId, blockedUsers]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
@@ -246,6 +288,10 @@ export default function ListingChat() {
 
   const sendVoiceMessage = async () => {
     if (!audioBlob || !id || !buyerId || !user?.uid) return;
+    if (isBlocked) {
+      toast({ title: 'Cannot Send Message', description: 'User is blocked. Unblock to send messages.', variant: 'destructive' });
+      return;
+    }
     setSendingVoice(true);
     try {
       const base64 = await new Promise<string>((resolve) => {
@@ -287,6 +333,10 @@ export default function ListingChat() {
 
   const sendMessage = async () => {
     if (!user || !id || !buyerId || (!newMessage.trim() && attachments.length === 0)) return;
+    if (isBlocked) {
+      toast({ title: 'Cannot Send Message', description: 'User is blocked. Unblock to send messages.', variant: 'destructive' });
+      return;
+    }
     setSending(true);
     try {
       const attachmentData = attachments.length > 0 ? await Promise.all(attachments.map(async (file) => {
@@ -322,6 +372,107 @@ export default function ListingChat() {
       toast({ title: 'Failed', description: 'Could not send message.', variant: 'destructive' });
     } finally {
       setSending(false);
+    }
+  };
+
+  // Function to show block user confirmation
+  const handleBlockUserClick = () => {
+    if (!otherPartyId) return;
+    setUserToBlock({ id: otherPartyId, name: otherPartyName });
+    setShowBlockUserConfirm(true);
+  };
+
+  // Function to block user (mirrors EnquiryResponses logic)
+  const blockUser = async () => {
+    if (!userToBlock || !user || !id || !buyerId) return;
+    setShowBlockUserConfirm(false);
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const currentBlocked = userDoc.data().blockedUsers || [];
+        if (!currentBlocked.includes(userToBlock.id)) {
+          await updateDoc(userRef, {
+            blockedUsers: arrayUnion(userToBlock.id)
+          });
+        }
+      } else {
+        await setDoc(userRef, {
+          blockedUsers: [userToBlock.id]
+        }, { merge: true });
+      }
+
+      // Add "User blocked" system message to chat for both users
+      try {
+        await addDoc(collection(db, 'chatMessages'), {
+          enquiryId: `sell_listing_${id}`, chatId: `sell_${id}_${buyerId}`,
+          senderId: 'system',
+          senderName: 'System',
+          senderType: 'system',
+          message: 'blocked',
+          isSystemMessage: true,
+          blockedBy: user.uid,
+          blockedUser: userToBlock.id,
+          timestamp: serverTimestamp()
+        });
+      } catch (msgError) {
+        console.error('Error adding block message:', msgError);
+      }
+
+      setBlockedUsers(prev => prev.includes(userToBlock.id) ? prev : [...prev, userToBlock.id]);
+      setIsBlocked(true);
+
+      toast({
+        title: 'User Blocked',
+        description: 'User has been blocked. Both users cannot send or receive messages.'
+      });
+      setUserToBlock(null);
+    } catch (error) {
+      console.error('Error blocking user:', error);
+      toast({ title: 'Error', description: 'Failed to block user', variant: 'destructive' });
+      setUserToBlock(null);
+    }
+  };
+
+  // Function to unblock user
+  const unblockUser = async () => {
+    if (!user || !id || !buyerId || !otherPartyId) return;
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        blockedUsers: arrayRemove(otherPartyId)
+      });
+
+      // Add "User unblocked" system message
+      try {
+        await addDoc(collection(db, 'chatMessages'), {
+          enquiryId: `sell_listing_${id}`, chatId: `sell_${id}_${buyerId}`,
+          senderId: 'system',
+          senderName: 'System',
+          senderType: 'system',
+          message: 'unblocked',
+          isSystemMessage: true,
+          unblockedBy: user.uid,
+          unblockedUser: otherPartyId,
+          timestamp: serverTimestamp()
+        });
+      } catch (msgError) {
+        console.error('Error adding unblock message:', msgError);
+      }
+
+      setBlockedUsers(prev => prev.filter(u => u !== otherPartyId));
+      setIsBlocked(false);
+
+      toast({
+        title: 'User Unblocked',
+        description: 'User has been unblocked. You can now send and receive messages.'
+      });
+    } catch (error) {
+      console.error('Error unblocking user:', error);
+      toast({ title: 'Error', description: 'Failed to unblock user', variant: 'destructive' });
     }
   };
 
@@ -483,11 +634,34 @@ export default function ListingChat() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="my-1 bg-gray-300" />
                         <DropdownMenuItem
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (otherPartyId) {
+                              const params = new URLSearchParams({ listingId: id || '' });
+                              if (user?.uid === listing?.sellerId) params.set('buyerId', otherPartyId);
+                              else params.set('sellerId', otherPartyId);
+                              navigate(`/report-user/${otherPartyId}?${params.toString()}`);
+                            }
+                          }}
                           className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md transition-all duration-200 cursor-pointer text-slate-600 hover:text-red-700 hover:bg-red-50"
                         >
-                          Block User
+                          Report
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator className="my-1 bg-gray-300" />
+                        {isBlocked ? (
+                          <DropdownMenuItem
+                            onClick={unblockUser}
+                            className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md transition-all duration-200 cursor-pointer text-slate-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            Unblock User
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={handleBlockUserClick}
+                            className="text-xs sm:text-sm font-black px-2.5 sm:px-3 py-2 rounded-md transition-all duration-200 cursor-pointer text-slate-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            Block User
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -789,6 +963,38 @@ export default function ListingChat() {
                   </Link>
                 );
               })}
+            </div>
+          </div>
+        )}
+        {/* Block User Confirmation Modal - Mobile Friendly (mirrors EnquiryResponses) */}
+        {showBlockUserConfirm && userToBlock && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowBlockUserConfirm(false)}>
+            <div
+              className="bg-white rounded-2xl border-2 border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3)] w-full max-w-sm p-5 sm:p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-black text-center mb-2">Block User?</h3>
+              <p className="text-xs sm:text-sm text-gray-600 text-center mb-5">
+                You won't receive messages from <span className="font-bold">{userToBlock.name}</span> anymore, and neither of you can message each other in this chat.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowBlockUserConfirm(false)}
+                  className="flex-1 border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={blockUser}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Block
+                </Button>
+              </div>
             </div>
           </div>
         )}

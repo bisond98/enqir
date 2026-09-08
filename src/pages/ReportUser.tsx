@@ -23,6 +23,8 @@ export default function ReportUser() {
   const [searchParams] = useSearchParams();
   const enquiryId = searchParams.get('enquiryId');
   const sellerId = searchParams.get('sellerId');
+  const listingId = searchParams.get('listingId');
+  const buyerId = searchParams.get('buyerId');
   const userName = searchParams.get('userName');
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -100,6 +102,8 @@ export default function ReportUser() {
         enquiryId: enquiryId || null,
         enquiryTitle: enquiryTitle || null,
         sellerId: sellerId || null,
+        listingId: listingId || null,
+        buyerId: buyerId || null,
         timestamp: serverTimestamp(),
         status: 'pending',
         reviewed: false,
@@ -113,9 +117,11 @@ export default function ReportUser() {
         description: 'Thank you for reporting. We will review this report.' 
       });
       
-      // Navigate back to chat - doesn't affect chat state
+      // Navigate back to where the report came from - doesn't affect chat state
       if (enquiryId && sellerId) {
         navigate(`/enquiry/${enquiryId}/responses?sellerId=${sellerId}`);
+      } else if (listingId) {
+        navigate(`/sell/listing/${listingId}`);
       } else {
         navigate(-1);
       }

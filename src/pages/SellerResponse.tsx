@@ -78,9 +78,9 @@ const SellerResponse = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
-  const [imageUrls, setImageUrls] = useState<string[]>(Array(5).fill(""));
-  const [uploadProgresses, setUploadProgresses] = useState<number[]>(Array(5).fill(0));
+  const [images, setImages] = useState<string[]>([]);
+  const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
+  const [uploading, setUploading] = useState(false);
                         const submitButtonRef = useRef<HTMLDivElement>(null);
 
   // ID verification state
@@ -105,7 +105,7 @@ const SellerResponse = () => {
         if (data.description) setDescription(data.description);
         if (data.price) setPrice(data.price);
         if (data.notes) setNotes(data.notes);
-        if (data.imageUrls) setImageUrls(data.imageUrls);
+        if (data.imageUrls) setImages((data.imageUrls || []).slice(0, 5));
         // Scroll to submit button after restoring
         setTimeout(() => {
           submitButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -202,6 +202,9 @@ const SellerResponse = () => {
   const [loading, setLoading] = useState(true);
   const [isOwnEnquiry, setIsOwnEnquiry] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Synchronous re-entry lock: prevents double-tap / double-fired payment callback
+  // from creating two submission documents (state updates are async, refs are not)
+  const submitLockRef = useRef(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -491,7 +494,7 @@ const SellerResponse = () => {
     }
 
     // Image validation (optional)
-    const validImageUrls = imageUrls.filter(url => url.trim() !== "");
+    const validImageUrls = images.filter(url => url && url.trim() !== "");
     // Images are now optional - no validation required
 
     // Government ID validation (optional, but if started, must be complete)
@@ -551,87 +554,61 @@ const SellerResponse = () => {
     console.log('Validation result:', Object.keys(newErrors).length === 0);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, [`image_${index}`]: "Image must be less than 5MB" }));
+  };  // Image upload — same proven flow as the sell form (CreateListing): raw file to
+  // Cloudinary, no canvas compression, append-style with per-file progress bars.
+  const onAddImages = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    if (images.length >= 5) {
+      toast({ title: 'Image limit reached', description: 'You can upload up to 5 images only.', variant: 'destructive' });
       return;
     }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setErrors(prev => ({ ...prev, [`image_${index}`]: "Please upload a valid image file" }));
-      return;
-    }
-
-    // Update the specific image file
-    const newImageFiles = [...imageFiles];
-    newImageFiles[index] = file;
-    setImageFiles(newImageFiles);
-    
-    // Clear any previous errors for this slot
-    setErrors(prev => ({ ...prev, [`image_${index}`]: "" }));
-
-    // Upload to Cloudinary immediately for preview
+    setUploading(true);
     try {
-      // Update progress for this specific slot
-      const newProgresses = [...uploadProgresses];
-      newProgresses[index] = 10;
-      setUploadProgresses(newProgresses);
+      const urls: string[] = [];
+      const remainingSlots = 5 - images.length;
+      const selectedFiles = Array.from(files).slice(0, remainingSlots);
 
-      // Compress image for faster upload
-      newProgresses[index] = 25;
-      setUploadProgresses([...newProgresses]);
-      const compressedFile = await compressImage(file);
-      
-      // Upload to Cloudinary
-      newProgresses[index] = 50;
-      setUploadProgresses([...newProgresses]);
-      const uploadedUrl = await uploadToCloudinaryUnsigned(compressedFile);
-      
-      // Update progress to complete
-      newProgresses[index] = 100;
-      setUploadProgresses(newProgresses);
-      
-      // Update the specific image URL
-      const newImageUrls = [...imageUrls];
-      newImageUrls[index] = uploadedUrl;
-      setImageUrls(newImageUrls);
-      
-      // Clear any error for this image since upload was successful
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[`image_${index}`];
-        return newErrors;
-      });
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      // Reset progress for this slot
-      const newProgresses = [...uploadProgresses];
-      newProgresses[index] = 0;
-      setUploadProgresses(newProgresses);
-      setErrors(prev => ({ ...prev, [`image_${index}`]: "Failed to upload image. Please try again." }));
+      // Add placeholder progress entries
+      const startIdx = images.length;
+      setUploadProgresses(prev => [...prev, ...selectedFiles.map(() => 0)]);
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        // Simulated progress tick (same as sell form)
+        const progressInterval = setInterval(() => {
+          setUploadProgresses(prev => {
+            const next = [...prev];
+            const idx = startIdx + i;
+            if (next[idx] < 90) next[idx] = next[idx] + Math.floor(Math.random() * 15) + 5;
+            return next;
+          });
+        }, 200);
+
+        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+
+        clearInterval(progressInterval);
+        setUploadProgresses(prev => {
+          const next = [...prev];
+          next[startIdx + i] = 100;
+          return next;
+        });
+        urls.push(url);
+      }
+      if (files.length > selectedFiles.length) {
+        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+      }
+      setImages((prev) => [...prev, ...urls].slice(0, 5));
+      // Clear progress after a short delay
+      setTimeout(() => setUploadProgresses([]), 1000);
+    } catch {
+      toast({ title: 'Upload failed', description: 'Could not upload one or more images.', variant: 'destructive' });
+      setUploadProgresses([]);
+    } finally {
+      setUploading(false);
     }
   };
 
   const removeImage = (index: number) => {
-    const newImageFiles = [...imageFiles];
-    const newImageUrls = [...imageUrls];
-    const newProgresses = [...uploadProgresses];
-    
-    newImageFiles[index] = null;
-    newImageUrls[index] = "";
-    newProgresses[index] = 0;
-    
-    setImageFiles(newImageFiles);
-    setImageUrls(newImageUrls);
-    setUploadProgresses(newProgresses);
-    setErrors(prev => ({ ...prev, [`image_${index}`]: "" }));
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleGovIdUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -818,7 +795,14 @@ const SellerResponse = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Re-entry lock: block a second submit before the first finishes (synchronous, unlike state)
+    if (submitLockRef.current) {
+      console.log('Form submission blocked: already submitting');
+      return;
+    }
+    submitLockRef.current = true;
+
     console.log('Form submission started');
     console.log('enquiry:', enquiry);
     console.log('isOwnEnquiry:', isOwnEnquiry);
@@ -834,6 +818,7 @@ const SellerResponse = () => {
         description: "Enquiry not found. Please refresh the page.",
         variant: "destructive",
       });
+      submitLockRef.current = false;
       return;
     }
     
@@ -844,6 +829,7 @@ const SellerResponse = () => {
         description: "You cannot respond to your own enquiry.",
         variant: "destructive",
       });
+      submitLockRef.current = false;
       return;
     }
     
@@ -854,6 +840,7 @@ const SellerResponse = () => {
         description: "Please sign in to submit an offer.",
         variant: "destructive",
       });
+      submitLockRef.current = false;
       return;
     }
     
@@ -874,6 +861,7 @@ const SellerResponse = () => {
           variant: "destructive",
         });
       }
+      submitLockRef.current = false;
       return;
     }
     console.log('Form validation passed');
@@ -894,6 +882,7 @@ const SellerResponse = () => {
     const offerPlan = PAYMENT_PLANS.find(p => p.id === 'premium');
     if (!offerPlan) {
       toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+      submitLockRef.current = false;
       return;
     }
 
@@ -920,6 +909,7 @@ const SellerResponse = () => {
           variant: 'destructive',
         });
         setSubmitting(false);
+        submitLockRef.current = false;
         return;
       }
 
@@ -937,10 +927,8 @@ const SellerResponse = () => {
         try {
           console.log('📤 Saving offer to Firebase...');
 
-        const validImageUrls = imageUrls.filter(url => url.trim() !== "");
-        const validImageNames = imageFiles
-          .filter((file, index) => file !== null && imageUrls[index] !== "")
-          .map(file => file?.name || "");
+        const validImageUrls = images.filter(url => url && url.trim() !== "");
+        const validImageNames = validImageUrls.map((_, i) => `image-${i + 1}.jpg`);
 
         const responseData: SellerSubmission = {
           enquiryId: enquiryId!,
@@ -1608,111 +1596,53 @@ const SellerResponse = () => {
                     Show Them Who You Are And What You've Got.
                   </p>
                   <div className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-black font-medium">
-                    {imageUrls.filter(url => url.trim() !== "").length}/5 images uploaded
+                    {images.length}/5 images uploaded
                   </div>
                 </div>
-                
-                {/* 5-Slot Grid Layout */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <div key={index} className="relative">
-                      <label
-                        htmlFor={`image-${index}`}
-                        className={`flex flex-col items-center justify-center w-full h-28 sm:h-32 lg:h-36 border-[0.5px] border-black rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden group ${
-                          imageUrls[index]
-                            ? 'border-green-300 bg-green-50 hover:border-green-400'
-                            : 'bg-white hover:bg-gray-50 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'
-                        }`}
-                      >
-                        {/* Physical button depth effect */}
-                        {!imageUrls[index] && (
-                          <>
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                          </>
-                        )}
-                        <input
-                          id={`image-${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, index)}
-                          className="hidden"
-                        />
-                        
-                        {imageUrls[index] ? (
-                          // Image Preview
-                          <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
-                            <div className="flex flex-col items-center justify-center">
-                              <Check className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mb-1.5 sm:mb-2 relative z-10" />
-                              <p className="text-[10px] sm:text-xs text-black font-black text-center relative z-10 mb-1">Image uploaded</p>
-                            </div>
-                            <button
-                                type="button" 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                removeImage(index);
-                              }}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 shadow-lg z-20"
-                            >
-                              <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                            </button>
-                            {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
-                                {uploadProgresses[index]}%
-                            </div>
-                            )}
-                          </div>
-                        ) : (
-                          // Upload Area
-                          <div className="flex flex-col items-center justify-center p-3 sm:p-4">
-                              {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 ? (
-                              <>
-                                <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mb-2"></div>
-                                <p className="text-[10px] sm:text-xs text-slate-600">Uploading...</p>
-                              </>
-                            ) : (
-                              <>
-                                <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-black mb-1.5 sm:mb-2 relative z-10" />
-                                <p className="text-[8px] sm:text-[9px] text-black font-black text-center relative z-10">Add Image</p>
-                              </>
-                            )}
-                            {uploadProgresses[index] > 0 && uploadProgresses[index] < 100 && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
-                                  {uploadProgresses[index]}%
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </label>
-                        
-                        {/* Error Message */}
-                        {errors[`image_${index}`] && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] p-1 text-center rounded-b-xl">
-                            Error
-                          </div>
-                        )}
+
+                {/* Image upload UI — identical to the sell form's Photos (up to 5) */}
+                <div className="space-y-2">
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      {images.map((url, i) => (
+                        <div key={i} className="relative group">
+                          <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(i)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                          >✕</button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                
-                {/* Upload Guidelines */}
-                {/*
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-2">
-                    <ImageIcon className="h-4 w-4 text-blue-500 mt-0.5" />
-                    <div className="text-xs text-blue-700">
-                      <p className="font-semibold mb-1">Image Guidelines:</p>
-                      <ul className="space-y-0.5">
-                        <li>• Use clear, well-lit photos showing different angles</li>
-                        <li>• First image will be used as the main product image</li>
-                        <li>• JPEG, PNG, WebP formats supported (Max 5MB each)</li>
-                        <li>• Higher quality images get better buyer response</li>
-                      </ul>
-                    </div>
+                  )}
+                  {images.length < 5 && (
+                  <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
+                    <Input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => onAddImages(e.target.files)}
+                      disabled={uploading || images.length >= 5}
+                      className="cursor-pointer text-sm"
+                    />
+                    <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
+                    {uploading && uploadProgresses.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {uploadProgresses.map((p, i) => (
+                          <div key={i} className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div
+                              className="bg-black h-1.5 rounded-full transition-all duration-200"
+                              style={{ width: `${p}%` }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  )}
                 </div>
-                */}
-                
+
                 {/* Image requirement error */}
                 {errors.images && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -1729,9 +1659,8 @@ const SellerResponse = () => {
                   const imageErrors = Object.entries(errors)
                     .filter(([key]) => key.startsWith('image_'))
                     .filter(([key]) => {
-                      const slotNumber = parseInt(key.split('_')[1]);
-                      const isUploading = uploadProgresses[slotNumber] > 0 && uploadProgresses[slotNumber] < 100;
-                      const isUploaded = imageUrls[slotNumber] && imageUrls[slotNumber].length > 0;
+                      const isUploading = uploading;
+                      const isUploaded = images.length > 0;
                       // Only show error if not uploading and not successfully uploaded
                       return !isUploading && !isUploaded;
                     });
@@ -1781,7 +1710,7 @@ const SellerResponse = () => {
                         description,
                         price,
                         notes,
-                        imageUrls,
+                        imageUrls: images,
                       }));
                       navigate(`/profile?returnTo=/respond/${enquiryId}`);
                     }}

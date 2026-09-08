@@ -175,7 +175,22 @@ const MyResponses = () => {
       });
         
         console.log('📊 MyResponses: Total submissions from query:', submissionsData.length);
-        
+
+        // Dedupe submissions by enquiryId (keep the newest) — prevents the same
+        // enquiry showing twice when a duplicate submission document exists.
+        const timeVal = (s: SellerSubmission) => {
+          const t = s.createdAt?.toDate ? s.createdAt.toDate() : (s.createdAt?.seconds ? new Date(s.createdAt.seconds * 1000) : new Date(s.createdAt));
+          return t && !isNaN(t.getTime()) ? t.getTime() : 0;
+        };
+        const byEnquiry = new Map<string, SellerSubmission>();
+        for (const s of submissionsData) {
+          const existing = byEnquiry.get(s.enquiryId);
+          if (!existing || timeVal(s) > timeVal(existing)) {
+            byEnquiry.set(s.enquiryId, s);
+          }
+        }
+        const deduped = Array.from(byEnquiry.values());
+
         // Sort by createdAt in JavaScript (will be re-sorted after enquiries are loaded)
       submissionsData.sort((a, b) => {
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
@@ -183,10 +198,10 @@ const MyResponses = () => {
         return dateB.getTime() - dateA.getTime();
       });
         
-        console.log('📊 MyResponses: Final submissions to display:', submissionsData.length);
-        console.log('📊 MyResponses: Sample submission IDs:', submissionsData.slice(0, 5).map(s => ({ id: s.id, status: s.status, enquiryId: s.enquiryId })));
-        
-      setSellerSubmissions(submissionsData);
+        console.log('📊 MyResponses: Final submissions to display:', deduped.length);
+        console.log('📊 MyResponses: Sample submission IDs:', deduped.slice(0, 5).map(s => ({ id: s.id, status: s.status, enquiryId: s.enquiryId })));
+
+      setSellerSubmissions(deduped);
       setLoading(false);
       } catch (error) {
         console.error("❌ MyResponses: Error processing submissions:", error);

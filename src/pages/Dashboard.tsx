@@ -463,6 +463,23 @@ const Dashboard = () => {
         submission.userProfileVerified = isProfileVerified;
         submissionsData.push(submission);
       });
+
+      // Dedupe submissions by enquiryId (keep the newest) — prevents the same
+      // enquiry showing twice when a duplicate submission document exists.
+      {
+        const timeVal = (s: SellerSubmission) => {
+          const t = s.createdAt?.toDate ? s.createdAt.toDate() : (s.createdAt?.seconds ? new Date(s.createdAt.seconds * 1000) : new Date(s.createdAt));
+          return t && !isNaN(t.getTime()) ? t.getTime() : 0;
+        };
+        const byEnquiry = new Map<string, SellerSubmission>();
+        for (const s of submissionsData) {
+          const existing = byEnquiry.get(s.enquiryId);
+          if (!existing || timeVal(s) > timeVal(existing)) {
+            byEnquiry.set(s.enquiryId, s);
+          }
+        }
+        submissionsData = Array.from(byEnquiry.values());
+      }
       
       // Fetch enquiry data for each response to check expiration and deletion (combined for efficiency)
       const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];

@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -562,6 +562,16 @@ export default function ListingDetail() {
                 >
                   <Bookmark className={`h-4 w-4 ${saved ? 'fill-black text-black' : 'text-gray-600'}`} />
                 </button>
+                {!isOwner && listing?.sellerId && (
+                  <button
+                    onClick={() => navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`)}
+                    aria-label="Report listing"
+                    title="Report"
+                    className="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </button>
+                )}
                 <span className="ml-auto"><ShareButton listing={listing} /></span>
               </div>
             </div>
