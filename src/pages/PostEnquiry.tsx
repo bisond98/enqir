@@ -9,6 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { MapLocationPicker } from "@/components/MapLocationPicker";
+import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus } from "lucide-react";
 import { format } from "date-fns";
@@ -141,6 +143,9 @@ export default function PostEnquiry() {
   const [categoriesSheetOpen, setCategoriesSheetOpen] = useState(false);
   const [budget, setBudget] = useState("");
   const [location, setLocation] = useState("");
+  // Precise map location (lat/lng + structured address) picked from the map picker
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
+  const [mapLocation, setMapLocation] = useState<MapLocationAddress | null>(null);
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
@@ -455,6 +460,9 @@ export default function PostEnquiry() {
             categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
             budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
             location: location.trim(),
+            latitude: mapLocation?.latitude ?? null,
+            longitude: mapLocation?.longitude ?? null,
+            mapAddress: mapLocation ?? null,
             deadline: deadline,
             isUrgent: deadline ? (() => {
               const now = new Date();
@@ -2160,6 +2168,42 @@ export default function PostEnquiry() {
                           </div>
                         )}
                       </div>
+
+                      {/* Pin precise location on a map */}
+                      <button
+                        type="button"
+                        onClick={() => setMapPickerOpen(true)}
+                        className="w-full flex items-center gap-3 rounded-2xl border-2 border-gray-800 bg-gradient-to-br from-white to-slate-50 hover:from-white hover:to-slate-100 px-4 py-3 transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:translate-y-[2px]"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="text-left flex-1 min-w-0">
+                          <p className="text-sm font-bold text-black">Pin precise location</p>
+                          <p className="text-[11px] text-slate-500 truncate">
+                            {mapLocation?.formatted_address || mapLocation?.city || location || (mapLocation ? 'Location pinned on map' : 'Use the map to drop a pin')}
+                          </p>
+                        </div>
+                        {mapLocation && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-1 flex-shrink-0">
+                            <Check className="h-3 w-3" /> Pinned
+                          </span>
+                        )}
+                      </button>
+
+                      <MapLocationPicker
+                        open={mapPickerOpen}
+                        onOpenChange={(o) => setMapPickerOpen(o)}
+                        title="Pin your precise location"
+                        defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
+                        onSelect={(lat, lng, addr) => {
+                          setMapLocation(addr);
+                          // Prefill the search box with the pin's city/address so both stay in sync
+                          const text = addr.formatted_address || addr.city || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                          setLocation(text);
+                          setShowLocationSuggestions(false);
+                        }}
+                      />
                     </div>
                   )}
 
