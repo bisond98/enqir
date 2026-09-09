@@ -291,22 +291,23 @@ const Dashboard = () => {
           where('enquiryId', '<', 'sell_listing\uf8ff')
         );
         const snap = await getDocs(chatQuery);
-        // Group by thread (enquiryId + buyerId/sellerId pair)
+        // Group by thread using the SAME thread key as MyChats: enquiryId_sellerId
+        // (every sell-chat message carries a sellerId field). Building the key from
+        // sender/recipient instead made read-markers unfindable → badge never showed.
         const threadLatest = new Map<string, number>();
         snap.docs.forEach(d => {
           const data = d.data();
-          if (!data.enquiryId || data.isSystemMessage) return;
+          if (!data.enquiryId || !data.sellerId || data.isSystemMessage) return;
           // Only threads I actually participate in — never count other people's chats
-          if (data.senderId !== user.uid && data.recipientId !== user.uid) return;
+          if (data.senderId !== user.uid && data.recipientId !== user.uid && data.sellerId !== user.uid) return;
           const t = data.timestamp?.toDate ? data.timestamp.toDate().getTime() : (data.timestamp?.seconds ? data.timestamp.seconds * 1000 : 0);
           if (!t) return;
-          const key = `${data.enquiryId}_${data.senderId === user.uid ? data.recipientId : data.senderId}`;
+          const key = `${data.enquiryId}_${data.sellerId}`;
           const cur = threadLatest.get(key) || 0;
           if (t > cur) threadLatest.set(key, t);
         });
         let count = 0;
         threadLatest.forEach((latest, key) => {
-          const listingId = key.split('_').slice(2).join('_');
           const readKey = `chat_read_${user.uid}_${key}`;
           const lastViewed = localStorage.getItem(readKey);
           if (!lastViewed) { count++; return; }

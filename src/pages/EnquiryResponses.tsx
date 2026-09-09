@@ -2912,8 +2912,8 @@ const EnquiryResponses = () => {
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                       <CardContent className="p-4 flex items-center justify-center relative z-10">
                         <div className="flex flex-col items-center space-y-2 text-center">
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#004d00' }}>
+                            <CheckCircle className="h-5 w-5 text-white" />
                           </div>
                           <div>
                             <h4 className="font-black text-black mb-1 text-center text-lg tracking-tight">Response Submitted Successfully</h4>
