@@ -296,7 +296,8 @@ const Dashboard = () => {
         snap.docs.forEach(d => {
           const data = d.data();
           if (!data.enquiryId || data.isSystemMessage) return;
-          // Only threads where I'm the seller (listing owner) or the chatting buyer
+          // Only threads I actually participate in — never count other people's chats
+          if (data.senderId !== user.uid && data.recipientId !== user.uid) return;
           const t = data.timestamp?.toDate ? data.timestamp.toDate().getTime() : (data.timestamp?.seconds ? data.timestamp.seconds * 1000 : 0);
           if (!t) return;
           const key = `${data.enquiryId}_${data.senderId === user.uid ? data.recipientId : data.senderId}`;
