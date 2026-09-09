@@ -2251,10 +2251,13 @@ export default function PostEnquiry() {
                         <Textarea
                           id="enquiry-notes"
                           value={notes}
-                          onChange={(e) => setNotes(e.target.value)}
-                          placeholder="Additional requirements or preferences..."
+                          onChange={(e) => setNotes(e.target.value.split(/\s+/).filter(Boolean).slice(0, 50).join(' ') + (e.target.value.endsWith(' ') && e.target.value.trim() ? ' ' : ''))}
+                          placeholder="Additional requirements or preferences... (max 50 words)"
                           className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                         />
+                        <p className="text-[10px] text-gray-400 text-right">
+                          {notes.split(/\s+/).filter(Boolean).length}/50 words
+                        </p>
                       </div>
                     </div>
                   )}

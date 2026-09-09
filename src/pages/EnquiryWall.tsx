@@ -5974,7 +5974,7 @@ export default function EnquiryWall() {
                               <div className="flex items-baseline justify-between mb-0 sm:-mb-2 ml-1 sm:ml-0 -mt-2 sm:mt-0">
                                 <div className="flex items-center gap-1.5">
                                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 flex-shrink-0"></div>
-                                  <span className="text-[14px] sm:text-base text-white font-bold px-2 py-0.5 rounded-xl border border-black block sm:inline bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
+                                  <span className="text-[14px] sm:text-base text-white font-bold px-2 py-0.5 rounded-xl border border-black block sm:inline bg-red-600 shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
                                   {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
                                     <Badge className="text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 bg-red-500 text-white border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] font-semibold">
                                       <span className="w-0.5 h-0.5 sm:w-1.5 sm:h-1.5 bg-white rounded-full inline-block mr-0.5 sm:mr-1"></span>
@@ -6224,7 +6224,7 @@ export default function EnquiryWall() {
                             <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
                             {/* Need Label - Above Title */}
                             <div className="relative text-left">
-                              <span className="text-[10px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-xl border border-black bg-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
+                              <span className="text-[10px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-xl border border-black bg-red-600 shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
                               {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
                               {enquiry.createdAt && (
                                 <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-black font-bold px-1.5 py-0.5 rounded-xl border border-black bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">

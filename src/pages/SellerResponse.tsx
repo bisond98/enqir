@@ -1568,7 +1568,7 @@ const SellerResponse = () => {
                   id="notes"
                   placeholder="Payment terms, delivery details, etc..."
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={(e) => setNotes(e.target.value.slice(0, 300))}
                     className="min-h-[120px] text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
                     style={{ fontSize: '16px' }}
                 />

@@ -2905,15 +2905,19 @@ const EnquiryResponses = () => {
 
               {/* Success Message for 3rd+ Sellers (Non-Premium) - Mobile Only */}
               {isUserInQueue() && (
-                <Card className="border-2 border-black shadow-lg bg-green-50 md:hidden mt-6 relative z-0 rounded-2xl">
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
+                <Card className="border-[0.5px] border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] bg-white md:hidden mt-6 relative z-0 !rounded-2xl overflow-hidden relative">
+                      {/* Physical depth effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                      <CardContent className="p-4 flex items-center justify-center relative z-10">
+                        <div className="flex flex-col items-center space-y-2 text-center">
                           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <CheckCircle className="h-5 w-5 text-green-600" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-green-800 mb-1">Response Submitted Successfully</h4>
-                            <p className="text-green-700 text-sm">
+                            <h4 className="font-black text-black mb-1 text-center text-lg tracking-tight">Response Submitted Successfully</h4>
+                            <p className="text-black text-[10px] text-center">
                               Your response has been submitted. The buyer will review it and get back to you if interested.
                             </p>
                           </div>
