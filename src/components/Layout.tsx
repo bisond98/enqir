@@ -638,7 +638,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const isActive = (path: string) => location.pathname === path;
 
   const navigationItems = [
-    { path: "/#home-search-section", label: "Search", icon: Search, isHashLink: true },
+    { path: "/#home-search-section", label: "Search", icon: Search, isHashLink: true, isGlobalSearch: true },
     { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
     { path: "/post-enquiry", label: "Post Enquiry", icon: Plus, iconOnly: true },
     { path: "/profile", label: "Profile", icon: User },
@@ -1014,8 +1014,21 @@ export default function Layout({ children, showNavigation = true }: { children: 
               const Icon = item.icon;
               // Check if this is a protected route (Dashboard or Profile)
               const isProtectedRoute = item.path === "/dashboard" || item.path === "/profile";
-              
+              const isGlobalSearch = (item as any).isGlobalSearch;
+
+              const handleSearchClick = () => {
+                // Open the global mixed-search popup on the home page
+                sessionStorage.setItem('openGlobalSearch', '1');
+                window.dispatchEvent(new Event('open-global-search'));
+                if (location.pathname !== '/') navigate('/');
+              };
+
               const handleClick = (e: React.MouseEvent) => {
+                if (isGlobalSearch) {
+                  e.preventDefault();
+                  handleSearchClick();
+                  return;
+                }
                 if (isProtectedRoute && !user) {
                   e.preventDefault();
                   navigate("/signin");
@@ -1060,6 +1073,20 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <Icon className="h-8 w-8" />
                   </div>
                 ) : (
+                  (item as any).isGlobalSearch ? (
+                    <div
+                      key={item.path}
+                      onClick={handleClick}
+                      className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-0 flex-1 cursor-pointer ${
+                        isActive(item.path)
+                          ? "text-pal-blue bg-pal-blue/10"
+                          : "text-gray-900 hover:text-black hover:bg-gray-100"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                    </div>
+                  ) : (
                   <Link
                     key={item.path}
                     to={item.path}
@@ -1072,6 +1099,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <Icon className="h-5 w-5" />
                     <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
                   </Link>
+                  )
                 )}
                 </>
               );

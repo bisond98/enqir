@@ -224,6 +224,10 @@ const Landing = () => {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchPosition, setSearchPosition] = useState({ top: 0, left: 0, width: 0 });
+  // Global search popup (opened from footer Search icon) — searches BOTH engines
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
+  const [globalSearchTerm, setGlobalSearchTerm] = useState("");
+  const globalSearchInputRef = useRef<HTMLInputElement>(null);
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
   // Track window width for responsive behavior
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
@@ -383,6 +387,65 @@ const Landing = () => {
       .filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
     return uniqueFiltered.slice(0, 6);
   };
+
+  // ---- Global mixed search (enquiries + for-sale listings) ----
+  // Live dropdown suggestions as you type — relevance: title > category/tags > location > description
+  const globalSuggestions = (() => {
+    const term = globalSearchTerm.trim().toLowerCase();
+    if (!term || !globalSearchOpen) return [] as any[];
+    const words = term.split(/\s+/).filter(Boolean);
+    const scoreDoc = (title: string, desc: string, cats: string, loc: string, tags: string) => {
+      const t = title.toLowerCase();
+      const d = desc.toLowerCase();
+      const c = cats.toLowerCase();
+      const l = loc.toLowerCase();
+      const g = tags.toLowerCase();
+      let score = 0;
+      for (const w of words) {
+        if (t.includes(w)) score += 10;
+        if (c.includes(w) || g.includes(w)) score += 5;
+        if (l.includes(w)) score += 3;
+        if (d.includes(w)) score += 1;
+      }
+      return score;
+    };
+    const enquiryHits = allLiveEnquiries
+      .map(e => {
+        const s = scoreDoc(e.title || '', e.description || '', (e.category || '') + ' ' + (e.categories || []).join(' '), e.location || '', (e.tags || []).join(' '));
+        return s > 0 ? { type: 'enquiry' as const, data: e, score: s } : null;
+      })
+      .filter(Boolean) as any[];
+    const listingHits = sellListings
+      .map(l2 => {
+        const s = scoreDoc(l2.title || '', l2.description || '', (l2.category || '') + ' ' + (l2.categories || []).join(' '), l2.location || '', (l2.tags || []).join(' '));
+        return s > 0 ? { type: 'listing' as const, data: l2, score: s } : null;
+      })
+      .filter(Boolean) as any[];
+    const newest = (x: any) => {
+      try { return x.data.createdAt?.toMillis?.() ?? new Date(x.data.createdAt || 0).getTime(); } catch { return 0; }
+    };
+    return [...enquiryHits, ...listingHits].sort((a, b) => b.score - a.score || newest(b) - newest(a)).slice(0, 8);
+  })();
+
+  const openGlobalSearch = () => {
+    setGlobalSearchTerm('');
+    setGlobalSearchOpen(true);
+    setTimeout(() => globalSearchInputRef.current?.focus(), 150);
+  };
+
+  // Footer Search icon asks the home page to open the popup (works even when
+  // the user is on another route — Layout navigates to '/' first)
+  useEffect(() => {
+    const handler = () => {
+      if (sessionStorage.getItem('openGlobalSearch') === '1') {
+        sessionStorage.removeItem('openGlobalSearch');
+        setTimeout(openGlobalSearch, 120);
+      }
+    };
+    window.addEventListener('open-global-search', handler);
+    handler(); // catch the case where the event fired before Landing mounted
+    return () => window.removeEventListener('open-global-search', handler);
+  }, []);
 
   // Update search position for portal
   const updateSearchPosition = () => {
@@ -3418,6 +3481,87 @@ const Landing = () => {
               <span className="text-sm text-black font-medium">{suggestion}</span>
             </button>
           ))}
+        </div>,
+        document.body
+      )}
+
+      {/* ===== Global Search Popup (footer Search icon) — compact centered dropdown over faded app ===== */}
+      {globalSearchOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-[2px]"
+          onClick={() => setGlobalSearchOpen(false)}
+        >
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-[12%] w-[92%] max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Search input + Search button */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black pointer-events-none" />
+                <input
+                  ref={globalSearchInputRef}
+                  type="text"
+                  placeholder="Search enquiries & for sale..."
+                  value={globalSearchTerm}
+                  onChange={(e) => setGlobalSearchTerm(e.target.value)}
+                  className="w-full h-11 pl-10 pr-3 text-sm border-2 border-black rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black bg-white placeholder-gray-400 placeholder:text-xs shadow-[0_4px_0_0_rgba(0,0,0,0.25)]"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const first = globalSuggestions[0];
+                  if (first) {
+                    setGlobalSearchOpen(false);
+                    navigate(first.type === 'enquiry' ? `/enquiry/${first.data.id}` : `/sell/listing/${first.data.id}`);
+                  }
+                }}
+                disabled={!globalSuggestions.length}
+                className="h-11 px-4 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 text-white text-sm font-black rounded-xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[3px] transition-all flex-shrink-0"
+              >
+                Search
+              </button>
+            </div>
+
+            {/* Live dropdown suggestions */}
+            {globalSearchTerm.trim() && (
+              <div className="mt-2 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden max-h-[55vh] overflow-y-auto">
+                {globalSuggestions.length === 0 ? (
+                  <p className="px-4 py-3 text-xs text-gray-400">No matches in enquiries or for sale</p>
+                ) : (
+                  globalSuggestions.map((hit) => {
+                    const d = hit.data;
+                    const isEnquiry = hit.type === 'enquiry';
+                    const priceText = isEnquiry
+                      ? (d.budgetMax && d.budgetMin ? `₹${Number(d.budgetMin).toLocaleString('en-IN')} - ₹${Number(d.budgetMax).toLocaleString('en-IN')}` : d.budget ? `₹${Number(d.budget).toLocaleString('en-IN')}` : 'Budget —')
+                      : (d.priceType === 'range' ? `₹${Number(d.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(d.priceMax ?? 0).toLocaleString('en-IN')}` : d.price ? `₹${Number(d.price).toLocaleString('en-IN')}` : '₹—');
+                    return (
+                      <button
+                        key={`${hit.type}-${d.id}`}
+                        onClick={() => {
+                          setGlobalSearchOpen(false);
+                          navigate(isEnquiry ? `/enquiry/${d.id}` : `/sell/listing/${d.id}`);
+                        }}
+                        className="w-full text-left px-3 py-2.5 hover:bg-gray-100 transition-colors flex items-center gap-2.5 border-b border-gray-100 last:border-b-0"
+                      >
+                        <span className={`inline-block px-1.5 py-0.5 text-[8px] font-black rounded border border-black flex-shrink-0 ${isEnquiry ? 'bg-red-600 text-white' : 'bg-black text-white'}`}>
+                          {isEnquiry ? 'NEED' : 'FOR SALE'}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-black truncate">{d.title || 'Untitled'}</p>
+                          <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                            <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+                            <span className="truncate">{d.location || 'Anywhere'}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs font-black text-black whitespace-nowrap flex-shrink-0">{priceText}</span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
         </div>,
         document.body
       )}
