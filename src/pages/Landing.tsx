@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift, Plus, Store } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
@@ -132,6 +132,23 @@ const Landing = () => {
     };
     return iconMap[value] || Package;
   };
+
+  // Footer "Search" navigates to /#home-search-section — scroll so both the
+  // enquiry search/cards AND the For Sale cards below them are visible
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === '#home-search-section') {
+      const t = setTimeout(() => {
+        const section = document.getElementById('home-search-section');
+        if (!section) return;
+        // Anchor at the section top: enquiry cards fill the upper screen and the
+        // For Sale deck below peeks into view on phone-height viewports
+        const targetY = section.getBoundingClientRect().top + window.scrollY - 60;
+        window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  }, [location]);
 
   // State for shuffled categories (showing 6 at a time)
   const [displayedCategories, setDisplayedCategories] = useState<any[]>([]);
@@ -1153,7 +1170,8 @@ const Landing = () => {
   }, [publicRecentEnquiries]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Don't reset scroll when arriving with a #hash (footer Search deep-link)
+    if (!window.location.hash) window.scrollTo(0, 0);
   }, []);
 
   // Track window width for responsive card behavior
@@ -2003,7 +2021,7 @@ const Landing = () => {
           {/* Sell Section */}
 
           {/* Recent Enquiries Grid - White background full viewport width */}
-          <section className="py-4 sm:py-16 relative w-full" style={{ 
+          <section id="home-search-section" className="py-4 sm:py-16 relative w-full scroll-mt-16" style={{ 
             backgroundColor: '#ffffff',
             background: '#ffffff',
             width: '100vw',
