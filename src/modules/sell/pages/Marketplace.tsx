@@ -10,10 +10,13 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSearch';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, Navigation, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
-import type { MapLocationAddress } from '@/types/mapLocation';
+import type { MapLocationAddress, SortReferenceLocation } from '@/types/mapLocation';
+import { haversineKm } from '@/lib/haversine';
+import { loadNearestRadiusKm, saveNearestRadiusKm } from '@/lib/nearestRadiusStorage';
+import { geocodeLocationText } from '@/lib/geocodeText';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
@@ -136,6 +139,14 @@ export default function Marketplace() {
   const { user } = useAuth();
   const [savedListingIds, setSavedListingIds] = useState<Set<string>>(new Set());
 
+  // "Near me" radius filter (mirrors the EnquiryWall nearest flow):
+  // nearRef = applied filter; nearDraft = location chosen but not yet submitted
+  const [nearRef, setNearRef] = useState<SortReferenceLocation | null>(null);
+  const [nearDraft, setNearDraft] = useState<SortReferenceLocation | null>(null);
+  const [nearStep, setNearStep] = useState(false);
+  const [nearPickerOpen, setNearPickerOpen] = useState(false);
+  const [nearRadiusKm, setNearRadiusKm] = useState<number>(() => loadNearestRadiusKm());
+
   // Natural-language search: parsed suggestion (live) + auto-applied structured overlay
   const [nlFilters, setNlFilters] = useState<NLFilters | null>(null);
   const [nlSuggestion, setNlSuggestion] = useState<NLFilters | null>(null);
@@ -190,7 +201,7 @@ export default function Marketplace() {
   }, [page]);
 
   // Auto-shuffle listings every 5 minutes when no filters/search
-  const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all';
+  const noFiltersActive = search.trim() === '' && category === 'all' && location === 'all' && !nearRef;
 
   // Seller profiles for trust badge
   const [sellerProfiles, setSellerProfiles] = useState<Record<string, any>>({});
@@ -223,14 +234,20 @@ export default function Marketplace() {
     try {
       // AI NL-search family: car ↔ vehicles share one bucket so neither hides the other
       const CATEGORY_FAMILY: Record<string, string[]> = { car: ['car', 'vehicles'], vehicles: ['car', 'vehicles'] };
+      const parsed = parseNLSearch(search);
       const cats = CATEGORY_FAMILY[category];
+      // When the dropdown is 'all' but the parser detected a category from the
+      // text (e.g. searching "bike"), honor it — otherwise the stripped text
+      // query is empty and every listing matches.
+      const parsedCats = parsed?.category ? (CATEGORY_FAMILY[parsed.category] ?? [parsed.category]) : undefined;
+      const effectiveCats = cats ?? parsedCats;
       // Text query = residual keywords only (the sentence minus what the parser
       // extracted), so "toyota car under 100000" doesn't text-match itself to zero.
-      const textQuery = parseNLSearch(search)?.search ?? search;
+      const textQuery = parsed?.search ?? search;
       const data = await listMarketplace({
         search: textQuery,
-        categories: cats,
-        category: cats ? undefined : category === 'all' ? undefined : category,
+        categories: effectiveCats,
+        category: effectiveCats ? undefined : category === 'all' ? undefined : category,
         location: location === 'all' ? undefined : location,
       });
       setListings(data);
@@ -354,7 +371,7 @@ export default function Marketplace() {
   const minVal = priceMin ? Math.max(0, parseFloat(priceMin.replace(/[^0-9]/g, ''))) : null;
   const maxVal = priceMax ? Math.max(0, parseFloat(priceMax.replace(/[^0-9]/g, ''))) : null;
   const budgetActive = minVal !== null || maxVal !== null;
-  const hasFilters = category !== 'all' || location !== 'all' || budgetActive || trustBadgeOnly;
+  const hasFilters = category !== 'all' || location !== 'all' || budgetActive || trustBadgeOnly || !!nearRef;
 
   // Show Indian-style thousand separators (e.g. 1,00,000) while typing.
   const toInr = (raw: string): string => {
@@ -392,7 +409,9 @@ export default function Marketplace() {
     return SELL_LOCATIONS.filter(l => l !== 'Other' && l.toLowerCase().includes(locSearch.toLowerCase()));
   }, [locSearch]);
 
-  const activeLocationLabel = location === 'all' ? 'Locations' : location;
+  const activeLocationLabel = nearRef
+    ? `Within ${nearRadiusKm} km`
+    : location === 'all' ? 'Locations' : location;
 
   // Apply budget (min/max) and trust-badge filters on top of the fetched results.
   const budgetFilteredListings = useMemo(() => {
@@ -409,23 +428,81 @@ export default function Marketplace() {
     });
   }, [noFiltersActive, shuffledListings, listings, budgetActive, trustBadgeOnly, minVal, maxVal, sellerProfiles]);
 
+  // Apply the near-me radius filter on top of fetched results, closest first.
+  // Runs after budget/trust filtering so it composes with every existing filter.
+  // Listings without map-pin coordinates fall back to geocoding their saved
+  // text location (async, cached); unknowns are hidden while a radius is active.
+  const [textCoordMap, setTextCoordMap] = useState<Record<string, { lat: number; lng: number } | null>>({});
+  useEffect(() => {
+    if (!nearRef) return;
+    const missing = budgetFilteredListings.filter((l) => {
+      const lat = Number((l as any).latitude);
+      const lng = Number((l as any).longitude);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return false;
+      const key = (l.location || '').trim().toLowerCase();
+      return key && textCoordMap[key] === undefined;
+    });
+    if (missing.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const updates: Record<string, { lat: number; lng: number } | null> = {};
+      for (const l of missing.slice(0, 20)) {
+        const key = (l.location || '').trim().toLowerCase();
+        if (!key || updates[key] !== undefined || textCoordMap[key] !== undefined) continue;
+        updates[key] = await geocodeLocationText(l.location || '');
+      }
+      if (!cancelled && Object.keys(updates).length > 0) {
+        setTextCoordMap((prev) => ({ ...prev, ...updates }));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [nearRef, budgetFilteredListings, textCoordMap]);
+
+  const radiusFilteredListings = useMemo(() => {
+    if (!nearRef) return budgetFilteredListings;
+    const withDistance: Array<{ l: SellListing; dist: number }> = [];
+    for (const l of budgetFilteredListings) {
+      const lat = Number((l as any).latitude);
+      const lng = Number((l as any).longitude);
+      let coords = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+      if (!coords) {
+        const key = (l.location || '').trim().toLowerCase();
+        const textCoords = key ? textCoordMap[key] : null;
+        if (textCoords) coords = textCoords;
+      }
+      if (!coords) continue;
+      const dist = haversineKm(nearRef.lat, nearRef.lng, coords.lat, coords.lng);
+      if (dist <= nearRadiusKm) withDistance.push({ l, dist });
+    }
+    return withDistance.sort((a, b) => a.dist - b.dist).map((x) => x.l);
+  }, [budgetFilteredListings, nearRef, nearRadiusKm, textCoordMap]);
+
   const displayListings = useMemo(
     () => {
-      if (!nlFilters) return budgetFilteredListings;
-      const filtered = budgetFilteredListings.filter(nlMatches);
+      if (!nlFilters) return radiusFilteredListings;
+      let filtered = radiusFilteredListings.filter(nlMatches);
       const wantCat = nlFilters.category;
       const siblings = wantCat ? (CATEGORY_SIBLINGS[wantCat] ?? []) : [];
-      // Listings in the requested category (or its siblings) rank first; others stay visible below as related
-      return [...filtered].sort((a, b) => {
-        const inA = (a.category === wantCat || siblings.includes(a.category)) ? 1 : 0;
-        const inB = (b.category === wantCat || siblings.includes(b.category)) ? 1 : 0;
-        if (inA !== inB) return inB - inA;
-        const s = nlStrength(b) - nlStrength(a);
-        if (s !== 0) return s;
-        return 0;
-      });
+      if (nearRef) {
+        // Radius + search combined: strict — only listings matching the search
+        // within the radius. No "related" non-matches from outside the radius.
+        filtered = filtered.filter((l) => l.category === wantCat || siblings.includes(l.category));
+        return filtered.sort((a, b) => nlStrength(b) - nlStrength(a));
+      }
+      const matches = filtered.filter((l) => l.category === wantCat || siblings.includes(l.category));
+      if (matches.length === 0) {
+        // No real matches for the requested category: show nothing rather than
+        // dressing up unrelated listings (e.g. an iPhone) as "related" results.
+        return [];
+      }
+      // Search alone with at least one match: matches first, related below (original behavior)
+      const related = filtered.filter((l) => !(l.category === wantCat || siblings.includes(l.category)));
+      return [
+        ...matches.sort((a, b) => nlStrength(b) - nlStrength(a)),
+        ...related.sort((a, b) => nlStrength(b) - nlStrength(a)),
+      ];
     },
-    [budgetFilteredListings, nlFilters, nlMatches, nlStrength]
+    [radiusFilteredListings, nlFilters, nlMatches, nlStrength, nearRef]
   );
   const perPage = viewMode === 'grid' ? 12 : 10;
   const totalPages = Math.ceil(displayListings.length / perPage);
@@ -443,6 +520,24 @@ export default function Marketplace() {
         onOpenChange={setMapPickerOpen}
         onSelect={handleMapSelect}
         title="Choose location on map"
+      />
+      <MapLocationPicker
+        open={nearPickerOpen}
+        autoLocate
+        onOpenChange={setNearPickerOpen}
+        title="Use your location"
+        onSelect={(lat, lng, addr) => {
+          const loc: SortReferenceLocation = {
+            lat,
+            lng,
+            formatted_address: addr.formatted_address,
+          };
+          // Show the radius step inside the location popup instead of applying immediately
+          setNearDraft(loc);
+          setNearStep(true);
+          setNearPickerOpen(false);
+          setLocPopupOpen(true);
+        }}
       />
 
       {/* Search & Filters */}
@@ -579,6 +674,43 @@ export default function Marketplace() {
                   </div>
                 </div>
 
+                {/* Near me (radius filter) — mirrors the EnquiryWall nearest flow */}
+                {nearStep && nearDraft ? (
+                  <div className="p-3 border-b border-gray-100 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-wide text-gray-500 text-center">
+                      Show listings within
+                    </p>
+                    <div className="flex items-center justify-center gap-1.5">
+                      {([5, 10, 25] as const).map((km) => (
+                        <button
+                          key={km}
+                          type="button"
+                          onClick={() => { setNearRadiusKm(km); saveNearestRadiusKm(km); }}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-black transition-all ${
+                            nearRadiusKm === km
+                              ? 'bg-blue-600 text-white border border-blue-700 shadow-[0_2px_0_0_rgba(37,99,235,0.35)]'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {km} km
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNearRef(nearDraft);
+                        setNearStep(false);
+                        setNearDraft(null);
+                        setLocPopupOpen(false);
+                      }}
+                      className="w-full h-9 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl border border-black transition-colors"
+                    >
+                      <Search className="h-3.5 w-3.5" /> Submit
+                    </button>
+                  </div>
+                ) : (
+                  <>
                 {/* Choose on Map */}
                 <div className="p-3 border-b border-gray-100">
                   <button
@@ -588,7 +720,16 @@ export default function Marketplace() {
                     <Map className="h-4 w-4" />
                     Choose on map
                   </button>
+                  <button
+                    onClick={() => setNearPickerOpen(true)}
+                    className="mt-2 w-full flex items-center gap-2 px-3 py-2.5 text-xs font-bold text-black bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                  >
+                    <Navigation className="h-4 w-4 text-blue-600" />
+                    Near me — use my location
+                  </button>
                 </div>
+                  </>
+                )}
 
                 {/* Search Suggestions */}
                 {locSearch && (
@@ -685,7 +826,7 @@ export default function Marketplace() {
         <div className="flex items-center gap-2">
           {hasFilters && (
             <button
-              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); nlSuppressRef.current = null; setNlFilters(null); setNlSuggestion(null); }}
+              onClick={() => { setCategory('all'); setLocation('all'); setLocSearch(''); setSearch(''); setPriceMin(''); setPriceMax(''); setTrustBadgeOnly(false); setNearRef(null); setNearDraft(null); setNearStep(false); nlSuppressRef.current = null; setNlFilters(null); setNlSuggestion(null); }}
               className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
             >
               <X className="h-3 w-3" />Clear filters
@@ -787,8 +928,8 @@ export default function Marketplace() {
                       {l.condition}
                     </span>
                   )}
-                  <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5">
-                    <MapPin className="h-2.5 w-2.5 text-red-500" />{l.location}
+                  <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] flex items-center gap-0.5 max-w-full overflow-hidden">
+                    <MapPin className="h-2.5 w-2.5 text-red-500 flex-shrink-0" /><span className="truncate">{l.location && l.location.length > 15 ? l.location.slice(0, 15) + '...' : l.location}</span>
                   </span>
                   {l.details?.year && (
                     <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
@@ -885,8 +1026,8 @@ export default function Marketplace() {
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] inline-flex items-center gap-0.5">
-                      <MapPin className="h-1.5 w-1.5 text-red-500" />{l.location}
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] inline-flex items-center gap-0.5 max-w-full overflow-hidden">
+                      <MapPin className="h-1.5 w-1.5 text-red-500 flex-shrink-0" /><span className="truncate">{l.location && l.location.length > 15 ? l.location.slice(0, 15) + '...' : l.location}</span>
                     </span>
 
                   </div>

@@ -33,10 +33,14 @@ import { debounce } from "@/utils/performance";
 import { MapLocationPicker } from "@/components/MapLocationPicker";
 import { getEnquiryCoordinates } from "@/lib/enquiryCoordinates";
 import { sortByDistanceWithUnknownsAtBottom } from "@/lib/sortEnquiriesByDistance";
+import { haversineKm } from "@/lib/haversine";
+import { geocodeLocationText } from "@/lib/geocodeText";
 import {
+  clearSortReferenceLocation,
   loadSortReferenceLocation,
   saveSortReferenceLocation,
 } from "@/lib/sortReferenceStorage";
+import { loadNearestRadiusKm, saveNearestRadiusKm } from "@/lib/nearestRadiusStorage";
 import type { SortReferenceLocation } from "@/types/mapLocation";
 
 interface Enquiry {
@@ -89,12 +93,32 @@ export default function EnquiryWall() {
   );
   const [refLocationPickerOpen, setRefLocationPickerOpen] = useState(false);
   const [pendingDistanceSort, setPendingDistanceSort] = useState<'nearest' | 'farthest' | null>(null);
+  const [locationFilterQuery, setLocationFilterQuery] = useState('');
+  const [locationDraft, setLocationDraft] = useState('');
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  // Radius (km) used to limit results when the Nearest sort is active
+  const [nearestRadiusKm, setNearestRadiusKm] = useState<number>(() => loadNearestRadiusKm());
+  // Geocoded coordinates for enquiries that lack map-pin coords (keyed by location text)
+  const [textCoordMap, setTextCoordMap] = useState<Record<string, { lat: number; lng: number } | null>>({});
 
   useEffect(() => {
     if ((sortBy === "nearest" || sortBy === "farthest") && !sortReferenceLocation) {
       setSortBy("default");
     }
   }, [sortBy, sortReferenceLocation]);
+
+  // Unique location suggestions from loaded enquiries, for the sort popup's location search
+  const locationSuggestions = useMemo(() => {
+    const q = locationFilterQuery.toLowerCase().trim();
+    const set = new Set<string>();
+    enquiries.forEach(e => {
+      const loc = (e.location || '').trim();
+      if (!loc) return;
+      if (!q || loc.toLowerCase().includes(q)) set.add(loc);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b)).slice(0, 8);
+  }, [enquiries, locationFilterQuery]);
 
   // 🚀 PAGINATION: State for paginated display (10 per page)
   const [displayedEnquiries, setDisplayedEnquiries] = useState<Enquiry[]>([]);
@@ -1425,6 +1449,31 @@ export default function EnquiryWall() {
   // If no enquiries in selected category, show all enquiries as fallback
   const displayEnquiries = useMemo(() => {
     let results = nlFilteredEnquiries;
+
+    // Location text filter from the sort popup's location search bar
+    const locQuery = locationFilterQuery.toLowerCase().trim();
+    if (locQuery) {
+      results = results.filter(enquiry =>
+        (enquiry.location || '').toLowerCase().includes(locQuery)
+      );
+    }
+
+    // Radius filter: when Nearest is active with a reference point, keep only
+    // enquiries within the selected radius (haversine distance ≤ nearestRadiusKm).
+    // Enquiries without map-pin coordinates fall back to geocoded text locations
+    // (fetched async in the effect below); unknowns are hidden while a radius is on.
+    if (sortBy === 'nearest' && sortReferenceLocation) {
+      results = results.filter(enquiry => {
+        let coords = getEnquiryCoordinates(enquiry);
+        if (!coords) {
+          const key = (enquiry.location || '').trim().toLowerCase();
+          const textCoords = key ? textCoordMap[key] : null;
+          if (!textCoords) return false;
+          coords = textCoords;
+        }
+        return haversineKm(sortReferenceLocation.lat, sortReferenceLocation.lng, coords.lat, coords.lng) <= nearestRadiusKm;
+      });
+    }
     
     // Filter by trust badge if enabled - match the exact conditions for blue tick display
     if (showTrustBadgeOnly) {
@@ -1652,7 +1701,31 @@ export default function EnquiryWall() {
     
     // Combine: live first, then expired, then deal closed (all sorted by date)
     return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation]);
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation, locationFilterQuery, nearestRadiusKm, textCoordMap]);
+
+  // Geocode text-only locations for the nearest radius filter (throttled, cached)
+  useEffect(() => {
+    if (!(sortBy === 'nearest' && sortReferenceLocation)) return;
+    const missing = enquiries.filter((e) => {
+      if (getEnquiryCoordinates(e)) return false;
+      const key = (e.location || '').trim().toLowerCase();
+      return key && textCoordMap[key] === undefined;
+    });
+    if (missing.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const updates: Record<string, { lat: number; lng: number } | null> = {};
+      for (const e of missing.slice(0, 20)) {
+        const key = (e.location || '').trim().toLowerCase();
+        if (!key || updates[key] !== undefined || textCoordMap[key] !== undefined) continue;
+        updates[key] = await geocodeLocationText(e.location || '');
+      }
+      if (!cancelled && Object.keys(updates).length > 0) {
+        setTextCoordMap((prev) => ({ ...prev, ...updates }));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sortBy, sortReferenceLocation, enquiries, textCoordMap]);
 
   // 🚀 PAGINATION: Show only current page (prev/next style)
   useEffect(() => {
@@ -5561,7 +5634,17 @@ export default function EnquiryWall() {
               </DropdownMenu>
               
               {/* Sort Dropdown */}
-              <DropdownMenu>
+              <DropdownMenu open={sortDropdownOpen} onOpenChange={(open) => {
+                setSortDropdownOpen(open);
+                if (open) {
+                  // Pre-fill the search bar with the active filter: map point address if set, else text filter
+                  setLocationDraft(
+                    sortReferenceLocation
+                      ? (sortReferenceLocation.formatted_address || `${sortReferenceLocation.lat.toFixed(4)}, ${sortReferenceLocation.lng.toFixed(4)}`)
+                      : locationFilterQuery
+                  );
+                }
+              }}>
                 <DropdownMenuTrigger asChild>
                   <button
                     className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex items-center justify-center gap-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
@@ -5583,7 +5666,7 @@ export default function EnquiryWall() {
                     <span className="relative z-10 hidden sm:inline">Sort</span>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[200px] sm:min-w-[228px] w-[min(92vw,260px)] sm:w-56 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
+                <DropdownMenuContent align="end" className="min-w-[240px] sm:min-w-[280px] w-[min(92vw,300px)] sm:w-72 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
                   <DropdownMenuCheckboxItem
                     checked={sortBy === 'newest'}
                     onCheckedChange={() => setSortBy('newest')}
@@ -5600,22 +5683,6 @@ export default function EnquiryWall() {
                   >
                     Newest first
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={sortBy === 'oldest'}
-                    onCheckedChange={() => setSortBy('oldest')}
-                    className={`cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden flex items-center justify-center text-center pl-3 pr-3 ${
-                      sortBy === 'oldest'
-                        ? 'bg-blue-600 border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95'
-                        : 'bg-white hover:bg-gray-50 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95'
-                    }`}
-                    style={{ 
-                      color: sortBy === 'oldest' ? '#ffffff' : '#000000',
-                      paddingLeft: '12px',
-                      paddingRight: '12px'
-                    }}
-                  >
-                    Oldest first
-                  </DropdownMenuCheckboxItem>
                   <div className="h-px bg-gray-300 my-1.5 mx-2" />
                   <div
                     className="px-1.5 pt-2 pb-2 space-y-2.5"
@@ -5624,26 +5691,126 @@ export default function EnquiryWall() {
                     <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.28em] text-center text-slate-600">
                       Sort by location
                     </p>
-                    <button
-                      type="button"
-                      className="w-full overflow-hidden rounded-lg border border-black bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.2)] active:translate-y-px active:shadow-none transition-transform touch-manipulation min-h-[76px] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
-                      onClick={() => setRefLocationPickerOpen(true)}
-                    >
-                      {sortReferenceLocation ? (
-                        <img
-                          src={`https://staticmap.openstreetmap.de/staticmap.php?center=${sortReferenceLocation.lat},${sortReferenceLocation.lng}&zoom=13&size=280x152&maptype=mapnik`}
-                          alt=""
-                          className="h-[76px] w-full object-cover"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center gap-1 py-4 px-2 text-[10px] font-black text-slate-700">
-                          <MapPin className="h-5 w-5" />
-                          <span>Choose on map</span>
+                    <div className="relative" onPointerDown={(e) => e.stopPropagation()}>
+                      <div className="flex gap-1.5">
+                        <div className="relative flex-1">
+                          <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500 pointer-events-none" />
+                          <input
+                            type="text"
+                            value={locationDraft}
+                            onChange={(e) => {
+                              setLocationDraft(e.target.value);
+                              setShowLocationSuggestions(true);
+                              // Typing invalidates any map-selected reference point (mutually exclusive)
+                              if (sortReferenceLocation) {
+                                setSortReferenceLocation(null);
+                                clearSortReferenceLocation();
+                              }
+                            }}
+                            onFocus={() => setShowLocationSuggestions(true)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.stopPropagation();
+                                if (sortReferenceLocation) {
+                                  // Draft text mirrors the map selection — keep the map point active
+                                  setShowLocationSuggestions(false);
+                                  setSortDropdownOpen(false);
+                                  return;
+                                }
+                                setLocationFilterQuery(locationDraft.trim());
+                                setShowLocationSuggestions(false);
+                                setSortDropdownOpen(false);
+                              }
+                            }}
+                            placeholder="Location"
+                            className="w-full h-9 rounded-lg border-[0.5px] border-black bg-white pl-8 pr-7 text-[11px] font-bold text-black placeholder:text-[9px] placeholder:text-slate-400 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-1"
+                          />
+                          {locationDraft && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setLocationDraft(''); setLocationFilterQuery(''); setShowLocationSuggestions(false); setSortReferenceLocation(null); clearSortReferenceLocation(); }}
+                              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full text-slate-500 hover:text-black hover:bg-slate-100 transition-colors"
+                              title="Clear location filter"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {showLocationSuggestions && locationSuggestions.length > 0 && (
+                        <div className="absolute z-20 top-full mt-1 left-0 right-0 rounded-lg border-[0.5px] border-black bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.2)] overflow-hidden max-h-[160px] overflow-y-auto">
+                          {locationSuggestions.map(loc => (
+                            <button
+                              key={loc}
+                              type="button"
+                              onClick={() => {
+                                setLocationDraft(loc);
+                                setShowLocationSuggestions(false);
+                                // Suggestion picked for text search — clear any map-selected point
+                                setSortReferenceLocation(null);
+                                clearSortReferenceLocation();
+                              }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[11px] font-bold text-black hover:bg-blue-50 transition-colors border-b last:border-b-0 border-slate-100"
+                            >
+                              <MapPin className="h-3 w-3 text-slate-500 flex-shrink-0" />
+                              <span className="truncate">{loc}</span>
+                            </button>
+                          ))}
                         </div>
                       )}
+                    </div>
+                    <button
+                      type="button"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-black bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.2)] active:translate-y-px active:shadow-none transition-all touch-manipulation h-8 px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                      onClick={() => {
+                        // Opening the map picker invalidates any typed location (mutually exclusive)
+                        if (locationDraft || locationFilterQuery) {
+                          setLocationDraft('');
+                          setLocationFilterQuery('');
+                          setShowLocationSuggestions(false);
+                        }
+                        setRefLocationPickerOpen(true);
+                      }}
+                    >
+                      {sortReferenceLocation ? (
+                        <>
+                          <MapPin className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                          <span className="text-[9px] font-black text-black truncate max-w-[110px]">
+                            {sortReferenceLocation.lat.toFixed(3)}, {sortReferenceLocation.lng.toFixed(3)}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="h-3.5 w-3.5 text-slate-700 flex-shrink-0" />
+                          <span className="text-[9px] font-black text-slate-700">Choose on map</span>
+                        </>
+                      )}
                     </button>
+                    {!(sortBy === "nearest" && sortReferenceLocation) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const text = locationDraft.trim();
+                        if (text && !sortReferenceLocation) {
+                          // Text search wins: apply it and reset the map section
+                          setLocationFilterQuery(text);
+                          setSortReferenceLocation(null);
+                          clearSortReferenceLocation();
+                        } else if (!text) {
+                          // Empty bar with no map point = clear all location filtering
+                          setLocationFilterQuery('');
+                          setSortReferenceLocation(null);
+                          clearSortReferenceLocation();
+                        }
+                        // If a map point is active and the bar still shows its address, Submit just closes
+                        setShowLocationSuggestions(false);
+                        setSortDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 border-[0.5px] border-blue-700 text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                    >
+                      Submit
+                    </button>
+                    )}
                     <div className="grid grid-cols-2 gap-1.5">
                       <DropdownMenuCheckboxItem
                         checked={sortBy === "nearest"}
@@ -5654,6 +5821,7 @@ export default function EnquiryWall() {
                             setSortBy("nearest");
                             return;
                           }
+                          // No saved point yet: open the picker and auto-request the user's current location
                           setPendingDistanceSort("nearest");
                           setRefLocationPickerOpen(true);
                         }}
@@ -5665,27 +5833,59 @@ export default function EnquiryWall() {
                       >
                         Nearest
                       </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === "farthest"}
-                        onCheckedChange={() => {
-                          const ref = sortReferenceLocation ?? loadSortReferenceLocation();
-                          if (ref) {
-                            setSortReferenceLocation(ref);
-                            setSortBy("farthest");
-                            return;
-                          }
-                          setPendingDistanceSort("farthest");
-                          setRefLocationPickerOpen(true);
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Clear every filter/sort at once
+                          setSortBy('default');
+                          setLocationFilterQuery('');
+                          setLocationDraft('');
+                          setSortReferenceLocation(null);
+                          clearSortReferenceLocation();
+                          setShowLocationSuggestions(false);
+                          setShowTrustBadgeOnly(false);
+                          setSearchTerm('');
+                          setSortDropdownOpen(false);
                         }}
-                        className={`cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] relative overflow-hidden flex items-center justify-center text-center ${
-                          sortBy === "farthest"
-                            ? "bg-blue-600 border-[0.5px] border-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.35)]"
-                            : "bg-white border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]"
-                        }`}
+                        className="cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] relative overflow-hidden flex items-center justify-center text-center bg-red-500 border-[0.5px] border-red-600 text-white shadow-[0_3px_0_0_rgba(220,38,38,0.35)] active:translate-y-px active:shadow-none"
                       >
-                        Farthest
-                      </DropdownMenuCheckboxItem>
+                        Clear all
+                      </button>
                     </div>
+                    {sortBy === "nearest" && sortReferenceLocation && (
+                      <>
+                      <div className="flex items-center justify-center gap-1.5">
+                        {([5, 10, 25] as const).map(km => (
+                          <button
+                            key={km}
+                            type="button"
+                            onClick={() => {
+                              setNearestRadiusKm(km);
+                              saveNearestRadiusKm(km);
+                            }}
+                            className={`px-2.5 py-1 rounded-full text-[9px] font-black transition-all ${
+                              nearestRadiusKm === km
+                                ? "bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_2px_0_0_rgba(37,99,235,0.35)]"
+                                : "bg-white text-slate-700 border-[0.5px] border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15)]"
+                            }`}
+                          >
+                            {km} km
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Radius chosen — dismiss the popup and apply
+                          setShowLocationSuggestions(false);
+                          setSortDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 border-[0.5px] border-blue-700 text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                      >
+                        Submit
+                      </button>
+                      </>
+                    )}
                   </div>
                   {sortBy !== 'default' && (
                     <>
@@ -6714,6 +6914,7 @@ export default function EnquiryWall() {
       </div>
       <MapLocationPicker
         open={refLocationPickerOpen}
+        autoLocate={pendingDistanceSort === 'nearest'}
         onOpenChange={(o) => {
           setRefLocationPickerOpen(o);
           if (!o) setPendingDistanceSort(null);
@@ -6736,8 +6937,15 @@ export default function EnquiryWall() {
           };
           saveSortReferenceLocation(loc);
           setSortReferenceLocation(loc);
+          // Show the picked location in the search bar (mirrors the map selection);
+          // typing or submitting a text location will clear the map point instead
+          setLocationDraft(addr.formatted_address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+          setLocationFilterQuery('');
+          setShowLocationSuggestions(false);
           if (pendingDistanceSort) {
             setSortBy(pendingDistanceSort);
+            // Keep the sort popup open so the 5/10/25 km pills + Submit are shown
+            setSortDropdownOpen(true);
           }
           setPendingDistanceSort(null);
           setRefLocationPickerOpen(false);

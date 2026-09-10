@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -49,6 +49,8 @@ export type MapLocationPickerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string;
+  /** When true, automatically requests the device location as soon as the picker opens. */
+  autoLocate?: boolean;
 };
 
 const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 };
@@ -72,6 +74,7 @@ export function MapLocationPicker({
   open,
   onOpenChange,
   title = "Choose location",
+  autoLocate = false,
 }: MapLocationPickerProps) {
   const isMobile = useIsMobile();
   const [position, setPosition] = useState<[number, number]>([
@@ -149,6 +152,18 @@ export function MapLocationPicker({
       }
     );
   }, []);
+
+  // Auto-request the device location when the picker opens with autoLocate enabled
+  const autoLocateFiredRef = useRef(false);
+  useEffect(() => {
+    if (open && autoLocate && !autoLocateFiredRef.current) {
+      autoLocateFiredRef.current = true;
+      handleUseMyLocation();
+    }
+    if (!open) {
+      autoLocateFiredRef.current = false;
+    }
+  }, [open, autoLocate, handleUseMyLocation]);
 
   const handleConfirm = async () => {
     const [lat, lng] = position;

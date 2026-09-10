@@ -2641,8 +2641,8 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
-                                    <span className={`text-sm sm:text-base lg:text-sm xl:text-base font-black ${
+                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-8 sm:pt-10 lg:pt-9 xl:pt-10">
+                                    <span className={`text-lg sm:text-xl lg:text-lg xl:text-xl font-black text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
@@ -2654,12 +2654,12 @@ const Dashboard = () => {
                               )}
                             </div>
 
-                            {/* Details - Moved from where Submission Time was */}
-                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg">
+                            {/* Details preview removed — placeholder keeps the tile size unchanged */}
+                              <div className="invisible flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg" aria-hidden="true">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-bold truncate">
-                                    {submission.message?.split(' ').slice(0, 3).join(' ') || 'Professional service'}
+                                    placeholder
                                   </span>
                               </div>
                             </div>
