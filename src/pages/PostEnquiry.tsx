@@ -33,6 +33,7 @@ import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES } from "@/constants/categories";
+import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
@@ -1320,6 +1321,12 @@ export default function PostEnquiry() {
       return;
     }
 
+    // Reference images are required for physical-item categories (cars, bikes, mobiles, etc.)
+    if (categoriesRequireImage(selectedCategories) && referenceImageUrls.length === 0) {
+      alert('At least 1 image is required for this category. Physical items like cars, bikes and mobiles need a photo so sellers can see them.');
+      return;
+    }
+
     // ALL enquiries require ₹10 Razorpay payment before posting
     // handleDirectPayment manages its own loading/error states
     console.log('💳 Opening Razorpay checkout - ₹10 payment required for all enquiries');
@@ -2269,7 +2276,9 @@ export default function PostEnquiry() {
                       <div className="space-y-2">
                         <Label className="text-xs font-bold flex items-center gap-2">
                           <Upload className="h-3.5 w-3.5" />
-                          Show your need (optional)
+                          {categoriesRequireImage(selectedCategories)
+                            ? 'Show your need'
+                            : 'Show your need (optional)'}
                         </Label>
                         {referenceImageUrls.length > 0 && (
                           <div className="grid grid-cols-3 gap-2 mb-3">
@@ -2295,7 +2304,12 @@ export default function PostEnquiry() {
                               disabled={uploadingImages || referenceImageUrls.length >= 5}
                               className="cursor-pointer text-sm"
                             />
-                            <p className="text-[11px] text-slate-600 mt-2">{referenceImageUrls.length}/5 images</p>
+                            <p className="text-[11px] text-slate-600 mt-2">
+                              {referenceImageUrls.length}/5 images
+                              {categoriesRequireImage(selectedCategories) && referenceImageUrls.length === 0 && (
+                                <span className="ml-1 font-semibold text-red-600">• at least 1 required for this category</span>
+                              )}
+                            </p>
                             {uploadingImages && referenceUploadProgresses.length > 0 && (
                               <div className="mt-2 space-y-1">
                                 {referenceUploadProgresses.map((p, i) => (

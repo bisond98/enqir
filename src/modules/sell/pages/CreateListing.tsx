@@ -17,6 +17,7 @@ import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep } from '../categoryDetails';
+import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import {
@@ -462,7 +463,12 @@ export default function CreateListing() {
       case 4:
         return true;
       case 5:
-        return validatePriceFields();
+        if (!validatePriceFields()) return false;
+        if (categoriesRequireImage(category) && images.length === 0) {
+          toast({ title: 'At least 1 photo is required', description: 'Categories like cars, bikes, mobiles and other physical items need at least one image so buyers can see them.', variant: 'destructive' });
+          return false;
+        }
+        return true;
       case 6:
         return true;
       default:
@@ -502,6 +508,10 @@ export default function CreateListing() {
       return;
     }
     if (!validatePriceFields()) return;
+    if (categoriesRequireImage(category) && images.length === 0) {
+      toast({ title: 'At least 1 photo is required', description: 'Categories like cars, bikes, mobiles and other physical items need at least one image so buyers can see them.', variant: 'destructive' });
+      return;
+    }
 
     setPublishing(true);
 
@@ -1170,7 +1180,9 @@ export default function CreateListing() {
                 <div className="space-y-2">
                   <Label className="text-xs font-bold flex items-center gap-2">
                     <Upload className="h-3.5 w-3.5" />
-                    Photos (up to 5)
+                    {categoriesRequireImage(category)
+                      ? 'Photos — at least 1 required for this category'
+                      : 'Photos (up to 5)'}
                   </Label>
                   {images.length > 0 && (
                     <div className="grid grid-cols-3 gap-2 mb-3">
@@ -1196,7 +1208,12 @@ export default function CreateListing() {
                       disabled={uploading || images.length >= 5}
                       className="cursor-pointer text-sm"
                     />
-                    <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
+                    <p className="text-[11px] text-slate-600 mt-2">
+                      {images.length}/5 images
+                      {categoriesRequireImage(category) && images.length === 0 && (
+                        <span className="ml-1 font-semibold text-red-600">• at least 1 required for this category</span>
+                      )}
+                    </p>
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {uploadProgresses.map((p, i) => (

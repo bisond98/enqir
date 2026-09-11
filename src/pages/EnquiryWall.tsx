@@ -1482,13 +1482,16 @@ export default function EnquiryWall() {
         // Match the exact conditions used to display the blue tick in the card header
         // Grid view: userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage
         // List view: (userProfiles[enquiry.userId]?.isProfileVerified || userProfiles[enquiry.userId]?.isVerified || userProfiles[enquiry.userId]?.trustBadge || userProfiles[enquiry.userId]?.isIdentityVerified) || enquiry.idFrontImage || enquiry.idBackImage
+        // Match the blue tick display condition exactly (see verified badge render below)
         const hasTrustBadge = 
           profile?.isProfileVerified || 
           profile?.isVerified ||
           profile?.trustBadge ||
           profile?.isIdentityVerified ||
           enquiry.idFrontImage || 
-          enquiry.idBackImage;
+          enquiry.idBackImage ||
+          enquiry.isProfileVerified || 
+          enquiry.userVerified;
         
         return hasTrustBadge;
       });
@@ -6261,12 +6264,12 @@ export default function EnquiryWall() {
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
                                           {/* Location - Desktop first position, Mobile right-aligned */}
                                         {enquiry.location && (
-                                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex">
+                                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex max-w-full overflow-hidden">
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                             </div>
-                                              <span className="text-[7px] sm:text-sm text-white font-bold" style={{ letterSpacing: '0.05em' }}>At </span>
-                                              <span className="truncate text-[7px] sm:text-sm md:text-base text-white font-bold" style={{ letterSpacing: '0.05em' }}>{enquiry.location}</span>
+                                              <span className="text-[7px] sm:text-sm text-white font-bold flex-shrink-0" style={{ letterSpacing: '0.05em' }}>At </span>
+                                              <span className="truncate text-[7px] sm:text-sm md:text-base text-white font-bold whitespace-nowrap overflow-hidden" style={{ letterSpacing: '0.05em' }}>{enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}</span>
                                           </div>
                                         )}
                                         {enquiry.location && (
@@ -6506,7 +6509,7 @@ export default function EnquiryWall() {
                                     <div className="flex flex-col items-end gap-1 sm:gap-1.5 pt-2">
                                       {/* Location - Right aligned above date */}
                                       {enquiry.location && (
-                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
+                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out max-w-full overflow-hidden"
                                           style={{
                                             boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
                                             transformStyle: 'preserve-3d',
@@ -6533,7 +6536,7 @@ export default function EnquiryWall() {
                                           {/* Inner depth shadow */}
                                           <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
                                           
-                                          <span className="text-[8px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>At </span>
+                                          <span className="text-[8px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap flex-shrink-0" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>At </span>
                                           <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0 relative z-10"
                                             style={{
                                               transform: 'translateZ(10px)'
@@ -6541,7 +6544,7 @@ export default function EnquiryWall() {
                                           >
                                             <MapPin className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
                                           </div>
-                                          <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location}</span>
+                                          <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10 whitespace-nowrap overflow-hidden" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}</span>
                                         </div>
                                       )}
                                       <div className="flex items-center gap-1.5 sm:gap-3">
