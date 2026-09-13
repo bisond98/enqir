@@ -128,29 +128,48 @@ export function MapLocationPicker({
     setGeoLoading(true);
     setGeoError(null);
     setError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-          setGeoError("Invalid coordinates from device. Pick on the map.");
-          setGeoLoading(false);
-          return;
-        }
-        setPosition([lat, lng]);
-        setMapInstanceKey((k) => k + 1);
+
+    // Two-stage request: GPS first (accurate but slow), then network location
+    // (fast, works on Wi-Fi-only devices). Whichever answers first wins.
+    let settled = false;
+    const succeed = (pos: GeolocationPosition) => {
+      if (settled) return;
+      settled = true;
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        setGeoError("Invalid coordinates from device. Pick on the map.");
         setGeoLoading(false);
-      },
-      (err) => {
-        setGeoLoading(false);
-        setGeoError(geolocationErrorMessage(err.code, err.message));
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 25_000,
-        maximumAge: 0,
+        return;
       }
-    );
+      setPosition([lat, lng]);
+      setMapInstanceKey((k) => k + 1);
+      setGeoLoading(false);
+    };
+    const fail = (err: GeolocationPositionError) => {
+      if (settled) return;
+      settled = true;
+      setGeoLoading(false);
+      setGeoError(geolocationErrorMessage(err.code, err.message));
+    };
+
+    // Stage 1: high accuracy (GPS). Short timeout — if GPS is slow, stage 2 covers it.
+    navigator.geolocation.getCurrentPosition(succeed, () => {
+      // Stage 2: network-based location — much faster, works without GPS.
+      navigator.geolocation.getCurrentPosition(
+        succeed,
+        fail,
+        {
+          enableHighAccuracy: false,
+          timeout: 15_000,
+          maximumAge: 300_000, // accept a position cached up to 5 min ago
+        }
+      );
+    }, {
+      enableHighAccuracy: true,
+      timeout: 8_000,
+      maximumAge: 30_000,
+    });
   }, []);
 
   // Auto-request the device location when the picker opens with autoLocate enabled

@@ -7,7 +7,11 @@
 // ⚠️ DO NOT MODIFY: The count calculation useEffect (around line 1049-1096)
 // ⚠️ DO NOT REVERT: This fix ensures count matches Load More button and what users see
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { APP_CATEGORIES } from "@/constants/categories";
+import { SlidersHorizontal, IndianRupee, LayoutGrid, Map as MapIcon, Navigation } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -77,6 +81,7 @@ interface Enquiry {
 
 export default function EnquiryWall() {
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   // 🛡️ PROTECTED: Live enquiries count - REQUIRED for matching Landing.tsx count
@@ -92,6 +97,11 @@ export default function EnquiryWall() {
     loadSortReferenceLocation()
   );
   const [refLocationPickerOpen, setRefLocationPickerOpen] = useState(false);
+  // Marketplace-style filter panel (opened from the header Filter button)
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [budgetMin, setBudgetMin] = useState('');
+  const [budgetMax, setBudgetMax] = useState('');
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [pendingDistanceSort, setPendingDistanceSort] = useState<'nearest' | 'farthest' | null>(null);
   const [locationFilterQuery, setLocationFilterQuery] = useState('');
   const [locationDraft, setLocationDraft] = useState('');
@@ -1450,6 +1460,19 @@ export default function EnquiryWall() {
   const displayEnquiries = useMemo(() => {
     let results = nlFilteredEnquiries;
 
+    // Marketplace-style budget filter (min/max on the enquiry budget)
+    const bMin = parseFloat(budgetMin.replace(/[^0-9.]/g, ''));
+    const bMax = parseFloat(budgetMax.replace(/[^0-9.]/g, ''));
+    if (!isNaN(bMin) || !isNaN(bMax)) {
+      results = results.filter(enquiry => {
+        const num = parseFloat(String(enquiry.budget ?? '').replace(/[^0-9.]/g, ''));
+        if (isNaN(num)) return false;
+        if (!isNaN(bMin) && num < bMin) return false;
+        if (!isNaN(bMax) && num > bMax) return false;
+        return true;
+      });
+    }
+
     // Location text filter from the sort popup's location search bar
     const locQuery = locationFilterQuery.toLowerCase().trim();
     if (locQuery) {
@@ -1704,7 +1727,7 @@ export default function EnquiryWall() {
     
     // Combine: live first, then expired, then deal closed (all sorted by date)
     return [...sortedLiveResults, ...sortedExpiredResults, ...sortedDealClosedResults];
-  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation, locationFilterQuery, nearestRadiusKm, textCoordMap]);
+  }, [showCategoryFallback, enquiries, filteredEnquiries, showTrustBadgeOnly, userProfiles, shuffledLiveEnquiries, sortBy, searchTerm, sortReferenceLocation, locationFilterQuery, nearestRadiusKm, textCoordMap, budgetMin, budgetMax]);
 
   // Geocode text-only locations for the nearest radius filter (throttled, cached)
   useEffect(() => {
@@ -5210,488 +5233,137 @@ export default function EnquiryWall() {
           </div>
 
         <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
-          {/* Search and Filters */}
+          {/* Search and Filters - marketplace layout */}
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
-                <div className="relative">
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search enquiries..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleSearchChange(searchTerm);
-                    }
-                  }}
-                  onFocus={() => {
-                    // Only show suggestions if not clicking a suggestion and not prevented
-                    if (!isClickingSuggestionRef.current && !preventSuggestionsRef.current) {
-                      setShowSuggestions(searchSuggestions.length > 0);
-                    }
-                  }}
-                  onBlur={(e) => {
-                    // Clear any existing timeout
-                    if (blurTimeoutRef.current) {
-                      clearTimeout(blurTimeoutRef.current);
-                    }
-                    
-                    // Check if the blur is caused by clicking on a suggestion
-                    const relatedTarget = e.relatedTarget as HTMLElement;
-                    const isClickingDropdown = relatedTarget && suggestionsDropdownRef.current && 
-                      suggestionsDropdownRef.current.contains(relatedTarget);
-                    
-                    // Only hide suggestions if not clicking a suggestion and not clicking dropdown
-                    if (!isClickingSuggestionRef.current && !isClickingDropdown) {
-                      blurTimeoutRef.current = setTimeout(() => {
-                        // Double check before hiding
-                        if (!isClickingSuggestionRef.current) {
-                          setShowSuggestions(false);
-                        }
-                        blurTimeoutRef.current = null;
-                      }, 150);
-                    }
-                  }}
-                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
-                  style={{ 
-                    fontSize: '16px', // Prevents zoom on iOS
-                    lineHeight: '1.5',
-                    paddingTop: '0.75rem',
-                    paddingBottom: '0.75rem',
-                    paddingLeft: '2.75rem', // More space for icon on mobile
-                    WebkitAppearance: 'none',
-                    WebkitTapHighlightColor: 'transparent',
-                    direction: 'ltr'
-                  }}
-                  disabled={isAISearching}
-                />
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
-                </div>
-                {isAISearching ? (
-                  <div className="absolute right-10 sm:right-12 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      // Prevent suggestions from showing when search button is clicked
-                      preventSuggestionsRef.current = true;
-                      setShowSuggestions(false);
-                      setSearchSuggestions([]);
-                      // Perform search without triggering suggestions
-                      if (searchTerm.trim()) {
-                        handleSearchChange(searchTerm);
-                      }
-                      // Keep preventSuggestions active longer to prevent dropdown from reopening
-                      setTimeout(() => {
-                        preventSuggestionsRef.current = false;
-                      }, 500);
-                    }}
-                    className="absolute right-2 sm:right-3 top-1/2 z-50 p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex items-center justify-center touch-manipulation cursor-pointer"
-                    aria-label="Search"
-                    style={{ 
-                      pointerEvents: 'auto',
-                      transform: 'translateY(-50%)',
-                      top: '50%',
-                      willChange: 'auto'
-                    }}
-                  >
-                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-black pointer-events-none" />
-                  </button>
-                )}
-                
-                {/* AI Search Suggestions Dropdown - Absolute with Layout Isolation */}
-                {showSuggestions && searchSuggestions.length > 0 && (
-                  <div 
-                    ref={suggestionsDropdownRef}
-                    onMouseDown={(e) => {
-                      // Prevent input blur when clicking anywhere in dropdown
-                      e.preventDefault();
-                      isClickingSuggestionRef.current = true;
-                    }}
-                    className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
-                    style={{
-                      touchAction: 'pan-y',
-                      transform: 'translateZ(0)',
-                      WebkitTransform: 'translateZ(0)',
-                      contain: 'layout style paint', // Isolate from page layout - prevents layout shifts
-                      willChange: 'transform',
-                      isolation: 'isolate' // Create new stacking context
-                    }}
-                  >
-                    {searchSuggestions.map((suggestion, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onTouchStart={(e) => {
-                          e.preventDefault();
-                        }}
-                        onTouchEnd={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          
-                          // Mark that we're clicking a suggestion
-                          isClickingSuggestionRef.current = true;
-                          
-                          // Blur input to prevent keyboard zoom
-                          if (searchInputRef.current) {
-                            searchInputRef.current.blur();
-                          }
-                          
-                          // Execute click (viewport already locked by useEffect)
-                          handleSuggestionClick(suggestion);
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          
-                          // Mark that we're clicking a suggestion
-                          isClickingSuggestionRef.current = true;
-                          
-                          if (searchInputRef.current) {
-                            searchInputRef.current.blur();
-                          }
-                          handleSuggestionClick(suggestion);
-                        }}
-                        className="w-full text-left px-4 py-3 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-b-0 cursor-pointer"
-                        style={{
-                          touchAction: 'none',
-                          fontSize: '16px',
-                          WebkitAppearance: 'none',
-                          WebkitTapHighlightColor: 'transparent',
-                          transform: 'translateZ(0)',
-                          WebkitTransform: 'translateZ(0)',
-                          userSelect: 'none',
-                          WebkitUserSelect: 'none'
-                        }}
-                      >
-                        <div className="flex items-center gap-2" style={{ pointerEvents: 'none' }}>
-                          <Search className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                          <span className="text-sm text-slate-700">{suggestion}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* AI natural-language chips (auto-applied while typing) */}
-                {nlFilters && nlFilters.chips.length > 0 && (
-                  <div className="flex items-center gap-1.5 flex-wrap mt-2">
-                    <Sparkles className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
-                    {nlFilters.chips.map((chip) => (
-                      <span key={chip} className="text-[10px] font-black text-white bg-black border border-black rounded-full px-2.5 py-1">{chip}</span>
-                    ))}
-                    <button
-                      onClick={() => { nlSuppressRef.current = searchTerm.trim(); setNlFilters(null); }}
-                      className="text-gray-400 hover:text-black"
-                      title="Turn off AI filtering"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                )}
-              </div>
+{/* Buy / Sell / Filter row - marketplace style */}
+            <div className="sm:hidden grid grid-cols-3 gap-3">
+              <button onClick={() => navigate('/post-enquiry')} className="w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] !bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+                <span className="relative z-10">Buy</span>
+              </button>
+              <button className="w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]">
+                <span className="relative z-10">Sell</span>
+              </button>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] flex items-center justify-center gap-1 ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+                <SlidersHorizontal className="h-4 w-4 relative z-10" />
+                <span className="relative z-10">Filter</span>
+              </button>
+            </div>
+            <div className="hidden sm:flex items-center justify-end gap-2">
+              <button onClick={() => navigate('/post-enquiry')} className="px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black bg-white hover:bg-gray-50 text-black transition-all active:scale-[0.98]">Buy</button>
+              <button className="px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white transition-all active:scale-[0.98]">Sell</button>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black transition-all active:scale-[0.98] flex items-center gap-1.5 ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'}`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
             </div>
 
-            <div className="space-y-3 sm:space-y-4">
-              {/* Categories Box - Scrollable */}
-              <div className="w-full" ref={categoryBoxRef}>
-                <div className="bg-gray-200 border border-black rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 transition-all duration-300 relative overflow-hidden">
-                      {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
-                  <div className="relative z-10">
-                    <h3 className="text-xs sm:text-sm md:text-base font-black text-black mb-3 sm:mb-4 bg-white border-2 border-black rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 inline-block">
-                      Categories
-                    </h3>
-
-                  <div
-                    ref={categoriesScrollRef}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3 overflow-y-auto pr-3 sm:pr-4 md:pr-5 categories-scroll"
-                    style={{
-                      maxHeight: '120px',
-                      scrollbarWidth: 'thin',
-                      scrollbarColor: '#000 #f3f4f6',
-                      WebkitOverflowScrolling: 'touch'
-                    }}
-                  >
-                    {(() => {
-                      const allCategories = [
-                        { value: "all", label: "All" },
-                        { value: "business", label: "Business" },
-                        { value: "personal", label: "Personal" },
-                        { value: "service", label: "Service" },
-                        { value: "agriculture-farming", label: "Agriculture" },
-                        { value: "antiques", label: "Antiques" },
-                        { value: "art", label: "Art" },
-                        { value: "automobile", label: "Automobile" },
-                        { value: "baby-kids", label: "Baby & Kids" },
-                        { value: "bags-luggage", label: "Bags & Luggage" },
-                        { value: "books-publications", label: "Books" },
-                        { value: "beauty-products", label: "Beauty" },
-                        { value: "bicycles", label: "Bicycles" },
-                        { value: "childcare-family", label: "Childcare" },
-                        { value: "collectibles", label: "Collectibles" },
-                        { value: "construction-renovation", label: "Construction" },
-                        { value: "education-training", label: "Education" },
-                        { value: "electronics-gadgets", label: "Electronics" },
-                        { value: "entertainment-media", label: "Entertainment" },
-                        { value: "events-entertainment", label: "Events" },
-                        { value: "fashion-apparel", label: "Fashion" },
-                        { value: "food-beverage", label: "Food" },
-                        { value: "gaming-recreation", label: "Gaming" },
-                        { value: "government-public", label: "Government" },
-                        { value: "health-beauty", label: "Health" },
-                        { value: "home-furniture", label: "Home" },
-                        { value: "insurance-services", label: "Insurance" },
-                        { value: "jobs", label: "Jobs" },
-                        { value: "jewelry-accessories", label: "Jewelry" },
-                        { value: "legal-financial", label: "Legal" },
-                        { value: "marketing-advertising", label: "Marketing" },
-                        { value: "memorabilia", label: "Memorabilia" },
-                        { value: "non-profit-charity", label: "Non-Profit" },
-                        { value: "pets", label: "Pets" },
-                        { value: "raw-materials-industrial", label: "Industrial" },
-                        { value: "real-estate", label: "Real Estate" },
-                        { value: "real-estate-services", label: "Real Estate Services" },
-                        { value: "renewable-energy", label: "Renewable Energy" },
-                        { value: "security-safety", label: "Security" },
-                        { value: "sneakers", label: "Sneakers" },
-                        { value: "souvenir", label: "Souvenir" },
-                        { value: "sports-outdoor", label: "Sports" },
-                        { value: "technology", label: "Technology" },
-                        { value: "thrift", label: "Thrift" },
-                        { value: "transportation-logistics", label: "Transportation" },
-                        { value: "travel-tourism", label: "Travel" },
-                        { value: "vintage", label: "Vintage" },
-                        { value: "waste-management", label: "Waste Management" },
-                        { value: "wedding-events", label: "Wedding" },
-                        { value: "musical-instruments", label: "Musical Instruments" },
-                        { value: "tools-equipment", label: "Tools & Equipment" },
-                        { value: "appliances", label: "Appliances" },
-                        { value: "photography-cameras", label: "Photography & Cameras" },
-                        { value: "fitness-gym-equipment", label: "Fitness & Gym Equipment" },
-                        { value: "kitchen-dining", label: "Kitchen & Dining" },
-                        { value: "garden-outdoor", label: "Garden & Outdoor" },
-                        { value: "office-supplies", label: "Office Supplies" },
-                        { value: "repair-services", label: "Repair Services" },
-                        { value: "cleaning-services", label: "Cleaning Services" },
-                        { value: "musical-services", label: "Musical Services" },
-                        { value: "tutoring-lessons", label: "Tutoring & Lessons" },
-                        { value: "medical-equipment", label: "Medical Equipment" },
-                        { value: "musical-accessories", label: "Musical Accessories" },
-                        { value: "other", label: "Other" }
-                      ];
-                      // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
-                      const mainCategories = allCategories.filter(cat => ['all', 'business', 'personal', 'service'].includes(cat.value));
-                      const otherCategories = allCategories.filter(cat => !['all', 'business', 'personal', 'service', 'other'].includes(cat.value));
-                      const otherCategory = allCategories.find(cat => cat.value === 'other');
-                      const sortedCategories = [
-                        ...mainCategories,
-                        ...otherCategories.sort((a, b) => a.label.localeCompare(b.label)),
-                        otherCategory
-                      ].filter(Boolean);
-                      
-                      return sortedCategories.map((category) => (
-                      <button
-                        key={category.value}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCategorySelect(category.value);
-                          if (category.value === "all") {
-                            setSearchTerm("");
-                            setAiSearchResults(null);
-                            setSearchSuggestions([]);
-                            // Remove search param from URL when clearing search
-                            const newParams = new URLSearchParams(searchParams);
-                            newParams.delete('search');
-                            setSearchParams(newParams, { replace: true });
-                            setShowSuggestions(false);
-                          }
-                        }}
-                          className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex-shrink-0 ${
-                          selectedCategory === category.value
-                              ? 'bg-black text-white border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
-                              : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
-                        }`}
-                      >
-                        {/* Physical button depth effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-b ${
-                          selectedCategory === category.value
-                            ? 'from-white/5 to-transparent'
-                            : 'from-white/20 to-transparent'
-                          } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
-                        {/* Shimmer effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full sm:hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl md:rounded-2xl" />
-                        <span className="relative z-10">{category.label}</span>
-                      </button>
-                      ));
-                      })()}
+{/* Filter Panel: Adjust budget + trust badge - opens from the header Filter button */}
+            {filterPanelOpen && (
+              <div className="border-[1.5px] border-black !rounded-2xl bg-gradient-to-br from-white to-slate-50/50 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm sm:text-base font-black text-black tracking-tight flex items-center gap-2">
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Adjust budget
+                  </h3>
+                  <button onClick={() => setFilterPanelOpen(false)} className="p-1 rounded-lg hover:bg-black/5 text-gray-400 hover:text-black transition-colors">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Min (₹)</label>
+                    <div className="relative">
+                      <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={budgetMin}
+                        onChange={(e) => setBudgetMin(e.target.value.replace(/[^0-9]/g, ''))}
+                        placeholder="e.g., 5,000"
+                        style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                        className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Max (₹)</label>
+                    <div className="relative">
+                      <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={budgetMax}
+                        onChange={(e) => setBudgetMax(e.target.value.replace(/[^0-9]/g, ''))}
+                        placeholder="e.g., 50,000"
+                        style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                        className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Scroll Indicator - Mobile Only - Between Categories and Cards */}
-          {showScrollIndicator && (
-            <div className="flex justify-center items-center pt-1 pb-4 sm:hidden">
-            <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5 }}
-                className="relative flex flex-col items-center"
-              >
-              <motion.div 
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="relative z-10"
-                >
-                  <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
-              </motion.div>
-                <motion.div 
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="text-[10px] text-gray-600 font-medium absolute top-0 whitespace-nowrap z-0"
-                >
-                  Scroll down
-                </motion.div>
-              </motion.div>
-            </div>
-          )}
-
-          {/* View Toggle */}
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <div className="inline-flex items-center gap-1 sm:gap-2">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
-                {showTrustBadgeOnly 
-                  ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
-                  : `${liveEnquiriesCount} real buyers waiting for the right seller` // 🛡️ PROTECTED TEXT - DO NOT MODIFY
-                }
-              </span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Trust Badge Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex items-center justify-center gap-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
-                      showTrustBadgeOnly
-                        ? 'bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
-                        : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
-                    }`}
-                    title="Filter enquiries"
-                  >
-                    {/* Physical button depth effect */}
-                    <div className={`absolute inset-0 bg-gradient-to-b ${
-                      showTrustBadgeOnly
-                        ? 'from-white/5 to-transparent'
-                        : 'from-white/20 to-transparent'
-                      } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
-                    <Filter 
-                      className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0 relative z-10 ${
-                        showTrustBadgeOnly ? 'text-white' : 'text-black'
-                      }`}
-                      style={{
-                        fill: showTrustBadgeOnly ? 'currentColor' : 'none'
-                      }}
-                    />
-                    <span className="relative z-10 hidden sm:inline">Filter</span>
+                <p className="text-[9px] text-gray-500 -mt-2">Applies on top of your current search, category, and location.</p>
+                <div className={`flex items-center justify-between gap-3 py-2 px-3 border-t border-black/10 rounded-xl transition-colors ${showTrustBadgeOnly ? 'bg-blue-50' : ''}`}>
+                  <button type="button" onClick={() => setShowTrustBadgeOnly(v => !v)} className="text-left flex-1 cursor-pointer">
+                    <p className={`text-xs font-black ${showTrustBadgeOnly ? 'text-blue-700' : 'text-black'}`}>Trust badge buyers only</p>
+                    <p className="text-[9px] text-gray-500">Show only verified buyers</p>
                   </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-40 sm:w-48 border-2 rounded-xl shadow-xl p-2 ${
-                  showTrustBadgeOnly 
-                    ? "bg-[#800020] border-[#6b0019]" 
-                    : "bg-blue-600 border-blue-700"
-                }`}>
-                  <DropdownMenuCheckboxItem
-                    checked={showTrustBadgeOnly}
-                    onCheckedChange={setShowTrustBadgeOnly}
-                    className={`cursor-pointer rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-sm sm:text-base text-white flex items-center justify-center text-center [&>span]:hidden ${
-                      showTrustBadgeOnly 
-                        ? "hover:bg-[#6b0019] hover:text-white focus:bg-[#6b0019] focus:text-white" 
-                        : "hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white"
-                    }`}
-                  >
-                    {showTrustBadgeOnly ? "Remove filter" : "Trust badge only"}
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Sort Dropdown */}
-              <DropdownMenu open={sortDropdownOpen} onOpenChange={(open) => {
-                setSortDropdownOpen(open);
-                if (open) {
-                  // Pre-fill the search bar with the active filter: map point address if set, else text filter
-                  setLocationDraft(
-                    sortReferenceLocation
-                      ? (sortReferenceLocation.formatted_address || `${sortReferenceLocation.lat.toFixed(4)}, ${sortReferenceLocation.lng.toFixed(4)}`)
-                      : locationFilterQuery
-                  );
-                }
-              }}>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 text-[10px] sm:text-xs md:text-sm font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-200 whitespace-nowrap relative overflow-hidden touch-manipulation flex items-center justify-center gap-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
-                      sortBy !== 'default'
-                        ? 'bg-blue-600 text-white border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] sm:hover:scale-105'
-                        : 'bg-white hover:bg-gray-50 text-black border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95 sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:scale-105'
-                    }`}
-                    title="Sort enquiries"
-                  >
-                    {/* Physical button depth effect */}
-                    <div className={`absolute inset-0 bg-gradient-to-b ${
-                      sortBy !== 'default'
-                        ? 'from-white/5 to-transparent'
-                        : 'from-white/20 to-transparent'
-                      } rounded-lg sm:rounded-xl md:rounded-2xl pointer-events-none`} />
-                    <ArrowUpDown className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0 relative z-10 ${
-                      sortBy !== 'default' ? 'text-white' : 'text-black'
-                    }`} />
-                    <span className="relative z-10 hidden sm:inline">Sort</span>
+                  <Switch checked={showTrustBadgeOnly} onCheckedChange={setShowTrustBadgeOnly} className="flex-shrink-0 !h-6 !w-11 !min-h-0 !min-w-0 !border-2 !border-black data-[state=checked]:!bg-blue-600 data-[state=unchecked]:!bg-black" />
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <button onClick={() => { setBudgetMin(''); setBudgetMax(''); setShowTrustBadgeOnly(false); }} className="flex items-center justify-center gap-1 px-3 py-2 text-[10px] font-bold text-black bg-white border border-black !rounded-xl hover:bg-gray-50 transition-colors">
+                    Reset
                   </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[240px] sm:min-w-[280px] w-[min(92vw,300px)] sm:w-72 border-[0.5px] border-black rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] p-2 sm:p-2.5 bg-white transition-all duration-200">
-                  <DropdownMenuCheckboxItem
-                    checked={sortBy === 'newest'}
-                    onCheckedChange={() => setSortBy('newest')}
-                    className={`cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden flex items-center justify-center text-center pl-3 pr-3 ${
-                      sortBy === 'newest'
-                        ? 'bg-blue-600 border-[0.5px] border-blue-700 shadow-[0_4px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95'
-                        : 'bg-white hover:bg-gray-50 border-[0.5px] border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:scale-95'
-                    }`}
-                    style={{ 
-                      color: sortBy === 'newest' ? '#ffffff' : '#000000',
-                      paddingLeft: '12px',
-                      paddingRight: '12px'
-                    }}
-                  >
-                    Newest first
-                  </DropdownMenuCheckboxItem>
-                  <div className="h-px bg-gray-300 my-1.5 mx-2" />
-                  <div
-                    className="px-1.5 pt-2 pb-2 space-y-2.5"
-                    onPointerDown={(e) => e.preventDefault()}
-                  >
-                    <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.28em] text-center text-slate-600">
+                  <button onClick={() => setFilterPanelOpen(false)} className="flex-1 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-xl border border-black !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:!translate-y-[2px] transition-all duration-200">
+                    <Search className="h-4 w-4 mr-1.5" />Show results
+                  </button>
+                </div>
+              </div>
+            )}
+
+{/* Filter Row: Categories + Location - marketplace clone, same existing logic */}
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Select value={selectedCategory || 'all'} onValueChange={(v) => {
+                  handleCategorySelect(v);
+                  if (v === 'all') {
+                    setSearchTerm('');
+                    setAiSearchResults(null);
+                    setSearchSuggestions([]);
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('search');
+                    setSearchParams(newParams, { replace: true });
+                    setShowSuggestions(false);
+                  }
+                }}>
+                  <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 overflow-hidden font-bold [&>svg]:!text-white">
+                    <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent className="!rounded-2xl !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-white max-h-72">
+                    <SelectItem value="all" className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black">All categories</SelectItem>
+                    {APP_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value} className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black">{c.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1 relative">
+                <button
+                  onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                  className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
+                >
+                  <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
+                  <span className="flex-1 text-center truncate text-white font-bold relative z-10">
+                    {sortReferenceLocation
+                      ? (() => {
+                          const full = sortReferenceLocation.formatted_address || `${sortReferenceLocation.lat.toFixed(3)}, ${sortReferenceLocation.lng.toFixed(3)}`;
+                          return full.length > 20 ? full.slice(0, 20) + '...' : full;
+                        })()
+                      : locationFilterQuery ? locationFilterQuery : 'Locations'}
+                  </span>
+                </button>
+                {/* Location Popup - reuses the existing location controls (same state, same logic) */}
+                {sortDropdownOpen && (
+                  <div className="absolute z-50 top-full mt-1 right-0 w-[min(92vw,18rem)] bg-white border-[1.5px] border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] overflow-hidden">
+                    <div className="p-2 space-y-2.5">
+<p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.28em] text-center text-slate-600">
                       Sort by location
                     </p>
                     <div className="relative" onPointerDown={(e) => e.stopPropagation()}>
@@ -5815,9 +5487,9 @@ export default function EnquiryWall() {
                     </button>
                     )}
                     <div className="grid grid-cols-2 gap-1.5">
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === "nearest"}
-                        onCheckedChange={() => {
+                      <button
+                        type="button"
+                        onClick={() => {
                           const ref = sortReferenceLocation ?? loadSortReferenceLocation();
                           if (ref) {
                             setSortReferenceLocation(ref);
@@ -5828,14 +5500,14 @@ export default function EnquiryWall() {
                           setPendingDistanceSort("nearest");
                           setRefLocationPickerOpen(true);
                         }}
-                        className={`cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] relative overflow-hidden flex items-center justify-center text-center ${
+                        className={`cursor-pointer rounded-lg px-2 py-2 text-[9px] sm:text-[10px] font-black transition-all duration-200 min-h-[44px] relative overflow-hidden flex items-center justify-center text-center ${
                           sortBy === "nearest"
                             ? "bg-blue-600 border-[0.5px] border-blue-700 text-white shadow-[0_3px_0_0_rgba(37,99,235,0.35)]"
                             : "bg-white border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]"
                         }`}
                       >
                         Nearest
-                      </DropdownMenuCheckboxItem>
+                      </button>
                       <button
                         type="button"
                         onClick={() => {
@@ -5889,63 +5561,289 @@ export default function EnquiryWall() {
                       </button>
                       </>
                     )}
+                    </div>
                   </div>
-                  {sortBy !== 'default' && (
-                    <>
-                      <div className="h-px bg-gray-300 my-1.5 mx-2" />
-                      <DropdownMenuCheckboxItem
-                        checked={false}
-                        onCheckedChange={() => setSortBy('default')}
-                        className="cursor-pointer rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs md:text-sm font-black transition-all duration-200 [&>span.absolute]:hidden min-h-[44px] sm:min-h-[auto] relative overflow-hidden bg-red-500 border-[0.5px] border-red-600 shadow-[0_4px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(220,38,38,0.4),inset_0_1px_2px_rgba(0,0,0,0.3)] active:scale-95 hover:bg-red-600 flex items-center justify-center text-center pl-3 pr-3"
-                        style={{ 
-                          color: '#ffffff',
-                          paddingLeft: '12px',
-                          paddingRight: '12px'
-                        }}
-                      >
-                        Cancel
-                      </DropdownMenuCheckboxItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Grid/List Toggle */}
-              <div 
-                className="relative inline-flex items-center bg-black border border-black rounded-full p-0.5 sm:p-1 cursor-pointer transition-colors duration-200 hover:bg-gray-900"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              >
-              {/* Track background */}
-              <div className="relative w-16 h-6 sm:w-20 sm:h-7 flex items-center">
-                {/* Icons on sides */}
-                <div className="absolute left-1.5 sm:left-2 z-10 flex items-center justify-center pointer-events-none">
-                  <Grid3X3 className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-colors duration-200 ${
-                    viewMode === 'grid' ? 'text-white' : 'text-gray-400'
-                  }`} />
-                </div>
-                <div className="absolute right-1.5 sm:right-2 z-10 flex items-center justify-center pointer-events-none">
-                  <List className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-colors duration-200 ${
-                    viewMode === 'list' ? 'text-white' : 'text-gray-400'
-                  }`} />
-                </div>
-                
-                {/* Sliding knob */}
-                <motion.div 
-                  className="absolute top-0.5 sm:top-1 w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full shadow-md z-20 flex items-center justify-center"
-                  animate={{
-                    left: viewMode === 'grid' ? '0.125rem' : 'calc(100% - 1.5rem)',
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30
-                  }}
-                >
-                  <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 bg-gray-300 rounded-full"></div>
-            </motion.div>
-              </div>
+                )}
               </div>
             </div>
+
+            <div className="max-w-2xl mx-auto w-full">
+              <div className="relative">
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
+                <div className="relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder='Search enquiries… or try "used car in Kerala"'
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSearchChange(searchTerm);
+                    }
+                  }}
+                  onFocus={() => {
+                    // Only show suggestions if not clicking a suggestion and not prevented
+                    if (!isClickingSuggestionRef.current && !preventSuggestionsRef.current) {
+                      setShowSuggestions(searchSuggestions.length > 0);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Clear any existing timeout
+                    if (blurTimeoutRef.current) {
+                      clearTimeout(blurTimeoutRef.current);
+                    }
+                    
+                    // Check if the blur is caused by clicking on a suggestion
+                    const relatedTarget = e.relatedTarget as HTMLElement;
+                    const isClickingDropdown = relatedTarget && suggestionsDropdownRef.current && 
+                      suggestionsDropdownRef.current.contains(relatedTarget);
+                    
+                    // Only hide suggestions if not clicking a suggestion and not clicking dropdown
+                    if (!isClickingSuggestionRef.current && !isClickingDropdown) {
+                      blurTimeoutRef.current = setTimeout(() => {
+                        // Double check before hiding
+                        if (!isClickingSuggestionRef.current) {
+                          setShowSuggestions(false);
+                        }
+                        blurTimeoutRef.current = null;
+                      }, 150);
+                    }
+                  }}
+                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                  style={{ 
+                    fontSize: '16px', // Prevents zoom on iOS
+                    lineHeight: '1.5',
+                    paddingTop: '0.75rem',
+                    paddingBottom: '0.75rem',
+                    paddingLeft: '2.75rem', // More space for icon on mobile
+                    WebkitAppearance: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    direction: 'ltr'
+                  }}
+                  disabled={isAISearching}
+                />
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
+                </div>
+                {isAISearching ? (
+                  <div className="absolute right-10 sm:right-12 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  searchTerm ? (
+                    <button
+                      type="button"
+                      onClick={() => { setSearchTerm(''); }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-50"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : null
+                )}
+                
+                {/* AI Search Suggestions Dropdown - Absolute with Layout Isolation */}
+                {showSuggestions && searchSuggestions.length > 0 && (
+                  <div 
+                    ref={suggestionsDropdownRef}
+                    onMouseDown={(e) => {
+                      // Prevent input blur when clicking anywhere in dropdown
+                      e.preventDefault();
+                      isClickingSuggestionRef.current = true;
+                    }}
+                    className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
+                    style={{
+                      touchAction: 'pan-y',
+                      transform: 'translateZ(0)',
+                      WebkitTransform: 'translateZ(0)',
+                      contain: 'layout style paint', // Isolate from page layout - prevents layout shifts
+                      willChange: 'transform',
+                      isolation: 'isolate' // Create new stacking context
+                    }}
+                  >
+                    {searchSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                        }}
+                        onTouchEnd={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
+                          // Mark that we're clicking a suggestion
+                          isClickingSuggestionRef.current = true;
+                          
+                          // Blur input to prevent keyboard zoom
+                          if (searchInputRef.current) {
+                            searchInputRef.current.blur();
+                          }
+                          
+                          // Execute click (viewport already locked by useEffect)
+                          handleSuggestionClick(suggestion);
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
+                          // Mark that we're clicking a suggestion
+                          isClickingSuggestionRef.current = true;
+                          
+                          if (searchInputRef.current) {
+                            searchInputRef.current.blur();
+                          }
+                          handleSuggestionClick(suggestion);
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-b-0 cursor-pointer"
+                        style={{
+                          touchAction: 'none',
+                          fontSize: '16px',
+                          WebkitAppearance: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          transform: 'translateZ(0)',
+                          WebkitTransform: 'translateZ(0)',
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none'
+                        }}
+                      >
+                        <div className="flex items-center gap-2" style={{ pointerEvents: 'none' }}>
+                          <Search className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                          <span className="text-sm text-slate-700">{suggestion}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* AI natural-language chips (auto-applied while typing) */}
+                {nlFilters && nlFilters.chips.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                    <Sparkles className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                    {nlFilters.chips.map((chip) => (
+                      <span key={chip} className="text-[10px] font-black text-white bg-black border border-black rounded-full px-2.5 py-1">{chip}</span>
+                    ))}
+                    <button
+                      onClick={() => { nlSuppressRef.current = searchTerm.trim(); setNlFilters(null); }}
+                      className="text-gray-400 hover:text-black"
+                      title="Turn off AI filtering"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Clear filters + view toggle + Search button - marketplace style */}
+            <div className="flex items-center gap-2 w-full">
+              {(searchTerm || selectedCategory !== 'all' || locationFilterQuery || sortReferenceLocation || sortBy !== 'default' || showTrustBadgeOnly || budgetMin || budgetMax) && (
+                <button
+                  onClick={() => {
+                    handleCategorySelect('all');
+                    setSearchTerm('');
+                    setAiSearchResults(null);
+                    setSearchSuggestions([]);
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('search');
+                    setSearchParams(newParams, { replace: true });
+                    setShowSuggestions(false);
+                    setLocationFilterQuery('');
+                    setLocationDraft('');
+                    setSortReferenceLocation(null);
+                    clearSortReferenceLocation();
+                    setShowLocationSuggestions(false);
+                    setSortBy('default');
+                    setShowTrustBadgeOnly(false);
+                    setBudgetMin('');
+                    setBudgetMax('');
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
+                >
+                  <X className="h-3 w-3" />Clear filters
+                </button>
+              )}
+              <div className="flex h-10 sm:h-12 border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
+                <button
+                  onClick={() => { setViewMode('list'); }}
+                  className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                >
+                  <List className="h-3 w-3" />
+                </button>
+                <button
+                  onClick={() => { setViewMode('grid'); }}
+                  className={`h-full px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                >
+                  <LayoutGrid className="h-3 w-3" />
+                </button>
+              </div>
+              <button
+                className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                onClick={() => {
+                  preventSuggestionsRef.current = true;
+                  setShowSuggestions(false);
+                  setSearchSuggestions([]);
+                  if (searchTerm.trim()) {
+                    handleSearchChange(searchTerm);
+                  }
+                  setTimeout(() => { preventSuggestionsRef.current = false; }, 500);
+                }}
+              >
+                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
+              </button>            </div>
+            </div>
+
+          {/* Scroll Indicator - Mobile Only - Between Categories and Cards */}
+          {showScrollIndicator && (
+            <div className="flex justify-center items-center pt-1 pb-4 sm:hidden">
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5 }}
+                className="relative flex flex-col items-center"
+              >
+              <motion.div 
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="relative z-10"
+                >
+                  <ChevronDown className="h-8 w-8 text-gray-600 drop-shadow-lg" />
+              </motion.div>
+                <motion.div 
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="text-[10px] text-gray-600 font-medium absolute top-0 whitespace-nowrap z-0"
+                >
+                  Scroll down
+                </motion.div>
+              </motion.div>
+            </div>
+          )}
+
+          {/* View Toggle */}
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <div className="inline-flex items-center gap-1 sm:gap-2">
+              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
+                {showTrustBadgeOnly 
+                  ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
+                  : `${liveEnquiriesCount} real buyers waiting for the right seller` // 🛡️ PROTECTED TEXT - DO NOT MODIFY
+                }
+              </span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3"></div>
           </div>
 
           {/* Enquiries Grid/List */}
