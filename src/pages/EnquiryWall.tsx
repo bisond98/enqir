@@ -5574,7 +5574,7 @@ export default function EnquiryWall() {
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder='Search enquiries… or try "used car in Kerala"'
+                  placeholder='Search for "enquiries to respond"'
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onKeyDown={(e) => {
