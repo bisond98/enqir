@@ -496,6 +496,15 @@ export default function PostEnquiry() {
           const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
           const enquiryId = docRef.id;
           console.log('Premium enquiry saved successfully with ID:', enquiryId);
+          // Notify users who liked this enquiry's categories (non-blocking)
+          import('@/services/categoryNotifications').then(({ notifyNewEnquiry }) =>
+            notifyNewEnquiry({
+              categories: Array.isArray(enquiryData.categories) && enquiryData.categories.length > 0 ? enquiryData.categories : [enquiryData.category],
+              authorId: enquiryData.userId,
+              title: enquiryData.title,
+              targetUrl: `/enquiry/${enquiryId}`,
+            })
+          ).catch(() => {});
 
           // AI Match engine: scan live listings for this need (non-blocking)
           matchesForEnquiry({
@@ -1532,6 +1541,15 @@ export default function PostEnquiry() {
       try {
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
         console.log('Enquiry saved successfully with ID:', docRef.id);
+        // Notify users who liked this enquiry's categories (non-blocking)
+        import('@/services/categoryNotifications').then(({ notifyNewEnquiry }) =>
+          notifyNewEnquiry({
+            categories: Array.isArray(enquiryData.categories) && enquiryData.categories.length > 0 ? enquiryData.categories : [enquiryData.category],
+            authorId: enquiryData.userId,
+            title: enquiryData.title,
+            targetUrl: `/enquiry/${docRef.id}`,
+          })
+        ).catch(() => {});
         // AI Match engine (non-blocking)
         matchesForEnquiry({
           id: docRef.id,
@@ -1847,9 +1865,9 @@ export default function PostEnquiry() {
               
             {/* Post Enquiry Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                      Post Your Enquiry.
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                      <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+                      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Post Your Enquiry.</span>
               </h1>
                   </div>
             

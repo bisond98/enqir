@@ -57,6 +57,7 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Settings = lazy(() => import("./pages/Settings"));
+const MyLikes = lazy(() => import("./pages/MyLikes"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -160,6 +161,7 @@ const App = () => {
                   <Route path="/data-clear" element={<DataClear />} />
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                  <Route path="/likes" element={<AuthGuard><MyLikes /></AuthGuard>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />

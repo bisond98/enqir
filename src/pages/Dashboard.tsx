@@ -1695,9 +1695,9 @@ const Dashboard = () => {
               
             {/* Dashboard Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6 pt-6 sm:pt-8">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white" />
-                      Dashboard.
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                      <LayoutDashboard className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+                      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Dashboard.</span>
               </h1>
             </div>
             

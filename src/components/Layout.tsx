@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
-import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store } from "lucide-react";
+import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store, Heart } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { lazy, Suspense } from "react";
 // Lazy load heavy non-critical components to reduce initial bundle size
@@ -34,6 +34,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
   const navigate = useNavigate();
   const [unreadChatCount, setUnreadChatCount] = useState(0);
   const [unreadResponseCount, setUnreadResponseCount] = useState(0);
+  // Badge for the Likes (heart) icon — new listings/enquiries in liked categories
+  const [likesBadgeCount, setLikesBadgeCount] = useState(0);
   
   // Apply performance optimizations
   usePerformanceOptimizations();
@@ -447,6 +449,85 @@ export default function Layout({ children, showNavigation = true }: { children: 
       window.dispatchEvent(new CustomEvent('routeChanged'));
     }
   }, [location.pathname, user?.uid]);
+
+  // Likes feed badge — listens for live feed updates from MyLikes + real-time Firestore
+  useEffect(() => {
+    if (!user?.uid) {
+      setLikesBadgeCount(0);
+      return;
+    }
+
+    let isMounted = true;
+    const LIKE_READ_KEY = `likes_feed_read_${user.uid}`;
+
+    const computeBadge = async () => {
+      try {
+        // Fetch the user's liked categories
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        const likedCats: string[] = Array.isArray(userSnap.data()?.likedCategories)
+          ? userSnap.data()!.likedCategories
+          : [];
+        if (!likedCats.length) {
+          if (isMounted) setLikesBadgeCount(0);
+          return;
+        }
+
+        const lastRead = parseInt(localStorage.getItem(LIKE_READ_KEY) || '0', 10);
+        const matches = (cats: any) => Array.isArray(cats) && cats.some((c: string) => likedCats.includes(c));
+
+        // New live listings in liked categories since last read
+        const listingsSnap = await getDocs(query(collection(db, 'sell_listings'), where('status', '==', 'live')));
+        let newCount = 0;
+        listingsSnap.docs.forEach(d => {
+          const l: any = d.data();
+          const cats = Array.isArray(l.categories) && l.categories.length ? l.categories : [l.category];
+          const t = l.createdAt?.toMillis?.() ?? (l.createdAt ? new Date(l.createdAt).getTime() : 0);
+          if (t > lastRead && matches(cats)) newCount++;
+        });
+
+        // New live enquiries in liked categories since last read
+        const enquiriesSnap = await getDocs(query(collection(db, 'enquiries'), where('status', '==', 'live')));
+        enquiriesSnap.docs.forEach(d => {
+          const e: any = d.data();
+          const cats = Array.isArray(e.categories) && e.categories.length ? e.categories : [e.category];
+          const t = e.createdAt?.toMillis?.() ?? (e.createdAt ? new Date(e.createdAt).getTime() : 0);
+          if (t > lastRead && matches(cats)) newCount++;
+        });
+
+        if (isMounted) setLikesBadgeCount(newCount);
+      } catch (error) {
+        console.error('Error counting likes feed badge:', error);
+      }
+    };
+
+    computeBadge();
+
+    // Live updates — recount whenever a listing or enquiry changes
+    const unsubListings = onSnapshot(
+      query(collection(db, 'sell_listings'), where('status', '==', 'live')),
+      () => computeBadge(),
+      (error) => console.error('Likes badge listings listener error:', error)
+    );
+    const unsubEnquiries = onSnapshot(
+      query(collection(db, 'enquiries'), where('status', '==', 'live')),
+      () => computeBadge(),
+      (error) => console.error('Likes badge enquiries listener error:', error)
+    );
+
+    // Immediate clear when the user visits the Likes page / updates their feed view
+    const handleLikesViewed = () => {
+      localStorage.setItem(LIKE_READ_KEY, String(Date.now()));
+      setLikesBadgeCount(0);
+    };
+    window.addEventListener('likesFeedViewed', handleLikesViewed);
+
+    return () => {
+      isMounted = false;
+      unsubListings();
+      unsubEnquiries();
+      window.removeEventListener('likesFeedViewed', handleLikesViewed);
+    };
+  }, [user?.uid]);
 
   // PRO PLAN - KEPT FOR FUTURE UPDATES
   // const [proRemainingCount, setProRemainingCount] = useState<number>(0);
@@ -956,9 +1037,25 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     </Button>
                   </Link>
 
-                    {/* Settings and Logout Icons */}
+                    {/* Likes, Settings Icons */}
                     {showNavigation && (
                       <div className="lg:hidden flex items-center gap-2">
+                        <Link to="/likes" onClick={() => window.dispatchEvent(new Event('likesFeedViewed'))}>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-muted/50 relative"
+                          >
+                            <div className="relative">
+                              <Heart className="h-4 w-4" />
+                              {likesBadgeCount > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+                                  {likesBadgeCount > 9 ? '9+' : likesBadgeCount}
+                                </span>
+                              )}
+                            </div>
+                    </Button>
+                  </Link>
                         <Link to="/settings">
                           <Button 
                             variant="ghost" 
@@ -968,14 +1065,6 @@ export default function Layout({ children, showNavigation = true }: { children: 
                             <Settings className="h-4 w-4" />
                     </Button>
                   </Link>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 hover:bg-muted/50"
-                          onClick={() => setShowSignOutDialog(true)}
-                        >
-                          <LogOut className="h-4 w-4" />
-                  </Button>
                 </div>
                     )}
                   </div>

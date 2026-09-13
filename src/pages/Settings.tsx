@@ -11,20 +11,23 @@ import {
   BellOff,
   Key,
   ArrowLeft,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  LogOut
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useUsage } from "@/contexts/UsageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
+import SignOutDialog from "@/components/SignOutDialog";
 import { db } from "@/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { toast, updateNotificationPreferenceCache } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { user } = useUsage();
-  const { user: authUser, deleteAccount, sendPasswordResetEmail } = useAuth();
+  const { user: authUser, deleteAccount, sendPasswordResetEmail, signOut } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   
   const [privacy, setPrivacy] = useState({
@@ -106,9 +109,9 @@ const Settings = () => {
             
             {/* Settings Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0" />
-                Settings.
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Settings.</span>
               </h1>
             </div>
             
@@ -267,6 +270,14 @@ const Settings = () => {
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Account
                     </Button>
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center justify-center sm:justify-start w-full text-red-600 hover:text-red-700 border-2 border-red-600 bg-white hover:bg-red-50 text-xs sm:text-sm font-semibold"
+                      onClick={() => setShowSignOutDialog(true)}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Log Out
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -281,6 +292,13 @@ const Settings = () => {
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={deleteAccount}
         userName={user?.displayName || undefined}
+      />
+
+      {/* Sign Out Confirmation Dialog */}
+      <SignOutDialog
+        open={showSignOutDialog}
+        onOpenChange={setShowSignOutDialog}
+        onConfirm={signOut}
       />
     </Layout>
   );

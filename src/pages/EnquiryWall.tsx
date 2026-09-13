@@ -763,6 +763,15 @@ export default function EnquiryWall() {
     const searchLower = searchValue.toLowerCase();
     const suggestionsSet = new Set<string>();
     
+    // Suggest matching app categories first (labels from the shared category list)
+    APP_CATEGORIES.forEach(cat => {
+      const labelLower = cat.label.toLowerCase();
+      const valueLower = cat.value.toLowerCase();
+      if (labelLower.includes(searchLower) || searchLower.includes(labelLower) || valueLower.includes(searchLower)) {
+        suggestionsSet.add(cat.label);
+      }
+    });
+    
     // Extract unique categories from enquiries
     const categories = new Set<string>();
     enquiries.forEach(enquiry => {
@@ -5213,9 +5222,9 @@ export default function EnquiryWall() {
             
             {/* Live Enquiries Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 rounded-full bg-green-500 flex-shrink-0"></span>
-                      Live Enquiries.
+                      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Live Enquiries.</span>
               </h1>
                   </div>
             

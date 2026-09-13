@@ -707,9 +707,9 @@ const EnquiryDetail = () => {
               </div>
               
             {/* Enquiry Title Heading in Black Header */}            <div className="flex flex-col items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full mb-2 sm:mb-3 dashboard-header-no-emoji">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full mb-2 sm:mb-3 dashboard-header-no-emoji">
                 <span className="inline-block align-middle bg-red-600 text-white text-[10px] sm:text-xs font-black tracking-widest uppercase rounded-md px-2.5 py-1 mr-2 sm:mr-3">Need</span>
-                <span>{enquiry.title}.</span>
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{enquiry.title}.</span>
               </h1>
               {/* Trust Badge - Center bottom of header */}
               {((userProfile?.isProfileVerified || 

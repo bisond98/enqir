@@ -596,6 +596,15 @@ export default function CreateListing() {
           })
       ).catch(() => {});
       sessionStorage.removeItem('listing-published');
+      // Notify users who liked this listing's categories (non-blocking)
+      import('@/services/categoryNotifications').then(({ notifyNewListing }) =>
+        notifyNewListing({
+          categories: selectedCats.length > 0 ? selectedCats : [category],
+          authorId: user.uid,
+          title: title.trim(),
+          targetUrl: `/sell/listing/${newListingId}`,
+        })
+      ).catch(() => {});
       window.setTimeout(() => {
         navigate(`/sell/listing/${newListingId}`);
       }, 2000);

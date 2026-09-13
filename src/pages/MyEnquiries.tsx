@@ -553,8 +553,8 @@ const MyEnquiries = () => {
               
             {/* My Enquiries Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
-                My Enquiries.
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">My Enquiries.</span>
               </h1>
                   </div>
             

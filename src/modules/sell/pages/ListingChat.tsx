@@ -533,9 +533,9 @@ export default function ListingChat() {
             </div>
 
             <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 gap-2 sm:gap-2.5">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full" />
-                Chat.
+              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+                <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 rounded-full text-blue-400" />
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Chat.</span>
               </h1>
             </div>
 
