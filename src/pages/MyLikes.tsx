@@ -381,11 +381,15 @@ const MyLikes = () => {
 
         <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 flex-grow">
           {/* Notification toggles */}
-          <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[0_6px_0_0_rgba(0,0,0,0.2)] space-y-5">
-            <h3 className="text-sm sm:text-base font-bold text-black inline-flex items-center gap-2">
-              <Bell className="h-4 w-4 text-black" />
-              Notify me about new posts in my liked categories
-            </h3>
+          <div className="bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.2)] overflow-hidden">
+            {/* Black tile header */}
+            <div className="bg-black px-4 sm:px-6 py-3.5">
+              <h3 className="text-sm sm:text-base font-bold text-white inline-flex items-center gap-2">
+                <Bell className="h-4 w-4 text-white" />
+                Notify me about new posts in my liked categories
+              </h3>
+            </div>
+            <div className="p-4 sm:p-6 space-y-5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-black">For Sale</p>
@@ -415,6 +419,7 @@ const MyLikes = () => {
                 <BellOff className="h-3 w-3" /> You won't get notifications until you like at least one category.
               </p>
             )}
+            </div>
           </div>
 
           {/* Category grid */}
@@ -441,14 +446,18 @@ const MyLikes = () => {
               <button
                 type="button"
                 onClick={() => setDropdownOpen(v => !v)}
-                className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-[1.5px] border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 overflow-hidden font-bold !rounded-2xl"
+                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg border-[0.5px] border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] font-black !rounded-2xl !overflow-hidden group"
               >
-                <SlidersHorizontal className="h-3.5 w-3.5 ml-3 mr-1.5 text-white flex-shrink-0" />
-                <span className="flex-1 text-left truncate">Categories</span>
+                {/* Physical button depth effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 ml-4 mr-2 text-white flex-shrink-0 relative z-10" />
+                <span className="flex-1 text-left truncate relative z-10">Categories</span>
                 {effective.length > 0 && (
-                  <span className="mr-2 bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0">{effective.length}</span>
+                  <span className="mr-2 bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0 relative z-10">{effective.length}</span>
                 )}
-                <ChevronDown className={`h-4 w-4 mr-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 mr-4 transition-transform relative z-10 ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {dropdownOpen && (
@@ -478,7 +487,12 @@ const MyLikes = () => {
                     {filtered.length === 0 && (
                       <p className="text-center text-xs sm:text-sm text-muted-foreground py-6">No categories match "{query}"</p>
                     )}
-                    {filtered.map((c) => {
+                    {/* Selected categories first */}
+                    {[...filtered].sort((a, b) => {
+                      const aSel = effective.includes(a.value) ? 0 : 1;
+                      const bSel = effective.includes(b.value) ? 0 : 1;
+                      return aSel - bSel;
+                    }).map((c) => {
                       const Icon = getCategoryIcon(c.value);
                       const isLiked = effective.includes(c.value);
                       return (
@@ -503,20 +517,17 @@ const MyLikes = () => {
                 </div>
               )}
             </div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
-              Tap a category to like / unlike it — the list stays open so you can pick as many as you want.
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 truncate">
+              Tap a category to like / unlike it
             </p>
 
             {/* Keywords — custom free-text follows */}
             <div className="mt-5">
               <div className="flex items-center justify-between gap-3 mb-2">
-                <h4 className="text-xs sm:text-sm font-bold text-black inline-flex items-center gap-1.5">
-                  <Type className="h-3.5 w-3.5" /> Keywords
-                </h4>
+                <h4 className="text-xs sm:text-sm font-bold text-black">Keywords</h4>
                 <span className="text-[10px] sm:text-xs text-muted-foreground">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
               </div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   value={keywordInput}
@@ -529,7 +540,7 @@ const MyLikes = () => {
                   }}
                   placeholder="Type a keyword (e.g., innova, 2012)…"
                   disabled={effectiveKeywords.length >= MAX_KEYWORDS}
-                  className="w-full h-11 pl-10 pr-24 rounded-xl border-2 border-black bg-white text-sm font-medium text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 shadow-[0_3px_0_0_rgba(0,0,0,0.2)] disabled:bg-gray-50 disabled:text-gray-400"
+                  className="w-full h-12 pl-4 pr-24 rounded-2xl border-[1.5px] border-black bg-white text-base font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 shadow-[0_5px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_3px_0_0_rgba(0,0,0,0.2)] transition-all disabled:bg-gray-50 disabled:text-gray-400"
                 />
                 <button
                   type="button"
@@ -561,8 +572,8 @@ const MyLikes = () => {
                   ))}
                 </div>
               )}
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
-                Posts matching your keywords (in title, description, tags, or category) appear in your feed below.
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 truncate">
+                Matches titles, descriptions, tags & categories
               </p>
             </div>
 
