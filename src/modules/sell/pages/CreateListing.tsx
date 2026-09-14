@@ -1048,7 +1048,7 @@ export default function CreateListing() {
                     <MapPin className="h-4 w-4 text-white" />
                   </div>
                   <div className="text-left flex-1 min-w-0">
-                    <p className="text-sm font-bold text-black">Pin precise location</p>
+                    <p className="text-sm font-bold text-black">Your Location</p>
                     <p className="text-[11px] text-slate-500 truncate">
                       {mapLocation?.formatted_address || mapLocation?.city || location || (mapLocation ? 'Location pinned on map' : 'Use the map to drop a pin')}
                     </p>
@@ -1063,7 +1063,7 @@ export default function CreateListing() {
                 <MapLocationPicker
                   open={mapPickerOpen}
                   onOpenChange={(o) => setMapPickerOpen(o)}
-                  title="Pin your precise location"
+                  title="Your Location"
                   defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                   onSelect={(lat, lng, addr) => {
                     setMapLocation(addr);

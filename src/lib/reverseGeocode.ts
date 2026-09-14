@@ -54,3 +54,46 @@ export async function reverseGeocodeToMapLocation(lat: number, lng: number): Pro
     formatted_address: formatted,
   };
 }
+
+export interface PlaceSearchResult {
+  label: string;
+  lat: number;
+  lng: number;
+}
+
+function buildSearchUrl(query: string): string {
+  const q = `format=jsonv2&addressdetails=0&limit=5&q=${encodeURIComponent(query)}`;
+  // Dev: Vite proxies to Nominatim with a valid User-Agent. Prod: direct (Nominatim allows browser CORS for API).
+  if (import.meta.env.DEV) {
+    return `/api/nominatim/search?${q}`;
+  }
+  return `https://nominatim.openstreetmap.org/search?${q}`;
+}
+
+/** Forward-geocode a free-text place query into up to 5 candidate locations. */
+export async function searchPlaces(query: string): Promise<PlaceSearchResult[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+  const url = buildSearchUrl(trimmed);
+  const res = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+      "Accept-Language": "en",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Place search failed (${res.status})`);
+  }
+  const data = (await res.json()) as Array<{
+    display_name?: string;
+    lat?: string;
+    lon?: string;
+  }>;
+  return data
+    .map((row) => ({
+      label: (row.display_name || "").trim(),
+      lat: Number(row.lat),
+      lng: Number(row.lon),
+    }))
+    .filter((r) => r.label && Number.isFinite(r.lat) && Number.isFinite(r.lng));
+}
