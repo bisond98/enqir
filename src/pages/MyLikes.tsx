@@ -328,8 +328,6 @@ const MyLikes = () => {
     loadFeed(pending, keywords);
   };
 
-  const discardPending = () => setPending(null);
-
   const effective = pending ?? liked;
   const effectiveKeywords = pendingKeywords ?? keywords;
   const filtered = query.trim()
@@ -496,8 +494,24 @@ const MyLikes = () => {
                   <Plus className="h-3 w-3" /> Add
                 </button>
               </div>
+              <div className="flex items-center justify-between gap-3 mt-2">
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate leading-none">
+                  Matches titles, descriptions, tags & categories
+                </p>
+                <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
+                {(effective.length > 0 || effectiveKeywords.length > 0) && (
+                  <button
+                    type="button"
+                    onClick={clearAllCategories}
+                    disabled={saving}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] sm:text-xs font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors disabled:opacity-50 shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[1px] flex-shrink-0"
+                  >
+                    <X className="h-3 w-3" /> Clear all
+                  </button>
+                )}
+              </div>
               {effectiveKeywords.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   {effectiveKeywords.map(kw => (
                     <span
                       key={kw}
@@ -516,22 +530,6 @@ const MyLikes = () => {
                   ))}
                 </div>
               )}
-              <div className="flex items-center justify-between gap-3 mt-2">
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate leading-none">
-                  Matches titles, descriptions, tags & categories
-                </p>
-                <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
-                {(effective.length > 0 || effectiveKeywords.length > 0) && (
-                  <button
-                    type="button"
-                    onClick={clearAllCategories}
-                    disabled={saving}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] sm:text-xs font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors disabled:opacity-50 shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[1px] flex-shrink-0"
-                  >
-                    <X className="h-3 w-3" /> Clear all
-                  </button>
-                )}
-              </div>
             </div>
 
             {/* Notification toggles — shown only once a category or keyword is selected */}
@@ -576,14 +574,16 @@ const MyLikes = () => {
             {/* Feed: live listings + enquiries from liked categories + keywords */}
             {(liked.length > 0 || keywords.length > 0) && (
               <div className="mt-8">
-                <h3 className="text-sm sm:text-base font-bold text-black mb-3">From your liked categories & keywords</h3>
+                <div className="flex justify-center mb-3">
+                  <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+                </div>
                 {feedLoading ? (
                   <p className="text-xs sm:text-sm text-muted-foreground py-6 text-center">Loading posts…</p>
                 ) : (
                   <div className="space-y-6">
                     {/* Listings */}
                     <div>
-                      <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 inline-flex items-center gap-1.5 justify-center w-full">
+                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
                         <Tag className="h-3 w-3" /> Listings ({feedListings.length})
                       </p>
                       {feedListings.length === 0 ? (
@@ -597,7 +597,7 @@ const MyLikes = () => {
                                 key={l.id}
                                 type="button"
                                 onClick={() => navigate(`/sell/listing/${l.id}`)}
-                                className="flex items-center gap-3 rounded-xl border-2 border-black bg-white px-3 py-2.5 text-left shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:bg-gray-50 active:translate-y-0.5 transition-all"
+                                className="group/tile relative flex items-center gap-3 !rounded-2xl border-[0.5px] border-black bg-white px-3 py-3 text-left !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] hover:translate-y-[1px] active:translate-y-[3px] !transition-all !duration-150 overflow-hidden"
                               >
                                 {l.images?.[0] ? (
                                   <img src={l.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-200" />
@@ -624,7 +624,7 @@ const MyLikes = () => {
 
                     {/* Enquiries */}
                     <div>
-                      <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 inline-flex items-center gap-1.5 justify-center w-full">
+                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
                         <Megaphone className="h-3 w-3" /> Enquiries ({feedEnquiries.length})
                       </p>
                       {feedEnquiries.length === 0 ? (
@@ -638,7 +638,7 @@ const MyLikes = () => {
                                 key={e.id}
                                 type="button"
                                 onClick={() => navigate(`/enquiry/${e.id}`)}
-                                className="flex items-center gap-3 rounded-xl border-2 border-black bg-white px-3 py-2.5 text-left shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:bg-gray-50 active:translate-y-0.5 transition-all"
+                                className="group/tile relative flex items-center gap-3 !rounded-2xl border-[0.5px] border-black bg-white px-3 py-3 text-left !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] hover:translate-y-[1px] active:translate-y-[3px] !transition-all !duration-150 overflow-hidden"
                               >
                                 <span className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                                   <Icon className="w-5 h-5 text-gray-500" />
@@ -686,15 +686,6 @@ const MyLikes = () => {
                   </>
                 )}
               </Button>
-              {pending !== null && pendingCount > 0 && (
-                <button
-                  type="button"
-                  onClick={discardPending}
-                  className="w-full text-center text-[10px] sm:text-xs text-muted-foreground underline mt-2"
-                >
-                  Discard changes
-                </button>
-              )}
             </div>
           </div>
         </div>
