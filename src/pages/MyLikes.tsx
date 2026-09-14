@@ -397,11 +397,11 @@ const MyLikes = () => {
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 ml-4 mr-2 text-white flex-shrink-0 relative z-10" />
-                <span className="flex-1 text-left truncate relative z-10">Categories</span>
+                <span className="flex-1 text-center truncate relative z-10">Categories</span>
                 {effective.length > 0 && (
-                  <span className="mr-2 bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0 relative z-10">{effective.length}</span>
+                  <span className="bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0 relative z-10">{effective.length}</span>
                 )}
-                <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 mr-4 transition-transform relative z-10 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 ml-2 mr-4 transition-transform relative z-10 ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {dropdownOpen && (
@@ -470,9 +470,6 @@ const MyLikes = () => {
 
             {/* Keywords — custom free-text follows */}
             <div className="mt-2 sm:mt-5">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <span className="text-[10px] sm:text-xs text-muted-foreground">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
-              </div>
               <div className="relative">
                 <input
                   type="text"
@@ -523,6 +520,7 @@ const MyLikes = () => {
                 <p className="text-[10px] sm:text-xs text-muted-foreground truncate leading-none">
                   Matches titles, descriptions, tags & categories
                 </p>
+                <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
                 {(effective.length > 0 || effectiveKeywords.length > 0) && (
                   <button
                     type="button"
