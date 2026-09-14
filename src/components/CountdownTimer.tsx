@@ -90,15 +90,22 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       };
     };
 
-    const updateTimer = () => {
-      setTimeLeft(calculateTimeLeft());
+    // Adaptive tick: 1s only when seconds are displayed (< 1h left), otherwise 30s.
+    // Displayed output is identical — seconds aren't rendered above 1h.
+    let delay = 1000;
+    let interval: ReturnType<typeof setInterval>;
+    const tick = () => {
+      const t = calculateTimeLeft();
+      setTimeLeft(t);
+      const nextDelay = t.total > 0 && t.total < 60 * 60 * 1000 ? 1000 : 30000;
+      if (nextDelay !== delay) {
+        delay = nextDelay;
+        clearInterval(interval);
+        interval = setInterval(tick, nextDelay);
+      }
     };
-
-    // Update immediately
-    updateTimer();
-
-    // Update every second
-    const interval = setInterval(updateTimer, 1000);
+    tick();
+    interval = setInterval(tick, delay);
 
     return () => clearInterval(interval);
   }, [deadline]);

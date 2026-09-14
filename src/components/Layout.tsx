@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { Button } from "@/components/ui/button";
@@ -801,11 +800,13 @@ export default function Layout({ children, showNavigation = true }: { children: 
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <motion.div
+                  <div
                     key={item.path}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    style={{
+                      opacity: 1,
+                      transform: 'translateX(0)',
+                      animation: `nav-item-in 0.35s ease-out ${index * 0.05}s both`,
+                    }}
                     className="w-full"
                   >
                     <Link
@@ -833,7 +834,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         <div className="w-2.5 h-2.5 bg-white rounded-full flex-shrink-0 shadow-lg animate-pulse"></div>
                       )}
                   </Link>
-                  </motion.div>
+                  </div>
                 );
               })}
 
@@ -913,11 +914,9 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 ).map((item) => {
                   const Icon = item.icon;
                   return (
-                    <motion.div
+                    <div
                       key={item.path}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 transition-transform duration-200 ease-out hover:scale-105 active:scale-95"
                     >
                       <Link
                         to={item.path}
@@ -930,14 +929,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                         <span className="truncate">{item.label}</span>
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
                 {/* For Sale button */}
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex-shrink-0"
+                <div
+                  className="flex-shrink-0 transition-transform duration-200 ease-out hover:scale-105 active:scale-95"
                 >
                   <Link
                     to="/sell/new"
@@ -950,7 +947,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                     <span className="truncate">For Sale</span>
                   </Link>
-                </motion.div>
+                </div>
               </nav>
             )}
 

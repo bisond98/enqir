@@ -600,7 +600,7 @@ const MyLikes = () => {
                                 className="group/tile relative flex items-center gap-3 !rounded-2xl border-[0.5px] border-black bg-white px-3 py-3 text-left !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] hover:translate-y-[1px] active:translate-y-[3px] !transition-all !duration-150 overflow-hidden"
                               >
                                 {l.images?.[0] ? (
-                                  <img src={l.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-200" />
+                                  <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-200" />
                                 ) : (
                                   <span className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                                     <Icon className="w-5 h-5 text-gray-500" />

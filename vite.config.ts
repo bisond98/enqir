@@ -67,7 +67,9 @@ export default defineConfig(({ mode }) => ({
           'vendor-motion': ['framer-motion'],
           'vendor-date': ['date-fns'],
           'vendor-query': ['@tanstack/react-query'],
-          'vendor-charts': ['chart.js', 'recharts'],
+          // NOTE: chart libs (recharts/chart.js) intentionally NOT in manualChunks —
+          // they're only used by the lazy Admin page, so they must load with Admin's
+          // chunk instead of being modulepreloaded on every page visit.
           'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
         // Optimize asset filenames for better caching
@@ -103,8 +105,8 @@ export default defineConfig(({ mode }) => ({
         safari10: true, // Fix Safari 10+ issues
       },
     },
-    // Target modern browsers for better optimization
-    target: 'es2015',
+    // Target modern browsers for better optimization (smaller output, no legacy transforms)
+    target: 'es2020',
     // Optimize CSS
     cssCodeSplit: true,
     // Report compressed size
