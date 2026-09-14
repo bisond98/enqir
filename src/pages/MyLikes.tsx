@@ -24,6 +24,8 @@ const orderedCategories = [
 // No cap — users can like as many categories as they want
 // Max custom keywords a user can follow
 const MAX_KEYWORDS = 10;
+// Max characters per keyword
+const MAX_KEYWORD_LENGTH = 20;
 
 interface LikesSettings {
   categories: string[];
@@ -380,66 +382,8 @@ const MyLikes = () => {
         </div>
 
         <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 flex-grow">
-          {/* Notification toggles */}
-          <div className="bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.2)] overflow-hidden">
-            {/* Black tile header */}
-            <div className="bg-black px-4 sm:px-6 py-3.5">
-              <h3 className="text-sm sm:text-base font-bold text-white inline-flex items-center gap-2">
-                <Bell className="h-4 w-4 text-white" />
-                Notify me about new posts in my liked categories
-              </h3>
-            </div>
-            <div className="p-4 sm:p-6 space-y-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-black">For Sale</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">When a seller lists something in a category you like</p>
-              </div>
-              <Switch
-                checked={notifyListings}
-                onCheckedChange={(checked) => { setNotifyListings(checked); save({ notifyListings: checked }); }}
-                disabled={loading}
-                className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-300"
-              />
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-black">New enquiries</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">When a buyer posts a need in a category you like</p>
-              </div>
-              <Switch
-                checked={notifyEnquiries}
-                onCheckedChange={(checked) => { setNotifyEnquiries(checked); save({ notifyEnquiries: checked }); }}
-                disabled={loading}
-                className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-300"
-              />
-            </div>
-            {likedCount === 0 && (
-              <p className="text-[10px] sm:text-xs text-muted-foreground inline-flex items-center gap-1.5">
-                <BellOff className="h-3 w-3" /> You won't get notifications until you like at least one category.
-              </p>
-            )}
-            </div>
-          </div>
-
           {/* Category grid */}
           <div className="mt-6">
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 className="text-sm sm:text-base font-bold text-black">Categories</h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs text-muted-foreground">{effective.length} selected</span>
-                {effective.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={clearAllCategories}
-                    disabled={saving}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] sm:text-xs font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors disabled:opacity-50 shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[1px]"
-                  >
-                    <X className="h-3 w-3" /> Clear all
-                  </button>
-                )}
-              </div>
-            </div>
 
             {/* Category dropdown — stays open, tap to like/unlike, unlimited picks */}
             <div className="relative" ref={dropdownRef}>
@@ -517,21 +461,23 @@ const MyLikes = () => {
                 </div>
               )}
             </div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 truncate">
-              Tap a category to like / unlike it
-            </p>
+            <div className="flex items-center justify-between gap-3 mt-1.5">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                Tap a category to like / unlike it
+              </p>
+              <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effective.length} selected</span>
+            </div>
 
             {/* Keywords — custom free-text follows */}
-            <div className="mt-5">
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <h4 className="text-xs sm:text-sm font-bold text-black">Keywords</h4>
+            <div className="mt-2 sm:mt-5">
+              <div className="flex items-center justify-center gap-3 mb-2">
                 <span className="text-[10px] sm:text-xs text-muted-foreground">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
               </div>
               <div className="relative">
                 <input
                   type="text"
                   value={keywordInput}
-                  onChange={(e) => setKeywordInput(e.target.value)}
+                  onChange={(e) => setKeywordInput(e.target.value.slice(0, MAX_KEYWORD_LENGTH))}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -539,8 +485,9 @@ const MyLikes = () => {
                     }
                   }}
                   placeholder="Type a keyword (e.g., innova, 2012)…"
+                  maxLength={MAX_KEYWORD_LENGTH}
                   disabled={effectiveKeywords.length >= MAX_KEYWORDS}
-                  className="w-full h-12 pl-4 pr-24 rounded-2xl border-[1.5px] border-black bg-white text-base font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 shadow-[0_5px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:shadow-[0_3px_0_0_rgba(0,0,0,0.2)] transition-all disabled:bg-gray-50 disabled:text-gray-400"
+                  className="w-full h-14 sm:h-16 pl-4 pr-24 rounded-2xl border-2 border-black bg-white text-base sm:text-lg font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !transition-all !duration-200 !transform focus:!scale-[0.98] disabled:bg-gray-50 disabled:text-gray-400"
                 />
                 <button
                   type="button"
@@ -557,25 +504,76 @@ const MyLikes = () => {
                   {effectiveKeywords.map(kw => (
                     <span
                       key={kw}
-                      className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full border-[1.5px] border-black bg-blue-50 text-blue-700 text-[11px] font-black"
+                      className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full border-[1.5px] border-black bg-black text-white text-[11px] font-black shadow-[0_3px_0_0_rgba(0,0,0,0.3)]"
                     >
                       {kw}
                       <button
                         type="button"
                         onClick={() => removeKeyword(kw)}
-                        className="p-0.5 rounded-full hover:bg-blue-100 transition-colors"
+                        className="p-0.5 rounded-full hover:bg-white/20 transition-colors"
                         aria-label={`Remove keyword ${kw}`}
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3 w-3 text-red-500" />
                       </button>
                     </span>
                   ))}
                 </div>
               )}
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 truncate">
-                Matches titles, descriptions, tags & categories
-              </p>
+              <div className="flex items-center justify-between gap-3 mt-2">
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate leading-none">
+                  Matches titles, descriptions, tags & categories
+                </p>
+                {(effective.length > 0 || effectiveKeywords.length > 0) && (
+                  <button
+                    type="button"
+                    onClick={clearAllCategories}
+                    disabled={saving}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] sm:text-xs font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors disabled:opacity-50 shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[1px] flex-shrink-0"
+                  >
+                    <X className="h-3 w-3" /> Clear all
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Notification toggles — shown only once a category or keyword is selected */}
+            {(effective.length > 0 || effectiveKeywords.length > 0) && (
+            <div className="mt-5 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.2)] overflow-hidden">
+              {/* Black tile header */}
+              <div className="bg-black px-4 sm:px-6 py-3.5">
+                <h3 className="text-sm sm:text-base font-bold text-white inline-flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-white" />
+                  Notify
+                </h3>
+              </div>
+              <div className="p-4 sm:p-6 space-y-5">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-black">For Sale</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">When a seller lists something in a category you like</p>
+                </div>
+                <Switch
+                  checked={notifyListings}
+                  onCheckedChange={(checked) => { setNotifyListings(checked); save({ notifyListings: checked }); }}
+                  disabled={loading}
+                  className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-300"
+                />
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-black">New enquiries</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">When a buyer posts a need in a category you like</p>
+                </div>
+                <Switch
+                  checked={notifyEnquiries}
+                  onCheckedChange={(checked) => { setNotifyEnquiries(checked); save({ notifyEnquiries: checked }); }}
+                  disabled={loading}
+                  className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-300"
+                />
+              </div>
+              </div>
+            </div>
+            )}
 
             {/* Feed: live listings + enquiries from liked categories + keywords */}
             {(liked.length > 0 || keywords.length > 0) && (
@@ -670,16 +668,24 @@ const MyLikes = () => {
               <Button
                 onClick={pending === null ? undefined : savePending}
                 disabled={pending === null || saving}
-                className={`w-full h-12 sm:h-14 rounded-xl text-sm sm:text-base font-bold transition-all ${
+                className={`relative w-full h-14 sm:h-16 !rounded-2xl text-base sm:text-lg font-black !overflow-hidden group !transition-all !duration-200 !transform ${
                   pending !== null && pendingCount > 0
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_5px_0_0_rgba(37,99,235,0.4)]'
-                    : 'bg-gray-200 text-gray-500 shadow-none cursor-not-allowed'
+                    ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:!scale-[1.02] active:!scale-[0.98]'
+                    : 'bg-gray-200 text-gray-500 !shadow-none cursor-not-allowed'
                 }`}
               >
                 {saving ? (
                   'Saving…'
                 ) : (
-                  <span className="inline-flex items-center gap-2"><Check className="h-4 w-4" /> Save</span>
+                  <span className="inline-flex items-center gap-2 relative z-10"><Check className="h-4 w-4" /> Save</span>
+                )}
+                {pending !== null && pendingCount > 0 && (
+                  <>
+                    {/* Physical button depth effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent !rounded-2xl pointer-events-none" />
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none !rounded-2xl" />
+                  </>
                 )}
               </Button>
               {pending !== null && pendingCount > 0 && (

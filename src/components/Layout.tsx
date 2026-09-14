@@ -1047,7 +1047,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                             className="h-8 w-8 p-0 hover:bg-muted/50 relative"
                           >
                             <div className="relative">
-                              <Heart className="h-4 w-4" />
+                              <Heart className={`h-4 w-4 transition-colors ${likesBadgeCount > 0 ? 'fill-red-500 text-red-500' : ''}`} />
                               {likesBadgeCount > 0 && (
                                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
                                   {likesBadgeCount > 9 ? '9+' : likesBadgeCount}
