@@ -93,6 +93,7 @@ import {
   Clock,
   Ruler,
   Compass,
+  Cog,
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -833,11 +834,12 @@ export default function CreateListing() {
                   maxLength={30}
                   autoFocus
                 />
-                <p className="text-[11px] text-slate-500">Keep it specific.</p>
+                <p className="text-[9px] text-slate-500">Keep it specific.</p>
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="flex items-center justify-between gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => (
                       <div key={f.key} className="relative w-[48%]">
+                        <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         {f.typeable ? (
                           <Input
                             type="text"
@@ -846,6 +848,15 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, ''))}
                             placeholder={f.placeholder ?? 'Type year'}
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                          />
+                        ) : f.type === 'text' ? (
+                          <Input
+                            type="text"
+                            maxLength={40}
+                            value={details[f.key] ?? ''}
+                            onChange={(e) => setDetail(f.key, e.target.value)}
+                            placeholder={f.placeholder ?? 'Type here'}
                             className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                           />
                         ) : (
@@ -1302,6 +1313,7 @@ export default function CreateListing() {
                           <div className="flex flex-wrap gap-1.5">
                             {[...titleFields, ...descFields, ...usedFields, ...priceFields].map((f) => {
                               const SpecIcon =
+                                f.key === 'variant' ? Cog :
                                 f.key === 'brand' ? Tag :
                                 f.key === 'year' ? CalendarDays :
                                 f.key === 'transmission' ? GearShiftIcon :

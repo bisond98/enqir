@@ -3,13 +3,15 @@
 // so inputs never overcrowd — they slot into the existing flow.
 // Values are stored as a flat `details` map on the listing document.
 
+import { CAR_BRANDS, BIKE_BRANDS } from './categoryBrands';
+
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
 
 export interface CategoryDetailField {
   key: string;
   label: string;
   placeholder?: string;
-  type: 'select' | 'number';
+  type: 'select' | 'number' | 'text';
   options?: string[];
   min?: number;
   max?: number;
@@ -19,20 +21,6 @@ export interface CategoryDetailField {
 }
 
 export type CategoryDetailsConfig = Record<string, CategoryDetailField[]>;
-
-const CAR_BRANDS = [
-  'Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Toyota', 'Honda', 'Kia',
-  'Renault', 'Nissan', 'MG', 'Volkswagen', 'Skoda', 'Jeep', 'Citroën',
-  'BMW', 'Mercedes-Benz', 'Audi', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche',
-  'Lexus', 'Isuzu', 'Force', 'Datsun', 'Fiat', 'Chevrolet', 'Ford',
-  'Hindustan Motors', 'Opel', 'Rolls-Royce', 'Bentley', 'Ferrari', 'Lamborghini', 'Other',
-];
-
-const BIKE_BRANDS = [
-  'Hero', 'Bajaj', 'TVS', 'Honda', 'Royal Enfield', 'Yamaha', 'Suzuki',
-  'KTM', 'Mahindra', 'Jawa', 'Yezdi', 'Ather', 'Ola Electric', 'Revolt',
-  'Harley-Davidson', 'Kawasaki', 'Ducati', 'Benelli', 'UM', 'Other',
-];
 
 const MOBILE_BRANDS = [
   'Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Redmi', 'Realme', 'Vivo', 'Oppo',
@@ -52,6 +40,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   car: [
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
+    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 45,000', suffix: 'km', min: 0, step: 'details' },
@@ -60,6 +49,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   vehicles: [
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
+    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 45,000', suffix: 'km', min: 0, step: 'details' },
@@ -68,6 +58,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   bike: [
     { key: 'brand', label: 'Brand', type: 'select', options: BIKE_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
+    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., 350 Standard, Dual Channel ABS', step: 'title' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 12,000', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
   ],

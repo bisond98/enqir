@@ -69,6 +69,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
+  details?: { brand?: string; year?: string; variant?: string } | null;
 }
 
 interface UserProfile {
@@ -788,6 +789,26 @@ const EnquiryDetail = () => {
                   <div className="mb-5 sm:mb-6">
                     <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3 text-center">Description</h3>
                     <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    {/* Vehicle detail chips — brand/year/variant when provided */}
+                    {(() => {
+                      const d = enquiry.details;
+                      if (!d || (!d.brand && !d.year && !d.variant)) return null;
+                      const chips = [
+                        d.brand && { label: 'Brand', value: d.brand },
+                        d.year && { label: 'Year', value: d.year },
+                        d.variant && { label: 'Variant', value: d.variant },
+                      ].filter(Boolean) as { label: string; value: string }[];
+                      return (
+                        <div className="flex flex-wrap justify-center gap-1.5 mt-3">
+                          {chips.map((c) => (
+                            <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                              <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
+                              {c.value}
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   {/* Reference Images Section - Only on Detailed Page */}

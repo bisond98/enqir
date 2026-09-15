@@ -34,6 +34,7 @@ import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES } from "@/constants/categories";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
+import { CAR_BRANDS, BIKE_BRANDS } from "@/modules/sell/categoryBrands";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
@@ -150,6 +151,8 @@ export default function PostEnquiry() {
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
+  // Vehicle details (brand/year/variant) — filled when a vehicle category is selected
+  const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string }>({ brand: '', year: '', variant: '' });
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -281,6 +284,7 @@ export default function PostEnquiry() {
         if (d.location) setLocation(d.location);
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
+        if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
         if (d.selectedPlanId) {
           const plan = PAYMENT_PLANS.find(p => p.id === d.selectedPlanId);
@@ -480,6 +484,11 @@ export default function PostEnquiry() {
             userEmail: user?.email,
             userName: user?.displayName || user?.email?.split('@')[0],
             notes: notes.trim() || null,
+            details: {
+              ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+              ...(vehicleDetails.year && { year: vehicleDetails.year }),
+              ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+            },
             governmentIdFront: null,
             governmentIdBack: null,
             isUserVerified: isUserVerified,
@@ -697,6 +706,11 @@ export default function PostEnquiry() {
           userEmail: user?.email,
           userName: user?.displayName || user?.email?.split('@')[0],
           notes: notes.trim() || null,
+          details: {
+            ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+            ...(vehicleDetails.year && { year: vehicleDetails.year }),
+            ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+          },
           governmentIdFront: null,
           governmentIdBack: null,
           isUserVerified: isUserVerified,
@@ -816,6 +830,11 @@ export default function PostEnquiry() {
         userEmail: user?.email,
         userName: user?.displayName || user?.email?.split('@')[0],
         notes: notes.trim() || null,
+        details: {
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+          ...(vehicleDetails.year && { year: vehicleDetails.year }),
+          ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+        },
         governmentIdFront: null,
         governmentIdBack: null,
         isUserVerified: isUserVerified,
@@ -1490,6 +1509,11 @@ export default function PostEnquiry() {
         views: 0,
         userLikes: [],
         notes: notes.trim(),
+        details: {
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+          ...(vehicleDetails.year && { year: vehicleDetails.year }),
+          ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+        },
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified,
         // 🛡️ PROTECTED: Trust Badge Fix - userProfileVerified field is REQUIRED for trust badge display in enquiry cards
@@ -1974,17 +1998,9 @@ export default function PostEnquiry() {
                 </div>
 
                 {/* Step Title */}
-                <div id="step-title" className="text-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter">
-                    <span className="bg-gradient-to-r from-black via-black to-pal-blue bg-clip-text text-transparent">
-                      {STEPS[step].label}
-                    </span>
-                  </h2>
-                  {STEPS[step].description && (
-                    <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-2 tracking-wide uppercase">
-                      {STEPS[step].description}
-                    </p>
-                  )}
+                <div id="step-title" className="text-center pt-8 mb-10">
+                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
                 </div>
 
                 {/* Step Content */}
@@ -2158,7 +2174,68 @@ export default function PostEnquiry() {
                   {/* Step 2: Description */}
                   {step === 2 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
-                      <Label htmlFor="enquiry-desc" className="text-[10px] sm:text-xs font-bold">Description</Label>
+                      {/* Vehicle details — brand/year/variant above the description when a vehicle category is selected */}
+                      {(() => {
+                        const isCarLike = selectedCategories.some(c => ['car', 'automobile', 'vehicles'].includes(c));
+                        const isBike = selectedCategories.includes('bike');
+                        const isBikeOnly = isBike && !isCarLike;
+                        if (!isCarLike && !isBike) return null;
+                        return (
+                          <div className="mb-6">
+                            <div className="flex items-start justify-between gap-3">
+                              {/* Brand */}
+                              <div className="flex-1 min-w-0">
+                                <select
+                                  value={vehicleDetails.brand}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                >
+                                  <option value="">Brand</option>
+                                  {(isBikeOnly ? BIKE_BRANDS : CAR_BRANDS).map((b) => (
+                                    <option key={b} value={b}>{b}</option>
+                                  ))}
+                                </select>
+                                <div className="h-3">
+                                  <ChevronDown className="absolute right-3 -top-8 h-4 w-4 text-gray-500 pointer-events-none" />
+                                  <p className="text-[8px] font-bold text-black text-center tracking-wide">brand</p>
+                                </div>
+                              </div>
+                              {/* Year */}
+                              <div className="flex-1 min-w-0">
+                                <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  maxLength={4}
+                                  value={vehicleDetails.year}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '') }))}
+                                  placeholder="Year"
+                                  className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                />
+                                <div className="h-3">
+                                  <p className="text-[8px] font-bold text-black text-center tracking-wide">year</p>
+                                </div>
+                              </div>
+                              {/* Variant — cars/automobiles only, not bikes */}
+                              {isCarLike && (
+                                <div className="flex-1 min-w-0">
+                                  <Input
+                                    type="text"
+                                    maxLength={40}
+                                    value={vehicleDetails.variant}
+                                    onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                    placeholder="e.g., VXI, ZXI (O)"
+                                    className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                  />
+                                  <div className="h-3">
+                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">variant</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       <Textarea
                         id="enquiry-desc"
                         value={description}
@@ -2170,6 +2247,9 @@ export default function PostEnquiry() {
                         className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                         autoFocus
                       />
+                      <div className="h-3">
+                        <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
+                      </div>
                       <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
                     </div>
                   )}
@@ -2370,7 +2450,7 @@ export default function PostEnquiry() {
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, location,
+                                title, description, selectedCategories, budget, location, vehicleDetails,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, selectedPlanId: selectedPlan?.id
                               }));
