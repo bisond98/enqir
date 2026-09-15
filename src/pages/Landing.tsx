@@ -16,6 +16,7 @@ import { createPortal } from "react-dom";
 import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { listMarketplace } from "@/modules/sell/services/sellDb";
+import { buildEnquiryShareText } from "@/lib/enquiryShare";
 
 const Landing = () => {
   const features = [
@@ -550,7 +551,7 @@ const Landing = () => {
     e.stopPropagation();
     
     const shareUrl = `${window.location.origin}/respond/${enquiry.id}`;
-    const shareText = `Check out this enquiry: ${enquiry.title}`;
+    const shareText = buildEnquiryShareText(enquiry, shareUrl);
     
     // Update share count in database
     try {

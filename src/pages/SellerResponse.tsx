@@ -1618,14 +1618,21 @@ const SellerResponse = () => {
                   )}
                   {images.length < 5 && (
                   <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
-                    <Input
+                    <input
+                      id="response-images"
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={(e) => onAddImages(e.target.files)}
                       disabled={uploading || images.length >= 5}
-                      className="cursor-pointer text-sm"
+                      className="hidden"
                     />
+                    <label
+                      htmlFor="response-images"
+                      className="block w-full text-center rounded-xl border-2 border-black bg-white hover:bg-blue-50/30 active:scale-[0.98] active:bg-blue-100 transition-all duration-200 py-3 text-sm font-bold text-black cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-[2px]"
+                    >
+                      {images.length === 0 ? 'Choose Image' : 'Add More Images'}
+                    </label>
                     <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">

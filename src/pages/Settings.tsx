@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { 
   Shield, 
   Trash2,
-  Bell,
-  BellOff,
   Key,
   ArrowLeft,
   Settings as SettingsIcon,
@@ -21,7 +16,7 @@ import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 import SignOutDialog from "@/components/SignOutDialog";
 import { db } from "@/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { toast, updateNotificationPreferenceCache } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { user } = useUsage();
@@ -35,7 +30,6 @@ const Settings = () => {
     dataCollection: true,
     notificationsEnabled: true
   });
-
   // Load user profile data
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -134,86 +128,28 @@ const Settings = () => {
           <div className="space-y-4 sm:space-y-6">
             <Card className="p-4 sm:p-6 border-4 border-black">
               <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <label className="text-sm font-medium block mb-2 text-black">Profile Visibility</label>
-                  <Select 
-                    value={privacy.profileVisibility} 
-                    onValueChange={(value) => {
-                      setPrivacy(prev => ({ ...prev, profileVisibility: value }));
-                      savePrivacySetting('profileVisibility', value);
-                    }}
-                  >
-                    <SelectTrigger className="border-2 border-black focus:border-black focus:ring-black text-xs sm:text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="text-xs sm:text-sm">
-                      <SelectItem value="public" className="text-xs sm:text-sm">Public - Anyone can see</SelectItem>
-                      <SelectItem value="verified" className="text-xs sm:text-sm">Verified Users Only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <Separator />
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-sm sm:text-base font-medium text-black">Data Collection</h3>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">Allow Enqir.in to collect analytics for improving your experience</p>
+                {/* Log Out - styled like the Connect button */}
+                <Button
+                  type="button"
+                  onClick={() => setShowSignOutDialog(true)}
+                  className="!w-full !h-16 !text-lg !font-black !bg-none !bg-red-600 hover:!bg-red-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                >
+                  {/* Physical button depth effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                  <div className="flex items-center justify-center space-x-2 relative z-10">
+                    <LogOut className="h-5 w-5 text-white" />
+                    <span className="text-white">Log Out</span>
                   </div>
-                  <Switch 
-                    checked={privacy.dataCollection}
-                    onCheckedChange={(checked) => {
-                      setPrivacy(prev => ({ ...prev, dataCollection: checked }));
-                      savePrivacySetting('dataCollection', checked);
-                    }}
-                    className="sm:ml-4 data-[state=checked]:bg-black data-[state=unchecked]:bg-gray-300"
-                  />
-                </div>
-                
-                <Separator />
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {privacy.notificationsEnabled ? (
-                        <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
-                      ) : (
-                        <BellOff className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
-                      )}
-                      <h3 className="text-sm sm:text-base font-medium text-black">Notifications</h3>
-                    </div>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">Receive notifications about enquiries, responses, and updates</p>
-                  </div>
-                  <Switch 
-                    checked={privacy.notificationsEnabled}
-                    onCheckedChange={(checked) => {
-                      setPrivacy(prev => ({ ...prev, notificationsEnabled: checked }));
-                      // Save to Firestore immediately
-                      savePrivacySetting('notificationsEnabled', checked);
-                      // Update cache immediately when toggled
-                      if (authUser?.uid) {
-                        updateNotificationPreferenceCache(authUser.uid, checked);
-                      }
-                      if (!checked) {
-                        toast({
-                          title: "Notifications Turned Off",
-                          description: "You will no longer receive notifications about enquiries, responses, and updates.",
-                          forceShow: true // Always show this toast even when turning off
-                        });
-                      }
-                    }}
-                    className="sm:ml-4 data-[state=checked]:bg-black data-[state=unchecked]:bg-gray-300"
-                  />
-                </div>
-                
-                <Separator />
+                </Button>
                 
                 <div className="space-y-4">
                   <h3 className="text-sm sm:text-base font-medium text-black">Account Security</h3>
                   <div className="space-y-3">
                     <Button 
-                      variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full border-2 border-black text-xs sm:text-sm"
+                      type="button"
+                      className="!w-full !h-14 !text-base !font-black !bg-none !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
                       onClick={async () => {
                         if (!authUser?.email) {
                           toast({
@@ -251,8 +187,12 @@ const Settings = () => {
                       }}
                       disabled={isResettingPassword}
                     >
-                      <Key className="h-4 w-4 mr-2" />
-                      {isResettingPassword ? "Sending..." : "Reset Password"}
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <div className="flex items-center justify-center space-x-2 relative z-10">
+                        <Key className="h-5 w-5 text-white" />
+                        <span className="text-white">{isResettingPassword ? "Sending..." : "Reset Password"}</span>
+                      </div>
                     </Button>
                   </div>
                 </div>
@@ -261,24 +201,18 @@ const Settings = () => {
                 
                 <div className="space-y-4">
                   <h3 className="text-sm sm:text-base font-medium text-black">Account Management</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    <Button 
-                      variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full text-destructive hover:text-destructive border-2 border-black text-xs sm:text-sm"
-                      onClick={() => setShowDeleteDialog(true)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Account
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="flex items-center justify-center sm:justify-start w-full text-red-600 hover:text-red-700 border-2 border-red-600 bg-white hover:bg-red-50 text-xs sm:text-sm font-semibold"
-                      onClick={() => setShowSignOutDialog(true)}
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Log Out
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="!w-full !h-14 !text-base !font-black !bg-none !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                    <div className="flex items-center justify-center space-x-2 relative z-10">
+                      <Trash2 className="h-5 w-5 text-white" />
+                      <span className="text-white">Delete Account</span>
+                    </div>
+                  </Button>
                 </div>
               </div>
             </Card>

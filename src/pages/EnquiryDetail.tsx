@@ -34,6 +34,7 @@ import CountdownTimer from '@/components/CountdownTimer';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
+import { buildEnquiryShareText } from '@/lib/enquiryShare';
 
 interface Enquiry {
   id: string;
@@ -425,9 +426,10 @@ const EnquiryDetail = () => {
       setEnquiry(prev => prev ? { ...prev, shares: (prev.shares || 0) + 1 } : null);
       
       const url = `${window.location.origin}/enquiry/${enquiry.id}`;
+      const shareText = buildEnquiryShareText(enquiry, url);
       const shareData = {
         title: enquiry.title,
-        text: enquiry.description || enquiry.title,
+        text: shareText,
         url: url
       };
       

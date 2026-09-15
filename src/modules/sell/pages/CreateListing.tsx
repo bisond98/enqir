@@ -368,7 +368,7 @@ export default function CreateListing() {
           });
         }, 200);
         
-        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+        const url = await uploadToCloudinaryUnsigned(selectedFiles[i], 2, true);
         
         clearInterval(progressInterval);
         setUploadProgresses(prev => {
@@ -684,11 +684,15 @@ export default function CreateListing() {
               const filteredCats = catSearch.trim()
                 ? SELL_CATEGORIES.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
                 : SELL_CATEGORIES;
+              // Selected categories float to the top (stable sort keeps the rest in order)
+              const sortedCats = [...filteredCats].sort((a, b) =>
+                Number(selectedCats.includes(b.value)) - Number(selectedCats.includes(a.value))
+              );
               const isSearching = catSearch.trim().length > 0;
-              const totalPages = Math.ceil(filteredCats.length / CATS_PER_PAGE);
+              const totalPages = Math.ceil(sortedCats.length / CATS_PER_PAGE);
               const paginatedCats = isSearching
-                ? filteredCats
-                : filteredCats.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
+                ? sortedCats
+                : sortedCats.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
               return (
                 <div className="max-w-2xl mx-auto w-full">
                   {/* Search bar */}
@@ -1207,19 +1211,23 @@ export default function CreateListing() {
                   )}
                   {images.length < 5 && (
                   <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
-                    <Input
+                    <input
+                      id="listing-images"
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={(e) => onAddImages(e.target.files)}
                       disabled={uploading || images.length >= 5}
-                      className="cursor-pointer text-sm"
+                      className="hidden"
                     />
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {images.length}/5 images
-                      {categoriesRequireImage(category) && images.length === 0 && (
-                        <span className="ml-1 font-semibold text-red-600">• at least 1 required for this category</span>
-                      )}
+                    <label
+                      htmlFor="listing-images"
+                      className="block w-full text-center rounded-xl border-2 border-black bg-white hover:bg-blue-50/30 active:scale-[0.98] active:bg-blue-100 transition-all duration-200 py-3 text-sm font-bold text-black cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-[2px]"
+                    >
+                      {images.length === 0 ? 'Choose Image' : 'Add More Images'}
+                    </label>
+                    <p className="text-[11px] text-slate-600 mt-2 text-right">
+                      {images.length}/5
                     </p>
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">

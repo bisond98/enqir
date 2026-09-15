@@ -1241,7 +1241,7 @@ export default function PostEnquiry() {
           });
         }, 200);
 
-        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+        const url = await uploadToCloudinaryUnsigned(selectedFiles[i], 2, true);
 
         clearInterval(progressInterval);
         setReferenceUploadProgresses(prev => {
@@ -2004,11 +2004,15 @@ export default function PostEnquiry() {
                     const filteredCategories = catSearch.trim()
                       ? categories.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
                       : categories;
+                    // Selected categories float to the top (stable sort keeps the rest in order)
+                    const sortedCategories = [...filteredCategories].sort((a, b) =>
+                      Number(selectedCategories.includes(b.value)) - Number(selectedCategories.includes(a.value))
+                    );
                     const isSearching = catSearch.trim().length > 0;
-                    const totalPages = Math.ceil(filteredCategories.length / CATS_PER_PAGE);
+                    const totalPages = Math.ceil(sortedCategories.length / CATS_PER_PAGE);
                     const pagedCategories = isSearching
-                      ? filteredCategories
-                      : filteredCategories.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
+                      ? sortedCategories
+                      : sortedCategories.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
                     return (
                       <div className="max-w-2xl mx-auto w-full">
                         {/* Search bar */}
@@ -2274,12 +2278,15 @@ export default function PostEnquiry() {
                         <Textarea
                           id="enquiry-notes"
                           value={notes}
-                          onChange={(e) => setNotes(e.target.value.split(/\s+/).filter(Boolean).slice(0, 50).join(' ') + (e.target.value.endsWith(' ') && e.target.value.trim() ? ' ' : ''))}
-                          placeholder="Additional requirements or preferences... (max 50 words)"
+                          onChange={(e) => {
+                            if (e.target.value.length <= 50) setNotes(e.target.value);
+                          }}
+                          maxLength={50}
+                          placeholder="Additional requirements or preferences... (max 50 characters)"
                           className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                         />
                         <p className="text-[10px] text-gray-400 text-right">
-                          {notes.split(/\s+/).filter(Boolean).length}/50 words
+                          {notes.length}/50
                         </p>
                       </div>
                     </div>
@@ -2312,19 +2319,23 @@ export default function PostEnquiry() {
                         )}
                         {referenceImageUrls.length < 5 && (
                           <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
-                            <Input
+                            <input
+                              id="enquiry-ref-images"
                               type="file"
                               multiple
                               accept="image/*"
                               onChange={(e) => onAddReferenceImages(e.target.files)}
                               disabled={uploadingImages || referenceImageUrls.length >= 5}
-                              className="cursor-pointer text-sm"
+                              className="hidden"
                             />
-                            <p className="text-[11px] text-slate-600 mt-2">
-                              {referenceImageUrls.length}/5 images
-                              {categoriesRequireImage(selectedCategories) && referenceImageUrls.length === 0 && (
-                                <span className="ml-1 font-semibold text-red-600">• at least 1 required for this category</span>
-                              )}
+                            <label
+                              htmlFor="enquiry-ref-images"
+                              className="block w-full text-center rounded-xl border-2 border-black bg-white hover:bg-blue-50/30 active:scale-[0.98] active:bg-blue-100 transition-all duration-200 py-3 text-sm font-bold text-black cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-[2px]"
+                            >
+                              {referenceImageUrls.length === 0 ? 'Choose Image' : 'Add More Images'}
+                            </label>
+                            <p className="text-[11px] text-slate-600 mt-2 text-right">
+                              {referenceImageUrls.length}/5
                             </p>
                             {uploadingImages && referenceUploadProgresses.length > 0 && (
                               <div className="mt-2 space-y-1">
@@ -2407,15 +2418,6 @@ export default function PostEnquiry() {
                   )}
                 </div>
 
-                {/* Posting Fee */}
-                {step === totalSteps - 1 && (
-                  <div className="flex items-center justify-center gap-2 py-1">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5c0a0a]">
-                      <IndianRupee className="h-4 w-4 text-white" />
-                      <span className="text-xs font-bold text-white">We don't offer free listings to waste your time.</span>
-                    </div>
-                  </div>
-                )}
 
                 {/* Navigation Buttons */}
                 <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
