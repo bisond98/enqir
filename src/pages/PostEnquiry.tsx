@@ -2175,8 +2175,8 @@ export default function PostEnquiry() {
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
                           placeholder="Search location..."
-                          className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
-                          style={{ fontSize: '16px' }}
+                          className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
+                          style={{ fontSize: '14px' }}
                         />
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
                           <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
@@ -2200,7 +2200,7 @@ export default function PostEnquiry() {
                         onClick={() => setMapPickerOpen(true)}
                         className="w-full flex items-center gap-3 rounded-2xl border-2 border-gray-800 bg-gradient-to-br from-white to-slate-50 hover:from-white hover:to-slate-100 px-4 py-3 transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.15)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:translate-y-[2px]"
                       >
-                        <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                           <MapPin className="h-4 w-4 text-white" />
                         </div>
                         <div className="text-left flex-1 min-w-0">
@@ -2210,9 +2210,7 @@ export default function PostEnquiry() {
                           </p>
                         </div>
                         {mapLocation && (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-1 flex-shrink-0">
-                            <Check className="h-3 w-3" /> Pinned
-                          </span>
+                          <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
                         )}
                       </button>
 

@@ -110,6 +110,8 @@ export function MapLocationPicker({
   const [placeSearching, setPlaceSearching] = useState(false);
   const [placeError, setPlaceError] = useState<string | null>(null);
   const [placeOpen, setPlaceOpen] = useState(false);
+  const [pickedLabel, setPickedLabel] = useState<string | null>(null);
+  const pickedLabelRef = useRef<string | null>(null);
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number; nonce: number } | null>(null);
   const searchSeqRef = useRef(0);
 
@@ -121,6 +123,8 @@ export function MapLocationPicker({
       setPlaceSearching(false);
       setPlaceError(null);
       setPlaceOpen(false);
+      setPickedLabel(null);
+      pickedLabelRef.current = null;
       setFlyTarget(null);
     }
   }, [open]);
@@ -128,6 +132,8 @@ export function MapLocationPicker({
   // Debounced forward-geocode as the user types (600ms, respects Nominatim rate limits)
   useEffect(() => {
     const q = placeQuery.trim();
+    // Skip the search triggered by programmatically filling the input with the picked label
+    if (pickedLabelRef.current && q === pickedLabelRef.current.trim()) return;
     if (!open || q.length < 3) {
       setPlaceResults([]);
       setPlaceOpen(false);
@@ -160,8 +166,13 @@ export function MapLocationPicker({
     setPosition([r.lat, r.lng]);
     setError(null);
     setPlaceOpen(false);
-    setPlaceQuery("");
+    setPlaceSearching(false);
+    setPlaceError(null);
     setPlaceResults([]);
+    // Keep the chosen place visible inside the search input
+    pickedLabelRef.current = r.label;
+    setPickedLabel(r.label);
+    setPlaceQuery(r.label);
     setFlyTarget({ lat: r.lat, lng: r.lng, nonce: Date.now() });
   }, []);
 
@@ -285,12 +296,12 @@ export function MapLocationPicker({
   };
 
   const mapBlock = (
-    <div className="space-y-3">
+    <div className="flex flex-col space-y-2 sm:space-y-3 flex-1 min-h-0 sm:flex-none sm:block">
       <div className="flex flex-col gap-2">
         <Button
           type="button"
           variant="outline"
-          className="!w-full !h-16 !text-base !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+          className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
           onClick={handleUseMyLocation}
           disabled={geoLoading || confirming}
         >
@@ -314,11 +325,10 @@ export function MapLocationPicker({
       </div>
       <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
         Or tap the map / drag the pin, then confirm.
-      </p>
-      <div
+      </p>      <div
         className={cn(
           "relative w-full overflow-hidden rounded-none border border-black bg-slate-100",
-          "h-[min(52vh,420px)] sm:h-[360px]"
+          "flex-1 min-h-[120px] sm:min-h-0 sm:flex-none sm:h-[360px]"
         )}
       >
         {open ? (
@@ -343,7 +353,7 @@ export function MapLocationPicker({
       {error ? <p className="text-xs text-red-600 font-medium">{error}</p> : null}
       {/* Place search — jump straight to a named location, just above the confirm button.
           Bottom margin only when the results dropdown is open, so there's no gap otherwise. */}
-      <div className={cn("relative", (placeSearching || placeError || (placeOpen && placeResults.length > 0)) && "mb-10")}>
+      <div className={cn("relative", (placeSearching || placeError || (placeOpen && placeResults.length > 0)) && "sm:mb-10")}>
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
           <input
@@ -358,7 +368,7 @@ export function MapLocationPicker({
           {placeQuery && (
             <button
               type="button"
-              onClick={() => { setPlaceQuery(""); setPlaceResults([]); setPlaceOpen(false); setPlaceError(null); }}
+              onClick={() => { setPlaceQuery(""); setPlaceResults([]); setPlaceOpen(false); setPlaceError(null); setPickedLabel(null); pickedLabelRef.current = null; }}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100"
               aria-label="Clear place search"
             >
@@ -375,7 +385,7 @@ export function MapLocationPicker({
           <p className="absolute left-3 top-full mt-1 text-[11px] text-red-600 font-medium z-20">{placeError}</p>
         )}
         {placeOpen && !placeSearching && placeResults.length > 0 && (
-            <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white border-2 border-black rounded-none shadow-[0_6px_0_0_rgba(0,0,0,0.2)] max-h-56 overflow-y-auto">
+            <div className="scrollbar-none absolute z-20 left-0 right-0 bottom-full mb-1 sm:bottom-auto sm:top-full sm:mt-1 bg-white border-2 border-black rounded-none shadow-[0_6px_0_0_rgba(0,0,0,0.2)] max-h-44 sm:max-h-56 overflow-y-auto">
               {placeResults.map((r, i) => (
                 <button
                   key={`${r.lat}-${r.lng}-${i}`}
@@ -383,7 +393,7 @@ export function MapLocationPicker({
                   onClick={() => handlePickPlace(r)}
                   className="w-full flex items-start gap-2 px-3 py-2.5 text-left text-xs font-medium text-black hover:bg-blue-50 border-b border-slate-100 last:border-b-0"
                 >
-                  <MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-blue-600" />
+                  <MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-red-500" />
                   <span className="leading-snug">{r.label}</span>
                 </button>
               ))}
@@ -397,7 +407,7 @@ export function MapLocationPicker({
     <div className="flex">
       <Button
         type="button"
-        className="!w-full !h-16 !text-base !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+        className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
         onClick={handleConfirm}
         disabled={confirming}
       >
@@ -425,7 +435,7 @@ export function MapLocationPicker({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="h-[90vh] max-h-[90vh] rounded-t-2xl border-t-2 border-black p-4 sm:p-5 flex flex-col gap-3 overflow-hidden"
+          className="!z-[70] h-[92vh] max-h-[92vh] rounded-t-2xl border-t-2 border-black p-3 sm:p-5 flex flex-col gap-2 overflow-hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="text-left space-y-1 pr-8">
             <SheetTitle className="text-base font-black tracking-tight">{title}</SheetTitle>
@@ -433,7 +443,7 @@ export function MapLocationPicker({
               Use my location or pick a point on the map, then confirm.
             </SheetDescription>
           </SheetHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">{mapBlock}</div>
+          <div className="scrollbar-none flex-1 min-h-0 flex flex-col overflow-y-auto">{mapBlock}</div>
           {footer}
         </SheetContent>
       </Sheet>
