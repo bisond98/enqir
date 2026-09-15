@@ -1975,8 +1975,16 @@ export default function PostEnquiry() {
 
                 {/* Step Title */}
                 <div id="step-title" className="text-center mb-6">
-                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter">
+                    <span className="bg-gradient-to-r from-black via-black to-pal-blue bg-clip-text text-transparent">
+                      {STEPS[step].label}
+                    </span>
+                  </h2>
+                  {STEPS[step].description && (
+                    <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-2 tracking-wide uppercase">
+                      {STEPS[step].description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Step Content */}
