@@ -948,7 +948,7 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-black text-base sm:text-lg rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
+                      className="w-full h-14 sm:h-16 border-[0.5px] border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 font-black text-base sm:text-lg rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
                     >
                           {loading ? (
                         <div className="flex items-center justify-center space-x-3">
@@ -1024,7 +1024,7 @@ const SignIn = () => {
                     <Button 
                       type="submit" 
                       disabled={loading}
-                      className="w-full h-14 sm:h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-black text-base sm:text-lg rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
+                      className="w-full h-14 sm:h-16 border-[0.5px] border-black bg-gradient-to-b from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 font-black text-base sm:text-lg rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative z-20"
                     >
                           {loading ? (
                         <div className="flex items-center justify-center space-x-3">

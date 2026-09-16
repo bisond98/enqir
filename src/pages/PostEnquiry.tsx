@@ -161,7 +161,7 @@ export default function PostEnquiry() {
   const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
   // Job-specific extra fields
   const [jobSkills, setJobSkills] = useState('');
-  const [jobDetails, setJobDetails] = useState<{ experience: string; jobType: string; workMode: string }>({ experience: '', jobType: '', workMode: '' });
+  const [jobDetails, setJobDetails] = useState<{ experience: string; jobType: string; workMode: string; education: string; stream: string }>({ experience: '', jobType: '', workMode: '', education: '', stream: '' });
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -505,6 +505,8 @@ export default function PostEnquiry() {
               ...(jobDetails.experience && { experience: jobDetails.experience }),
               ...(jobDetails.jobType && { jobType: jobDetails.jobType }),
               ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
+              ...(jobDetails.education && { education: jobDetails.education }),
+              ...(jobDetails.stream.trim() && { stream: jobDetails.stream.trim() }),
             },
             governmentIdFront: null,
             governmentIdBack: null,
@@ -1537,6 +1539,8 @@ export default function PostEnquiry() {
           ...(jobDetails.experience && { experience: jobDetails.experience }),
           ...(jobDetails.jobType && { jobType: jobDetails.jobType }),
           ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
+          ...(jobDetails.education && { education: jobDetails.education }),
+          ...(jobDetails.stream.trim() && { stream: jobDetails.stream.trim() }),
         },
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified,
@@ -2033,7 +2037,7 @@ export default function PostEnquiry() {
                   {/* Step 0: Title */}
                   {step === 0 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
-                      <p className="text-[8px] font-bold text-black text-center tracking-wide">Need</p>
+                      <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
                       <Input
                         id="enquiry-title"
                         value={title}
@@ -2223,14 +2227,41 @@ export default function PostEnquiry() {
                           </div>
                         </div>
                       )}
+                      {/* Qualifications — education capsule + stream input (Apply/seeking only), above the pills row */}
+                      {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
+                        <div className="mb-2 grid grid-cols-2 gap-1.5">
+                          <div className="min-w-0">
+                            <select
+                              value={jobDetails.education}
+                              onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value }))}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                            >
+                              <option value="">Education</option>
+                              {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="min-w-0">
+                            <input
+                              type="text"
+                              maxLength={35}
+                              value={jobDetails.stream}
+                              onChange={(e) => setJobDetails(v => ({ ...v, stream: e.target.value.slice(0, 35) }))}
+                              placeholder="Stream — e.g., B.Tech CSE"
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[9px] text-gray-700 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                            />
+                          </div>
+                        </div>
+                      )}
                       {/* Job details — experience/job type/work mode dropdowns (jobs category only, like the Sell form) */}
                       {isJobEnquiry(selectedCategories, category) && jobDirection && (
-                        <div className="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="mb-4 grid grid-cols-3 gap-1.5">
                           <div className="min-w-0">
                             <select
                               value={jobDetails.experience}
                               onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.experience ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
                               {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
@@ -2242,7 +2273,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.jobType}
                               onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.jobType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">Job type</option>
                               {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
@@ -2254,7 +2285,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.workMode}
                               onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.workMode ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">Work mode</option>
                               {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
@@ -2594,38 +2625,34 @@ export default function PostEnquiry() {
 
                       {/* Enquiry Preview */}
                       <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
-                        </div>
-                        <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
-                          <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
-                        </div>
-                        {/* Full description + job details filled on the description step */}
-                        {description.trim() && (
-                          <div className="border-t border-gray-200 pt-2.5">
-                            <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
-                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words">{description}</p>
-                          </div>
-                        )}
-                        {isJobEnquiry(selectedCategories, category) && jobDirection && (
-                          <div className="border-t border-gray-200 pt-2.5 space-y-1.5">
+                        {/* Job details first — looking to, experience, education etc. above Title/Category */}
+                        {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
+                          <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
-                              <span className="text-xs sm:text-sm font-bold text-black">{jobDirection === 'hiring' ? 'Hire' : 'Apply for Job'}</span>
+                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Status</span>
+                              <span className="text-xs sm:text-sm font-bold text-black">Open To Work</span>
                             </div>
+                            {jobDetails.education && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Education</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.education}</span>
+                              </div>
+                            )}
+                            {jobDetails.stream.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Stream</span>
+                                <span className="text-[10px] sm:text-xs font-bold text-black text-right truncate ml-4">{jobDetails.stream}</span>
+                              </div>
+                            )}
+                            {jobSkills.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Skills</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobSkills}</span>
+                              </div>
+                            )}
                             {jobDetails.experience && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{jobDirection === 'hiring' ? 'Experience Required' : 'Experience'}</span>
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Experience</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
                               </div>
                             )}
@@ -2641,14 +2668,59 @@ export default function PostEnquiry() {
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
                               </div>
                             )}
-                            {jobDirection === 'seeking' && jobSkills.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Skills</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobSkills}</span>
-                              </div>
-                            )}
+                            <div className="border-t border-gray-200" />
                           </div>
                         )}
+                        {isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring' && (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
+                              <span className="text-xs sm:text-sm font-bold text-black">Hire</span>
+                            </div>
+                            {jobDetails.experience && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Experience Required</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
+                              </div>
+                            )}
+                            {jobDetails.jobType && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Job Type</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
+                              </div>
+                            )}
+                            {jobDetails.workMode && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Work Mode</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
+                              </div>
+                            )}
+                            <div className="border-t border-gray-200" />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
+                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
+                        </div>
+                        <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
+                          <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
+                        </div>
+                        {/* Full description + job details filled on the description step */}
+                        {description.trim() && (
+                          <div className="border-t border-gray-200 pt-2.5">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
+                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words">{description}</p>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
+                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
+                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
+                        </div>
                       </div>
                     </div>
                   )}

@@ -69,7 +69,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string } | null;
 }
 
 interface UserProfile {
@@ -793,16 +793,28 @@ const EnquiryDetail = () => {
                     {(() => {
                       const d = enquiry.details;
                       if (!d) return null;
-                      const jobDir = d.jobDirection === 'hiring' ? 'Hiring' : d.jobDirection === 'seeking' ? 'Seeking Job' : null;
-                      const chips = [
-                        jobDir && { label: 'Job', value: jobDir },
-                        d.brand && { label: 'Brand', value: d.brand },
-                        d.year && { label: 'Year', value: d.year },
-                        d.variant && { label: 'Variant', value: d.variant },
+                      const isSeeking = d.jobDirection === 'seeking';
+                      const jobDir = d.jobDirection === 'hiring' ? 'Hiring' : d.jobDirection === 'seeking' ? 'Open To Work' : null;
+                      // Order matches the Post Enquiry preview: status first, then qualifications (Apply), then work details
+                      const jobChips: ({ label: string; value: string } | false)[] = isSeeking ? [
+                        jobDir && { label: 'Status', value: jobDir },
+                        d.education && { label: 'Education', value: d.education },
+                        d.stream && { label: 'Stream', value: d.stream },
                         d.skills && { label: 'Skills', value: d.skills },
                         d.experience && { label: 'Experience', value: d.experience },
                         d.jobType && { label: 'Job type', value: d.jobType },
                         d.workMode && { label: 'Work mode', value: d.workMode },
+                      ] : [
+                        jobDir && { label: 'Job', value: jobDir },
+                        d.experience && { label: 'Experience required', value: d.experience },
+                        d.jobType && { label: 'Job type', value: d.jobType },
+                        d.workMode && { label: 'Work mode', value: d.workMode },
+                      ];
+                      const chips = [
+                        ...jobChips,
+                        d.brand && { label: 'Brand', value: d.brand },
+                        d.year && { label: 'Year', value: d.year },
+                        d.variant && { label: 'Variant', value: d.variant },
                       ].filter(Boolean) as { label: string; value: string }[];
                       if (chips.length === 0) return null;
                       return (
