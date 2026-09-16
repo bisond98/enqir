@@ -77,6 +77,7 @@ interface Enquiry {
   state?: string | null;
   country?: string | null;
   formatted_address?: string | null;
+  details?: { jobDirection?: string } | null;
 }
 
 export default function EnquiryWall() {
@@ -6246,7 +6247,7 @@ export default function EnquiryWall() {
                               <div className="hidden sm:flex pt-6 sm:pt-8">
                                 {enquiry.budget && (
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[8px] sm:text-[10px] text-white font-normal">Budget -</span>
+                                    <span className="text-[8px] sm:text-[10px] text-white font-normal">{enquiry.details?.jobDirection === 'seeking' ? 'Salary Expected -' : enquiry.details?.jobDirection === 'hiring' ? 'Salary -' : 'Budget -'}</span>
                                     <span className="text-lg sm:text-xl text-white font-normal">₹</span>
                                     <span className="text-lg sm:text-xl text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
@@ -6263,7 +6264,7 @@ export default function EnquiryWall() {
                                       borderRadius: '8px'
                                     }}
                                   >
-                                    <span className="text-[9px] text-gray-900 font-bold">Budget:</span>
+                                    <span className="text-[9px] text-gray-900 font-bold">{enquiry.details?.jobDirection === 'seeking' ? 'Salary Expected:' : enquiry.details?.jobDirection === 'hiring' ? 'Salary:' : 'Budget:'}</span>
                                     <span className="text-[10px] text-gray-900 font-black">₹</span>
                                     <span className="text-[10px] text-gray-900 font-black">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
@@ -6529,7 +6530,7 @@ export default function EnquiryWall() {
                             <div className="flex flex-col gap-1.5 sm:gap-2.5">
                               {enquiry.budget && (
                                 <div className="hidden sm:flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5">
-                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>Budget -</span>
+                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>{enquiry.details?.jobDirection === 'seeking' ? 'Salary Expected -' : enquiry.details?.jobDirection === 'hiring' ? 'Salary -' : 'Budget -'}</span>
                                   <span className="font-extrabold text-black text-xs sm:text-base md:text-lg" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
                                   <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>{formatIndianCurrency(enquiry.budget)}</span>
                                 </div>
