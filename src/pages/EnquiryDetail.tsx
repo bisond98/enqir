@@ -69,7 +69,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string } | null;
 }
 
 interface UserProfile {
@@ -789,15 +789,22 @@ const EnquiryDetail = () => {
                   <div className="mb-5 sm:mb-6">
                     <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3 text-center">Description</h3>
                     <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
-                    {/* Vehicle detail chips — brand/year/variant when provided */}
+                    {/* Detail chips — brand/year/variant + job direction/skills */}
                     {(() => {
                       const d = enquiry.details;
-                      if (!d || (!d.brand && !d.year && !d.variant)) return null;
+                      if (!d) return null;
+                      const jobDir = d.jobDirection === 'hiring' ? 'Hiring' : d.jobDirection === 'seeking' ? 'Seeking Job' : null;
                       const chips = [
+                        jobDir && { label: 'Job', value: jobDir },
                         d.brand && { label: 'Brand', value: d.brand },
                         d.year && { label: 'Year', value: d.year },
                         d.variant && { label: 'Variant', value: d.variant },
+                        d.skills && { label: 'Skills', value: d.skills },
+                        d.experience && { label: 'Experience', value: d.experience },
+                        d.jobType && { label: 'Job type', value: d.jobType },
+                        d.workMode && { label: 'Work mode', value: d.workMode },
                       ].filter(Boolean) as { label: string; value: string }[];
+                      if (chips.length === 0) return null;
                       return (
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (

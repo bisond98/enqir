@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { MapLocationPicker } from "@/components/MapLocationPicker";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -157,6 +157,11 @@ export default function PostEnquiry() {
   const [notes, setNotes] = useState("");
   // Vehicle details (brand/year/variant) — filled when a vehicle category is selected
   const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string }>({ brand: '', year: '', variant: '' });
+  // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
+  const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
+  // Job-specific extra fields
+  const [jobSkills, setJobSkills] = useState('');
+  const [jobDetails, setJobDetails] = useState<{ experience: string; jobType: string; workMode: string }>({ experience: '', jobType: '', workMode: '' });
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -272,8 +277,7 @@ export default function PostEnquiry() {
     ];
     const completed = requiredFields.filter(field => field).length;
     const progress = (completed / requiredFields.length) * 100;
-    setFormProgress(progress);
-  }, [title, description, selectedCategories, category, budget, location, deadline]);
+    setFormProgress(progress);      }, [title, description, selectedCategories, category, budget, location, deadline, jobDirection, jobSkills]);
 
   // Restore form from localStorage if returning from profile verification
   useEffect(() => {
@@ -289,6 +293,9 @@ export default function PostEnquiry() {
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
+        if (d.jobDirection) setJobDirection(d.jobDirection);
+        if (d.jobSkills) setJobSkills(d.jobSkills);
+        if (d.jobDetails) setJobDetails(d.jobDetails);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
         if (d.selectedPlanId) {
           const plan = PAYMENT_PLANS.find(p => p.id === d.selectedPlanId);
@@ -345,7 +352,8 @@ export default function PostEnquiry() {
         return true;
       case 4:
         if (!budget.trim()) {
-          toast({ title: isJobEnquiry(selectedCategories, category) ? 'Add expected salary' : 'Add a budget', description: isJobEnquiry(selectedCategories, category) ? 'Set your expected salary in INR.' : 'Set your budget in INR.', variant: 'destructive' as any });
+          const jLabel = jobDirection === 'hiring' ? 'salary offered' : 'expected salary';
+          toast({ title: isJobEnquiry(selectedCategories, category) ? `Add ${jLabel}` : 'Add a budget', description: isJobEnquiry(selectedCategories, category) ? `Set your ${jLabel} in INR.` : 'Set your budget in INR.', variant: 'destructive' as any });
           return false;
         }
         return true;
@@ -492,6 +500,11 @@ export default function PostEnquiry() {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+              ...(jobDirection && { jobDirection }),
+              ...(jobSkills.trim() && { skills: jobSkills.trim() }),
+              ...(jobDetails.experience && { experience: jobDetails.experience }),
+              ...(jobDetails.jobType && { jobType: jobDetails.jobType }),
+              ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
             },
             governmentIdFront: null,
             governmentIdBack: null,
@@ -714,6 +727,8 @@ export default function PostEnquiry() {
             ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+            ...(jobDirection && { jobDirection }),
+            ...(jobSkills.trim() && { skills: jobSkills.trim() }),
           },
           governmentIdFront: null,
           governmentIdBack: null,
@@ -1517,6 +1532,11 @@ export default function PostEnquiry() {
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
           ...(vehicleDetails.year && { year: vehicleDetails.year }),
           ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+          ...(jobDirection && { jobDirection }),
+          ...(jobSkills.trim() && { skills: jobSkills.trim() }),
+          ...(jobDetails.experience && { experience: jobDetails.experience }),
+          ...(jobDetails.jobType && { jobType: jobDetails.jobType }),
+          ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
         },
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified,
@@ -2003,8 +2023,8 @@ export default function PostEnquiry() {
 
                 {/* Step Title */}
                 <div id="step-title" className="text-center pt-8 mb-10">
-                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? 'Salary Expected' : STEPS[step].label}</h2>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
+                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}</h2>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
                 </div>
 
                 {/* Step Content */}
@@ -2013,7 +2033,7 @@ export default function PostEnquiry() {
                   {/* Step 0: Title */}
                   {step === 0 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
-                      
+                      <p className="text-[8px] font-bold text-black text-center tracking-wide">Need</p>
                       <Input
                         id="enquiry-title"
                         value={title}
@@ -2178,6 +2198,85 @@ export default function PostEnquiry() {
                   {/* Step 2: Description */}
                   {step === 2 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
+                      {/* 'Need' floating label above the title input (step 1) is handled on the title step; here it refers to the enquiry itself */}
+                      {/* Job direction toggle — Hiring vs Seeking (jobs category only), styled like the Dashboard header pill toggle */}
+                      {isJobEnquiry(selectedCategories, category) && (
+                        <div className="mb-4 flex justify-center">
+                          <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                            {([
+                              { key: 'hiring' as const, label: 'Hire', icon: Briefcase, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
+                              { key: 'seeking' as const, label: 'Apply', icon: UserSearch, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
+                            ]).map(({ key, label, icon: Icon, activeColor }) => (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => setJobDirection(key)}
+                                className={cn(
+                                  'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all duration-200 whitespace-nowrap',
+                                  jobDirection === key ? activeColor : 'text-black hover:bg-gray-100'
+                                )}
+                              >
+                                <Icon className="h-3.5 w-3.5" />
+                                <span>{label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {/* Job details — experience/job type/work mode dropdowns (jobs category only, like the Sell form) */}
+                      {isJobEnquiry(selectedCategories, category) && jobDirection && (
+                        <div className="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="min-w-0">
+                            <select
+                              value={jobDetails.experience}
+                              onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.experience ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
+                              {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="min-w-0">
+                            <select
+                              value={jobDetails.jobType}
+                              onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.jobType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="">Job type</option>
+                              {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="min-w-0">
+                            <select
+                              value={jobDetails.workMode}
+                              onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!jobDetails.workMode ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="">Work mode</option>
+                              {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      {/* Job seeker skills input */}
+                      {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
+                        <div className="mb-4">
+                          <Input
+                            type="text"
+                            maxLength={80}
+                            value={jobSkills}
+                            onChange={(e) => setJobSkills(e.target.value)}
+                            placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
+                            className={`w-full rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
+                          />
+                        </div>
+                      )}
                       {/* Vehicle details — brand/year/variant above the description when a vehicle category is selected */}
                       {(() => {
                         const isCarLike = selectedCategories.some(c => ['car', 'automobile', 'vehicles'].includes(c));
@@ -2332,7 +2431,7 @@ export default function PostEnquiry() {
                       <div className="space-y-2">
                         <Label htmlFor="enquiry-budget" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                           <IndianRupee className="h-3.5 w-3.5" />
-                          {isJobEnquiry(selectedCategories, category) ? 'Salary Expected (INR)' : 'Budget (INR)'}
+                          {isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered (INR)' : 'Salary Expected (INR)') : 'Budget (INR)'}
                         </Label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
@@ -2391,7 +2490,11 @@ export default function PostEnquiry() {
                       <div className="space-y-2">
                         <Label className="text-xs font-bold flex items-center gap-2">
                           <Upload className="h-3.5 w-3.5" />
-                          {categoriesRequireImage(selectedCategories)
+                          {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
+                            ? 'Upload your Resume'
+                            : isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring'
+                            ? 'Workspace, etc.'
+                            : categoriesRequireImage(selectedCategories)
                             ? 'Show your need'
                             : 'Show your need (optional)'}
                         </Label>
@@ -2424,7 +2527,9 @@ export default function PostEnquiry() {
                               htmlFor="enquiry-ref-images"
                               className="block w-full text-center rounded-xl border-2 border-black bg-white hover:bg-blue-50/30 active:scale-[0.98] active:bg-blue-100 transition-all duration-200 py-3 text-sm font-bold text-black cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-[2px]"
                             >
-                              {referenceImageUrls.length === 0 ? 'Choose Image' : 'Add More Images'}
+                              {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
+                                ? (referenceImageUrls.length === 0 ? 'Choose File' : 'Add More Files')
+                                : (referenceImageUrls.length === 0 ? 'Choose Image' : 'Add More Images')}
                             </label>
                             <p className="text-[11px] text-slate-600 mt-2 text-right">
                               {referenceImageUrls.length}/5
@@ -2456,7 +2561,7 @@ export default function PostEnquiry() {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, location, vehicleDetails,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, selectedPlanId: selectedPlan?.id
+                                referenceImageUrls, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}
@@ -2502,9 +2607,48 @@ export default function PostEnquiry() {
                           <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
                         </div>
                         <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? 'Salary Expected' : 'Budget'}</span>
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
                           <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
                         </div>
+                        {/* Full description + job details filled on the description step */}
+                        {description.trim() && (
+                          <div className="border-t border-gray-200 pt-2.5">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
+                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words">{description}</p>
+                          </div>
+                        )}
+                        {isJobEnquiry(selectedCategories, category) && jobDirection && (
+                          <div className="border-t border-gray-200 pt-2.5 space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
+                              <span className="text-xs sm:text-sm font-bold text-black">{jobDirection === 'hiring' ? 'Hire' : 'Apply for Job'}</span>
+                            </div>
+                            {jobDetails.experience && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{jobDirection === 'hiring' ? 'Experience Required' : 'Experience'}</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
+                              </div>
+                            )}
+                            {jobDetails.jobType && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Job Type</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
+                              </div>
+                            )}
+                            {jobDetails.workMode && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Work Mode</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
+                              </div>
+                            )}
+                            {jobDirection === 'seeking' && jobSkills.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Skills</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobSkills}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

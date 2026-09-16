@@ -458,6 +458,10 @@ export default function CreateListing() {
           toast({ title: 'Add a description', description: 'A few sentences help buyers decide.', variant: 'destructive' });
           return false;
         }
+        if (category === 'jobs' && !details.experience) {
+          toast({ title: 'Select experience', description: 'Experience required must be filled for job listings.', variant: 'destructive' });
+          return false;
+        }
         return true;
       case 3:
         return true;
@@ -830,7 +834,7 @@ export default function CreateListing() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={(category === 'car' || category === 'vehicles') ? 'e.g., Innova, Scorpio' : 'e.g., iPhone 13 Pro 128GB — excellent condition'}
-                  className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
+                  className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
                   maxLength={30}
                   autoFocus
                 />
@@ -848,7 +852,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, ''))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -857,21 +861,21 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
                             placeholder={f.placeholder ?? 'Type here'}
-                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                           />
                         ) : (
                           <>
                             <select
                               value={details[f.key] ?? ''}
                               onChange={(e) => setDetail(f.key, e.target.value)}
-                              className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 text-black"
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">{f.placeholder ?? 'Select'}</option>
                               {f.options?.map((opt) => (
                                 <option key={opt} value={opt}>{opt}</option>
                               ))}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                           </>
                         )}
                       </div>
@@ -955,14 +959,14 @@ export default function CreateListing() {
                                     <select
                                       value={details[f.key] ?? ''}
                                       onChange={(e) => setDetail(f.key, e.target.value)}
-                                      className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                                     >
                                       <option value="">{f.placeholder ?? 'Select'}</option>
                                       {f.options?.map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
                                       ))}
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                                   </div>
                                 </div>
                               ))}
@@ -993,7 +997,7 @@ export default function CreateListing() {
                     onFocus={() => setLocationDropdownOpen(true)}
                     onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
                     placeholder="Search location..."
-                    className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
+                    className="rounded-2xl h-12 sm:h-14 text-sm border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
                     style={{ fontSize: '14px' }}
                   />
                   {locationDropdownOpen && locationSearch.length === 0 && (
@@ -1133,14 +1137,14 @@ export default function CreateListing() {
                           <select
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
-                            className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                           >
                             <option value="">{f.placeholder ?? 'Select'}</option>
                             {f.options?.map((opt) => (
                               <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                         </>
                       ) : (
                         <Input
@@ -1149,7 +1153,7 @@ export default function CreateListing() {
                           value={details[f.key] ?? ''}
                           onChange={(e) => setDetail(f.key, formatPriceInput(e.target.value))}
                           placeholder={f.placeholder}
-                          className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
+                          className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
                         />
                       )}
                       {f.suffix && f.type !== 'select' && (
@@ -1178,7 +1182,7 @@ export default function CreateListing() {
                       placeholder="25,000"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                      className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                       autoFocus
                     />
                   </div>
@@ -1190,14 +1194,14 @@ export default function CreateListing() {
                       <select
                         value={details[f.key] ?? ''}
                         onChange={(e) => setDetail(f.key, e.target.value)}
-                        className="w-full appearance-none rounded-2xl h-12 sm:h-14 text-base font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 text-black"
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                       >
                         <option value="">{f.placeholder ?? 'Select'}</option>
                         {f.options?.map((opt) => (
                           <option key={opt} value={opt}>{opt}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                     </div>
                   </div>
                 ))}
@@ -1242,6 +1246,12 @@ export default function CreateListing() {
                     <p className="text-[11px] text-slate-600 mt-2 text-right">
                       {images.length}/5
                     </p>
+                    {category === 'jobs' && (
+                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-black/10">
+                        <span className="text-[8px] font-bold text-black tracking-wide">workspace</span>
+                        <span className="text-[8px] font-bold text-black tracking-wide">culture</span>
+                      </div>
+                    )}
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {uploadProgresses.map((p, i) => (
