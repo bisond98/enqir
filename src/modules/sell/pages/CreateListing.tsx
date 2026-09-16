@@ -676,7 +676,7 @@ export default function CreateListing() {
           </div>
 
           <div id="step-title" className="text-center mb-6">
-            <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
+            <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
           </div>
 
@@ -1092,6 +1092,7 @@ export default function CreateListing() {
 
             {step === 4 && (
               <div className="max-w-lg mx-auto w-full space-y-6">
+                {category !== 'jobs' && (
                 <div className="space-y-2">
                   <Label className="text-xs font-bold">Condition</Label>
                   <div className="grid grid-cols-2 gap-3">
@@ -1121,6 +1122,7 @@ export default function CreateListing() {
                     </button>
                   </div>
                 </div>
+                )}
 
                 {condition === 'used' && fieldsForCategoryStep(category, 'details').map((f) => (
                   <div key={f.key} className="space-y-2">
@@ -1165,7 +1167,7 @@ export default function CreateListing() {
                 <div className="space-y-2">
                   <Label htmlFor="price-fixed" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                     <IndianRupee className="h-3.5 w-3.5" />
-                    Your price (INR)
+                    {category === 'jobs' ? 'Salary (INR)' : 'Your price (INR)'}
                   </Label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>

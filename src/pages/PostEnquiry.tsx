@@ -51,6 +51,10 @@ const STEPS = [
   { key: 'extras', label: 'Photos & Verify', description: 'Finish strong' },
 ] as const;
 
+// Job-related categories show "Salary Expected" instead of "Budget"
+const isJobEnquiry = (cats: string[], legacy?: string) =>
+  [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
+
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
 
 export default function PostEnquiry() {
@@ -341,7 +345,7 @@ export default function PostEnquiry() {
         return true;
       case 4:
         if (!budget.trim()) {
-          toast({ title: 'Add a budget', description: 'Set your budget in INR.', variant: 'destructive' as any });
+          toast({ title: isJobEnquiry(selectedCategories, category) ? 'Add expected salary' : 'Add a budget', description: isJobEnquiry(selectedCategories, category) ? 'Set your expected salary in INR.' : 'Set your budget in INR.', variant: 'destructive' as any });
           return false;
         }
         return true;
@@ -1999,7 +2003,7 @@ export default function PostEnquiry() {
 
                 {/* Step Title */}
                 <div id="step-title" className="text-center pt-8 mb-10">
-                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].label}</h2>
+                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? 'Salary Expected' : STEPS[step].label}</h2>
                   <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
                 </div>
 
@@ -2322,13 +2326,13 @@ export default function PostEnquiry() {
                     </div>
                   )}
 
-                  {/* Step 4: Budget */}
+                  {/* Step 4: Budget / Salary Expected */}
                   {step === 4 && (
                     <div className="max-w-md mx-auto w-full space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="enquiry-budget" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                           <IndianRupee className="h-3.5 w-3.5" />
-                          Budget (INR)
+                          {isJobEnquiry(selectedCategories, category) ? 'Salary Expected (INR)' : 'Budget (INR)'}
                         </Label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
@@ -2498,7 +2502,7 @@ export default function PostEnquiry() {
                           <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
                         </div>
                         <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Budget</span>
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? 'Salary Expected' : 'Budget'}</span>
                           <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
                         </div>
                       </div>

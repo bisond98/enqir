@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { 
@@ -14,9 +14,6 @@ import { useUsage } from "@/contexts/UsageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 import SignOutDialog from "@/components/SignOutDialog";
-import { db } from "@/firebase";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { toast } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { user } = useUsage();
@@ -24,61 +21,6 @@ const Settings = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
-  
-  const [privacy, setPrivacy] = useState({
-    profileVisibility: 'public',
-    dataCollection: true,
-    notificationsEnabled: true
-  });
-  // Load user profile data
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      if (!authUser?.uid) return;
-      
-      try {
-        const profileRef = doc(db, 'userProfiles', authUser.uid);
-        const profileDoc = await getDoc(profileRef);
-        
-        if (profileDoc.exists()) {
-          const data = profileDoc.data();
-          setPrivacy({
-            profileVisibility: data.profileVisibility || 'public',
-            dataCollection: data.dataCollection !== false,
-            notificationsEnabled: data.notificationsEnabled !== false
-          });
-        }
-      } catch (error) {
-        console.error('Failed to load user profile:', error);
-      }
-    };
-    
-    loadUserProfile();
-  }, [authUser?.uid]);
-
-  // Save privacy settings automatically when changed
-  const savePrivacySetting = async (field: string, value: any) => {
-    if (!authUser?.uid) return;
-    
-    try {
-      await setDoc(doc(db, 'userProfiles', authUser.uid), {
-        [field]: value,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-      
-      // Update notification preference cache immediately if it's the notifications field
-      if (field === 'notificationsEnabled') {
-        updateNotificationPreferenceCache(authUser.uid, value);
-      }
-    } catch (error) {
-      console.error(`Failed to save ${field}:`, error);
-      toast({
-        title: "Error",
-        description: `Failed to save ${field}. Please try again.`,
-        variant: "destructive",
-        forceShow: true // Always show error toasts
-      });
-    }
-  };
   
   return (
     <Layout>
@@ -196,8 +138,6 @@ const Settings = () => {
                     </Button>
                   </div>
                 </div>
-                
-                <Separator />
                 
                 <div className="space-y-4">
                   <h3 className="text-sm sm:text-base font-medium text-black">Account Management</h3>

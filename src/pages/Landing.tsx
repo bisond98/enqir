@@ -1938,8 +1938,8 @@ const Landing = () => {
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-              <span className="text-[10px] leading-[1] relative z-10 text-center">Post Need</span>
-              <Plus className="h-4.5 w-4.5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              <span className="text-[10px] leading-[1] relative z-10 text-center">Post a Need</span>
+              <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
           </Link>
           <Link to="/enquiries" className="w-auto group">
@@ -1948,8 +1948,7 @@ const Landing = () => {
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
               {/* Shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-              <span className="text-[10px] leading-[1] relative z-10 text-center">Enquiries</span>
-              <Eye className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+              <span className="text-[10px] leading-[1] relative z-10 text-center">All Enquiries</span>
             </button>
             </Link>
             <Link to="/sell/new" className="w-auto group hidden md:block">
@@ -1957,7 +1956,7 @@ const Landing = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 <span className="text-[10px] leading-[1] relative z-10 text-center">Sell</span>
-                <Store className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+                <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             <Link to="/sell/marketplace" className="w-auto group hidden md:block">
@@ -1965,7 +1964,6 @@ const Landing = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 <span className="text-[10px] leading-[1] relative z-10 text-center">For Sale</span>
-                <Package className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             </div>
@@ -1978,7 +1976,7 @@ const Landing = () => {
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 <span className="text-[10px] leading-[1] relative z-10">Sell</span>
-                <Plus className="h-4.5 w-4.5 group-hover:scale-110 transition-transform duration-200 relative z-10" />
+                <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             {/* For Sale Button - Mobile Only */}
@@ -1989,7 +1987,6 @@ const Landing = () => {
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
                 <span className="text-[10px] leading-[1] relative z-10">For Sale</span>
-                <Package className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             </div>
