@@ -11,7 +11,7 @@ export interface CategoryDetailField {
   key: string;
   label: string;
   placeholder?: string;
-  type: 'select' | 'number' | 'text';
+  type: 'select' | 'number' | 'text' | 'land-area';
   options?: string[];
   min?: number;
   max?: number;
@@ -19,6 +19,9 @@ export interface CategoryDetailField {
   typeable?: boolean;
   step: CategoryDetailsStep;
 }
+
+// Unit options for composite 'land-area' fields (number input + unit dropdown).
+export const LAND_AREA_UNITS = ['Cents', 'Acre', 'Hectare', 'Sqft'];
 
 export type CategoryDetailsConfig = Record<string, CategoryDetailField[]>;
 
@@ -81,7 +84,11 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   'real-estate': [
     { key: 'bhk', label: 'Configuration', type: 'select', options: ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK', 'Plot', 'Commercial'], placeholder: 'Select configuration', step: 'title' },
-    { key: 'carpetArea', label: 'Carpet area', type: 'number', placeholder: 'e.g., 1,200', suffix: 'sqft', min: 0, step: 'description' },
+    { key: 'landArea', label: 'Land / Plot', type: 'land-area', options: ['Cents', 'Acre', 'Hectare'], placeholder: 'e.g., 25', step: 'description' },
+    { key: 'builtUpArea', label: 'Buildings / Commercial', type: 'land-area', options: ['Sqft'], placeholder: 'e.g., 1200', step: 'description' },
+    { key: 'houseArea', label: 'House / Flat', type: 'land-area', options: ['Sqft'], placeholder: 'e.g., 1500', step: 'description' },
+    { key: 'houseBhk', label: 'BHK', type: 'select', options: ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'], placeholder: 'BHK', step: 'description' },
+    { key: 'otherArea', label: 'Others', type: 'land-area', options: ['Cents', 'Acre', 'Hectare', 'Sqft'], placeholder: 'e.g., 500', step: 'description' },
     { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Unfurnished', 'Semi-furnished', 'Fully furnished'], placeholder: 'Select furnishing', step: 'details' },
     { key: 'facing', label: 'Facing', type: 'select', options: ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'], placeholder: 'Select facing', step: 'details' },
     { key: 'listingFor', label: 'Listed for', type: 'select', options: ['Sale', 'Rent', 'Lease'], placeholder: 'Select listing type', step: 'price' },

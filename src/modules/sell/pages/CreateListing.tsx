@@ -248,6 +248,8 @@ export default function CreateListing() {
   const [priceMax, setPriceMax] = useState<string>('');
   const [tags, setTags] = useState<string>('');
   const [details, setDetails] = useState<Record<string, string>>({});
+  // Which real-estate capsule is selected (only one big capsule shows at a time)
+  const [estateType, setEstateType] = useState<'' | 'land' | 'built' | 'house' | 'other'>('');
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
@@ -280,6 +282,7 @@ export default function CreateListing() {
         if (d.priceMax) setPriceMax(d.priceMax);
         if (d.tags) setTags(d.tags);
         if (d.details) setDetails(d.details);
+        if (d.estateType) setEstateType(d.estateType);
         if (d.images?.length) setImages(d.images);
       } catch {}
       localStorage.removeItem(STORAGE_KEY);
@@ -565,6 +568,13 @@ export default function CreateListing() {
       const rangeMin = priceType === 'range' ? Number(priceMin) : null;
       const rangeMax = priceType === 'range' ? Number(priceMax) : null;
 
+      // Combine capsule number+unit parts into saved values (e.g., "25 Cents")
+      const estateSaved: Record<string, string> = {};
+      if (details['landAreaNum']) estateSaved.landArea = `${details['landAreaNum']} ${details['landAreaUnit'] ?? 'Cents'}`;
+      if (details['builtUpAreaNum']) estateSaved.builtUpArea = `${details['builtUpAreaNum']} ${details['builtUpAreaUnit'] ?? 'Sqft'}`;
+      if (details['houseAreaNum']) estateSaved.houseArea = `${details['houseAreaNum']} ${details['houseAreaUnit'] ?? 'Sqft'}`;
+      if (details['houseBhk']) estateSaved.houseBhk = details['houseBhk'];
+
       const newListingId = await createListing(user.uid, {
         title: title.trim(),
         description: description.trim(),
@@ -581,7 +591,7 @@ export default function CreateListing() {
         priceMax: rangeMax,
         tags: parsedTags,
         images,
-        details: Object.keys(details).length > 0 ? details : null,
+        details: Object.keys(estateSaved).length > 0 ? { ...details, ...estateSaved } : (Object.keys(details).length > 0 ? details : null),
       });
       toast({ title: 'Published', description: 'Your listing is live.' });
       // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
@@ -888,19 +898,140 @@ export default function CreateListing() {
 
             {step === 2 && (
               <div className="space-y-2 max-w-lg mx-auto w-full">
-                <Label htmlFor="listing-desc" className="text-[10px] sm:text-xs font-bold">
-                  Description
-                </Label>
-                <Textarea
-                  id="listing-desc"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Condition, accessories, warranty, reason for selling…"
-                  maxLength={250}
-                  className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                  autoFocus
-                />
-                {fieldsForCategoryStep(category, 'description').length > 0 && (
+                {/* Real-estate — selection buttons + big capsules above the description */}
+                {(() => {
+                  const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
+                  const BUILT_UNITS = ['Sqft'];
+                  const HOUSE_UNITS = ['Sqft'];
+                  const BHK_OPTIONS = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
+                  const isEstate = ['real-estate', 'real-estate-services'].includes(category);
+                  if (!isEstate) return null;
+                  const TYPES: { key: string; label: string }[] = [
+                    { key: 'land', label: 'Land / Plot' },
+                    { key: 'built', label: 'Buildings / Commercial' },
+                    { key: 'house', label: 'House / Flat' },
+                    { key: 'other', label: 'Others' },
+                  ];
+                  const unit = estateType === 'land' ? (details['landAreaUnit'] ?? 'Cents') : estateType === 'built' ? (details['builtUpAreaUnit'] ?? 'Sqft') : (details['houseAreaUnit'] ?? 'Sqft');
+                  const units = estateType === 'land' ? LAND_UNITS : estateType === 'built' ? BUILT_UNITS : HOUSE_UNITS;
+                  const areaVal = estateType === 'land' ? (details['landAreaNum'] ?? '') : estateType === 'built' ? (details['builtUpAreaNum'] ?? '') : (details['houseAreaNum'] ?? '');
+                  const areaKey = estateType === 'land' ? 'landAreaNum' : estateType === 'built' ? 'builtUpAreaNum' : 'houseAreaNum';
+                  const unitKey = estateType === 'land' ? 'landAreaUnit' : estateType === 'built' ? 'builtUpAreaUnit' : 'houseAreaUnit';
+                  return (
+                    <div className="space-y-2 pt-2">
+                      {/* Deal type toggle — For Sale / For Rent / For Lease (segmented). Selected one grows bigger, others shrink; LOCKED once a property type is chosen. */}
+                      <div className="flex justify-center mb-6">
+                        <div className="inline-flex items-center bg-white rounded-full p-1.5 gap-1 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                          {(['Sale', 'Rent', 'Lease'] as const).map((dt) => (
+                            <button
+                              key={dt}
+                              type="button"
+                              disabled={!!estateType}
+                              onClick={() => { if (!estateType) setDetail('listingFor', details['listingFor'] === dt ? '' : dt); }}
+                              className={cn(
+                                'rounded-full font-black transition-all duration-300 whitespace-nowrap',
+                                details['listingFor'] === dt
+                                  ? 'px-12 sm:px-16 py-3 sm:py-3.5 text-base sm:text-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
+                                  : estateType
+                                    ? 'px-4 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-xs text-black/50 cursor-not-allowed'
+                                    : 'px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm text-black hover:bg-gray-100'
+                              )}
+                            >
+                              For {dt}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
+                      <div className="flex items-stretch sm:items-center gap-2 flex-col sm:flex-row">
+                        {(estateType ? TYPES.filter(t => t.key === estateType) : TYPES).map((t) => (
+                          <button
+                            key={t.key}
+                            type="button"
+                            onClick={() => setEstateType(estateType === t.key ? '' : t.key as typeof estateType)}
+                            className={cn(
+                              'h-9 sm:h-10 rounded-full border font-bold text-[10px] sm:text-[11px] tracking-wide transition-colors whitespace-nowrap px-3 text-center',
+                              estateType === t.key ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-black hover:border-blue-600'
+                            )}
+                          >
+                            {t.label}
+                          </button>
+                        ))}
+                        {estateType && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Clear the selected type's saved data too
+                              if (estateType === 'land') { setDetail('landAreaNum', ''); }
+                              else if (estateType === 'built') { setDetail('builtUpAreaNum', ''); }
+                              else if (estateType === 'house') { setDetail('houseAreaNum', ''); setDetail('houseBhk', ''); }
+                              setEstateType('');
+                            }}
+                            className="h-9 sm:h-10 rounded-full border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center transition-colors"
+                          >
+                            ✕ Clear
+                          </button>
+                        )}
+                      </div>
+                      {/* Two separate capsules — number input + unit dropdown (only for non-Other types) */}
+                      {estateType && estateType !== 'other' && (
+                        <div className="flex items-stretch gap-2">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={areaVal}
+                            onChange={(e) => setDetail(areaKey, e.target.value.replace(/[^0-9]/g, ''))}
+                            placeholder="25 acres.."
+                            style={{ outline: 'none' }}
+                            className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
+                          />
+                          <div className="relative flex-shrink-0">
+                            <select
+                              value={unit}
+                              onChange={(e) => setDetail(unitKey, e.target.value)}
+                              className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                              style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                            >
+                              {units.map((u) => <option key={u} value={u}>{u}</option>)}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          </div>
+                          {estateType === 'house' && (
+                            <div className="relative flex-shrink-0">
+                              <select
+                                value={details['houseBhk'] ?? ''}
+                                onChange={(e) => setDetail('houseBhk', e.target.value)}
+                                className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer', !details['houseBhk'] ? 'text-slate-400' : 'text-black')}
+                                style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                              >
+                                <option value="">BHK</option>
+                                {BHK_OPTIONS.map((b) => <option key={b} value={b}>{b}</option>)}
+                              </select>
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+                {(!['real-estate', 'real-estate-services'].includes(category) || estateType) && (
+                  <>
+                    <Label htmlFor="listing-desc" className="text-[10px] sm:text-xs font-bold">
+                      Description
+                    </Label>
+                    <Textarea
+                      id="listing-desc"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Condition, accessories, warranty, reason for selling…"
+                      maxLength={250}
+                      className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                      autoFocus
+                    />
+                  </>
+                )}
+                {!['real-estate', 'real-estate-services'].includes(category) && fieldsForCategoryStep(category, 'description').length > 0 && (
                   <div className="space-y-3 pt-2">
                     {/* Creative toggle-style fields (e.g., transmission) */}
                     {(() => {
@@ -1341,8 +1472,9 @@ export default function CreateListing() {
                                 f.key === 'workMode' ? Home :
                                 f.key === 'salaryPeriod' ? IndianRupee :
                                 f.key === 'bhk' ? Home :
-                                f.key === 'carpetArea' ? Ruler :
+                                f.key === 'landArea' || f.key === 'builtUpArea' || f.key === 'houseArea' || f.key === 'otherArea' ? Ruler :
                                 f.key === 'furnishing' ? Armchair :
+                                f.key === 'houseBhk' ? Home :
                                 f.key === 'facing' ? Compass :
                                 f.key === 'listingFor' ? Tag :
                                 null;
@@ -1371,7 +1503,7 @@ export default function CreateListing() {
                 onClick={() => {
                   localStorage.setItem(STORAGE_KEY, JSON.stringify({
                     title, description, category, categories: selectedCats, location, condition,
-                    priceType, price, priceMin, priceMax, tags, images, details
+                    priceType, price, priceMin, priceMax, tags, images, details, estateType
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}

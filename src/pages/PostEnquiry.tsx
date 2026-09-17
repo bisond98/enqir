@@ -162,6 +162,12 @@ export default function PostEnquiry() {
   // Job-specific extra fields
   const [jobSkills, setJobSkills] = useState('');
   const [jobDetails, setJobDetails] = useState<{ experience: string; jobType: string; workMode: string; education: string; stream: string }>({ experience: '', jobType: '', workMode: '', education: '', stream: '' });
+  // Real-estate capsule details (land/buildings/house/other) — number + unit per capsule
+  const [estateDetails, setEstateDetails] = useState<{ landArea: string; landUnit: string; builtUpArea: string; builtUpUnit: string; houseArea: string; houseUnit: string; houseBhk: string }>({ landArea: '', landUnit: 'Cents', builtUpArea: '', builtUpUnit: 'Sqft', houseArea: '', houseUnit: 'Sqft', houseBhk: '' });
+  // Which real-estate capsule is selected (only one big capsule shows at a time)
+  const [estateType, setEstateType] = useState<'land' | 'built' | 'house' | 'other' | ''>('');
+  // Real-estate deal type: Buy / Rent / Lease
+  const [estateDealType, setEstateDealType] = useState<'' | 'Buy' | 'Rent' | 'Lease'>('Buy');
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -293,6 +299,9 @@ export default function PostEnquiry() {
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
+        if (d.estateDetails) setEstateDetails(d.estateDetails);
+        if (d.estateType) setEstateType(d.estateType);
+        if (d.estateDealType) setEstateDealType(d.estateDealType);
         if (d.jobDirection) setJobDirection(d.jobDirection);
         if (d.jobSkills) setJobSkills(d.jobSkills);
         if (d.jobDetails) setJobDetails(d.jobDetails);
@@ -731,6 +740,11 @@ export default function PostEnquiry() {
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
+            ...(estateDealType && { listingType: estateDealType }),
+          ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
+            ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
+            ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
+            ...(estateDetails.houseBhk && { houseBhk: estateDetails.houseBhk }),
           },
           governmentIdFront: null,
           governmentIdBack: null,
@@ -850,12 +864,16 @@ export default function PostEnquiry() {
         userId: user?.uid,
         userEmail: user?.email,
         userName: user?.displayName || user?.email?.split('@')[0],
-        notes: notes.trim() || null,
-        details: {
-          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
-          ...(vehicleDetails.year && { year: vehicleDetails.year }),
-          ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
-        },
+        notes: notes.trim() || null,            details: {
+              ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+              ...(vehicleDetails.year && { year: vehicleDetails.year }),
+              ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+              ...(estateDealType && { listingType: estateDealType }),
+          ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
+              ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
+              ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
+              ...(estateDetails.houseBhk && { houseBhk: estateDetails.houseBhk }),
+            },
         governmentIdFront: null,
         governmentIdBack: null,
         isUserVerified: isUserVerified,
@@ -1541,6 +1559,11 @@ export default function PostEnquiry() {
           ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
           ...(jobDetails.education && { education: jobDetails.education }),
           ...(jobDetails.stream.trim() && { stream: jobDetails.stream.trim() }),
+          ...(estateDealType && { listingType: estateDealType }),
+          ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
+          ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
+          ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
+          ...(estateDetails.houseBhk && { houseBhk: estateDetails.houseBhk }),
         },
         userVerified: isUserVerified, // Pass verification status to AI
         isProfileVerified: isUserVerified,
@@ -2370,21 +2393,173 @@ export default function PostEnquiry() {
                         );
                       })()}
 
-                      <Textarea
-                        id="enquiry-desc"
-                        value={description}
-                        onChange={(e) => {
-                          if (e.target.value.length <= 500) setDescription(e.target.value);
-                        }}
-                        placeholder="Specifications, requirements, timeline..."
-                        maxLength={500}
-                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                        autoFocus
-                      />
-                      <div className="h-3">
-                        <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
-                      </div>
-                      <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
+                      {/* Real-estate — selection buttons + big capsules above the description */}
+                      {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (() => {
+                        const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
+                        const BUILT_UNITS = ['Sqft'];
+                        const HOUSE_UNITS = ['Sqft'];
+                        const BHK_OPTIONS = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
+                        const TYPES: { key: 'land' | 'built' | 'house' | 'other'; label: string }[] = [
+                          { key: 'land', label: 'Land / Plot' },
+                          { key: 'built', label: 'Buildings / Commercial' },
+                          { key: 'house', label: 'House / Flat' },
+                          { key: 'other', label: 'Others' },
+                        ];
+                        const unit = estateType === 'land' ? estateDetails.landUnit : estateType === 'built' ? estateDetails.builtUpUnit : estateDetails.houseUnit;
+                        const units = estateType === 'land' ? LAND_UNITS : estateType === 'built' ? BUILT_UNITS : HOUSE_UNITS;
+                        const areaVal = estateType === 'land' ? estateDetails.landArea : estateType === 'built' ? estateDetails.builtUpArea : estateDetails.houseArea;
+                        const setArea = (val: string) => setEstateDetails(v => ({ ...v, landArea: estateType === 'land' ? val : v.landArea, builtUpArea: estateType === 'built' ? val : v.builtUpArea, houseArea: estateType === 'house' ? val : v.houseArea }));
+                        const setUnit = (val: string) => setEstateDetails(v => ({ ...v, landUnit: estateType === 'land' ? val : v.landUnit, builtUpUnit: estateType === 'built' ? val : v.builtUpUnit, houseUnit: estateType === 'house' ? val : v.houseUnit }));
+                        const pickType = (key: 'land' | 'built' | 'house' | 'other') => {
+                          if (estateType === key) { setEstateType(''); return; } // tap again to collapse
+                          setEstateType(key);
+                        };
+                        return (
+                          <div className="mb-6 space-y-2">
+                            {/* Deal type toggle — Buy / Rent / Lease (segmented). Selected one grows bigger, others shrink; LOCKED once a property type is chosen. */}
+                            <div className="flex justify-center mb-6">
+                              <div className="inline-flex items-center bg-white rounded-full p-1.5 gap-1 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                                {(['Buy', 'Rent', 'Lease'] as const).map((dt) => (
+                                  <button
+                                    key={dt}
+                                    type="button"
+                                    disabled={!!estateType}
+                                    onClick={() => { if (!estateType) setEstateDealType(estateDealType === dt ? '' : dt); }}
+                                    className={cn(
+                                      'rounded-full font-black transition-all duration-300 whitespace-nowrap',
+                                      estateDealType === dt
+                                        ? 'px-12 sm:px-16 py-3 sm:py-3.5 text-base sm:text-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
+                                        : estateType
+                                          ? 'px-4 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-xs text-black/50 cursor-not-allowed'
+                                          : 'px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm text-black hover:bg-gray-100'
+                                    )}
+                                  >
+                                    {dt}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
+                            {(!estateType ? (
+                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                {TYPES.map((t) => (
+                                  <button
+                                    key={t.key}
+                                    type="button"
+                                    onClick={() => setEstateType(t.key)}
+                                    className="h-9 sm:h-10 rounded-full border border-gray-300 bg-white text-black hover:border-blue-600 font-bold text-[10px] sm:text-[11px] tracking-wide transition-colors whitespace-nowrap px-3 text-center"
+                                  >
+                                    {t.label}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                {TYPES.filter(t => t.key === estateType).map((t) => (
+                                  <button
+                                    key={t.key}
+                                    type="button"
+                                    className="h-9 sm:h-10 rounded-full border border-blue-600 bg-blue-600 text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center"
+                                  >
+                                    {t.label}
+                                  </button>
+                                ))}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    // Clear the selected type's saved data too
+                                    if (estateType === 'land') setEstateDetails(v => ({ ...v, landArea: '' }));
+                                    else if (estateType === 'built') setEstateDetails(v => ({ ...v, builtUpArea: '' }));
+                                    else if (estateType === 'house') setEstateDetails(v => ({ ...v, houseArea: '', houseBhk: '' }));
+                                    setEstateType('');
+                                  }}
+                                  className="h-9 sm:h-10 rounded-full border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center transition-colors"
+                                >
+                                  ✕ Clear
+                                </button>
+                              </div>
+                            ))}
+                            {/* Two separate capsules — number input + unit dropdown (only for non-Other types) */}
+                            {estateType && estateType !== 'other' && (
+                              <div className="flex items-stretch gap-2">
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={areaVal}
+                                  onChange={(e) => setArea(e.target.value.replace(/[^0-9]/g, ''))}
+                                  placeholder="25 acres.."
+                                  style={{ outline: 'none' }}
+                                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
+                                />
+                                <div className="relative flex-shrink-0">
+                                  <select
+                                    value={unit}
+                                    onChange={(e) => setUnit(e.target.value)}
+                                    className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                                    style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                                  >
+                                    {units.map((u) => <option key={u} value={u}>{u}</option>)}
+                                  </select>
+                                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                </div>
+                                {estateType === 'house' && (
+                                  <div className="relative flex-shrink-0">
+                                    <select
+                                      value={estateDetails.houseBhk}
+                                      onChange={(e) => setEstateDetails(v => ({ ...v, houseBhk: e.target.value }))}
+                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black')}
+                                      style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                                    >
+                                      <option value="">BHK</option>
+                                      {BHK_OPTIONS.map((b) => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && estateType && (
+                        <>
+                          <Textarea
+                            id="enquiry-desc"
+                            value={description}
+                            onChange={(e) => {
+                              if (e.target.value.length <= 500) setDescription(e.target.value);
+                            }}
+                            placeholder="Specifications, requirements, timeline..."
+                            maxLength={500}
+                            className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                            autoFocus
+                          />
+                          <div className="h-3">
+                            <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
+                          </div>
+                          <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
+                        </>
+                      )}
+                      {!selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (
+                        <>
+                          <Textarea
+                            id="enquiry-desc"
+                            value={description}
+                            onChange={(e) => {
+                              if (e.target.value.length <= 500) setDescription(e.target.value);
+                            }}
+                            placeholder="Specifications, requirements, timeline..."
+                            maxLength={500}
+                            className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                            autoFocus
+                          />
+                          <div className="h-3">
+                            <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
+                          </div>
+                          <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -2590,7 +2765,7 @@ export default function PostEnquiry() {
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, location, vehicleDetails,
+                                title, description, selectedCategories, budget, location, vehicleDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails
                               }));
@@ -2625,6 +2800,38 @@ export default function PostEnquiry() {
 
                       {/* Enquiry Preview */}
                       <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
+                        {/* Real-estate details first */}
+                        {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (
+                          <div className="space-y-1.5">
+                            {estateDealType && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
+                                <span className="text-xs sm:text-sm font-bold text-black">{estateDealType}</span>
+                              </div>
+                            )}
+                            {estateDetails.landArea.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Land / Plot</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.landArea.trim()} {estateDetails.landUnit}</span>
+                              </div>
+                            )}
+                            {estateDetails.builtUpArea.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Buildings / Commercial</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.builtUpArea.trim()} {estateDetails.builtUpUnit}</span>
+                              </div>
+                            )}
+                            {estateDetails.houseArea.trim() && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">House / Flat</span>
+                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.houseArea.trim()} {estateDetails.houseUnit}{estateDetails.houseBhk ? ` · ${estateDetails.houseBhk}` : ''}</span>
+                              </div>
+                            )}
+                            {(estateDealType || estateDetails.landArea.trim() || estateDetails.builtUpArea.trim() || estateDetails.houseArea.trim()) && (
+                              <div className="border-t border-gray-200" />
+                            )}
+                          </div>
+                        )}
                         {/* Job details first — looking to, experience, education etc. above Title/Category */}
                         {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
                           <div className="space-y-1.5">

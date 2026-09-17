@@ -69,7 +69,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
 }
 
 interface UserProfile {
@@ -812,6 +812,10 @@ const EnquiryDetail = () => {
                       ];
                       const chips = [
                         ...jobChips,
+                        d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType },
+                        d.landArea && { label: 'Land / Plot', value: d.landArea },
+                        d.builtUpArea && { label: 'Buildings', value: d.builtUpArea },
+                        d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea },
                         d.brand && { label: 'Brand', value: d.brand },
                         d.year && { label: 'Year', value: d.year },
                         d.variant && { label: 'Variant', value: d.variant },
