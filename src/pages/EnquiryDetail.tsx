@@ -825,13 +825,13 @@ const EnquiryDetail = () => {
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
                             c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
-                              <span key={c.label} className="inline-flex items-center gap-1.5 text-[13px] sm:text-sm font-black text-black bg-white border-2 border-[#800020] rounded-lg px-3 py-1.5">
-                                <span className="text-[9px] sm:text-[10px] font-semibold text-black/40 uppercase tracking-wide">{c.label}</span>
+                              <span key={c.label} className="inline-flex items-center gap-2 text-[15px] sm:text-base font-black text-black bg-white border-2 border-[#800020] rounded-lg px-4 py-2">
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-black/40 uppercase tracking-wide">{c.label}</span>
                                 {c.value}
                               </span>
                             ) : c.highlight ? (
-                              <span key={c.label} className="inline-flex items-center gap-1.5 text-[13px] sm:text-sm font-black text-black bg-white border-2 border-[#800020] rounded-lg px-3 py-1.5">
-                                <span className="text-[10px] sm:text-[11px] font-bold text-[#800020] uppercase tracking-wide">{c.label}</span>
+                              <span key={c.label} className="inline-flex items-center gap-2 text-[15px] sm:text-base font-black text-black bg-white border-2 border-[#800020] rounded-lg px-4 py-2">
+                                <span className="text-[11px] sm:text-xs font-bold text-[#800020] uppercase tracking-wide">{c.label}</span>
                                 {c.value}
                               </span>
                             ) : (
