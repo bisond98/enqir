@@ -937,7 +937,7 @@ export default function CreateListing() {
                                     : 'px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm text-black hover:bg-gray-100'
                               )}
                             >
-                              For {dt}
+                              {dt}
                             </button>
                           ))}
                         </div>
