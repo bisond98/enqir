@@ -741,9 +741,6 @@ export default function PostEnquiry() {
     
     setPaymentLoading(true);
     
-    // Store timeout ID to clear it if payment completes/errors before timeout
-    let loadingTimeout: NodeJS.Timeout | null = null;
-    
     try {
       // Process payment directly with Razorpay (no custom card form needed - Razorpay has its own)
       console.log('💳 Calling processPayment...');
@@ -761,20 +758,12 @@ export default function PostEnquiry() {
         }
       );
       
-      // Stop showing loading once Razorpay popup opens (give it a moment to open)
-      loadingTimeout = setTimeout(() => {
-        setPaymentLoading(false);
-        loadingTimeout = null;
-      }, 1000); // 1 second should be enough for Razorpay to open
+      // Keep the button locked for the ENTIRE payment flow — Razorpay checkout,
+      // verification, and enquiry creation. It must not re-enable until the
+      // success page shows. (Previously a 1s timeout re-enabled it early.)
       
       // Wait for payment to complete
       const paymentResult = await paymentPromise;
-      
-      // Clear timeout since payment completed
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
-        loadingTimeout = null;
-      }
       
       console.log('📊 Payment result received:', paymentResult);
       
@@ -926,12 +915,6 @@ export default function PostEnquiry() {
       }
       
     } catch (error) {
-      // Clear timeout if error occurs
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
-        loadingTimeout = null;
-      }
-      
       console.error('❌ Payment failed:', error);
       console.error('❌ Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
