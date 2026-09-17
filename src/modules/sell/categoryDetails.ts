@@ -83,7 +83,6 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'salaryPeriod', label: 'Salary period', type: 'select', options: ['Per month', 'Per year', 'Per hour', 'Per day'], placeholder: 'Select salary period', step: 'price' },
   ],
   'real-estate': [
-    { key: 'bhk', label: 'Configuration', type: 'select', options: ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK', 'Plot', 'Commercial'], placeholder: 'Select configuration', step: 'title' },
     { key: 'landArea', label: 'Land / Plot', type: 'land-area', options: ['Cents', 'Acre', 'Hectare'], placeholder: 'e.g., 25', step: 'description' },
     { key: 'builtUpArea', label: 'Buildings / Commercial', type: 'land-area', options: ['Sqft'], placeholder: 'e.g., 1200', step: 'description' },
     { key: 'houseArea', label: 'House / Flat', type: 'land-area', options: ['Sqft'], placeholder: 'e.g., 1500', step: 'description' },
