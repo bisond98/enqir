@@ -289,6 +289,40 @@ export const processPayment = async (
     console.log('✅ Razorpay Key ID loaded:', razorpayKeyId.substring(0, 10) + '...', isTestKey ? '(TEST MODE)' : '(LIVE MODE)');
 
     // Initialize Razorpay checkout
+    const verifyRazorpayPaymentWithRetry = async (
+      razorpayOrderId: string,
+      razorpayPaymentId: string,
+      razorpaySignature: string,
+      maxAttempts = 3
+    ): Promise<{ success: boolean; error?: string }> => {
+      let lastError = '';
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          console.log(`🔍 Payment verification attempt ${attempt}/${maxAttempts}...`);
+          const result = await verifyRazorpayPayment(
+            razorpayOrderId,
+            razorpayPaymentId,
+            razorpaySignature,
+            enquiryId,
+            userId,
+            plan.id,
+            plan.price
+          );
+          if (result.success) return result;
+          // Signature/auth failures won't fix themselves — return immediately
+          if (result.error && (result.error.includes('signature') || result.error.includes('Invalid payment'))) return result;
+          lastError = result.error || 'Payment verification failed';
+        } catch (err: any) {
+          // Network/server errors may be transient — retry
+          lastError = err?.message || 'Payment verification failed';
+        }
+        if (attempt < maxAttempts) {
+          await new Promise(r => setTimeout(r, 1000 * attempt)); // backoff: 1s, 2s
+        }
+      }
+      return { success: false, error: lastError };
+    };
+
     return new Promise((resolve) => {
       // CRITICAL: Remove any blocking overlays and ensure body scroll is enabled
       // Hide all app overlays that might block Razorpay
@@ -394,15 +428,11 @@ export const processPayment = async (
           window.removeEventListener('popstate', handlePopState);
           
           try {
-            // Verify payment on backend
-            const verifyResult = await verifyRazorpayPayment(
+            // Verify payment on backend (with retries for transient network/server errors)
+            const verifyResult = await verifyRazorpayPaymentWithRetry(
               response.razorpay_order_id,
               response.razorpay_payment_id,
-              response.razorpay_signature,
-      enquiryId,
-      userId,
-              plan.id,
-              plan.price
+              response.razorpay_signature
             );
 
             if (verifyResult.success) {

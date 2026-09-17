@@ -197,6 +197,10 @@ export default function PostEnquiry() {
   const [enquiryStatus, setEnquiryStatus] = useState<string>('pending');
   const [isEnquiryApproved, setIsEnquiryApproved] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
+  // Successful payment awaiting enquiry creation — enables one-click recovery if creation fails
+  const [successfulPayment, setSuccessfulPayment] = useState<{ transactionId: string; planId: string } | null>(null);
+  // When true, the post button creates the enquiry WITHOUT charging again (payment already verified)
+  const [recoverablePayment, setRecoverablePayment] = useState(false);
   
   // Trust Badge Verification States (matching SellerResponse)
   const [govIdType, setGovIdType] = useState("");
@@ -630,6 +634,89 @@ export default function PostEnquiry() {
 
   // Direct payment handler - skips custom card form, goes straight to Razorpay checkout
   const handleDirectPayment = async (): Promise<void> => {
+    // Recovery mode: payment already succeeded but enquiry wasn't created.
+    // Skip Razorpay entirely and create the enquiry now — no new charge.
+    if (recoverablePayment && successfulPayment && !loading && !isSubmitted) {
+      console.log('🔁 Recovery mode: creating paid enquiry without new payment...');
+      const plan = selectedPlan || PAYMENT_PLANS.find(p => p.id === successfulPayment.planId) || PAYMENT_PLANS.find(p => p.id === 'premium');
+      if (!plan || !user) return;
+      try {
+        setLoading(true);
+        const enquiryData: any = {
+          title: title.trim(),
+          description: description.trim(),
+          category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
+          categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
+          budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+          location: location.trim(),
+          deadline: deadline,
+          isUrgent: deadline ? (() => {
+            const now = new Date();
+            const diffHours = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+            return diffHours < 72;
+          })() : false,
+          status: "live",
+          isPremium: plan.price > 0,
+          selectedPlanId: plan.id,
+          selectedPlanPrice: plan.price,
+          paymentStatus: "completed",
+          createdAt: serverTimestamp(),
+          userId: user.uid,
+          userEmail: user.email,
+          userName: user.displayName || user.email?.split('@')[0],
+          notes: notes.trim() || null,
+          details: {
+            ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+            ...(vehicleDetails.year && { year: vehicleDetails.year }),
+            ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+            ...(jobDirection && { jobDirection }),
+            ...(jobSkills.trim() && { skills: jobSkills.trim() }),
+            ...(estateDealType && { listingType: estateDealType }),
+            ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
+            ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
+            ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
+            ...(estateDetails.houseBhk && { houseBhk: estateDetails.houseBhk }),
+          },
+          governmentIdFront: null,
+          governmentIdBack: null,
+          isUserVerified: isUserVerified,
+          profileVerificationStatus: profileVerificationStatus
+        };
+        const validImages = referenceImageUrls.filter(url => url.trim() !== "");
+        if (validImages.length > 0) enquiryData.referenceImages = validImages;
+        const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
+        const paymentRecordId = await savePaymentRecord(
+          docRef.id,
+          user.uid,
+          plan,
+          successfulPayment.transactionId
+        );
+        await updateUserPaymentPlan(user.uid, plan.id, paymentRecordId, docRef.id);
+        setSubmittedEnquiryId(docRef.id);
+        setEnquiryStatus('live');
+        setIsEnquiryApproved(true);
+        incrementEnquiries();
+        setIsSubmitted(true);
+        setIsPaymentSuccessful(true);
+        setRecoverablePayment(false);
+        setSuccessfulPayment(null);
+        toast({
+          title: "Enquiry Posted! 🎉",
+          description: "Recovered your payment — enquiry is now live. You were not charged again.",
+          variant: "success",
+        });
+      } catch (error) {
+        console.error('Recovery creation failed:', error);
+        toast({
+          title: "Still couldn't save",
+          description: "Please try again in a moment — you will not be charged again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
     if (!selectedPlan || !user?.uid) {
       console.error('❌ Cannot process payment: Missing plan or user', { selectedPlan, user: !!user });
       toast({
@@ -698,6 +785,10 @@ export default function PostEnquiry() {
       }
       
       console.log('✅ Razorpay payment completed successfully:', paymentResult.transactionId);
+      
+      // Remember the successful payment so the enquiry can be recovered
+      // without charging again if creation fails
+      setSuccessfulPayment({ transactionId: paymentResult.transactionId || '', planId: selectedPlan.id });
       
       // Create enquiry immediately after successful payment
       // Prevent double submission
@@ -791,11 +882,44 @@ export default function PostEnquiry() {
         
       } catch (error) {
         console.error('Error creating premium enquiry:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create enquiry. Please try again.",
-          variant: "destructive",
-        });
+        // One retry after a short wait (transient Firestore issues)
+        try {
+          console.log('🔁 Retrying premium enquiry creation...');
+          await new Promise(r => setTimeout(r, 1500));
+          const retryRef = await addDoc(collection(db, "enquiries"), enquiryData);
+          const retryId = retryRef.id;
+          console.log('✅ Retry succeeded — premium enquiry saved with ID:', retryId);
+          const paymentRecordId = await savePaymentRecord(
+            retryId,
+            user.uid,
+            selectedPlan,
+            paymentResult.transactionId || ''
+          );
+          await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, retryId);
+          setSubmittedEnquiryId(retryId);
+          setEnquiryStatus('live');
+          setIsEnquiryApproved(true);
+          incrementEnquiries();
+          setIsSubmitted(true);
+          setIsPaymentSuccessful(true);
+          setRecoverablePayment(false);
+          toast({
+            title: "Payment Successful! 🎉",
+            description: "Your premium enquiry is now live and ready to get responses!",
+            variant: "success",
+          });
+        } catch (retryError) {
+          console.error('Enquiry creation failed after retry:', retryError);
+          // Payment succeeded but enquiry creation failed — DON'T make the user
+          // pay again. Enable one-click recovery via the post button.
+          setRecoverablePayment(true);
+          toast({
+            title: "Payment received — enquiry not saved",
+            description: "Your payment went through but the enquiry couldn't be created. Tap the post button again — you will NOT be charged again.",
+            variant: "destructive",
+            duration: 12000,
+          });
+        }
       } finally {
         setLoading(false);
         setPaymentLoading(false);
@@ -2967,7 +3091,7 @@ export default function PostEnquiry() {
                       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                      <span className="relative z-10">{paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : 'Post Enquiry'}</span>
+                      <span className="relative z-10">{paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : recoverablePayment ? 'Post My Enquiry (already paid)' : 'Post Enquiry'}</span>
                     </Button>
                   )}
                 </div>
