@@ -2549,7 +2549,7 @@ export default function PostEnquiry() {
                             </div>
                             {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
                             {(!estateType ? (
-                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 self-start">
                                 {TYPES.map((t) => (
                                   <button
                                     key={t.key}
