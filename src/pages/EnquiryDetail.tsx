@@ -812,22 +812,29 @@ const EnquiryDetail = () => {
                       ];
                       const chips = [
                         ...jobChips,
-                        d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType },
-                        d.landArea && { label: 'Land / Plot', value: d.landArea },
-                        d.builtUpArea && { label: 'Buildings', value: d.builtUpArea },
-                        d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea },
+                        d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
+                        d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
+                        d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
+                        d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea, highlight: true },
                         d.brand && { label: 'Brand', value: d.brand },
                         d.year && { label: 'Year', value: d.year },
                         d.variant && { label: 'Variant', value: d.variant },
-                      ].filter(Boolean) as { label: string; value: string }[];
+                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean }[];
                       if (chips.length === 0) return null;
                       return (
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
-                            <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
-                              <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
-                              {c.value}
-                            </span>
+                            c.highlight ? (
+                              <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-[#800020] border border-black/40 rounded-lg px-2 py-1">
+                                <span className="text-[9px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>
+                                {c.value}
+                              </span>
+                            ) : (
+                              <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                                <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
+                                {c.value}
+                              </span>
+                            )
                           ))}
                         </div>
                       );
