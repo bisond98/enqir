@@ -247,7 +247,7 @@ export default function CreateListing() {
   const [priceMin, setPriceMin] = useState<string>('');
   const [priceMax, setPriceMax] = useState<string>('');
   const [tags, setTags] = useState<string>('');
-  const [details, setDetails] = useState<Record<string, string>>({});
+  const [details, setDetails] = useState<Record<string, string>>({ listingFor: 'Sale' }); // Real-estate deal type defaults to For Sale
   // Which real-estate capsule is selected (only one big capsule shows at a time)
   const [estateType, setEstateType] = useState<'' | 'land' | 'built' | 'house' | 'other'>('');
   const [images, setImages] = useState<string[]>([]);
@@ -927,7 +927,7 @@ export default function CreateListing() {
                               key={dt}
                               type="button"
                               disabled={!!estateType}
-                              onClick={() => { if (!estateType) setDetail('listingFor', details['listingFor'] === dt ? '' : dt); }}
+                              onClick={() => { if (!estateType) setDetail('listingFor', dt); }}
                               className={cn(
                                 'rounded-full font-black transition-all duration-300 whitespace-nowrap',
                                 details['listingFor'] === dt
