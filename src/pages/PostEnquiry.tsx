@@ -33,7 +33,7 @@ import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES } from "@/constants/categories";
-import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
+import { categoriesRequireImage, categoriesRequireImageForEnquiry } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS } from "@/modules/sell/categoryBrands";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
@@ -1389,7 +1389,8 @@ export default function PostEnquiry() {
     }
 
     // Reference images are required for physical-item categories (cars, bikes, mobiles, etc.)
-    if (categoriesRequireImage(selectedCategories) && referenceImageUrls.length === 0) {
+    // Real-estate enquiries keep images optional.
+    if (categoriesRequireImageForEnquiry(selectedCategories) && referenceImageUrls.length === 0) {
       alert('At least 1 image is required for this category. Physical items like cars, bikes and mobiles need a photo so sellers can see them.');
       return;
     }
@@ -2700,7 +2701,7 @@ export default function PostEnquiry() {
                             ? 'Upload your Resume'
                             : isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring'
                             ? 'Workspace, etc.'
-                            : categoriesRequireImage(selectedCategories)
+                            : categoriesRequireImageForEnquiry(selectedCategories)
                             ? 'Show your need'
                             : 'Show your need (optional)'}
                         </Label>

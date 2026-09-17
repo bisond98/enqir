@@ -58,3 +58,17 @@ export function categoriesRequireImage(cats: string[] | string | undefined | nul
   const list = Array.isArray(cats) ? cats : [cats];
   return list.some((c) => IMAGE_REQUIRED_CATEGORIES.has(c));
 }
+
+// Categories where the SELL form requires images but the POST ENQUIRY form
+// keeps them optional (buyers may not have a photo of what they want yet).
+const ENQUIRY_IMAGE_OPTIONAL_CATEGORIES = new Set<string>([
+  'real-estate',
+  'real-estate-services',
+]);
+
+/** True if ANY of the given categories requires an image when POSTING AN ENQUIRY. */
+export function categoriesRequireImageForEnquiry(cats: string[] | string | undefined | null): boolean {
+  if (!cats) return false;
+  const list = Array.isArray(cats) ? cats : [cats];
+  return list.some((c) => IMAGE_REQUIRED_CATEGORIES.has(c) && !ENQUIRY_IMAGE_OPTIONAL_CATEGORIES.has(c));
+}
