@@ -943,7 +943,7 @@ export default function CreateListing() {
                         </div>
                       </div>
                       {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
-                      <div className="flex items-stretch sm:items-center gap-2 flex-col sm:flex-row">
+                      <div className="flex items-center gap-2">
                         {(estateType ? TYPES.filter(t => t.key === estateType) : TYPES).map((t) => (
                           estateType === t.key ? (
                             <span
