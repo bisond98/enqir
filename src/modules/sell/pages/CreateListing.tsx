@@ -957,7 +957,7 @@ export default function CreateListing() {
                               key={t.key}
                               type="button"
                               onClick={() => setEstateType(t.key as typeof estateType)}
-                              className="rounded-full border border-black bg-white text-black hover:bg-black hover:text-white font-black text-xs sm:text-sm tracking-wide transition-all duration-200 whitespace-nowrap px-4 sm:px-6 py-2.5 sm:py-3 text-center shadow-[0_3px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[2px]"
+                              className="rounded-full border border-black/40 bg-white text-black hover:bg-black hover:text-white font-black text-xs sm:text-sm tracking-wide transition-all duration-200 whitespace-nowrap px-4 sm:px-6 py-2.5 sm:py-3 text-center shadow-[0_3px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[2px]"
                             >
                               {t.label}
                             </button>
