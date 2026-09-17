@@ -912,8 +912,8 @@ export default function CreateListing() {
                     { key: 'house', label: 'House / Flat' },
                     { key: 'other', label: 'Others' },
                   ];
-                  const unit = estateType === 'land' ? (details['landAreaUnit'] ?? 'Cents') : estateType === 'built' ? (details['builtUpAreaUnit'] ?? 'Sqft') : (details['houseAreaUnit'] ?? 'Sqft');
-                  const units = estateType === 'land' ? LAND_UNITS : estateType === 'built' ? BUILT_UNITS : HOUSE_UNITS;
+                  const unit = details['landAreaUnit'] ?? 'Cents';
+                  const units = LAND_UNITS;
                   const areaVal = estateType === 'land' ? (details['landAreaNum'] ?? '') : estateType === 'built' ? (details['builtUpAreaNum'] ?? '') : (details['houseAreaNum'] ?? '');
                   const areaKey = estateType === 'land' ? 'landAreaNum' : estateType === 'built' ? 'builtUpAreaNum' : 'houseAreaNum';
                   const unitKey = estateType === 'land' ? 'landAreaUnit' : estateType === 'built' ? 'builtUpAreaUnit' : 'houseAreaUnit';
@@ -991,17 +991,19 @@ export default function CreateListing() {
                             style={{ outline: 'none' }}
                             className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
                           />
-                          <div className="relative flex-shrink-0">
-                            <select
-                              value={unit}
-                              onChange={(e) => setDetail(unitKey, e.target.value)}
-                              className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
-                              style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
-                            >
-                              {units.map((u) => <option key={u} value={u}>{u}</option>)}
-                            </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
-                          </div>
+                          {estateType === 'land' && (
+                            <div className="relative flex-shrink-0">
+                              <select
+                                value={unit}
+                                onChange={(e) => setDetail(unitKey, e.target.value)}
+                                className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                                style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                              >
+                                {units.map((u) => <option key={u} value={u}>{u}</option>)}
+                              </select>
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                          )}
                           {estateType === 'house' && (
                             <div className="relative flex-shrink-0">
                               <select

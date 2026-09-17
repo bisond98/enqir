@@ -2513,8 +2513,8 @@ export default function PostEnquiry() {
                           { key: 'house', label: 'House / Flat' },
                           { key: 'other', label: 'Others' },
                         ];
-                        const unit = estateType === 'land' ? estateDetails.landUnit : estateType === 'built' ? estateDetails.builtUpUnit : estateDetails.houseUnit;
-                        const units = estateType === 'land' ? LAND_UNITS : estateType === 'built' ? BUILT_UNITS : HOUSE_UNITS;
+                        const unit = estateDetails.landUnit;
+                        const units = LAND_UNITS;
                         const areaVal = estateType === 'land' ? estateDetails.landArea : estateType === 'built' ? estateDetails.builtUpArea : estateDetails.houseArea;
                         const setArea = (val: string) => setEstateDetails(v => ({ ...v, landArea: estateType === 'land' ? val : v.landArea, builtUpArea: estateType === 'built' ? val : v.builtUpArea, houseArea: estateType === 'house' ? val : v.houseArea }));
                         const setUnit = (val: string) => setEstateDetails(v => ({ ...v, landUnit: estateType === 'land' ? val : v.landUnit, builtUpUnit: estateType === 'built' ? val : v.builtUpUnit, houseUnit: estateType === 'house' ? val : v.houseUnit }));
@@ -2598,17 +2598,19 @@ export default function PostEnquiry() {
                                   style={{ outline: 'none' }}
                                   className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
                                 />
-                                <div className="relative flex-shrink-0">
-                                  <select
-                                    value={unit}
-                                    onChange={(e) => setUnit(e.target.value)}
-                                    className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
-                                    style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
-                                  >
-                                    {units.map((u) => <option key={u} value={u}>{u}</option>)}
-                                  </select>
-                                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
-                                </div>
+                                {estateType === 'land' && (
+                                  <div className="relative flex-shrink-0">
+                                    <select
+                                      value={unit}
+                                      onChange={(e) => setUnit(e.target.value)}
+                                      className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                                      style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
+                                    >
+                                      {units.map((u) => <option key={u} value={u}>{u}</option>)}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                  </div>
+                                )}
                                 {estateType === 'house' && (
                                   <div className="relative flex-shrink-0">
                                     <select
