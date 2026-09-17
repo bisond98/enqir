@@ -948,7 +948,7 @@ export default function CreateListing() {
                           estateType === t.key ? (
                             <span
                               key={t.key}
-                              className="h-9 sm:h-10 rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 flex items-center"
+                              className="rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 py-1.5 inline-flex items-center justify-center text-center"
                             >
                               {t.label}
                             </span>
