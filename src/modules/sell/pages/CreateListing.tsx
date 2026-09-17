@@ -945,17 +945,23 @@ export default function CreateListing() {
                       {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
                       <div className="flex items-stretch sm:items-center gap-2 flex-col sm:flex-row">
                         {(estateType ? TYPES.filter(t => t.key === estateType) : TYPES).map((t) => (
-                          <button
-                            key={t.key}
-                            type="button"
-                            onClick={() => setEstateType(estateType === t.key ? '' : t.key as typeof estateType)}
-                            className={cn(
-                              'h-9 sm:h-10 rounded-full border font-bold text-[10px] sm:text-[11px] tracking-wide transition-colors whitespace-nowrap px-3 text-center',
-                              estateType === t.key ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-black hover:border-blue-600'
-                            )}
-                          >
-                            {t.label}
-                          </button>
+                          estateType === t.key ? (
+                            <span
+                              key={t.key}
+                              className="h-9 sm:h-10 rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 flex items-center"
+                            >
+                              {t.label}
+                            </span>
+                          ) : (
+                            <button
+                              key={t.key}
+                              type="button"
+                              onClick={() => setEstateType(t.key as typeof estateType)}
+                              className="h-9 sm:h-10 rounded-full border border-gray-300 bg-white text-black hover:border-blue-600 font-bold text-[10px] sm:text-[11px] tracking-wide transition-colors whitespace-nowrap px-3 text-center"
+                            >
+                              {t.label}
+                            </button>
+                          )
                         ))}
                         {estateType && (
                           <button

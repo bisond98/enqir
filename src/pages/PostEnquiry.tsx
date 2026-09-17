@@ -2564,13 +2564,12 @@ export default function PostEnquiry() {
                             ) : (
                               <div className="flex items-center gap-2">
                                 {TYPES.filter(t => t.key === estateType).map((t) => (
-                                  <button
+                                  <span
                                     key={t.key}
-                                    type="button"
-                                    className="h-9 sm:h-10 rounded-full border border-blue-600 bg-blue-600 text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center"
+                                    className="h-9 sm:h-10 rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 flex items-center"
                                   >
                                     {t.label}
-                                  </button>
+                                  </span>
                                 ))}
                                 <button
                                   type="button"
