@@ -981,7 +981,7 @@ export default function CreateListing() {
                             inputMode="numeric"
                             value={areaVal}
                             onChange={(e) => setDetail(areaKey, e.target.value.replace(/[^0-9]/g, ''))}
-                            placeholder="25 acres.."
+                            placeholder={estateType === 'house' ? '1000 sqft' : '25 acres..'}
                             style={{ outline: 'none' }}
                             className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
                           />
