@@ -760,7 +760,7 @@ export default function Marketplace() {
 
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none z-10" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -779,13 +779,33 @@ export default function Marketplace() {
               load();
             }}
             placeholder='Search listings… or try "used car under 2 lakh"'
-            className="relative pl-10 pr-10 h-10 sm:h-12 text-xs sm:text-sm bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] font-bold overflow-hidden"
+            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] h-[50px] sm:h-[54px] text-sm sm:text-base bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] sm:placeholder:text-xs font-bold overflow-hidden"
           />
           {search && (
-            <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
+            <button onClick={() => { setSearch(''); }} className="absolute right-[3.4rem] sm:right-[3.9rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-20" aria-label="Clear search">
               <X className="h-4 w-4" />
             </button>
           )}
+          {/* Search submit — thumb-reachable black pill inside the bar (same as EnquiryWall) */}
+          <button
+            onClick={() => {
+              // Same as Enter: apply immediately (no debounce wait) and trigger the fetch
+              const parsed = parseNLSearch(search);
+              if (parsed && isNLSearchQuery(search, parsed)) {
+                nlSuppressRef.current = null;
+                setNlFilters(parsed);
+                if (parsed.category && parsed.category !== category) setCategory(parsed.category);
+                if (parsed.location && parsed.location !== location) { setLocation(parsed.location); setLocSearch(parsed.location); }
+                if (parsed.priceMin) setPriceMin(parsed.priceMin);
+                if (parsed.priceMax) setPriceMax(parsed.priceMax);
+              }
+              load();
+            }}
+            className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
+            aria-label="Search"
+          >
+            <Search className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
+          </button>
         </div>
 
         {/* AI natural-language filters: chips of what was understood (auto-applied) */}

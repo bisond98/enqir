@@ -5618,7 +5618,7 @@ export default function EnquiryWall() {
                       }, 150);
                     }
                   }}
-                    className="w-full pl-11 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                    className="w-full pl-11 sm:pl-12 pr-[4.5rem] sm:pr-[5.25rem] py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
@@ -5635,20 +5635,31 @@ export default function EnquiryWall() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
                 </div>
                 {isAISearching ? (
-                  <div className="absolute right-10 sm:right-12 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
+                  <div className="absolute right-[4.5rem] sm:right-[5.25rem] top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
-                  searchTerm ? (
+                  <>
+                    {searchTerm ? (
+                      <button
+                        type="button"
+                        onClick={() => { setSearchTerm(''); }}
+                        className="absolute right-[3.4rem] sm:right-[4.1rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-50"
+                        aria-label="Clear search"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                    {/* Search submit — thumb-reachable black pill inside the bar (mobile-first) */}
                     <button
                       type="button"
-                      onClick={() => { setSearchTerm(''); }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-50"
-                      aria-label="Clear search"
+                      onClick={() => handleSearchChange(searchTerm)}
+                      className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-50 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
+                      aria-label="Search"
                     >
-                      <X className="h-4 w-4" />
+                      <Search className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
                     </button>
-                  ) : null
+                  </>
                 )}
                 
                 {/* AI Search Suggestions Dropdown - Absolute with Layout Isolation */}
