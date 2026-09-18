@@ -720,7 +720,7 @@ export default function CreateListing() {
                       value={catSearch}
                       onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                       placeholder="Search categories..."
-                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-200 bg-white text-sm font-medium text-black placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
+                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-400 bg-white text-sm font-medium text-black placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
                     />
                     {catSearch && (
                       <button
