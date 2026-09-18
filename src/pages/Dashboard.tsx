@@ -1715,24 +1715,24 @@ const Dashboard = () => {
                   </div>
                   {/* 3-Way Toggle: Buy | Sell | Listings */}
                   <div className="flex justify-center mt-4 sm:mt-5">
-                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
                       {([
-                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: buyUnreadCount },
-                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: sellUnreadCount },
-                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]', unread: matchDotCount || 0 },
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-blue-600 !text-white', unread: buyUnreadCount },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-blue-600 !text-white', unread: sellUnreadCount },
+                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: '!bg-blue-600 !text-white', unread: matchDotCount || 0 },
                       ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
                         <motion.button
                           key={key}
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-2 sm:gap-2 px-5 sm:px-5 lg:px-6 py-2.5 sm:py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
+                            'relative flex items-center gap-1.5 sm:gap-1.5 lg:gap-2 px-5 sm:px-5 lg:px-6 py-1.5 sm:py-1.5 rounded-full text-[11px] sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none origin-center',
                             viewMode === key
-                              ? activeColor
+                              ? `${activeColor} !text-[13px] sm:!text-[14px] lg:!text-[15px] z-10`
                               : 'text-black hover:text-black hover:bg-gray-100'
                           )}
                           whileTap={{ scale: 0.95 }}
-                          animate={viewMode === key ? { scale: 1.05 } : { scale: 1 }}
+                          animate={viewMode === key ? { scale: 1.13, y: -1 } : { scale: 1, y: 0 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
                           <Icon className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
@@ -1832,7 +1832,7 @@ const Dashboard = () => {
 
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
                       { key: 'interests' as const, label: 'Interests', unread: visibleInterestListings.length > 0 && localStorage.getItem(`interests_viewed_${user?.uid}`) === null ? visibleInterestListings.length : (visibleInterestListings.length > parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) ? visibleInterestListings.length - parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) : 0) },
@@ -1851,9 +1851,9 @@ const Dashboard = () => {
                         animate={enquiryView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none',
                           enquiryView === key
-                            ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
+                            ? '!bg-blue-600 text-white'
                             : 'text-black hover:text-black hover:bg-gray-100'
                         )}
                       >
@@ -2129,13 +2129,9 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 !border-[0.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] !relative !overflow-hidden disabled:grayscale"
+                                  className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                               >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform relative z-10" />
+                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
                                     {responseCount} {responseCount === 1 ? 'Response' : 'Responses'}
                                   </span>
@@ -2158,13 +2154,9 @@ const Dashboard = () => {
                                       }
                                     }}
                                     disabled={expiredFlag}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-[0.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] disabled:!opacity-50 disabled:!cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] !relative !overflow-hidden disabled:grayscale"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                                   >
-                                    {/* Physical button depth effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                    {/* Shimmer effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
                                     <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
                                   </Button>
                                 </div>
@@ -2252,11 +2244,9 @@ const Dashboard = () => {
                               <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
                                 <Link
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
-                                  className="w-full flex items-center justify-center border-[0.5px] border-black bg-gradient-to-b from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xs sm:text-sm px-3.5 py-2 h-9 font-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 relative overflow-hidden group/chat"
+                                  className="w-full flex items-center justify-center !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-xs sm:text-sm px-3.5 py-2 h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/chat touch-manipulation select-none"
                                 >
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <MessageSquare className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 group-hover/chat:scale-110 transition-transform relative z-10" />
+                                  <MessageSquare className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat with Seller</span>
                                 </Link>
                               </div>
@@ -2265,13 +2255,9 @@ const Dashboard = () => {
                                   variant="destructive"
                                   size="sm"
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
-                                  className="w-full flex-1 flex-shrink-0 !border-[0.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] group/delete flex items-center justify-center !relative !overflow-hidden"
+                                  className="w-full flex-1 flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/delete flex items-center justify-center !relative !overflow-hidden touch-manipulation select-none"
                                 >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Remove</span>
                                 </Button>
                               </div>
@@ -2304,7 +2290,7 @@ const Dashboard = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={(e) => { e.stopPropagation(); navigate(`/sell/listing/${listing.id}`); }}
-                                className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-[10px] font-black rounded-xl h-8"
+                                className="w-full mt-2 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none"
                               >
                                 Buy
                               </Button>
@@ -2338,7 +2324,7 @@ const Dashboard = () => {
                               variant="outline"
                               size="sm"
                               onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${enquiry.id}`); }}
-                              className="w-full mt-2 border-[0.5px] border-black bg-gradient-to-b from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 text-[10px] font-black rounded-xl h-8"
+                              className="w-full mt-2 !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none"
                             >
                               Connect
                             </Button>
@@ -2393,7 +2379,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
                       { key: 'listings' as const, label: 'Listings', unread: sellUnreadCount },
@@ -2411,9 +2397,9 @@ const Dashboard = () => {
                         animate={sellerView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black transition-all duration-200 whitespace-nowrap',
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none',
                           sellerView === key
-                            ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
+                            ? '!bg-blue-600 text-white'
                             : 'text-black hover:text-black hover:bg-gray-100'
                         )}
                       >
@@ -2671,13 +2657,9 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="w-full sm:flex-none flex-shrink-0 border border-black bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:border-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden"
+                                    className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chat:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                    <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/chat:scale-110 transition-transform relative z-10" />
+                                    <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
                                 </Button>
                               )}
@@ -2693,14 +2675,10 @@ const Dashboard = () => {
                                     state: { highlightSubmissionId: submission.id }
                                   });
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-gradient-to-b from-white to-gray-50 text-black hover:bg-gray-50 text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black rounded-xl lg:rounded-xl xl:rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 group-hover/btn:scale-110 transition-transform relative z-10" />
+                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">View Details</span>
                               </Button>
                               
@@ -2713,14 +2691,10 @@ const Dashboard = () => {
                                     deleteResponse(submission.id);
                                   }
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 border border-black bg-[#800020] text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] hover:bg-[#6b0019] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale"
+                                  className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shimmer effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 group-hover/delete:scale-110 transition-transform relative z-10" />
+                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
                               </Button>
                               </div>

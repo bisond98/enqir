@@ -183,7 +183,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
       </div>
 
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl border-[3px] border-black">
+      <div className="flex gap-1 mb-4 bg-white p-1 rounded-full !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length, unread: listingsUnread },
           { key: 'responses' as const, label: 'Buyers', count: responses.length, unread: responsesUnread },
@@ -195,10 +195,10 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               if (key === 'listings') { setListingsUnread(0); localStorage.setItem(`sd_listings_viewed_${user?.uid}`, String(listings.length)); }
               if (key === 'responses') { setResponsesUnread(0); localStorage.setItem(`sd_responses_viewed_${user?.uid}`, String(responses.length)); }
             }}
-            className={`relative flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
+            className={`relative flex-1 py-2 text-xs sm:text-sm font-black !rounded-full !transition-all !duration-150 touch-manipulation select-none ${
               activeTab === key
-                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-[0_4px_0_0_rgba(37,99,235,0.3)]'
-                : 'text-black font-black hover:bg-gray-50'
+                ? '!bg-blue-600 text-white'
+                : 'text-black hover:bg-gray-100'
             }`}
           >
             {label} ({count})
@@ -417,18 +417,14 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-gray-800 !border-[0.5px] !border-black/20 rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all duration-200 shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:translate-y-[4px] bg-white hover:bg-gray-50 overflow-hidden group/edit"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-gray-800 !border-[1.5px] !border-black !rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-150 !bg-white hover:!bg-gray-50 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] overflow-hidden group/edit touch-manipulation select-none"
                     >
-                      <span className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-black/5 pointer-events-none" />
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/edit:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                       <Pencil className="h-3 w-3 relative z-10" /><span className="relative z-10">Edit</span>
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[0.5px] !border-black/20 rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 transition-all duration-200 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:translate-y-[4px] bg-[#800020] hover:bg-[#6b0019] overflow-hidden group/del"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[1.5px] !border-black !rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-150 !bg-[#800020] hover:!bg-[#6b0019] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] overflow-hidden group/del touch-manipulation select-none"
                     >
-                      <span className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/20 pointer-events-none" />
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/del:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                       <Trash2 className="h-3 w-3 relative z-10" /><span className="relative z-10">Delete</span>
                     </button>
                   </div>
@@ -463,7 +459,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           {/* Create Listing CTA */}
           {!loading && listings.length > 0 && (
             <Link to="/sell/new" className="block">
-              <Button className="w-full h-11 bg-black text-white border border-black font-black text-sm rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all">
+              <Button className="w-full h-11 !bg-black text-white !border-[1.5px] !border-black font-black text-sm !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none">
                 <Plus className="h-4 w-4 mr-2" />Create New Listing
               </Button>
             </Link>

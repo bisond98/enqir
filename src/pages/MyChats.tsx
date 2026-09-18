@@ -680,12 +680,12 @@ export default function MyChats() {
                     key={chat.id}
                   >
                     <Card
-                      className={`border-[3px] border-black rounded-lg sm:rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      className={`!border-[1.5px] !border-black !rounded-2xl !transition-all !duration-150 relative overflow-hidden touch-manipulation select-none ${
                         isAdminWarning
                           ? 'bg-[#5C1A1A] text-white'
                           : isDisabled 
-                            ? 'opacity-60 grayscale cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] bg-gradient-to-br from-white via-white to-gray-50' 
-                            : 'cursor-pointer group shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99] bg-gradient-to-br from-white via-white to-gray-50'
+                            ? 'opacity-60 grayscale cursor-not-allowed !bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.3)]' 
+                            : 'cursor-pointer group !bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]'
                       }`}
                       onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
@@ -902,10 +902,10 @@ export default function MyChats() {
                             size="sm"
                             variant="outline"
                             disabled={isDisabled}
-                            className={`relative w-full !rounded-2xl !border-[1.5px] !border-black/20 text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 !h-auto transition-all duration-200 overflow-hidden ${
+                            className={`relative w-full !rounded-2xl !border-[1.5px] !border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 !h-auto !transition-all !duration-150 overflow-hidden touch-manipulation select-none ${
                               isDisabled
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-[0_4px_0_0_rgba(0,0,0,0.15)]'
-                                : 'bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:translate-y-[4px] group/openchat'
+                                ? '!bg-gray-300 !text-gray-500 cursor-not-allowed !shadow-[0_4px_0_0_rgba(0,0,0,0.15)]'
+                                : '!bg-emerald-600 hover:!bg-emerald-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]'
                             }`}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -914,15 +914,6 @@ export default function MyChats() {
                               }
                             }}
                           >
-                            {/* Physical button depth effect */}
-                            {!isDisabled && (
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                            )}
-                            {/* Shimmer effect on button */}
-                            {!isDisabled && (
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/openchat:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                            )}
-                            
                             <span className="flex items-center justify-center relative z-10">
                               <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 relative z-10" />
                             <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>

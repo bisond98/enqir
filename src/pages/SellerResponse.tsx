@@ -1445,11 +1445,9 @@ const SellerResponse = () => {
                     }
                   }}
                   maxLength={500}
-                    className={`min-h-[140px] text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 ${errors.description ? 'border-red-500 focus:border-red-500 focus:border-2 focus-visible:border-red-500 focus-visible:border-2' : ''}`}
+                    className={`min-h-[140px] text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation ${errors.description ? '!border-red-500 focus:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
                 <div className="flex justify-between items-center mt-1">
                   <p className="text-xs text-gray-500">
@@ -1510,7 +1508,7 @@ const SellerResponse = () => {
                       setPrice('₹' + e.target.value);
                     }
                   }}
-                    className={`h-12 sm:h-14 text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold ${errors.price ? 'border-red-500 focus:border-red-500 focus:border-2 focus-visible:border-red-500 focus-visible:border-2' : ''}`}
+                    className={`h-12 sm:h-14 text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold touch-manipulation ${errors.price ? '!border-red-500 focus:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                   required
                 />
@@ -1534,7 +1532,7 @@ const SellerResponse = () => {
               </div>
 
               {/* Form Progress Indicator */}
-              <div className="pt-4 space-y-3 border-4 border-black rounded-lg p-4">
+              <div className="pt-4 space-y-3 !border-0 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs sm:text-sm font-semibold text-foreground">Form Completion</h3>
                   <span className={`text-[10px] sm:text-xs ${formProgress === 100 ? 'text-green-600 font-semibold' : 'text-muted-foreground'}`}>
@@ -1569,11 +1567,9 @@ const SellerResponse = () => {
                   placeholder="Payment terms, delivery details, etc..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value.slice(0, 300))}
-                    className="min-h-[120px] text-base border border-black focus:border-2 focus:border-black focus:ring-0 focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10"
+                    className="min-h-[120px] text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation"
                     style={{ fontSize: '16px' }}
                 />
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-none pointer-events-none z-0" />
                 </div>
                 <span className="text-[10px] sm:text-xs text-black">
                   {notes.length}/300 characters
@@ -1629,7 +1625,7 @@ const SellerResponse = () => {
                     />
                     <label
                       htmlFor="response-images"
-                      className="block w-full text-center rounded-xl border-2 border-black bg-white hover:bg-blue-50/30 active:scale-[0.98] active:bg-blue-100 transition-all duration-200 py-3 text-sm font-bold text-black cursor-pointer shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-[2px]"
+                      className="block w-full text-center !rounded-2xl !border-[1.5px] !border-black bg-white hover:bg-gray-50 text-black !transition-all !duration-150 py-3 text-sm font-black cursor-pointer !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
@@ -1721,9 +1717,9 @@ const SellerResponse = () => {
                       }));
                       navigate(`/profile?returnTo=/respond/${enquiryId}`);
                     }}
-                    className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all group shadow-[0_4px_0_0_rgba(37,99,235,0.4)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.4)] active:translate-y-0.5"
+                    className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-2xl !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !transition-all !duration-150 group !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
                   >
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                       <ShieldCheck className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1 text-left">
@@ -1753,15 +1749,11 @@ const SellerResponse = () => {
                       });
                     }
                   }}
-                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group ${
+                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none ${
                     submitting ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                   disabled={!price || submitting}
                 >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                   {submitting ? (
                     <div className="flex items-center justify-center space-x-2 relative z-10">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>

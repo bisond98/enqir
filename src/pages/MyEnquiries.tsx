@@ -802,14 +802,14 @@ const MyEnquiries = () => {
                       <div className="relative space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-3.5">
                         {/* Enquiry Heading - Moved from header */}
                         <div className="mb-2 sm:mb-3 lg:mb-2 xl:mb-3">
-                          <h3 className={`text-lg sm:text-xl lg:text-lg xl:text-xl font-bold leading-tight tracking-tight ${
+                          <h3 className={`text-lg sm:text-xl lg:text-lg xl:text-xl font-bold leading-tight tracking-tight text-center ${
                             isExpired ? 'text-gray-400' : 'text-black'
                           }`}>
                             {enquiry.title}
                           </h3>
                           {/* Status Message as Subheading */}
                           {getStatusMessage(enquiry) && (
-                            <div className="mt-1 sm:mt-1 lg:mt-0.5 xl:mt-1">
+                            <div className="mt-1 sm:mt-1 lg:mt-0.5 xl:mt-1 text-center">
                               <span className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500 font-medium">{getStatusMessage(enquiry)}</span>
                             </div>
                           )}
@@ -834,20 +834,20 @@ const MyEnquiries = () => {
                             </Badge>
                             {/* Posted - Mobile Only */}
                             <span className="sm:hidden flex items-center gap-1 px-1.5 py-0.5 bg-gray-50/80 border-0 rounded-md text-[7px] text-gray-600 font-semibold">
-                              Posted: {formatDate(enquiry.createdAt)}
+                              Posted on: {formatDate(enquiry.createdAt)}
                             </span>
                           </div>
                         </div>
 
                         {/* Budget & Location Group */}
-                        <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 p-2 sm:p-2.5 lg:p-2 xl:p-2.5 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl border-[0.5px] border-gray-800 shadow-sm">
-                          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
-                            <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-6.5 lg:h-6.5 xl:w-7 xl:h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                              <span className="text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs">₹</span>
+                        <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3 p-3 sm:p-4 lg:p-3.5 xl:p-4 bg-gradient-to-r from-white via-gray-50/50 to-white rounded-lg sm:rounded-xl lg:rounded-lg xl:rounded-xl border-[0.5px] border-gray-800 shadow-sm">
+                          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-11 xl:h-11 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md sm:rounded-lg lg:rounded-md xl:rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                              <span className="text-white font-black text-xs sm:text-base lg:text-sm xl:text-lg">₹</span>
                             </div>
                             <div>
-                              <div className="text-[8px] sm:text-[9px] lg:text-[8px] xl:text-[9px] text-gray-600 font-bold uppercase tracking-wide">Budget</div>
-                              <div className="text-xs sm:text-base lg:text-sm xl:text-base font-black text-gray-900 tracking-tight">{formatBudget(enquiry.budget)}</div>
+                              <div className="text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-600 font-bold uppercase tracking-wide">Budget</div>
+                              <div className="text-base sm:text-xl lg:text-lg xl:text-2xl font-black text-gray-900 tracking-tight">{formatBudget(enquiry.budget)}</div>
                             </div>
                           </div>
                           {enquiry.location && (
@@ -891,17 +891,17 @@ const MyEnquiries = () => {
                         <div className="space-y-1 sm:space-y-1.5 lg:space-y-1 xl:space-y-1.5 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5">
                           {/* Admin Notes - Hidden */}
                           {/* Timestamps */}
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
-                            <span className="hidden sm:flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-0 rounded-lg lg:rounded-md xl:rounded-lg">
-                              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
-                              <span className="font-semibold">Posted: {formatDate(enquiry.createdAt)}</span>
-                            </span>
+                          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 text-[9px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-gray-500">
                             {enquiry.rejectedAt && (
                               <span className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-red-50/80 border border-red-200/60 rounded-lg lg:rounded-md xl:rounded-lg text-red-700 font-semibold">
                                 <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
                                 <span>Rejected: {formatDate(enquiry.rejectedAt)}</span>
                               </span>
                             )}
+                            <span className="hidden sm:flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-1 sm:py-1.5 lg:py-1 xl:py-1.5 bg-gray-50/80 border-0 rounded-lg lg:rounded-md xl:rounded-lg">
+                              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 flex-shrink-0" />
+                              <span className="font-semibold">Posted on: {formatDate(enquiry.createdAt)}</span>
+                            </span>
                           </div>
                         </div>
 
@@ -914,18 +914,14 @@ const MyEnquiries = () => {
                           }}
                         >
                           {isExpired ? (
-                            <button disabled className="flex-shrink-0 lg:flex-1 border-[0.5px] border-black text-gray-400 bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden">
+                            <button disabled className="flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black text-gray-400 !bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden touch-manipulation select-none">
                               <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10" />
                               <span className="whitespace-nowrap relative z-10">View Details</span>
                             </button>
                           ) : (
                             <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-shrink-0 lg:flex-1 group/btn">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
-                                {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/btn:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
+                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] relative overflow-hidden touch-manipulation select-none">
+                                <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Details</span>
                               </button>
                             </Link>
@@ -933,21 +929,14 @@ const MyEnquiries = () => {
                           
                           <button 
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses touch-manipulation select-none"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
                               }
                             }}
                           >
-                            {/* Physical button depth effect */}
-                            {!isExpired && (
-                              <>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/responses:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                              </>
-                            )}
-                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/responses:scale-110 transition-transform duration-200 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
+                            <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
                             {(() => {
                               const allResponses = enquiryResponses[enquiry.id] || [];
                               // Count only approved responses to match what's shown on responses page
@@ -968,12 +957,8 @@ const MyEnquiries = () => {
                           
                           {enquiry.status === 'live' && !isExpired && (
                             <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-shrink-0 lg:flex-1 group/chats">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full border-[0.5px] border-black bg-white hover:bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] relative overflow-hidden">
-                                {/* Physical button depth effect */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                {/* Shimmer effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/chats:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/chats:scale-110 transition-transform duration-200 relative z-10 text-green-500 fill-green-500 stroke-black stroke-2" />
+                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] relative overflow-hidden touch-manipulation select-none">
+                                <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-green-500 fill-green-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
                               </button>
                             </Link>
@@ -986,16 +971,9 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 border border-black bg-red-500 hover:bg-red-600 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-red-500 hover:!bg-red-600 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete touch-manipulation select-none"
                           >
-                            {/* Physical button depth effect */}
-                            {!isExpired && (
-                              <>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/delete:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                              </>
-                            )}
-                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 group-hover/delete:scale-110 transition-transform duration-200 relative z-10 text-white fill-white stroke-black stroke-2" />
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-white fill-white stroke-black stroke-2" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>
                             <span className="sm:hidden whitespace-nowrap tracking-tight relative z-10">Delete</span>
                           </button>
