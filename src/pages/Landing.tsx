@@ -2540,26 +2540,22 @@ const Landing = () => {
                               const isOwnEnquiry = enquiry.userId === user.uid;
                               if (isOwnEnquiry) {
                                 return (
-                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                  <button className="w-full h-9 !border-[1.5px] !border-black bg-gray-100 text-gray-500 text-[10px] font-black !rounded-2xl cursor-not-allowed min-h-[36px] relative overflow-hidden" disabled>
                                     <span className="relative z-10">Your Enquiry</span>
                                   </button>
                                 );
                               } else if (isEnquiryOutdated(enquiry)) {
                                 return (
-                                  <button className="w-full h-9 bg-gray-100 text-gray-500 text-[10px] font-black rounded-t-lg rounded-b-xl border border-black cursor-not-allowed min-h-[36px] shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden" disabled>
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
+                                  <button className="w-full h-9 !border-[1.5px] !border-black bg-gray-100 text-gray-500 text-[10px] font-black !rounded-2xl cursor-not-allowed min-h-[36px] relative overflow-hidden" disabled>
                                     <span className="relative z-10">Expired</span>
                                   </button>
                                 );
                               } else {
                                 return (
                                   <button 
-                                    className="w-full h-9 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                                    className="w-full h-9 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white text-[10px] font-black !rounded-2xl relative overflow-hidden min-h-[36px] shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none"
                                     onClick={() => navigate(`/respond/${enquiry.id}`)}
                                   >
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
                                     <span className="relative z-10">Sell</span>
                                   </button>
                                 );
@@ -2567,11 +2563,9 @@ const Landing = () => {
                             })()
                           ) : (
                             <button 
-                              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black rounded-t-lg rounded-b-xl border border-blue-700 hover:border-blue-800 transition-all duration-200 shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] hover:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_1px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden min-h-[36px] group"
+                              className="w-full h-9 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white text-[10px] font-black !rounded-2xl relative overflow-hidden min-h-[36px] shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none"
                               onClick={() => navigate('/signin')}
                             >
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-t-lg rounded-b-xl" />
                               <span className="relative z-10">Sign In</span>
                             </button>
                           )}
@@ -2628,30 +2622,22 @@ const Landing = () => {
                             const isOwnEnquiry = enquiry.userId === user.uid;
                             if (isOwnEnquiry) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
-                                  {/* Physical button depth effect */}
-                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} !border-[1.5px] !border-black bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black !rounded-2xl cursor-not-allowed min-h-[36px] relative overflow-hidden`} disabled>
                                   <span className="relative z-10">Your Enquiry</span>
                                 </button>
                               );
                             } else if (isEnquiryOutdated(enquiry)) {
                               return (
-                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black cursor-not-allowed ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'} shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden`} disabled>
-                                  {/* Physical button depth effect */}
-                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
+                                <button className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} !border-[1.5px] !border-black bg-gray-100 text-gray-500 ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black !rounded-2xl cursor-not-allowed min-h-[36px] relative overflow-hidden`} disabled>
                                   <span className="relative z-10">Expired</span>
                                 </button>
                               );
                             } else {
                               return (
                                 <button 
-                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-black shadow-[0_2px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:shadow-[0_1px_0_0_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                                  className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black !rounded-2xl relative overflow-hidden shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none`}
                                   onClick={() => navigate(`/respond/${enquiry.id}`)}
                                 >
-                                  {/* Physical button depth effect */}
-                                  <div className={`absolute inset-0 bg-gradient-to-b from-white/10 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
-                                  {/* Shimmer effect */}
-                                  <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
                                   <span className="relative z-10">Sell</span>
                                 </button>
                               );
@@ -2659,13 +2645,9 @@ const Landing = () => {
                           })()
                         ) : (
                           <button 
-                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} bg-blue-600 hover:bg-blue-700 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} border border-blue-700 hover:border-blue-800 transition-all duration-200 shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)] hover:shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 relative overflow-hidden ${windowWidth < 640 ? 'min-h-[36px]' : 'min-h-[36px]'}`}
+                            className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black !rounded-2xl relative overflow-hidden shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none`}
                             onClick={() => navigate('/signin')}
                           >
-                            {/* Physical button depth effect */}
-                            <div className={`absolute inset-0 bg-gradient-to-b from-white/20 to-transparent ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'} pointer-events-none`} />
-                            {/* Shimmer effect */}
-                            <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none ${windowWidth < 640 ? 'rounded-t-lg rounded-b-xl' : 'rounded-lg'}`} />
                             <span className="relative z-10">Sign In</span>
                           </button>
                         )}
@@ -2775,13 +2757,13 @@ const Landing = () => {
             )}
 
             {/* Show All Enquiries Button */}
-            <div className="text-center mt-3">
+            <div className="text-center mt-8">
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-[50px] sm:h-[54px] px-6 sm:px-8 !text-[15px] font-black !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center gap-2"
+                  className="h-[38px] sm:h-[40px] px-4 sm:px-5 !text-[12px] sm:!text-[13px] font-black !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center gap-1.5"
                 >
-                  <Eye className="h-4 w-4 relative z-10" />
+                  <Eye className="h-3.5 w-3.5 relative z-10" />
                   <span className="relative z-10">Show All Enquiries</span>
                 </Button>
               </Link>
@@ -3032,10 +3014,10 @@ const Landing = () => {
                         })}
                       </AnimatePresence>
                     </div>
-                    <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-[50px] sm:h-[54px] px-6 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !text-[15px] font-black !rounded-2xl inline-flex items-center gap-1.5 transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] relative overflow-hidden touch-manipulation select-none">
+                    <Link to="/sell/marketplace" className="group mt-8">
+                      <button className="h-[38px] sm:h-[40px] px-4 sm:px-5 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !text-[12px] sm:!text-[13px] font-black !rounded-2xl inline-flex items-center gap-1 transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] relative overflow-hidden touch-manipulation select-none">
                         <span className="relative z-10">Show All</span>
-                        <ArrowRight className="h-4 w-4 relative z-10" />
+                        <ArrowRight className="h-3.5 w-3.5 relative z-10" />
                       </button>
                     </Link>
 

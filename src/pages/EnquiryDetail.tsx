@@ -789,7 +789,7 @@ const EnquiryDetail = () => {
                   <div className="mb-5 sm:mb-6">
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
-                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif" }} className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight break-words !border-[1.5px] !border-black rounded-2xl px-4 py-3 text-center">Need: {enquiry.title}</h2>
+                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif" }} className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight break-words !bg-gray-200 !border-[1.5px] !border-black rounded-2xl px-4 py-3 text-center"><span className="text-red-600 bg-gray-200 rounded-md px-1.5 py-0.5">Need:</span> {enquiry.title}</h2>
                     </div>
                     <h3 className="text-xs sm:text-xs font-black text-slate-700 mb-3 sm:mb-3 text-center uppercase tracking-wide">Description</h3>
                     <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
@@ -851,10 +851,10 @@ const EnquiryDetail = () => {
                   </div>
 
                   <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
-                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -864,7 +864,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -877,7 +877,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -905,10 +905,10 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
                         <div className="flex-1 min-w-0">
