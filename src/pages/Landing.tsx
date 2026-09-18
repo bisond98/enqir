@@ -2109,7 +2109,7 @@ const Landing = () => {
                 - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries Count */}
             <div className="text-center mb-4 sm:mb-4">
-              <p className="text-xs sm:text-sm font-black text-white bg-black mb-3 inline-block border border-black rounded-xl px-2 py-0.5 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">Enquiries</p>
+              <p className="text-xs sm:text-sm font-black text-black bg-white mb-3 inline-block !border-[1.5px] !border-black !rounded-2xl px-3 py-1 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">Enquiries</p>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
@@ -2370,7 +2370,7 @@ const Landing = () => {
                       }}
                     >
             <motion.div 
-              className={`bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black hover:border-gray-700 flex flex-col h-full overflow-visible group relative ${
+              className={`bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl !border-[1.5px] !border-black flex flex-col h-full overflow-visible group relative ${
                 isEnquiryOutdated(enquiry) ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'
               }`}
               animate={{
@@ -2395,8 +2395,8 @@ const Landing = () => {
                   ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' 
                   : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
                 boxShadow: isHovered 
-                  ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
-                  : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                  ? '0 8px 0 0 rgba(0,0,0,0.85), 0 12px 32px rgba(0,0,0,0.15)'
+                  : '0 5px 0 0 rgba(0,0,0,0.85)',
                 transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
               }}
             >
@@ -2500,7 +2500,7 @@ const Landing = () => {
                             <span className="text-[7px] sm:text-[8px] font-normal text-gray-500 flex-shrink-0">at</span>
                             <div className="flex items-center gap-1 sm:gap-1.5">
                               <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-900 flex-shrink-0 stroke-[2.5]" />
-                              <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate min-w-0">{enquiry.location}</span>
+                              <span className="text-[10px] sm:text-xs font-semibold text-gray-900 min-w-0">{enquiry.location && enquiry.location.length > 15 ? `${enquiry.location.substring(0, 15)}…` : enquiry.location}</span>
                             </div>
                           </div>
                         </div>
@@ -2779,13 +2779,9 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block">
                 <Button 
                   variant="outline" 
-                  className="h-9 sm:h-12 px-4 sm:px-6 text-[10px] sm:text-sm font-black !border !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                  className="h-[50px] sm:h-[54px] px-6 sm:px-8 !text-[15px] font-black !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center gap-2"
                 >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                  <Eye className="mr-1 sm:mr-2 h-2.5 w-2.5 sm:h-4 sm:w-4 relative z-10" />
+                  <Eye className="h-4 w-4 relative z-10" />
                   <span className="relative z-10">Show All Enquiries</span>
                 </Button>
               </Link>
@@ -2879,7 +2875,7 @@ const Landing = () => {
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
                 {shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="inline-block border border-black rounded-xl px-2 py-0.5 text-xs sm:text-sm font-black text-white bg-black mb-3 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">For Sale</p>
+                    <p className="inline-block !border-[1.5px] !border-black !rounded-2xl px-3 py-1 text-xs sm:text-sm font-black text-black bg-white mb-3 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">For Sale</p>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
@@ -2950,7 +2946,7 @@ const Landing = () => {
                             >
                               <Link to={`/sell/listing/${listing.id}`} className="block h-full">
                                 <motion.div
-                                  className="bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl border-2 border-black flex flex-col h-full overflow-hidden group"
+                                  className="bg-gray-100 rounded-xl sm:rounded-2xl lg:rounded-3xl !border-[1.5px] !border-black flex flex-col h-full overflow-hidden group"
                                   animate={{
                                     rotateX: isHovered ? 2 : 0,
                                     rotateY: isHovered ? -2 : 0,
@@ -2963,8 +2959,8 @@ const Landing = () => {
                                     perspective: '1000px',
                                     filter: isHovered ? 'drop-shadow(0 12px 32px rgba(0,0,0,0.2))' : 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
                                     boxShadow: isHovered
-                                      ? '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
-                                      : '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)',
+                                      ? '0 8px 0 0 rgba(0,0,0,0.85), 0 12px 32px rgba(0,0,0,0.15)'
+                                      : '0 5px 0 0 rgba(0,0,0,0.85)',
                                     transition: 'filter 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
                                   }}
                                 >
@@ -3013,7 +3009,7 @@ const Landing = () => {
                                       <div className="w-full mb-2 sm:mb-2.5">
                                         <div className="flex items-center justify-between bg-gray-200 rounded-lg border border-black px-1.5 py-1 sm:px-2 sm:py-1 min-h-[32px]">
                                           <span className="text-[7px] sm:text-[8px] text-gray-500">at</span>
-                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-900 truncate">{listing.location || "N/A"}</span>
+                                          <span className="text-[10px] sm:text-xs font-semibold text-gray-900">{listing.location && listing.location.length > 15 ? `${listing.location.substring(0, 15)}…` : (listing.location || "N/A")}</span>
                                         </div>
                                       </div>
                                       <button
@@ -3023,9 +3019,8 @@ const Landing = () => {
                                           e.stopPropagation();
                                           navigate(`/sell/listing/${listing.id}`);
                                         }}
-                                        className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-xs font-black rounded-t-lg rounded-b-xl border border-blue-700 hover:border-blue-800 min-h-[36px] shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] hover:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.3),inset_0_1px_1px_rgba(0,0,0,0.1)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden"
+                                        className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-xs font-black rounded-t-lg rounded-b-xl !border-[1.5px] !border-black min-h-[36px] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] transition-all !duration-150 relative overflow-hidden touch-manipulation select-none"
                                       >
-                                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg rounded-b-xl pointer-events-none" />
                                         <span className="relative z-10">View Product</span>
                                       </button>
                                     </div>
@@ -3038,11 +3033,9 @@ const Landing = () => {
                       </AnimatePresence>
                     </div>
                     <Link to="/sell/marketplace" className="group mt-3">
-                      <button className="h-9 sm:h-11 px-4 border border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] sm:text-xs font-black !rounded-2xl inline-flex items-center gap-1.5 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]">
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+                      <button className="h-[50px] sm:h-[54px] px-6 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !text-[15px] font-black !rounded-2xl inline-flex items-center gap-1.5 transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] relative overflow-hidden touch-manipulation select-none">
                         <span className="relative z-10">Show All</span>
-                        <ArrowRight className="h-3 w-3 relative z-10" />
+                        <ArrowRight className="h-4 w-4 relative z-10" />
                       </button>
                     </Link>
 

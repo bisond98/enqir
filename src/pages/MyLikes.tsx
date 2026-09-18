@@ -388,12 +388,8 @@ const MyLikes = () => {
               <button
                 type="button"
                 onClick={() => setDropdownOpen(v => !v)}
-                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg border-[0.5px] border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] font-black !rounded-2xl !overflow-hidden group"
+                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg !border-[1.5px] !border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 font-black !rounded-2xl !overflow-hidden touch-manipulation select-none"
               >
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 ml-4 mr-2 text-white flex-shrink-0 relative z-10" />
                 <span className="flex-1 text-center truncate relative z-10">Categories</span>
                 {effective.length > 0 && (
@@ -583,7 +579,7 @@ const MyLikes = () => {
                   <div className="space-y-6">
                     {/* Listings */}
                     <div>
-                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
+                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black !border-[1.5px] !border-black rounded-xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
                         <Tag className="h-3 w-3" /> Listings ({feedListings.length})
                       </p>
                       {feedListings.length === 0 ? (
@@ -597,7 +593,7 @@ const MyLikes = () => {
                                 key={l.id}
                                 type="button"
                                 onClick={() => navigate(`/sell/listing/${l.id}`)}
-                                className="group/tile relative flex items-center gap-3 !rounded-2xl border-[0.5px] border-black bg-white px-3 py-3 text-left !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] hover:translate-y-[1px] active:translate-y-[3px] !transition-all !duration-150 overflow-hidden"
+                                className="group/tile relative flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white px-3 py-3 text-left !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden touch-manipulation select-none"
                               >
                                 {l.images?.[0] ? (
                                   <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-200" />
@@ -624,7 +620,7 @@ const MyLikes = () => {
 
                     {/* Enquiries */}
                     <div>
-                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
+                      <p className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide px-4 py-2 bg-black !border-[1.5px] !border-black rounded-xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] inline-flex items-center gap-1.5 justify-center w-fit max-w-full">
                         <Megaphone className="h-3 w-3" /> Enquiries ({feedEnquiries.length})
                       </p>
                       {feedEnquiries.length === 0 ? (
@@ -638,7 +634,7 @@ const MyLikes = () => {
                                 key={e.id}
                                 type="button"
                                 onClick={() => navigate(`/enquiry/${e.id}`)}
-                                className="group/tile relative flex items-center gap-3 !rounded-2xl border-[0.5px] border-black bg-white px-3 py-3 text-left !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] hover:translate-y-[1px] active:translate-y-[3px] !transition-all !duration-150 overflow-hidden"
+                                className="group/tile relative flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white px-3 py-3 text-left !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden touch-manipulation select-none"
                               >
                                 <span className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                                   <Icon className="w-5 h-5 text-gray-500" />
@@ -666,9 +662,9 @@ const MyLikes = () => {
               <Button
                 onClick={pending === null ? undefined : savePending}
                 disabled={pending === null || saving}
-                className={`relative w-full h-14 sm:h-16 !rounded-2xl text-base sm:text-lg font-black !overflow-hidden group !transition-all !duration-200 !transform ${
+                className={`relative w-full h-14 sm:h-16 !rounded-2xl !border-[1.5px] !border-black text-base sm:text-lg font-black !overflow-hidden !transition-all !duration-150 touch-manipulation select-none ${
                   pending !== null && pendingCount > 0
-                    ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.15)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:!scale-[1.02] active:!scale-[0.98]'
+                    ? '!bg-black hover:!bg-gray-900 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]'
                     : 'bg-gray-200 text-gray-500 !shadow-none cursor-not-allowed'
                 }`}
               >
@@ -676,14 +672,6 @@ const MyLikes = () => {
                   'Saving…'
                 ) : (
                   <span className="inline-flex items-center gap-2 relative z-10"><Check className="h-4 w-4" /> Save</span>
-                )}
-                {pending !== null && pendingCount > 0 && (
-                  <>
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent !rounded-2xl pointer-events-none" />
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none !rounded-2xl" />
-                  </>
                 )}
               </Button>
             </div>

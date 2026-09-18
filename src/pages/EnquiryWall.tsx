@@ -6592,16 +6592,10 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !rounded-xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !rounded-xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
-                                    {/* Top highlight overlay — same as Connect button */}
-                                    <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                                    
-                                    {/* Shine sweep on hover — same as Connect button */}
-                                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                    
-                                    <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                                    <span className="relative z-10 flex items-center">
                                       respond / sell / provide
                                       <ArrowRight className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 ml-0.5 sm:ml-1.5 md:ml-2" />
                                     </span>
@@ -6667,16 +6661,10 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-10 text-[11px] font-black !text-white !rounded-xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                                className="w-full h-10 text-[11px] font-black !text-white !rounded-xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                {/* Top highlight overlay — same as Connect button */}
-                                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                                
-                                {/* Shine sweep on hover — same as Connect button */}
-                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                
-                                <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                                <span className="relative z-10 flex items-center">
                                   respond / sell / provide
                                   <ArrowRight className="h-2.5 w-2.5 ml-0.5" />
                                 </span>
@@ -6718,16 +6706,10 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !rounded-2xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !rounded-2xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                {/* Top highlight overlay — same as Connect button */}
-                                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                                
-                                {/* Shine sweep on hover — same as Connect button */}
-                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                                
-                                <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                                <span className="relative z-10 flex items-center">
                                   respond / sell / provide
                                   <ArrowRight className="h-2 w-2 sm:h-3.5 sm:w-3.5 ml-1 sm:ml-2" />
                                 </span>
