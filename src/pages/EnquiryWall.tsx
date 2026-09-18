@@ -6742,12 +6742,20 @@ export default function EnquiryWall() {
               ))}
             </div>
 
-            {/* 🚀 PAGINATION: Next Button */}
-            {displayEnquiries.length > enquiriesPerPage && hasMore && (
-              <div className="flex justify-center pt-2 pb-4">
+            {/* 🚀 PAGINATION: Previous / page indicator / Next */}
+            {displayEnquiries.length > enquiriesPerPage && (
+              <div className="flex items-center justify-center gap-3 pt-2 pb-4">
+                <button
+                  onClick={prevPage}
+                  disabled={currentPage <= 1}
+                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0"
+                >
+                  ← Previous
+                </button>
                 <button
                   onClick={nextPage}
-                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all"
+                  disabled={!hasMore}
+                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0"
                 >
                   Next →
                 </button>
