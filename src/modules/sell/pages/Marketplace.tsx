@@ -625,7 +625,7 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 overflow-hidden font-bold">
+              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold touch-manipulation">
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
@@ -645,7 +645,7 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
+              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
             >
               <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0" />
               <span className="flex-1 text-center truncate text-white font-bold">
@@ -853,28 +853,39 @@ export default function Marketplace() {
             </button>
           )}
           {/* View Toggle */}
-          <div className="flex h-10 sm:h-12 border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
+          <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] flex-shrink-0">
             <button
               onClick={() => { setViewMode('list'); setPage(0); }}
-              className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+              className={`h-full px-3.5 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
-              <List className="h-3 w-3" />
+              <List className="h-4 w-4" strokeWidth={2.25} />
             </button>
             <button
               onClick={() => { setViewMode('grid'); setPage(0); }}
-              className={`h-full px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+              className={`h-full px-3.5 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
             >
-              <LayoutGrid className="h-3 w-3" />
+              <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
             </button>
           </div>
+          {/* Search button — original flex-1 position, restyled only */}
           <button
-            className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+            className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50 disabled:!translate-y-0 disabled:active:!translate-y-0 disabled:active:!shadow-[0_5px_0_0_rgba(0,0,0,0.85)]"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
-            <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-            <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Searching…
+                </>
+              ) : (
+                <>
+                  <Search className="h-[18px] w-[18px]" strokeWidth={2.5} />
+                  Search
+                </>
+              )}
+            </span>
           </button>
         </div>
       </div>

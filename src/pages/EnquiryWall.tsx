@@ -5244,21 +5244,21 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
 {/* Buy / Sell / Filter row - marketplace style */}
             <div className="sm:hidden grid grid-cols-3 gap-3">
-              <button onClick={() => navigate('/post-enquiry')} className="w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] !bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]">
+              <button onClick={() => navigate('/post-enquiry')} className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none">
                 <span className="relative z-10">Buy</span>
               </button>
-              <button className="w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]">
+              <button className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none">
                 <span className="relative z-10">Sell</span>
               </button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all active:!scale-[0.98] flex items-center justify-center gap-1 ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]`}>
                 <SlidersHorizontal className="h-4 w-4 relative z-10" />
                 <span className="relative z-10">Filter</span>
               </button>
             </div>
             <div className="hidden sm:flex items-center justify-end gap-2">
-              <button onClick={() => navigate('/post-enquiry')} className="px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black bg-white hover:bg-gray-50 text-black transition-all active:scale-[0.98]">Buy</button>
-              <button className="px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white transition-all active:scale-[0.98]">Sell</button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-4 h-10 font-black text-xs !rounded-2xl border-[1.5px] border-black transition-all active:scale-[0.98] flex items-center gap-1.5 ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'}`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
+              <button onClick={() => navigate('/post-enquiry')} className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-white hover:bg-gray-50 text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none">Buy</button>
+              <button className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none">Sell</button>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black transition-all !duration-150 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
             </div>
 
 {/* Filter Panel: Adjust budget + trust badge - opens from the header Filter button */}
@@ -5339,7 +5339,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-10 sm:h-12 text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 overflow-hidden font-bold [&>svg]:!text-white">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5354,7 +5354,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-10 sm:h-12 flex items-center text-xs sm:text-sm border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5782,22 +5782,22 @@ export default function EnquiryWall() {
                   <X className="h-3 w-3" />Clear filters
                 </button>
               )}
-              <div className="flex h-10 sm:h-12 border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] flex-shrink-0">
+              <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] flex-shrink-0">
                 <button
                   onClick={() => { setViewMode('list'); }}
-                  className={`h-full px-3 flex items-center justify-center transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                  className={`h-full px-3.5 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
-                  <List className="h-3 w-3" />
+                  <List className="h-4 w-4" strokeWidth={2.25} />
                 </button>
                 <button
                   onClick={() => { setViewMode('grid'); }}
-                  className={`h-full px-3 flex items-center justify-center transition-all border-l-2 border-black ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                  className={`h-full px-3.5 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
-                  <LayoutGrid className="h-3 w-3" />
+                  <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
                 </button>
               </div>
               <button
-                className="relative flex-1 h-10 sm:h-12 !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-xs sm:text-sm !shadow-[0_8px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(37,99,235,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   preventSuggestionsRef.current = true;
                   setShowSuggestions(false);

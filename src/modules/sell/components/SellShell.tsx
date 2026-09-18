@@ -86,14 +86,14 @@ export default function SellShell({
           </div>
           <div className="sm:hidden grid grid-cols-3 gap-3 mb-4">
             <Link to="/sell/new">
-              <Button size="sm" variant="outline" className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(37,99,235,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+              <Button size="sm" variant="outline" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]'}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                 <Plus className="h-4 w-4 mr-1 relative z-10" />
                 <span className="relative z-10">Sell</span>
               </Button>
             </Link>
             <Link to="/sell/marketplace">
-              <Button variant="outline" size="sm" className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isShop ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+              <Button variant="outline" size="sm" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${isShop ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]'}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                 <Store className="h-4 w-4 mr-1 relative z-10" />
                 <span className="relative z-10">Shop</span>
@@ -104,7 +104,7 @@ export default function SellShell({
                 variant="outline"
                 size="sm"
                 onClick={onToggleFilter}
-                className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${filterOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}
+                className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${filterOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]'}`}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                 <LayoutDashboard className="h-4 w-4 mr-1 relative z-10" />
@@ -112,7 +112,7 @@ export default function SellShell({
               </Button>
             ) : (
               <Link to="/sell/dashboard">
-                <Button variant="outline" size="sm" className={`w-full h-12 font-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-200 active:!scale-[0.98] ${isPanel ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]'}`}>
+                <Button variant="outline" size="sm" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${isPanel ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]'}`}>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                   <LayoutDashboard className="h-4 w-4 mr-1 relative z-10" />
                   <span className="relative z-10">Panel</span>
