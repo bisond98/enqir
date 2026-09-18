@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -514,17 +514,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -532,32 +532,52 @@ export default function ListingDetail() {
                 );
               })()}
 
-              <span className="bg-red-600 text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              <span className="bg-red-600 text-white border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                <MapPin className="h-3 w-3 text-red-500" />{listing.location}
-              </span>
-              {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                  <Calendar className="h-3 w-3 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                  <MapPin className="h-5 w-5 text-red-500" />{listing.location}
                 </span>
-              )}
-              {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
-                Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key)).map(([key, val], i) => (
-                  <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                    {key === 'facing' && <span className="text-[9px] text-gray-400">Facing</span>}{val}
-                    {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
-                  </span>
-                ))
+              {formatPostedDate(listing.createdAt) && (
+                <span className="inline-flex items-center gap-1 text-[13px] sm:text-sm font-black bg-white text-black border border-black px-3.5 py-2 rounded-xl">
+                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                </span>
+              )}                {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
+                (() => {
+                  const detailLabels: Record<string, string> = {
+                    transmission: 'Transmission',
+                    fuel: 'Fuel type',
+                    year: 'Year of manufacture',
+                    kmsDriven: 'KM driven',
+                    ownership: '',
+                    brand: 'Brand',
+                    facing: 'Facing',
+                    furnishing: 'Furnishing',
+                  };
+                  const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
+                  return entries.map(([key, val], i) => {
+                    const label = key in detailLabels ? detailLabels[key] : '';
+                    return (
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                        {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
+                        {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
+                        {label && key !== 'transmission' && key !== 'fuel' && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
+                        {key === 'facing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Facing:</span>}
+                        {key === 'furnishing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Furnishing:</span>}
+                        {String(val)}
+                        {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
+                      </span>
+                    );
+                  });
+                })()
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
@@ -772,7 +792,7 @@ function MessageSellerInline({
             onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
             placeholder="e.g., 15,000"
             inputMode="numeric"
-            className="h-10 sm:h-11 text-sm border-[1.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
+            className="h-10 sm:h-11 text-sm !border-[1.5px] !border-black rounded-2xl bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] pl-7 touch-manipulation"
           />
         </div>
       </div>
@@ -785,7 +805,7 @@ function MessageSellerInline({
             placeholder="Write your message to the seller…"
             maxLength={250}
             rows={3}
-            className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20"
+            className="text-sm !border-[1.5px] !border-black rounded-2xl min-h-[90px] bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20 touch-manipulation"
           />
           {/* Voice & Attach icons — right side */}
           <div className="absolute right-2 bottom-2 flex items-center gap-1">
@@ -868,12 +888,10 @@ function MessageSellerInline({
       </div>
       <Button
         variant="outline"
-        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform !relative !overflow-hidden group"
+        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none"
         onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
         disabled={sending}
       >
-        <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
         <Send className="h-4 w-4 mr-2 relative z-10" />
         <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
       </Button>
