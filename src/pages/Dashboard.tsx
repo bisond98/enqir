@@ -2798,8 +2798,8 @@ const Dashboard = () => {
                           {userMatches.forNeeds.slice(0, 10).map((m) => (
                             <button
                               key={m.listingId + m.enquiryId}
-                              onClick={() => navigate(`/sell/listing/${m.listingId}`)}
-                              className="text-left border-[1.5px] border-black rounded-2xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.12)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.18)] active:translate-y-[2px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12)] transition-all"
+                              onClick={() => navigate(`/sell/listing/${m.listingId}`, { state: { from: location.pathname + location.search, viewMode } })}
+                              className="text-left !border-[1.5px] !border-black !rounded-2xl p-3 bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none"
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
@@ -2838,8 +2838,8 @@ const Dashboard = () => {
                           {userMatches.forListings.slice(0, 10).map((m) => (
                             <button
                               key={m.listingId + m.enquiryId}
-                              onClick={() => navigate(`/enquiry/${m.enquiryId}`)}
-                              className="text-left border-[1.5px] border-black rounded-2xl p-3 bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.12)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.18)] active:translate-y-[2px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12)] transition-all"
+                              onClick={() => navigate(`/enquiry/${m.enquiryId}`, { state: { from: location.pathname + location.search, viewMode } })}
+                              className="text-left !border-[1.5px] !border-black !rounded-2xl p-3 bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none"
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">

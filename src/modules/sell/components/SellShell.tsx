@@ -33,9 +33,15 @@ export default function SellShell({
                   size="sm"
                   onClick={() => {
                     if (path.startsWith('/sell/listing/')) {
-                      // Go back to wherever the user came from (marketplace, dashboard, etc.)
-                      if ((window.history.state as any)?.idx > 0) navigate(-1);
-                      else navigate('/sell/marketplace');
+                      // Prefer the exact page the user navigated from (passed via router state)
+                      const from = (location.state as any)?.from;
+                      if (from) {
+                        navigate(from);
+                      } else if ((window.history.state as any)?.idx > 0) {
+                        navigate(-1);
+                      } else {
+                        navigate('/sell/marketplace');
+                      }
                     }
                     else if (path === '/sell/dashboard') navigate('/');
                     else if (path === '/sell/marketplace') navigate('/');
