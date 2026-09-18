@@ -423,6 +423,9 @@ export default function ListingDetail() {
     );
   }
 
+  const detailsRec = (listing.details || {}) as Record<string, string>;
+  const showDealChip = ['real-estate', 'real-estate-services'].includes(listing.category) && !!detailsRec.listingFor;
+
   return (
     <SellShell title="Listing">
       {paymentDone && sending && createPortal(
@@ -471,19 +474,28 @@ export default function ListingDetail() {
                 </>
               )}
             </div>
-            {listing.images.length > 1 && (
-              <div className="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
-                {listing.images.map((url, idx) => (
-                  <button
-                    key={url}
-                    onClick={() => setActiveImage(idx)}
-                    className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border transition-all ${
-                      idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 opacity-60'
-                    }`}
-                  >
-                    <img src={url} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
+            {(listing.images.length > 1 || showDealChip) && (
+              <div className="relative mt-2">
+                {listing.images.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide pr-28">
+                    {listing.images.map((url, idx) => (
+                      <button
+                        key={url}
+                        onClick={() => setActiveImage(idx)}
+                        className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border transition-all ${
+                          idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 opacity-60'
+                        }`}
+                      >
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {showDealChip && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center text-xs sm:text-sm font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                    For {detailsRec.listingFor}
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -502,9 +514,29 @@ export default function ListingDetail() {
 
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-4 sm:mt-3">
-              <span className="bg-black text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              <span className="bg-red-600 text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
 
-              {listing.condition && (
+              {(() => {
+                const d = (listing.details || {}) as Record<string, string>;
+                const areaVal = d.builtUpArea || d.houseArea || '';
+                const isSqft = /sqft/i.test(areaVal);
+                return (
+                  <>
+                    {isSqft && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                        {areaVal}
+                      </span>
+                    )}
+                    {d.houseBhk && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                        {d.houseBhk}
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
+
+              {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                   {listing.condition}
                 </span>
@@ -517,10 +549,10 @@ export default function ListingDetail() {
                   <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
-              {listing.details && Object.values(listing.details).filter(Boolean).length > 0 && (
-                Object.values(listing.details).filter(Boolean).map((val, i) => (
+              {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
+                Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key)).map(([key, val], i) => (
                   <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                    {val}
+                    {key === 'facing' && <span className="text-[8px] text-gray-400">Facing</span>}{val}
                   </span>
                 ))
               )}
