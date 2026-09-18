@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -474,28 +474,19 @@ export default function ListingDetail() {
                 </>
               )}
             </div>
-            {(listing.images.length > 1 || showDealChip) && (
-              <div className="relative mt-2">
-                {listing.images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide pr-28">
-                    {listing.images.map((url, idx) => (
-                      <button
-                        key={url}
-                        onClick={() => setActiveImage(idx)}
-                        className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border transition-all ${
-                          idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 opacity-60'
-                        }`}
-                      >
-                        <img src={url} alt="" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {showDealChip && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center text-xs sm:text-sm font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                    For {detailsRec.listingFor}
-                  </span>
-                )}
+            {(listing.images.length > 1) && (
+              <div className="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
+                {listing.images.map((url, idx) => (
+                  <button
+                    key={url}
+                    onClick={() => setActiveImage(idx)}
+                    className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border transition-all ${
+                      idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 opacity-60'
+                    }`}
+                  >
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -503,32 +494,37 @@ export default function ListingDetail() {
 
         {/* Listing Details — inside the same unified card */}
         <div className="relative">
-          {sellerProfile?.isProfileVerified && (
-            <span className="absolute top-3 right-3 z-10 inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)]"><CheckCircle className="h-4 w-4 text-white" /></span>
-          )}
           <div className="p-4 sm:p-5">
             {/* Title */}
             <div className="w-full text-center">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">{listing.title}</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap">
+                {listing.title}
+                {sellerProfile?.isProfileVerified && (
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)] flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
+                )}
+              </h2>
             </div>
 
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-4 sm:mt-3">
-              <span className="bg-red-600 text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
-
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 sm:mt-3 text-[11px]">
               {(() => {
                 const d = (listing.details || {}) as Record<string, string>;
                 const areaVal = d.builtUpArea || d.houseArea || '';
                 const isSqft = /sqft/i.test(areaVal);
                 return (
                   <>
+                    {showDealChip && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                        For {detailsRec.listingFor}
+                      </span>
+                    )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                         {d.houseBhk}
                       </span>
                     )}
@@ -536,29 +532,32 @@ export default function ListingDetail() {
                 );
               })()}
 
+              <span className="bg-red-600 text-white border border-black font-black text-xs sm:text-sm rounded-xl px-2.5 py-1 shadow-[0_4px_0_0_rgba(0,0,0,0.2)] inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                   {listing.condition}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                <MapPin className="h-3 w-3 text-black" />{listing.location}
+              <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                <MapPin className="h-3 w-3 text-red-500" />{listing.location}
               </span>
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                  <Calendar className="h-2.5 w-2.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                  <Calendar className="h-3 w-3 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
                 Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key)).map(([key, val], i) => (
-                  <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                    {key === 'facing' && <span className="text-[8px] text-gray-400">Facing</span>}{val}
+                  <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                    {key === 'facing' && <span className="text-[9px] text-gray-400">Facing</span>}{val}
+                    {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
                   </span>
                 ))
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[10px] font-black bg-white text-black border border-black px-2.5 py-1 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
                     {tag}
                   </span>
                 ))
@@ -567,16 +566,37 @@ export default function ListingDetail() {
 
             {/* Description */}
             {listing.description && (
-              <div className="border-t border-gray-100 pt-3 mb-3 mt-3">
-                <p className="text-[13px] text-black whitespace-pre-wrap leading-relaxed font-bold">{listing.description}</p>
+              <div className="border-t border-gray-100 pt-2.5 mb-3 mt-1.5">
+                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold border border-black rounded-xl p-3">{listing.description}</p>
               </div>
             )}
 
-              {chatUnlocked && (
-                <div className="sm:hidden mt-4 w-full flex justify-center">
+              <div className="w-full flex items-center justify-between mt-4 mb-0.5 gap-2">
+                <button
+                  onClick={toggleSave}
+                  aria-label={saved ? 'Remove from saved' : 'Save listing'}
+                  className={`w-8 h-8 rounded-full border border-black flex items-center justify-center transition-all active:scale-95 ${saved ? 'bg-black text-white' : 'bg-black text-white hover:bg-gray-800'}`}
+                >
+                  <Bookmark className={`h-4 w-4 ${saved ? 'fill-white text-white' : 'text-white'}`} />
+                </button>
+                {!isOwner && listing?.sellerId && (
+                  <button
+                    onClick={() => navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`)}
+                    aria-label="Report listing"
+                    title="Report"
+                    className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </button>
+                )}
+                <ShareButton listing={listing} className="[&>svg]:!text-white !w-8 !h-8 !rounded-full !border !border-black !bg-black flex items-center justify-center !p-0 hover:!bg-gray-800" />
+              </div>
+              {/* Message Seller — integrated inside the main card (not for the owner) */}
+              {!isOwner && (chatUnlocked ? (
+                <div className="mt-4 w-full flex justify-center">
                   <Button
                     variant="outline"
-                    className="relative !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                    className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
                     onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
                   >
                     <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -585,194 +605,41 @@ export default function ListingDetail() {
                     <span className="relative z-10">Continue Messaging</span>
                   </Button>
                 </div>
-              )}
-              <div className="w-full flex items-center justify-between mt-4 mb-0.5 gap-2">
-                <button
-                  onClick={toggleSave}
-                  aria-label={saved ? 'Remove from saved' : 'Save listing'}
-                  className={`p-1 rounded-lg transition-all active:scale-95 ${saved ? 'text-black hover:bg-gray-100' : 'text-gray-600 hover:text-black hover:bg-gray-100'}`}
-                >
-                  <Bookmark className={`h-4 w-4 ${saved ? 'fill-black text-black' : 'text-gray-600'}`} />
-                </button>
-                {!isOwner && listing?.sellerId && (
-                  <button
-                    onClick={() => navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`)}
-                    aria-label="Report listing"
-                    title="Report"
-                    className="p-1 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95"
-                  >
-                    <Flag className="h-4 w-4" />
-                  </button>
-                )}
-                <span className="ml-auto"><ShareButton listing={listing} /></span>
-              </div>
+              ) : (
+                <div id="message-seller">
+                  <MessageSellerInline
+                    offeredPrice={offeredPrice}
+                    setOfferedPrice={setOfferedPrice}
+                    message={message}
+                    setMessage={setMessage}
+                    isRecording={isRecording}
+                    startRecording={startRecording}
+                    stopRecording={stopRecording}
+                    attachedFiles={attachedFiles}
+                    attachedPreviews={attachedPreviews}
+                    fileUploadProgresses={fileUploadProgresses}
+                    uploadingMedia={uploadingMedia}
+                    voiceUploadProgress={voiceUploadProgress}
+                    voicePreviewUrl={voicePreviewUrl}
+                    playPauseVoice={playPauseVoice}
+                    clearVoice={clearVoice}
+                    isPlayingVoice={isPlayingVoice}
+                    recordingTime={recordingTime}
+                    fileInputRef={fileInputRef}
+                    handleFileAttach={handleFileAttach}
+                    removeAttachedFile={removeAttachedFile}
+                    sending={sending}
+                    user={user}
+                    submitResponse={submitResponse}
+                    navigate={navigate}
+                    listingId={listing.id}
+                  />
+                </div>
+              ))}
             </div>
 
           </div>
         </div>
-
-        {/* Message Seller Card */}
-        {!isOwner && (chatUnlocked ? (
-          <>
-            {/* Desktop: keep the card + Your Chat header */}
-            <div className="hidden sm:block border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-              <div className="bg-black p-3">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-white" />
-                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Your Chat
-                  {sellerProfile?.isProfileVerified && (
-                    <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
-                  )}
-                </h3>
-                <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <Button
-                variant="outline"
-                className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
-                onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
-              >
-                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
-                <span className="relative z-10">Continue Messaging</span>
-              </Button>
-            </div>
-          </div>
-        </>
-        ) : (
-          <div id="message-seller" className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
-            <div className="bg-black p-3">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-white" />
-                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">Message Seller
-                  {sellerProfile?.isProfileVerified && (
-                    <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-blue-500"><CheckCircle className="h-1.5 w-1.5 text-white" /></span>
-                  )}
-                </h3>
-                <IndianRupee className="h-3.5 w-3.5 text-white/70 ml-auto" />
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <div>
-                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
-                  <Input
-                    value={offeredPrice ? Number(offeredPrice).toLocaleString("en-IN") : ""}
-                    maxLength={13}
-                    onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder="e.g., 15,000"
-                    inputMode="numeric"
-                    className="h-10 sm:h-11 text-sm border-[1.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-[11px] font-bold text-gray-700 uppercase mb-1 block">Chat with Seller</Label>
-                <div className="relative">
-                  <Textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write your message to the seller…"
-                    maxLength={250}
-                    rows={3}
-                    className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20"
-                  />
-                  {/* Voice & Attach icons — right side */}
-                  <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={isRecording ? stopRecording : startRecording}
-                      title={isRecording ? 'Stop recording' : 'Record voice message'}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'text-gray-500 hover:text-black hover:bg-gray-100'}`}
-                    >
-                      <Mic className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={attachedFiles.length >= 5}
-                      title={`Attach files (${attachedFiles.length}/5)`}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <Paperclip className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*,application/pdf,.doc,.docx"
-                    className="hidden"
-                    onChange={handleFileAttach}
-                  />
-                </div>
-                {/* Voice preview */}
-                {voicePreviewUrl && (
-                  <div className="mt-2 p-2 rounded-xl border-[1.5px] border-black/20 bg-gray-50">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={playPauseVoice}
-                        className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0"
-                      >
-                        {isPlayingVoice ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 ml-0.5" />}
-                      </button>
-                      <span className="text-[11px] font-bold text-gray-600">Voice note ({formatRecordingTime(recordingTime)})</span>
-                      <button type="button" onClick={clearVoice} className="ml-auto text-red-500 hover:text-red-700">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    {uploadingMedia && voiceUploadProgress > 0 && voiceUploadProgress < 100 && (
-                      <div className="mt-1.5 w-full bg-gray-200 rounded-full h-1.5">
-                        <div className="bg-black h-1.5 rounded-full transition-all duration-200" style={{ width: `${voiceUploadProgress}%` }} />
-                      </div>
-                    )}
-                  </div>
-                )}
-                {/* Attached file previews */}
-                {attachedFiles.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {attachedFiles.map((f, i) => (
-                      <div key={i} className="relative group flex flex-col">
-                        {attachedPreviews[i] ? (
-                          <img src={attachedPreviews[i]} alt={f.name} className="w-14 h-14 object-cover rounded-lg border border-black/10" />
-                        ) : (
-                          <div className="w-14 h-14 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center">
-                            <span className="text-[8px] font-bold text-gray-500 text-center px-1 truncate w-full">{f.name.split('.').pop()?.toUpperCase()}</span>
-                          </div>
-                        )}
-                        {uploadingMedia && fileUploadProgresses[i] !== undefined && fileUploadProgresses[i] < 100 && (
-                          <div className="w-14 bg-gray-200 rounded-full h-1 mt-0.5">
-                            <div className="bg-black h-1 rounded-full transition-all duration-200" style={{ width: `${fileUploadProgresses[i]}%` }} />
-                          </div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeAttachedFile(i)}
-                          className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                        >✕</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform !relative !overflow-hidden group"
-                onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
-                disabled={sending}
-              >
-                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                <Send className="h-4 w-4 mr-2 relative z-10" />
-                <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
-              </Button>
-            </div>
-          </div>
-        ))}
 
         {/* Buyer Responses (Owner Only) */}
         {isOwner && (() => {
@@ -876,5 +743,140 @@ export default function ListingDetail() {
         </div>
       )}
     </SellShell>
+  );
+}
+
+/* Integrated Message Seller — Your Price, Chat with Seller, Connect (inside main card, under save/flag/share) */
+function MessageSellerInline({
+  offeredPrice, setOfferedPrice, message, setMessage,
+  isRecording, startRecording, stopRecording,
+  attachedFiles, attachedPreviews, fileUploadProgresses,
+  uploadingMedia, voiceUploadProgress,
+  voicePreviewUrl, playPauseVoice, clearVoice, isPlayingVoice,
+  recordingTime, fileInputRef, handleFileAttach, removeAttachedFile,
+  sending, user, submitResponse, navigate, listingId,
+}: any) {
+  return (
+    <div className="border-t border-gray-100 pt-5 mt-8 space-y-3">
+      <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5">
+        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600"><MessageSquare className="h-3 w-3 text-white" /></span>
+        Message Seller
+      </h3>
+      <div>
+        <Label className="text-[8px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
+          <Input
+            value={offeredPrice ? Number(offeredPrice).toLocaleString("en-IN") : ""}
+            maxLength={13}
+            onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
+            placeholder="e.g., 15,000"
+            inputMode="numeric"
+            className="h-10 sm:h-11 text-sm border-[1.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] pl-7"
+          />
+        </div>
+      </div>
+      <div>
+        <Label className="text-[8px] font-bold text-gray-700 uppercase mb-1 block">Chat with Seller</Label>
+        <div className="relative">
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Write your message to the seller…"
+            maxLength={250}
+            rows={3}
+            className="text-sm border-[1.5px] border-black rounded-xl min-h-[90px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20"
+          />
+          {/* Voice & Attach icons — right side */}
+          <div className="absolute right-2 bottom-2 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={isRecording ? stopRecording : startRecording}
+              title={isRecording ? 'Stop recording' : 'Record voice message'}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'text-black hover:bg-gray-100'}`}
+            >
+              <Mic className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={attachedFiles.length >= 5}
+              title={`Attach files (${attachedFiles.length}/5)`}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-black hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Paperclip className="h-4 w-4" />
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*,application/pdf,.doc,.docx"
+            className="hidden"
+            onChange={handleFileAttach}
+          />
+        </div>
+        {/* Voice preview */}
+        {voicePreviewUrl && (
+          <div className="mt-2 p-2 rounded-xl border-[1.5px] border-black/20 bg-gray-50">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={playPauseVoice}
+                className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0"
+              >
+                {isPlayingVoice ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 ml-0.5" />}
+              </button>
+              <span className="text-[11px] font-bold text-gray-600">Voice note ({formatRecordingTime(recordingTime)})</span>
+              <button type="button" onClick={clearVoice} className="ml-auto text-red-500 hover:text-red-700">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            {uploadingMedia && voiceUploadProgress > 0 && voiceUploadProgress < 100 && (
+              <div className="mt-1.5 w-full bg-gray-200 rounded-full h-1.5">
+                <div className="bg-black h-1.5 rounded-full transition-all duration-200" style={{ width: `${voiceUploadProgress}%` }} />
+              </div>
+            )}
+          </div>
+        )}
+        {/* Attached file previews */}
+        {attachedFiles.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {attachedFiles.map((f: File, i: number) => (
+              <div key={i} className="relative group flex flex-col">
+                {attachedPreviews[i] ? (
+                  <img src={attachedPreviews[i]} alt={f.name} className="w-14 h-14 object-cover rounded-lg border border-black/10" />
+                ) : (
+                  <div className="w-14 h-14 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-gray-500 text-center px-1 truncate w-full">{f.name.split('.').pop()?.toUpperCase()}</span>
+                  </div>
+                )}
+                {uploadingMedia && fileUploadProgresses[i] !== undefined && fileUploadProgresses[i] < 100 && (
+                  <div className="w-14 bg-gray-200 rounded-full h-1 mt-0.5">
+                    <div className="bg-black h-1 rounded-full transition-all duration-200" style={{ width: `${fileUploadProgresses[i]}%` }} />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeAttachedFile(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                >✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <Button
+        variant="outline"
+        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 disabled:!opacity-50 disabled:!cursor-not-allowed !transform !relative !overflow-hidden group"
+        onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
+        disabled={sending}
+      >
+        <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
+        <Send className="h-4 w-4 mr-2 relative z-10" />
+        <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
+      </Button>
+    </div>
   );
 }

@@ -27,7 +27,15 @@ export function generateShareMessage(listing: SellListing): string {
   const location = listing.location || 'India';
   const templateIndex = Math.floor(Math.random() * shareTemplates.length);
   
-  return shareTemplates[templateIndex](listing.title, price, location);
+  let message = shareTemplates[templateIndex](listing.title, price, location);
+
+  // Real-estate listings — make the deal type explicit (For Rent / For Lease / For Sale)
+  const listingFor = (listing.details as any)?.listingFor as string | undefined;
+  if (['real-estate', 'real-estate-services'].includes(listing.category) && listingFor && listingFor !== 'Sale') {
+    message = `🏠 FOR ${listingFor.toUpperCase()} — ${message}`;
+  }
+
+  return message;
 }
 
 // Get the listing URL

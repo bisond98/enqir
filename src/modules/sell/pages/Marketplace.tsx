@@ -923,7 +923,12 @@ export default function Marketplace() {
                 </div>
                 <p className="text-[11px] text-gray-500 mt-0.5">{l.description && l.description.length > 20 ? l.description.slice(0, 20) + '......' : l.description}</p>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  {l.condition && (
+                  {['real-estate', 'real-estate-services'].includes(l.category) && l.details?.listingFor && (
+                    <span className={`text-[9px] font-black text-white !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] ${l.details.listingFor === 'Rent' ? 'bg-emerald-600' : l.details.listingFor === 'Lease' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                      FOR {l.details.listingFor.toUpperCase()}
+                    </span>
+                  )}
+                  {l.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(l.category) && !/-services$/.test(l.category || '') && (
                     <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {l.condition}
                     </span>
@@ -1021,7 +1026,12 @@ export default function Marketplace() {
                     </h3>
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    {l.condition && (
+                    {['real-estate', 'real-estate-services'].includes(l.category) && l.details?.listingFor && (
+                      <span className={`text-[8px] font-black text-white !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] ${l.details.listingFor === 'Rent' ? 'bg-emerald-600' : l.details.listingFor === 'Lease' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                        FOR {l.details.listingFor.toUpperCase()}
+                      </span>
+                    )}
+                    {l.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(l.category) && !/-services$/.test(l.category || '') && (
                       <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                         {l.condition}
                       </span>

@@ -242,6 +242,8 @@ export default function CreateListing() {
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [mapLocation, setMapLocation] = useState<MapLocationAddress | null>(null);
   const [condition, setCondition] = useState<ListingCondition>('used');
+  // Categories where New/Used condition makes no sense (properties & services) — hides the selector and chips
+  const hideCondition = ['real-estate', 'real-estate-services', 'service', 'services'].includes(category) || /-services$/.test(category);
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
   const [priceMin, setPriceMin] = useState<string>('');
@@ -584,7 +586,7 @@ export default function CreateListing() {
         latitude: mapLocation?.latitude ?? null,
         longitude: mapLocation?.longitude ?? null,
         mapAddress: mapLocation ?? null,
-        condition,
+        condition: hideCondition ? ('' as ListingCondition) : condition,
         priceType,
         price: fixedPrice,
         priceMin: rangeMin,
@@ -1235,7 +1237,7 @@ export default function CreateListing() {
 
             {step === 4 && (
               <div className="max-w-lg mx-auto w-full space-y-6">
-                {category !== 'jobs' && (
+                {category !== 'jobs' && !hideCondition && (
                 <div className="space-y-2">
                   <Label className="text-xs font-bold">Condition</Label>
                   <div className="grid grid-cols-2 gap-3">
@@ -1267,7 +1269,7 @@ export default function CreateListing() {
                 </div>
                 )}
 
-                {condition === 'used' && fieldsForCategoryStep(category, 'details').map((f) => (
+                {(condition === 'used' || hideCondition) && fieldsForCategoryStep(category, 'details').map((f) => (
                   <div key={f.key} className="space-y-2">
                     <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>
                     <div className="relative">
@@ -1414,7 +1416,7 @@ export default function CreateListing() {
                 {(() => {
                   const titleFields = fieldsForCategoryStep(category, 'title').filter((f) => details[f.key]);
                   const descFields = fieldsForCategoryStep(category, 'description').filter((f) => details[f.key]);
-                  const usedFields = condition === 'used' ? fieldsForCategoryStep(category, 'details').filter((f) => details[f.key]) : [];
+                  const usedFields = (condition === 'used' || hideCondition) ? fieldsForCategoryStep(category, 'details').filter((f) => details[f.key]) : [];
                   const priceFields = fieldsForCategoryStep(category, 'price').filter((f) => details[f.key]);
                   const hasSpecs = titleFields.length + descFields.length + usedFields.length + priceFields.length > 0;
                   const hasPhoto = images.length > 0;
@@ -1445,9 +1447,11 @@ export default function CreateListing() {
                               {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <Icon className="h-3 w-3" />; })()}
                               {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
                             </span>
+                            {!hideCondition && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5 capitalize">
                               <BadgeCheck className="h-3 w-3" />{condition}
                             </span>
+                            )}
                             {location && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
                                 <MapPin className="h-3 w-3" /> {location}

@@ -5,6 +5,9 @@ interface ShareableEnquiry {
   location?: string;
   deadline?: any;
   isUrgent?: boolean;
+  category?: string;
+  categories?: string[];
+  details?: any;
 }
 
 const formatBudget = (budget?: number): string | null => {
@@ -29,17 +32,40 @@ const formatDeadline = (deadline: any): string | null => {
 };
 
 /**
+ * Deal-type suffix for real-estate enquiries — makes rent/buy/lease explicit in shares.
+ * Reads `details.listingType` ("Buy" | "Rent" | "Lease") saved by PostEnquiry.
+ */
+const estateDealSuffix = (enquiry: ShareableEnquiry): string => {
+  const isEstate =
+    ['real-estate', 'real-estate-services'].includes(enquiry.category || '') ||
+    (enquiry.categories || []).some((c) => ['real-estate', 'real-estate-services'].includes(c));
+  if (!isEstate) return '';
+
+  const listingType = enquiry.details?.listingType;
+  if (listingType === 'Rent') return ' for rent';
+  if (listingType === 'Lease') return ' for lease';
+  if (listingType === 'Buy') return ' for buy';
+  return '';
+};
+
+/**
  * Demand-focused share text for enquiries — sells the *need*, not the description.
  * Example:
  *   🔎 WANTED: Hyundai Verna Fluidic 2011–2017 model
  *   💰 Budget: ₹5,00,000 | 📍 Visakhapatnam
  *   ⏰ Needed within 12 days
  *   Can you supply this? Respond here 👇
+ *
+ * Real-estate example:
+ *   🔎 WANTED: 2 bhk House at Bombay for rent
+ *   💰 Buyer's budget: ₹1,00,000 | @ Kurla West, Mumbai
+ *   ⏰ Needed within 14 days
+ *   Can you supply this? Respond here 👇
  */
 export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): string => {
   const parts: string[] = [];
 
-  parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}🔎 WANTED: ${enquiry.title}`);
+  parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}🔎 WANTED: ${enquiry.title}${estateDealSuffix(enquiry)}`);
 
   const facts: string[] = [];
   const budget = formatBudget(enquiry.budget);
